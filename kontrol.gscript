@@ -1,0 +1,225 @@
+
+var YEAR = 2017
+var Kosten = {};
+var Erloese = {};
+var Auszahlungen = {};
+var BeuteAnteil = {};
+var report = "";
+
+var VertriebsAnteil = 0.05;
+var KommanditistenAnteil = 0.7;
+var FirmenAnteil = 0.2;
+var AngestelltenAnteil = 0.2;
+  
+var Buchungsarten = ["ER", "AR", "GV", "KA", "UstVZ", "GV-Vorjahr", "VB"];
+var KontoInhaber = {"K" : "Firma",
+                    "RW": "Kommanditist",
+                    "AN": "Kommanditist",
+                    "JM": "Kommanditist",
+                    "BW": "Angestellter",
+                    "Extern": "Extern"
+                   };
+
+
+// ============================
+function readKostenErlöseAuszahlungenBeuteAnteil () {
+  // get the kommitment Controlling gsheet and 
+  var ControllingSheet = DriveApp.getFilesByName("2017-Buchungen-KG").next();
+  var buchungsliste = SpreadsheetApp.open(ControllingSheet).getSheetByName("Buchungen 2017");
+  var StartRow = 13;
+  var range = buchungsliste.getRange(/*startRow*/ StartRow, 
+                                     /*startColumn*/ 1, 
+                                     /*numRows*/ buchungsliste.getLastRow()-StartRow+1, 
+                                     /*numColumns*/  buchungsliste.getLastColumn());
+  var numRows = range.getNumRows();
+  var numCols = range.getNumColumns();
+  var values = range.getValues();
+  var headers = [];
+  
+  
+  // iterate over values.rows
+  for (var row = 0; row < numRows; row++) {
+    var Betrag = values[row][3];
+    var Monat = new Date(values[row][4]).getMonth()+1;
+    var Year = new Date(values[row][4]).getYear();
+    var Periode = Year+"-"+Monat;
+    // checks
+    if (row > 0 && (isNaN(Monat) || Monat < 1 || Monat > 12)) {
+      report += "\n found unknown Monat of type >"+values[row][4]+"< in row " + row;
+    }
+    // check it the type of booking is in "Buchungsarten"
+    if (row > 0 && Buchungsarten.indexOf(values[row][0]) == -1) {
+      report += "\n found unknown Buchungsarten of type >"+values[row][0]+"< in row " + row;
+    }
+    // check if Verursacher is in "Personen"
+    if (row > 0 && !(values[row][1] in KontoInhaber) )  {
+      report += "\n found unknown KontoInhaber of type >"+values[row][1]+"< in row " + row;
+    }
+
+    for (var col = 0; col < numCols; col++) {
+
+      if ( row == 0 ) {
+        // write headers array
+        headers[col] = values[row][col];
+        }
+      else { // ich bin nun in den Daten
+        // loop through the content...
+        var currentValue = values[row][col];
+        //report +=  currentValue + " | ";
+      }
+    }
+    
+    // for each row
+    // determine Kosten
+    var Verursacher = values[row][1];
+    if (values[row][0] == "ER") {  
+      // ER == Eingangsrechnungen == Kosten
+      generateKosten (Periode, Verursacher, Betrag);
+    }
+    else if (values[row][0] == "AR")  {
+      // AR = Ausgangsrechnungen == Erlöse
+      generateErloese (Periode, Verursacher, Betrag);    
+      //
+      // loop through the colums of this row and find and distribute BeuteAnteil
+      // this starts in col=2
+      for (var col = 19; col < numCols; col++) {
+        var whoWorkedForIt = headers[col]; // wer es bekommt, steht in der Kopfzeile
+        var nettoRechnungsPosition = values[row][col];
+        generateBeute (Periode, Verursacher, Betrag, whoWorkedForIt, nettoRechnungsPosition);
+      }
+    }
+    else if (values[row][0] == "GV")  {
+      // Achtung, hier gibts kein "netto"
+      generateAuszahlungen (Periode, Verursacher, Betrag);
+    }
+  } 
+}
+
+// ==============================
+function generateKosten (Periode, Verursacher, Betrag) {
+      Kosten["NettoSumme"] = (!Kosten["NettoSumme"]) ? netto(Betrag) : Kosten["NettoSumme"] + netto(Betrag) ;
+      Kosten[Periode] = Kosten[Periode] || {};
+      Kosten[Periode].NettoSumme = Kosten[Periode].NettoSumme + netto(Betrag) ;
+      Kosten[Periode][Verursacher] = Kosten[Periode][Verursacher] + netto(Betrag) || netto(Betrag);     
+}
+
+// ==============================
+function generateErloese(Periode, Verursacher, Betrag) {
+      Erloese["NettoSumme"] = (!Erloese["NettoSumme"]) ? netto(Betrag) : Erloese["NettoSumme"] + netto(Betrag) ;
+      Erloese[Periode] = Erloese[Periode] || {};
+      Erloese[Periode].NettoSumme = Erloese[Periode].NettoSumme + netto(Betrag) || netto(Betrag);
+      Erloese[Periode][Verursacher] = Erloese[Periode][Verursacher] + netto(Betrag) || netto(Betrag);  
+}
+
+// ==============================
+function generateBeute(Periode, Verursacher, Betrag, whoWorkedForIt, nettoRechnungsPosition) {
+        // BeuteAnteil.Summe = BeuteAnteil.Summe  || 0.0;  // Summe über alle fakturierten Nettobeträge
+        BeuteAnteil[Periode] = BeuteAnteil[Periode] || {};
+        //BeuteAnteil[Periode].Summe = BeuteAnteil[Periode].Summe  || 0.0;
+        BeuteAnteil[Periode][Verursacher] = BeuteAnteil[Periode][Verursacher] || {};
+        
+        // BeuteAnteil.Summe += 1.0*nettoRechnungsPosition;
+        // BeuteAnteil[Periode].Summe += 1.0*nettoRechnungsPosition;
+        BeuteAnteil[Periode][whoWorkedForIt] = BeuteAnteil[Periode][whoWorkedForIt] || {};
+        BeuteAnteil[Periode][whoWorkedForIt].Faktura = BeuteAnteil[Periode][whoWorkedForIt].Faktura || 0.0;
+        BeuteAnteil[Periode][whoWorkedForIt].Faktura += 1.0*nettoRechnungsPosition;  
+        // Firmenanteil zur Firma "K" hinzufügen
+        BeuteAnteil[Periode]["K"] = BeuteAnteil[Periode]["K"] || {};
+        BeuteAnteil[Periode]["K"].FakturaAnteilvonKommanditisten = BeuteAnteil[Periode]["K"].FakturaAnteilvonKommanditisten || 0.0;
+        BeuteAnteil[Periode]["K"].FakturaAnteilvonAngestellten = BeuteAnteil[Periode]["K"].FakturaAnteilvonAngestellten || 0.0;
+        BeuteAnteil[Periode]["K"].FakturaAnteilvonExternen = BeuteAnteil[Periode]["K"].FakturaAnteilvonExternen || 0.0;
+        // Anteile
+        if (KontoInhaber[whoWorkedForIt] == "Kommanditist") {
+          BeuteAnteil[Periode][whoWorkedForIt].FakturaAnteil = BeuteAnteil[Periode][whoWorkedForIt].FakturaAnteil + KommanditistenAnteil*nettoRechnungsPosition || KommanditistenAnteil*nettoRechnungsPosition;  
+          BeuteAnteil[Periode]["K"].FakturaAnteilvonKommanditisten += FirmenAnteil*nettoRechnungsPosition;
+        } 
+        else if (KontoInhaber[whoWorkedForIt] == "Angestellter") {
+          BeuteAnteil[Periode][whoWorkedForIt].FakturaAnteil = BeuteAnteil[Periode][whoWorkedForIt].FakturaAnteil + AngestelltenAnteil*nettoRechnungsPosition || AngestelltenAnteil*nettoRechnungsPosition;  
+          BeuteAnteil[Periode]["K"].FakturaAnteilvonAngestellten += (1.0-VertriebsAnteil)*nettoRechnungsPosition;
+          //...          
+        }
+        else if (KontoInhaber[whoWorkedForIt] == "Extern") {
+          BeuteAnteil[Periode]["K"].FakturaAnteilvonExternen += (1.0-VertriebsAnteil)*nettoRechnungsPosition;
+          //...          
+        }
+        BeuteAnteil[Periode][Verursacher].VertriebsAnteil = BeuteAnteil[Periode][Verursacher].VertriebsAnteil || 0.0;
+        BeuteAnteil[Periode][Verursacher].VertriebsAnteil += VertriebsAnteil*nettoRechnungsPosition;  
+}
+
+
+// ==============================
+function generateAuszahlungen (Periode, Verursacher, Betrag) {
+      Auszahlungen["Summe"] = (!Auszahlungen["Summe"]) ? Betrag : Auszahlungen["Summe"] + Betrag ;
+      Auszahlungen[Periode] = Auszahlungen[Periode] || {};
+      Auszahlungen[Periode].Summe = Auszahlungen[Periode].Summe + netto(Betrag) || Betrag;
+      Auszahlungen[Periode][Verursacher] = Auszahlungen[Periode][Verursacher] + Betrag || Betrag;  
+}
+
+// =======================
+function createReport () {
+  var now = new Date().toISOString(); //"2011-12-19T15:28:46.493Z";
+  // Create a text file with the report
+  report += "\n\n=========== KONTEN ============"
+  var kontostand = {};
+  Object.keys(BeuteAnteil).forEach(function (periode,index) {      
+    if (index == 0) {
+      report += "\nPeriode: ";
+      Object.keys(BeuteAnteil[periode]).sort().forEach (function (konto,index) {
+        report += ("          "+konto).slice(-10);
+      })
+    }
+    report += "\n"+("          "+periode).slice(-10);
+    
+    Object.keys(BeuteAnteil[periode]).sort().forEach (function (konto,index) {
+      kontostand[konto] = kontostand[konto] || 0.0;
+      kontostand[konto] += BeuteAnteil[periode][konto].VertriebsAnteil || 0;
+      kontostand[konto] += BeuteAnteil[periode][konto].FakturaAnteil || 0;
+      kontostand[konto] += BeuteAnteil[periode][konto].FakturaAnteilvonKommanditisten || 0;
+      kontostand[konto] += BeuteAnteil[periode][konto].FakturaAnteilvonAngestellten || 0;
+      kontostand[konto] += BeuteAnteil[periode][konto].FakturaAnteilvonExternen || 0;
+      
+      kontostand[konto] -= Auszahlungen[periode][konto] || 0;
+      if (konto == "K") {
+        kontostand[konto] -= Kosten[periode][konto] || 0;
+      }
+      //...
+      report += ("          "+parseFloat(Math.round(100*kontostand[konto])/100).toFixed(2) ).slice(-10);
+    
+    })
+  })
+  report += "\n==========="
+  
+  
+  DriveApp.createFile('report.txt', 
+                      "Report generated at: "+ now + "\n"
+                      + "\n============\n"
+                      + "\nKosten: " + JSON.stringify(Kosten, null,2) + "\n" 
+                      + "\n\n\n============\n"
+                      + "\nErlöse: " + JSON.stringify(Erloese, null,2) + "\n" 
+                      + "\n\n\n============\n"
+                      + "\nBeuteAnteil: " + JSON.stringify(BeuteAnteil, null,2) + "\n" 
+                      + "\n\n\n============\n"
+                      + "\Auszahlungen: " + JSON.stringify(Auszahlungen, null,2) + "\n" 
+                      + "\n============\n"
+                      +
+                      report
+                     );
+  return
+}
+
+
+// ==============================
+function main_readAnalyzeAndReport () {
+  readKostenErlöseAuszahlungenBeuteAnteil();
+  createReport ();
+}
+
+
+
+// BruttoBetrag in Nettobetrag umwandeln...
+function netto(x) {
+  var Umsatzsteuer = 0.19;
+  return x/(1.0+Umsatzsteuer);
+}
+
+

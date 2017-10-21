@@ -1,0 +1,26 @@
+0   1  2        3       4       5    6   7       8   9    10         11 12 13       14 15 16 17       18 19 20 21 22 23 
+                                                          GEWINNE                      VERTRIEB          RECHNUNG
+Typ	CC Betrag   Betreff Mon.    File Ord Buchung Sum Leer Kommitment BW AN RW       JM BW AN RW       JM BW AN RW JM Extern							
+AR  RW 29180,56 BBG     2017-09                           5061,48          18243,75          1216,25           24325,00
+
+gewinn {
+    Mitarbeiter
+    Betrag
+}
+
+gewinn["Kommitment"] = record[10]
+gewinn["BW"]         = record[11]
+gewinn["AN"]         = record[11]
+gewinn["RW"]         = record[13]
+gewinn["JM"]         = record[14]
+
+vertrieb["BW"]       = record[15]
+vertrieb["AN"]       = record[16]
+vertrieb["RW"]       = record[17]
+vertrieb["RW"]       = record[18]
+
+rechnung["BW"]       = record[19]
+rechnung["AN"]       = record[20]
+rechnung["RW"]       = record[21]
+rechnung["JM"]       = record[22]
+rechnung["Extern"]   = record[23]
