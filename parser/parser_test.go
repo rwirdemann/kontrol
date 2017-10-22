@@ -8,8 +8,8 @@ import (
 	"bitbucket.org/rwirdemann/kontrol/util"
 )
 
-func TestParse(t *testing.T) {
-	positions := Parse("bookings.csv")
+func TestImport(t *testing.T) {
+	positions := Import("bookings.csv")
 	util.AssertEquals(t, 3, len(positions))
 	assertPosition(t, positions[0], "ER", "K", "Ulrike Klode", 2142, 2017, 2, 0, 0, 0)
 	assertPosition(t, positions[1], "AR", "AN", "moebel.de", 4730.25, 2017, 1, 0, 0, 3975)

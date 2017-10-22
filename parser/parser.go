@@ -12,7 +12,7 @@ import (
 	"bitbucket.org/rwirdemann/kontrol/kontrol"
 )
 
-func Parse(file string) []kontrol.Position {
+func Import(file string) []kontrol.Position {
 	var positions []kontrol.Position
 
 	if f, err := openCsvFile(file); err == nil {
@@ -25,7 +25,7 @@ func Parse(file string) []kontrol.Position {
 			if record[0] == "ER" || record[0] == "AR" {
 				typ := record[0]
 				cs := record[1]
-				subject := record[2]
+				subject := strings.Replace(record[2], "\n", ",", -1)
 				amount := parseAmount(record[3])
 				year, month := parseMonth(record[4])
 

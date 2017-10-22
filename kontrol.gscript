@@ -112,38 +112,27 @@ function generateErloese(Periode, Verursacher, Betrag) {
 }
 
 // ==============================
-function generateBeute(Periode, Verursacher, Betrag, whoWorkedForIt, nettoRechnungsPosition) {
-        // BeuteAnteil.Summe = BeuteAnteil.Summe  || 0.0;  // Summe über alle fakturierten Nettobeträge
-        BeuteAnteil[Periode] = BeuteAnteil[Periode] || {};
-        //BeuteAnteil[Periode].Summe = BeuteAnteil[Periode].Summe  || 0.0;
-        BeuteAnteil[Periode][Verursacher] = BeuteAnteil[Periode][Verursacher] || {};
-        
-        // BeuteAnteil.Summe += 1.0*nettoRechnungsPosition;
-        // BeuteAnteil[Periode].Summe += 1.0*nettoRechnungsPosition;
-        BeuteAnteil[Periode][whoWorkedForIt] = BeuteAnteil[Periode][whoWorkedForIt] || {};
-        BeuteAnteil[Periode][whoWorkedForIt].Faktura = BeuteAnteil[Periode][whoWorkedForIt].Faktura || 0.0;
+function generateBeute(Periode, CostCenter, Betrag, whoWorkedForIt, nettoRechnungsPosition) {
+
         BeuteAnteil[Periode][whoWorkedForIt].Faktura += 1.0*nettoRechnungsPosition;  
-        // Firmenanteil zur Firma "K" hinzufügen
-        BeuteAnteil[Periode]["K"] = BeuteAnteil[Periode]["K"] || {};
-        BeuteAnteil[Periode]["K"].FakturaAnteilvonKommanditisten = BeuteAnteil[Periode]["K"].FakturaAnteilvonKommanditisten || 0.0;
-        BeuteAnteil[Periode]["K"].FakturaAnteilvonAngestellten = BeuteAnteil[Periode]["K"].FakturaAnteilvonAngestellten || 0.0;
-        BeuteAnteil[Periode]["K"].FakturaAnteilvonExternen = BeuteAnteil[Periode]["K"].FakturaAnteilvonExternen || 0.0;
+
         // Anteile
         if (KontoInhaber[whoWorkedForIt] == "Kommanditist") {
           BeuteAnteil[Periode][whoWorkedForIt].FakturaAnteil = BeuteAnteil[Periode][whoWorkedForIt].FakturaAnteil + KommanditistenAnteil*nettoRechnungsPosition || KommanditistenAnteil*nettoRechnungsPosition;  
           BeuteAnteil[Periode]["K"].FakturaAnteilvonKommanditisten += FirmenAnteil*nettoRechnungsPosition;
         } 
-        else if (KontoInhaber[whoWorkedForIt] == "Angestellter") {
+
+        if (KontoInhaber[whoWorkedForIt] == "Angestellter") {
           BeuteAnteil[Periode][whoWorkedForIt].FakturaAnteil = BeuteAnteil[Periode][whoWorkedForIt].FakturaAnteil + AngestelltenAnteil*nettoRechnungsPosition || AngestelltenAnteil*nettoRechnungsPosition;  
           BeuteAnteil[Periode]["K"].FakturaAnteilvonAngestellten += (1.0-VertriebsAnteil)*nettoRechnungsPosition;
-          //...          
         }
         else if (KontoInhaber[whoWorkedForIt] == "Extern") {
           BeuteAnteil[Periode]["K"].FakturaAnteilvonExternen += (1.0-VertriebsAnteil)*nettoRechnungsPosition;
           //...          
         }
-        BeuteAnteil[Periode][Verursacher].VertriebsAnteil = BeuteAnteil[Periode][Verursacher].VertriebsAnteil || 0.0;
-        BeuteAnteil[Periode][Verursacher].VertriebsAnteil += VertriebsAnteil*nettoRechnungsPosition;  
+       
+        BeuteAnteil[Periode][CostCenter].VertriebsAnteil = BeuteAnteil[Periode][Verursacher].VertriebsAnteil || 0.0;
+        BeuteAnteil[Periode][CostCenter].VertriebsAnteil += VertriebsAnteil*nettoRechnungsPosition;  
 }
 
 
