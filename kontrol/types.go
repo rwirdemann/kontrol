@@ -49,14 +49,8 @@ type Booking struct {
 }
 
 func (b Booking) Print(account string) {
-	fmt.Printf("[booking %s: %-40s %9.2f]\n", account, b.Text, b.Amount)
+	fmt.Printf("[Booking %s: %-40s %9.2f]\n", account, b.Text, b.Amount)
 }
-
-type Account struct {
-	Bookings []Booking
-}
-
-var Accounts map[string]*Account
 
 func init() {
 	Accounts = make(map[string]*Account)

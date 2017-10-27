@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"bitbucket.org/rwirdemann/kontrol/kontrol"
 
 	"bitbucket.org/rwirdemann/kontrol/processing"
@@ -14,11 +16,13 @@ func main() {
 		processing.Process(p)
 	}
 
-	for k, v := range kontrol.Accounts {
-		if k == kontrol.SA_RW {
-			for _, b := range v.Bookings {
-				b.Print(k)
+	for owner, account := range kontrol.Accounts {
+		if owner == kontrol.SA_RW {
+			for _, b := range account.Bookings {
+				b.Print(owner)
 			}
+			fmt.Println("----------------------------------------------------------------")
+			fmt.Printf("Saldo: %10.2f", account.Saldo())
 		}
 	}
 }
