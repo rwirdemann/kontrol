@@ -1,5 +1,9 @@
 package kontrol
 
+import (
+	"fmt"
+)
+
 const (
 	SA_KM = "Kommitment"
 	SA_BW = "BW"
@@ -37,4 +41,26 @@ type Position struct {
 	Month      int
 
 	Net map[string]float64
+}
+
+type Booking struct {
+	Amount float64
+	Text   string
+}
+
+func (b Booking) Print(account string) {
+	fmt.Printf("[booking %s: %-40s %9.2f]\n", account, b.Text, b.Amount)
+}
+
+type Account struct {
+	Bookings []Booking
+}
+
+var Accounts map[string]*Account
+
+func init() {
+	Accounts = make(map[string]*Account)
+	for _, p := range NetPositions {
+		Accounts[p.Stakeholder] = new(Account)
+	}
 }

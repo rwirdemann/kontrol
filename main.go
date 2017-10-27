@@ -1,7 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"bitbucket.org/rwirdemann/kontrol/kontrol"
+
+	"bitbucket.org/rwirdemann/kontrol/processing"
 
 	"bitbucket.org/rwirdemann/kontrol/parser"
 )
@@ -9,8 +11,14 @@ import (
 func main() {
 	positions := parser.Import("buchungen-2017.csv")
 	for _, p := range positions {
-		if p.Typ == "AR" {
-			fmt.Printf("%v\n", p)
+		processing.Process(p)
+	}
+
+	for k, v := range kontrol.Accounts {
+		if k == kontrol.SA_RW {
+			for _, b := range v.Bookings {
+				b.Print(k)
+			}
 		}
 	}
 }

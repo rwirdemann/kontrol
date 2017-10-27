@@ -36,3 +36,12 @@ func AssertNil(t *testing.T, actual interface{}) {
 		t.FailNow()
 	}
 }
+
+func AssertFloatEquals(t *testing.T, expect float64, actual float64) {
+	const EPSILON float64 = 0.00000001
+
+	if (actual-expect) >= EPSILON || (expect-actual) >= EPSILON {
+		t.Errorf("wanted: %v, got: %v", expect, actual)
+		t.FailNow()
+	}
+}
