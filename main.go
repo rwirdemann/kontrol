@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 
 	"bitbucket.org/rwirdemann/kontrol/kontrol"
 
@@ -18,6 +19,7 @@ func main() {
 
 	for owner, account := range kontrol.Accounts {
 		if owner == kontrol.SA_RW {
+			sort.Sort(kontrol.ByMonth(account.Bookings))
 			for _, b := range account.Bookings {
 				b.Print(owner)
 			}

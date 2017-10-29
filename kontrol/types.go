@@ -1,9 +1,5 @@
 package kontrol
 
-import (
-	"fmt"
-)
-
 const (
 	SA_KM = "Kommitment"
 	SA_BW = "BW"
@@ -41,15 +37,4 @@ type Position struct {
 	Month      int
 
 	Net map[string]float64
-}
-
-type Booking struct {
-	Amount float64
-	Text   string
-	Year   int
-	Month  int
-}
-
-func (b Booking) Print(account string) {
-	fmt.Printf("[%s: %2d-%d %-40s %9.2f]\n", account, b.Month, b.Year, b.Text, b.Amount)
 }
