@@ -46,15 +46,10 @@ type Position struct {
 type Booking struct {
 	Amount float64
 	Text   string
+	Year   int
+	Month  int
 }
 
 func (b Booking) Print(account string) {
-	fmt.Printf("[Booking %s: %-40s %9.2f]\n", account, b.Text, b.Amount)
-}
-
-func init() {
-	Accounts = make(map[string]*Account)
-	for _, p := range NetPositions {
-		Accounts[p.Stakeholder] = new(Account)
-	}
+	fmt.Printf("[%s: %2d-%d %-40s %9.2f]\n", account, b.Month, b.Year, b.Text, b.Amount)
 }

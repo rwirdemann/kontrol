@@ -5,11 +5,24 @@ import (
 )
 
 func Process(position kontrol.Position) {
-	benefitees := stakeholderWithNetPositions(position)
-	for _, benefited := range benefitees {
-		b := kontrol.Booking{Amount: position.Net[benefited], Text: position.Subject}
-		account := kontrol.Accounts[benefited]
-		account.Bookings = append(kontrol.Accounts[benefited].Bookings, b)
+
+	if position.Typ == "GV" {
+		b := kontrol.Booking{Amount: -1 * position.Amount, Text: "GV Entnahme", Month: position.Month, Year: position.Year}
+		account := kontrol.Accounts[position.CostCenter]
+		account.Book(b)
+	}
+
+	if position.Typ == "AR" {
+		benefitees := stakeholderWithNetPositions(position)
+		for _, benefited := range benefitees {
+
+			// todo: externe kriegen ExternShare statt PartnerShare
+
+			b := kontrol.Booking{Amount: position.Net[benefited] * kontrol.PartnerShare, Text: position.Subject,
+				Month: position.Month, Year: position.Year}
+			account := kontrol.Accounts[benefited]
+			account.Bookings = append(kontrol.Accounts[benefited].Bookings, b)
+		}
 	}
 }
 

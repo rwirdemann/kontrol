@@ -6,6 +6,13 @@ type Account struct {
 
 var Accounts map[string]*Account
 
+func init() {
+	Accounts = make(map[string]*Account)
+	for _, p := range NetPositions {
+		Accounts[p.Stakeholder] = new(Account)
+	}
+}
+
 func (a *Account) Book(booking Booking) {
 	a.Bookings = append(a.Bookings, booking)
 }

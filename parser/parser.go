@@ -22,7 +22,7 @@ func Import(file string) []kontrol.Position {
 			if err == io.EOF {
 				break
 			}
-			if record[0] == "ER" || record[0] == "AR" {
+			if record[0] == "GV" || record[0] == "AR" || record[0] == "ER" {
 				typ := record[0]
 				cs := record[1]
 				subject := strings.Replace(record[2], "\n", ",", -1)
