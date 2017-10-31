@@ -37,7 +37,12 @@ type Booking struct {
 }
 
 func (b Booking) Print(account string) {
-	fmt.Printf("[%s: %2d-%d %-40s %9.2f]\n", account, b.Month, b.Year, b.Text, b.Amount)
+	text := b.Text
+	if len(text) > 37 {
+		text = text[:37] + "..."
+	}
+
+	fmt.Printf("[%s: %2d-%d %-40s \t %9.2f]\n", account, b.Month, b.Year, text, b.Amount)
 }
 
 type ByMonth []Booking
