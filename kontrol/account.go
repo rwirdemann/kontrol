@@ -8,7 +8,7 @@ var Accounts map[string]*Account
 
 func init() {
 	Accounts = make(map[string]*Account)
-	for _, p := range NetPositions {
+	for _, p := range NetBookings {
 		Accounts[p.Stakeholder] = new(Account)
 	}
 }

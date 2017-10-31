@@ -16,11 +16,12 @@ func setUp() {
 func TestProcessing(t *testing.T) {
 	setUp()
 
-	// given: a positon
-	p := kontrol.Position{Typ: "AR", CostCenter: "JM", Amount: 17225.25, Subject: "Rechnung 1234", Month: 1, Year: 2017}
-	p.Net = make(map[string]float64)
-	p.Net[kontrol.SA_RW] = 10800.0
-	p.Net[kontrol.SA_JM] = 3675.0
+	// given: a booking
+	extras := kontrol.CsvBookingExtras{Typ: "AR", CostCenter: "JM"}
+	extras.Net = make(map[string]float64)
+	extras.Net[kontrol.SA_RW] = 10800.0
+	extras.Net[kontrol.SA_JM] = 3675.0
+	p := kontrol.Booking{Extras: extras, Amount: 17225.25, Text: "Rechnung 1234", Month: 1, Year: 2017}
 
 	// when: the position is processed
 	Process(p)
@@ -47,7 +48,9 @@ func TestProcessing(t *testing.T) {
 func TestPartnerWithdrawals(t *testing.T) {
 	setUp()
 
-	p := kontrol.Position{Typ: "GV", CostCenter: "RW", Amount: 6000}
+	extras := kontrol.CsvBookingExtras{Typ: "GV", CostCenter: "RW"}
+	extras.Net = make(map[string]float64)
+	p := kontrol.Booking{Extras: extras, Amount: 6000}
 	Process(p)
 	util.AssertEquals(t, 1, len(kontrol.Accounts[kontrol.SA_RW].Bookings))
 	bRalf := kontrol.Accounts[kontrol.SA_RW].Bookings[0]

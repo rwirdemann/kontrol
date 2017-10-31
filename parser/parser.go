@@ -12,8 +12,8 @@ import (
 	"bitbucket.org/rwirdemann/kontrol/kontrol"
 )
 
-func Import(file string) []kontrol.Position {
-	var positions []kontrol.Position
+func Import(file string) []kontrol.Booking {
+	var positions []kontrol.Booking
 
 	if f, err := openCsvFile(file); err == nil {
 		r := csv.NewReader(bufio.NewReader(f))
@@ -28,14 +28,12 @@ func Import(file string) []kontrol.Position {
 				subject := strings.Replace(record[2], "\n", ",", -1)
 				amount := parseAmount(record[3])
 				year, month := parseMonth(record[4])
-
-				position := kontrol.Position{Typ: typ, CostCenter: cs, Subject: subject, Amount: amount, Year: year, Month: month}
-
-				position.Net = make(map[string]float64)
-				for _, p := range kontrol.NetPositions {
-					position.Net[p.Stakeholder] = parseAmount(record[p.Column])
+				extras := kontrol.CsvBookingExtras{Typ: typ, CostCenter: cs}
+				extras.Net = make(map[string]float64)
+				for _, p := range kontrol.NetBookings {
+					extras.Net[p.Stakeholder] = parseAmount(record[p.Column])
 				}
-
+				position := kontrol.Booking{Extras: extras, Text: subject, Amount: amount, Year: year, Month: month}
 				positions = append(positions, position)
 			}
 		}

@@ -17,17 +17,17 @@ func TestImport(t *testing.T) {
 	assertPosition(t, positions[3], "GV", "RW", "Ralf", 6000, 2017, 1, 0, 0, 0)
 }
 
-func assertPosition(t *testing.T, p kontrol.Position, typ string, costCenter string, subject string,
+func assertPosition(t *testing.T, p kontrol.Booking, typ string, costCenter string, subject string,
 	amount float64, year int, month int,
 	nettoRW float64, nettoJM float64, nettoAN float64) {
-	util.AssertEquals(t, typ, p.Typ)
-	util.AssertEquals(t, costCenter, p.CostCenter)
-	util.AssertEquals(t, subject, p.Subject)
+	util.AssertEquals(t, typ, p.Extras.Typ)
+	util.AssertEquals(t, costCenter, p.Extras.CostCenter)
+	util.AssertEquals(t, subject, p.Text)
 	util.AssertEquals(t, amount, p.Amount)
 	util.AssertEquals(t, year, p.Year)
 	util.AssertEquals(t, month, p.Month)
 
-	util.AssertEquals(t, nettoRW, p.Net[kontrol.SA_RW])
-	util.AssertEquals(t, nettoJM, p.Net[kontrol.SA_JM])
-	util.AssertEquals(t, nettoAN, p.Net[kontrol.SA_AN])
+	util.AssertEquals(t, nettoRW, p.Extras.Net[kontrol.SA_RW])
+	util.AssertEquals(t, nettoJM, p.Extras.Net[kontrol.SA_JM])
+	util.AssertEquals(t, nettoAN, p.Extras.Net[kontrol.SA_AN])
 }
