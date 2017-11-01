@@ -20,10 +20,16 @@ func Process(booking kontrol.Booking) {
 		benefitees := stakeholderWithNetPositions(booking)
 		for _, benefited := range benefitees {
 
-			// todo: externe kriegen ExternShare statt PartnerShare
+			var share float64
+			if benefited == kontrol.SA_EX {
+				share = kontrol.ExternalShare
+			} else {
+				share = kontrol.PartnerShare
+			}
 
 			b := kontrol.Booking{
-				Amount: booking.Extras.Net[benefited] * kontrol.PartnerShare,
+				Amount: booking.Extras.Net[benefited] * share,
+				Typ:    kontrol.Nettoanteil,
 				Text:   booking.Text,
 				Month:  booking.Month,
 				Year:   booking.Year}
@@ -33,6 +39,8 @@ func Process(booking kontrol.Booking) {
 	}
 }
 
+// Eine Buchung kann mehrere Nettopositionen enthalten, den je einem Stakeholder zugeschrieben wird.
+// Diese Funktion liefert ein Array mit Stateholder, deren Nettoanteil in der Buchung > 0 ist.
 func stakeholderWithNetPositions(position kontrol.Booking) []string {
 	var result []string
 

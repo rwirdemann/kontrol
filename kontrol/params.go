@@ -1,7 +1,7 @@
 package kontrol
 
 const (
-	SA_KM = "Kommitment"
+	SA_KM = "KM" // Kommitment
 	SA_BW = "BW"
 	SA_RW = "RW"
 	SA_JM = "JM"
@@ -14,5 +14,6 @@ const (
 	NET_COL_JM = 22
 	NET_COL_EX = 23
 
-	PartnerShare = 0.7
+	PartnerShare  = 0.7
+	ExternalShare = 0.8
 )

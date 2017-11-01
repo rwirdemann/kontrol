@@ -27,7 +27,15 @@ type CsvBookingExtras struct {
 	Net        map[string]float64 // Verteilung der netto Rechnungspositionen auf Stakeholder
 }
 
+const (
+	Vertriebsprovision = "Vertriebsprovision"
+	Nettoanteil        = "Nettoanteil"
+	Kommitmentanteil   = "Kommitmentanteil"
+	Entnahme           = "Entnahme"
+)
+
 type Booking struct {
+	Typ    string // Vertriebsprovision, Nettoanteil, Kommitmentanteil
 	Amount float64
 	Text   string
 	Year   int
@@ -42,7 +50,7 @@ func (b Booking) Print(account string) {
 		text = text[:37] + "..."
 	}
 
-	fmt.Printf("[%s: %2d-%d %-40s \t %9.2f]\n", account, b.Month, b.Year, text, b.Amount)
+	fmt.Printf("[%s: %2d-%d %-15s %-40s \t %9.2f]\n", account, b.Month, b.Year, b.Typ, text, b.Amount)
 }
 
 type ByMonth []Booking

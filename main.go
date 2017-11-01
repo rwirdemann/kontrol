@@ -14,5 +14,5 @@ func main() {
 		processing.Process(p)
 	}
 
-	kontrol.Accounts[kontrol.SA_JM].Print()
+	kontrol.Accounts[kontrol.SA_RW].Print()
 }
