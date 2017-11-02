@@ -11,3 +11,7 @@ type Stakeholder struct {
 	Id   string
 	Type string
 }
+
+func (sh Stakeholder) findAll() []Stakeholder {
+	return AllStakeholder
+}

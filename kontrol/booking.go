@@ -4,21 +4,6 @@ import (
 	"fmt"
 )
 
-// Beschreibt, dass die netto (Rechnungs-)Position in Spalte X der CSV-Datei dem Stakeholder Y gehört
-type NetBookingColumn struct {
-	Owner  Stakeholder
-	Column int
-}
-
-// Liste aller Spalten-Stateholder Positions-Mappings
-var NetBookings = []NetBookingColumn{
-	NetBookingColumn{Owner: SH_RW, Column: NET_COL_RW},
-	NetBookingColumn{Owner: SH_AN, Column: NET_COL_AN},
-	NetBookingColumn{Owner: SH_JM, Column: NET_COL_JM},
-	NetBookingColumn{Owner: SH_BW, Column: NET_COL_BW},
-	NetBookingColumn{Owner: SH_EX, Column: NET_COL_EX},
-}
-
 // Zusatzinformationen einer Buchung, deren Quelle die CSV-Datei ist, und die für die weitere
 // Bearbeitung erforderlich sind.
 type CsvBookingExtras struct {
