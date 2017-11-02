@@ -18,17 +18,17 @@ func TestPartnerNettoAnteil(t *testing.T) {
 
 	// given: a booking
 	extras := kontrol.CsvBookingExtras{Typ: "AR", CostCenter: "JM"}
-	extras.Net = make(map[string]float64)
-	extras.Net[kontrol.SA_RW] = 10800.0
-	extras.Net[kontrol.SA_JM] = 3675.0
+	extras.Net = make(map[kontrol.Stakeholder]float64)
+	extras.Net[kontrol.SH_RW] = 10800.0
+	extras.Net[kontrol.SH_JM] = 3675.0
 	p := kontrol.Booking{Extras: extras, Amount: 17225.25, Text: "Rechnung 1234", Month: 1, Year: 2017}
 
 	// when: the position is processed
 	Process(p)
 
 	// then ralf got his net booking
-	util.AssertEquals(t, 1, len(kontrol.Accounts[kontrol.SA_RW].Bookings))
-	bRalf := kontrol.Accounts[kontrol.SA_RW].Bookings[0]
+	util.AssertEquals(t, 1, len(kontrol.Accounts[kontrol.SH_RW.Id].Bookings))
+	bRalf := kontrol.Accounts[kontrol.SH_RW.Id].Bookings[0]
 	util.AssertFloatEquals(t, 10800.0*kontrol.PartnerShare, bRalf.Amount)
 	util.AssertEquals(t, "Rechnung 1234", bRalf.Text)
 	util.AssertEquals(t, 1, bRalf.Month)
@@ -36,8 +36,8 @@ func TestPartnerNettoAnteil(t *testing.T) {
 	util.AssertEquals(t, kontrol.Nettoanteil, bRalf.Typ)
 
 	// and hannes got his net booking
-	util.AssertEquals(t, 1, len(kontrol.Accounts[kontrol.SA_JM].Bookings))
-	bHannes := kontrol.Accounts[kontrol.SA_JM].Bookings[0]
+	util.AssertEquals(t, 1, len(kontrol.Accounts[kontrol.SH_JM.Id].Bookings))
+	bHannes := kontrol.Accounts[kontrol.SH_JM.Id].Bookings[0]
 	util.AssertFloatEquals(t, 3675*kontrol.PartnerShare, bHannes.Amount)
 	util.AssertEquals(t, "Rechnung 1234", bHannes.Text)
 	util.AssertEquals(t, 1, bHannes.Month)
@@ -48,10 +48,10 @@ func TestPartnerWithdrawals(t *testing.T) {
 	setUp()
 
 	extras := kontrol.CsvBookingExtras{Typ: "GV", CostCenter: "RW"}
-	extras.Net = make(map[string]float64)
+	extras.Net = make(map[kontrol.Stakeholder]float64)
 	p := kontrol.Booking{Extras: extras, Amount: 6000}
 	Process(p)
-	util.AssertEquals(t, 1, len(kontrol.Accounts[kontrol.SA_RW].Bookings))
-	bRalf := kontrol.Accounts[kontrol.SA_RW].Bookings[0]
+	util.AssertEquals(t, 1, len(kontrol.Accounts[kontrol.SH_RW.Id].Bookings))
+	bRalf := kontrol.Accounts[kontrol.SH_RW.Id].Bookings[0]
 	util.AssertFloatEquals(t, -6000, bRalf.Amount)
 }

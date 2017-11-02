@@ -6,25 +6,25 @@ import (
 
 // Beschreibt, dass die netto (Rechnungs-)Position in Spalte X der CSV-Datei dem Stakeholder Y gehört
 type NetBookingColumn struct {
-	Stakeholder string
-	Column      int
+	Owner  Stakeholder
+	Column int
 }
 
 // Liste aller Spalten-Stateholder Positions-Mappings
 var NetBookings = []NetBookingColumn{
-	NetBookingColumn{Stakeholder: SA_RW, Column: NET_COL_RW},
-	NetBookingColumn{Stakeholder: SA_AN, Column: NET_COL_AN},
-	NetBookingColumn{Stakeholder: SA_JM, Column: NET_COL_JM},
-	NetBookingColumn{Stakeholder: SA_BW, Column: NET_COL_BW},
-	NetBookingColumn{Stakeholder: SA_EX, Column: NET_COL_EX},
+	NetBookingColumn{Owner: SH_RW, Column: NET_COL_RW},
+	NetBookingColumn{Owner: SH_AN, Column: NET_COL_AN},
+	NetBookingColumn{Owner: SH_JM, Column: NET_COL_JM},
+	NetBookingColumn{Owner: SH_BW, Column: NET_COL_BW},
+	NetBookingColumn{Owner: SH_EX, Column: NET_COL_EX},
 }
 
 // Zusatzinformationen einer Buchung, deren Quelle die CSV-Datei ist, und die für die weitere
 // Bearbeitung erforderlich sind.
 type CsvBookingExtras struct {
-	Typ        string             // ER, AR, GV
-	CostCenter string             // JM, AN, K, usw.
-	Net        map[string]float64 // Verteilung der netto Rechnungspositionen auf Stakeholder
+	Typ        string                  // ER, AR, GV
+	CostCenter string                  // JM, AN, K, usw.
+	Net        map[Stakeholder]float64 // Verteilung der netto Rechnungspositionen auf Stakeholder
 }
 
 const (
@@ -44,13 +44,13 @@ type Booking struct {
 	Extras CsvBookingExtras
 }
 
-func (b Booking) Print(account string) {
+func (b Booking) Print(owner Stakeholder) {
 	text := b.Text
 	if len(text) > 37 {
 		text = text[:37] + "..."
 	}
 
-	fmt.Printf("[%s: %2d-%d %-15s %-40s \t %9.2f]\n", account, b.Month, b.Year, b.Typ, text, b.Amount)
+	fmt.Printf("[%s: %2d-%d %-15s %-40s \t %9.2f]\n", owner.Id, b.Month, b.Year, b.Typ, text, b.Amount)
 }
 
 type ByMonth []Booking

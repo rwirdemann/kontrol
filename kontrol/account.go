@@ -6,7 +6,7 @@ import (
 )
 
 type Account struct {
-	Owner    string
+	Owner    Stakeholder
 	Bookings []Booking
 }
 
@@ -14,8 +14,8 @@ var Accounts map[string]*Account
 
 func init() {
 	Accounts = make(map[string]*Account)
-	for _, p := range NetBookings {
-		Accounts[p.Stakeholder] = &Account{Owner: p.Stakeholder}
+	for _, b := range NetBookings {
+		Accounts[b.Owner.Id] = &Account{Owner: b.Owner}
 	}
 }
 

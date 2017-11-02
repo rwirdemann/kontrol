@@ -29,9 +29,9 @@ func Import(file string) []kontrol.Booking {
 				amount := parseAmount(record[3])
 				year, month := parseMonth(record[4])
 				extras := kontrol.CsvBookingExtras{Typ: typ, CostCenter: cs}
-				extras.Net = make(map[string]float64)
+				extras.Net = make(map[kontrol.Stakeholder]float64)
 				for _, p := range kontrol.NetBookings {
-					extras.Net[p.Stakeholder] = parseAmount(record[p.Column])
+					extras.Net[p.Owner] = parseAmount(record[p.Column])
 				}
 				position := kontrol.Booking{Extras: extras, Text: subject, Amount: amount, Year: year, Month: month}
 				positions = append(positions, position)

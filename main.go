@@ -14,5 +14,5 @@ func main() {
 		processing.Process(p)
 	}
 
-	kontrol.Accounts[kontrol.SA_RW].Print()
+	kontrol.Accounts[kontrol.SH_RW.Id].Print()
 }

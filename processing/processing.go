@@ -21,15 +21,15 @@ func Process(booking kontrol.Booking) {
 		for _, benefited := range benefitees {
 
 			// todo fix this: Externe bekommen keinen Sharem, Angestellte bekommen einen anderen Share
-			if benefited != kontrol.SA_EX && benefited != kontrol.SA_BW {
+			if benefited.Type == kontrol.STAKEHOLDER_TYPE_PARTNER {
 				b := kontrol.Booking{
 					Amount: booking.Extras.Net[benefited] * kontrol.PartnerShare,
 					Typ:    kontrol.Nettoanteil,
 					Text:   booking.Text,
 					Month:  booking.Month,
 					Year:   booking.Year}
-				account := kontrol.Accounts[benefited]
-				account.Bookings = append(kontrol.Accounts[benefited].Bookings, b)
+				account := kontrol.Accounts[benefited.Id]
+				account.Bookings = append(kontrol.Accounts[benefited.Id].Bookings, b)
 			}
 		}
 	}
@@ -37,10 +37,10 @@ func Process(booking kontrol.Booking) {
 
 // Eine Buchung kann mehrere Nettopositionen enthalten, den je einem Stakeholder zugeschrieben wird.
 // Diese Funktion liefert ein Array mit Stateholder, deren Nettoanteil in der Buchung > 0 ist.
-func stakeholderWithNetPositions(position kontrol.Booking) []string {
-	var result []string
+func stakeholderWithNetPositions(booking kontrol.Booking) []kontrol.Stakeholder {
+	var result []kontrol.Stakeholder
 
-	for k, v := range position.Extras.Net {
+	for k, v := range booking.Extras.Net {
 		if v > 0 {
 			result = append(result, k)
 		}
