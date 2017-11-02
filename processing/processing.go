@@ -20,21 +20,17 @@ func Process(booking kontrol.Booking) {
 		benefitees := stakeholderWithNetPositions(booking)
 		for _, benefited := range benefitees {
 
-			var share float64
-			if benefited == kontrol.SA_EX {
-				share = kontrol.ExternalShare
-			} else {
-				share = kontrol.PartnerShare
+			// todo fix this: Externe bekommen keinen Sharem, Angestellte bekommen einen anderen Share
+			if benefited != kontrol.SA_EX && benefited != kontrol.SA_BW {
+				b := kontrol.Booking{
+					Amount: booking.Extras.Net[benefited] * kontrol.PartnerShare,
+					Typ:    kontrol.Nettoanteil,
+					Text:   booking.Text,
+					Month:  booking.Month,
+					Year:   booking.Year}
+				account := kontrol.Accounts[benefited]
+				account.Bookings = append(kontrol.Accounts[benefited].Bookings, b)
 			}
-
-			b := kontrol.Booking{
-				Amount: booking.Extras.Net[benefited] * share,
-				Typ:    kontrol.Nettoanteil,
-				Text:   booking.Text,
-				Month:  booking.Month,
-				Year:   booking.Year}
-			account := kontrol.Accounts[benefited]
-			account.Bookings = append(kontrol.Accounts[benefited].Bookings, b)
 		}
 	}
 }

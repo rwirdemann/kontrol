@@ -44,24 +44,6 @@ func TestPartnerNettoAnteil(t *testing.T) {
 	util.AssertEquals(t, 2017, bHannes.Year)
 }
 
-func TestExternNettoAnteil(t *testing.T) {
-	setUp()
-
-	// given: a booking
-	extras := kontrol.CsvBookingExtras{Typ: "AR", CostCenter: "JM"}
-	extras.Net = make(map[string]float64)
-	extras.Net[kontrol.SA_EX] = 1000.0
-	p := kontrol.Booking{Extras: extras, Amount: 1190.00, Text: "Rechnung 1234", Month: 1, Year: 2017}
-
-	// when: the position is processed
-	Process(p)
-
-	// then external got his net booking
-	util.AssertEquals(t, 1, len(kontrol.Accounts[kontrol.SA_EX].Bookings))
-	b := kontrol.Accounts[kontrol.SA_EX].Bookings[0]
-	util.AssertFloatEquals(t, 1000*kontrol.ExternalShare, b.Amount)
-}
-
 func TestPartnerWithdrawals(t *testing.T) {
 	setUp()
 
