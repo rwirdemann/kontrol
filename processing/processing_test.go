@@ -36,12 +36,17 @@ func TestPartnerNettoAnteil(t *testing.T) {
 	util.AssertEquals(t, kontrol.Nettoanteil, bRalf.Typ)
 
 	// and hannes got his net booking
-	util.AssertEquals(t, 1, len(kontrol.Accounts[kontrol.SH_JM.Id].Bookings))
+	util.AssertEquals(t, 2, len(kontrol.Accounts[kontrol.SH_JM.Id].Bookings))
 	bHannes := kontrol.Accounts[kontrol.SH_JM.Id].Bookings[0]
 	util.AssertFloatEquals(t, 3675*kontrol.PartnerShare, bHannes.Amount)
 	util.AssertEquals(t, "Rechnung 1234", bHannes.Text)
 	util.AssertEquals(t, 1, bHannes.Month)
 	util.AssertEquals(t, 2017, bHannes.Year)
+
+	// and hannes got his provision
+	provision := kontrol.Accounts[kontrol.SH_JM.Id].Bookings[1]
+	util.AssertFloatEquals(t, 14475.0*kontrol.PartnerProvision, provision.Amount)
+	util.AssertEquals(t, kontrol.Vertriebsprovision, provision.Typ)
 }
 
 func TestPartnerWithdrawals(t *testing.T) {
@@ -49,9 +54,10 @@ func TestPartnerWithdrawals(t *testing.T) {
 
 	extras := kontrol.CsvBookingExtras{Typ: "GV", CostCenter: "RW"}
 	extras.Net = make(map[kontrol.Stakeholder]float64)
-	p := kontrol.Booking{Extras: extras, Amount: 6000}
-	Process(p)
+	b := kontrol.Booking{Extras: extras, Amount: 6000}
+	Process(b)
 	util.AssertEquals(t, 1, len(kontrol.Accounts[kontrol.SH_RW.Id].Bookings))
 	bRalf := kontrol.Accounts[kontrol.SH_RW.Id].Bookings[0]
 	util.AssertFloatEquals(t, -6000, bRalf.Amount)
+	util.AssertEquals(t, kontrol.Entnahme, bRalf.Typ)
 }

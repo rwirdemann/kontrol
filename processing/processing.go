@@ -2,6 +2,7 @@ package processing
 
 import (
 	"bitbucket.org/rwirdemann/kontrol/kontrol"
+	"bitbucket.org/rwirdemann/kontrol/util"
 )
 
 func Process(booking kontrol.Booking) {
@@ -9,6 +10,7 @@ func Process(booking kontrol.Booking) {
 	if booking.Extras.Typ == "GV" {
 		b := kontrol.Booking{
 			Amount: -1 * booking.Amount,
+			Typ:    kontrol.Entnahme,
 			Text:   "GV Entnahme",
 			Month:  booking.Month,
 			Year:   booking.Year}
@@ -20,7 +22,6 @@ func Process(booking kontrol.Booking) {
 		benefitees := stakeholderWithNetPositions(booking)
 		for _, benefited := range benefitees {
 
-			// todo fix this: Externe bekommen keinen Sharem, Angestellte bekommen einen anderen Share
 			if benefited.Type == kontrol.STAKEHOLDER_TYPE_PARTNER {
 				b := kontrol.Booking{
 					Amount: booking.Extras.Net[benefited] * kontrol.PartnerShare,
@@ -29,9 +30,19 @@ func Process(booking kontrol.Booking) {
 					Month:  booking.Month,
 					Year:   booking.Year}
 				account := kontrol.Accounts[benefited.Id]
-				account.Bookings = append(kontrol.Accounts[benefited.Id].Bookings, b)
+				account.Book(b)
 			}
 		}
+
+		// book provision
+		account := kontrol.Accounts[booking.Extras.CostCenter]
+		b := kontrol.Booking{
+			Amount: util.Net(booking.Amount) * kontrol.PartnerProvision,
+			Typ:    kontrol.Vertriebsprovision,
+			Text:   booking.Text,
+			Month:  booking.Month,
+			Year:   booking.Year}
+		account.Book(b)
 	}
 }
 

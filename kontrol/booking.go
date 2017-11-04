@@ -35,7 +35,7 @@ func (b Booking) Print(owner Stakeholder) {
 		text = text[:37] + "..."
 	}
 
-	fmt.Printf("[%s: %2d-%d %-15s %-40s \t %9.2f]\n", owner.Id, b.Month, b.Year, b.Typ, text, b.Amount)
+	fmt.Printf("[%s: %2d-%d %-22s %-40s \t %9.2f]\n", owner.Id, b.Month, b.Year, b.Typ, text, b.Amount)
 }
 
 type ByMonth []Booking

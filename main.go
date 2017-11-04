@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	bookings := parser.Import("buchungen-2017.csv")
+	bookings := parser.Import("2017-Buchungen-KG - Buchungen 2017.csv")
 	for _, p := range bookings {
 		processing.Process(p)
 	}
