@@ -9,5 +9,6 @@ const (
 
 type Stakeholder struct {
 	Id   string
+	Name string
 	Type string
 }

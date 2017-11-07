@@ -26,7 +26,7 @@ type Booking struct {
 	Year   int
 	Month  int
 
-	Extras CsvBookingExtras
+	Extras CsvBookingExtras `json:"-"`
 }
 
 func (b Booking) Print(owner Stakeholder) {

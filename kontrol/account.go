@@ -37,5 +37,5 @@ func (a Account) Print() {
 		b.Print(a.Owner)
 	}
 	fmt.Println("-------------------------------------------------------------------------------------------")
-	fmt.Printf("[Saldo: \t\t\t\t\t\t\t\t\t%10.2f]", a.Saldo())
+	fmt.Printf("[Saldo: \t\t\t\t\t\t\t\t\t%10.2f]\n", a.Saldo())
 }
