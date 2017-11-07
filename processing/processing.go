@@ -26,11 +26,34 @@ func Process(booking kontrol.Booking) {
 				b := kontrol.Booking{
 					Amount: booking.Extras.Net[benefited] * kontrol.PartnerShare,
 					Typ:    kontrol.Nettoanteil,
-					Text:   booking.Text,
+					Text:   booking.Text + "#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
 				account := kontrol.Accounts[benefited.Id]
 				account.Book(b)
+
+				// book kommitment share
+				kommitmentShare := kontrol.Booking{
+					Amount: booking.Extras.Net[benefited] * kontrol.KommmitmentShare,
+					Typ:    kontrol.Kommitmentanteil,
+					Text:   booking.Text + "#" + benefited.Id,
+					Month:  booking.Month,
+					Year:   booking.Year}
+				kommitmentAccount := kontrol.Accounts[kontrol.SH_KM.Id]
+				kommitmentAccount.Book(kommitmentShare)
+			}
+
+			if benefited.Type == kontrol.STAKEHOLDER_TYPE_EXTERN {
+
+				// book kommitment share
+				kommitmentShare := kontrol.Booking{
+					Amount: booking.Extras.Net[benefited] * kontrol.KommmitmentExternShare,
+					Typ:    kontrol.Kommitmentanteil,
+					Text:   booking.Text + "#" + benefited.Id,
+					Month:  booking.Month,
+					Year:   booking.Year}
+				kommitmentAccount := kontrol.Accounts[kontrol.SH_KM.Id]
+				kommitmentAccount.Book(kommitmentShare)
 			}
 		}
 

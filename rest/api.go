@@ -3,6 +3,7 @@ package rest
 import (
 	"fmt"
 	"net/http"
+	"sort"
 
 	"bitbucket.org/rwirdemann/kontrol/kontrol"
 	"bitbucket.org/rwirdemann/notux/util"
@@ -50,6 +51,7 @@ func bookings(w http.ResponseWriter, r *http.Request) {
 
 	if account != nil {
 		w.WriteHeader(http.StatusOK)
+		sort.Sort(kontrol.ByMonth(account.Bookings))
 		json := util.Json(account)
 		fmt.Fprintf(w, json)
 	} else {
