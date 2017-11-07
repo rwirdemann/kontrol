@@ -12,6 +12,9 @@ import (
 func StartService() {
 	r := mux.NewRouter()
 	r.HandleFunc("/kontrol", index)
+	r.HandleFunc("/kontrol/accounts", accounts)
+
+	// todo: should be account instead of booking
 	r.HandleFunc("/kontrol/accounts/{id}/bookings", bookings)
 
 	fmt.Printf("http://localhost:8991/kontrol/accounts/RW/bookings")
@@ -22,10 +25,22 @@ func index(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-type ResponseWrapper struct {
-	Bookings []kontrol.Booking
-	Owner    string
-	Saldo    string
+type AccountsResponse struct {
+	Accounts []kontrol.Account
+}
+
+func accounts(w http.ResponseWriter, r *http.Request) {
+
+	// convert account map to array
+	accounts := make([]kontrol.Account, 0, len(kontrol.Accounts))
+	for _, a := range kontrol.Accounts {
+		a.UpdateSaldo()
+		accounts = append(accounts, *a)
+	}
+
+	json := util.Json(AccountsResponse{Accounts: accounts})
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, json)
 }
 
 func bookings(w http.ResponseWriter, r *http.Request) {
@@ -35,8 +50,7 @@ func bookings(w http.ResponseWriter, r *http.Request) {
 
 	if account != nil {
 		w.WriteHeader(http.StatusOK)
-		response := ResponseWrapper{Owner: account.Owner.Name, Bookings: account.Bookings, Saldo: fmt.Sprintf("%.2f €", account.Saldo())}
-		json := util.Json(response)
+		json := util.Json(account)
 		fmt.Fprintf(w, json)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
