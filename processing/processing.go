@@ -23,10 +23,12 @@ func Process(booking kontrol.Booking) {
 		for _, benefited := range benefitees {
 
 			if benefited.Type == kontrol.STAKEHOLDER_TYPE_PARTNER {
+
+				// book partner share
 				b := kontrol.Booking{
 					Amount: booking.Extras.Net[benefited] * kontrol.PartnerShare,
 					Typ:    kontrol.Nettoanteil,
-					Text:   booking.Text + "#" + benefited.Id,
+					Text:   booking.Text + "#NetShare#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
 				account := kontrol.Accounts[benefited.Id]
@@ -36,7 +38,7 @@ func Process(booking kontrol.Booking) {
 				kommitmentShare := kontrol.Booking{
 					Amount: booking.Extras.Net[benefited] * kontrol.KommmitmentShare,
 					Typ:    kontrol.Kommitmentanteil,
-					Text:   booking.Text + "#" + benefited.Id,
+					Text:   booking.Text + "#Kommitment#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
 				kommitmentAccount := kontrol.Accounts[kontrol.SH_KM.Id]
@@ -49,23 +51,34 @@ func Process(booking kontrol.Booking) {
 				kommitmentShare := kontrol.Booking{
 					Amount: booking.Extras.Net[benefited] * kontrol.KommmitmentExternShare,
 					Typ:    kontrol.Kommitmentanteil,
-					Text:   booking.Text + "#" + benefited.Id,
+					Text:   booking.Text + "#Kommitment#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
 				kommitmentAccount := kontrol.Accounts[kontrol.SH_KM.Id]
 				kommitmentAccount.Book(kommitmentShare)
 			}
-		}
 
-		// book provision
-		account := kontrol.Accounts[booking.Extras.CostCenter]
-		b := kontrol.Booking{
-			Amount: util.Net(booking.Amount) * kontrol.PartnerProvision,
-			Typ:    kontrol.Vertriebsprovision,
+			// book provision
+			account := kontrol.Accounts[booking.Extras.CostCenter]
+			b := kontrol.Booking{
+				Amount: booking.Extras.Net[benefited] * kontrol.PartnerProvision,
+				Typ:    kontrol.Vertriebsprovision,
+				Text:   booking.Text + "#Provision#" + benefited.Id,
+				Month:  booking.Month,
+				Year:   booking.Year}
+			account.Book(b)
+		}
+	}
+
+	if booking.Extras.Typ == "ER" {
+		kommitmentShare := kontrol.Booking{
+			Amount: util.Net(booking.Amount) * -1,
+			Typ:    kontrol.Eingangsrechnung,
 			Text:   booking.Text,
 			Month:  booking.Month,
 			Year:   booking.Year}
-		account.Book(b)
+		kommitmentAccount := kontrol.Accounts[kontrol.SH_KM.Id]
+		kommitmentAccount.Book(kommitmentShare)
 	}
 }
 

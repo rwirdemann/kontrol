@@ -17,6 +17,7 @@ const (
 	Nettoanteil        = "Nettoanteil"
 	Kommitmentanteil   = "Kommitmentanteil"
 	Entnahme           = "Entnahme"
+	Eingangsrechnung   = "Eingangsrechnung"
 )
 
 type Booking struct {

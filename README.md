@@ -1,3 +1,15 @@
+# Rules
+
+R1: AR = Ausgangsrechnungen
+R1#S1Partner: Leistung wurde von Partner erbracht
+- Partner bekommt 70% seiner Nettoposition
+- Kommitment bekommt 25% der Partnernettoposition
+- Vertrieb bekommt 5% der Partnernettoposition
+
+R1#S2#Extern: Leistung wurde von Partner erbracht
+- Kommitment bekommt 95% der Externnettoposition
+- Vertrieb bekommt 5% der Partnernettoposition
+
 # Run all tests
 
 go test ./...

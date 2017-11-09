@@ -130,7 +130,8 @@ function generateBeute(Periode, CostCenter, Betrag, whoWorkedForIt, nettoRechnun
           BeuteAnteil[Periode]["K"].FakturaAnteilvonExternen += (1.0-VertriebsAnteil)*nettoRechnungsPosition;
           //...          
         }
-       
+
+        // Provision
         BeuteAnteil[Periode][CostCenter].VertriebsAnteil = BeuteAnteil[Periode][Verursacher].VertriebsAnteil || 0.0;
         BeuteAnteil[Periode][CostCenter].VertriebsAnteil += VertriebsAnteil*nettoRechnungsPosition;  
 }

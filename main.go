@@ -15,7 +15,7 @@ func main() {
 		processing.Process(p)
 	}
 
-	kontrol.Accounts[kontrol.SH_RW.Id].Print()
+	kontrol.Accounts[kontrol.SH_KM.Id].Print()
 
 	rest.StartService()
 }
