@@ -58,7 +58,30 @@ func Process(booking kontrol.Booking) {
 				kommitmentAccount.Book(kommitmentShare)
 			}
 
-			// book provision
+			if benefited.Type == kontrol.STAKEHOLDER_TYPE_EMPLOYEE {
+
+				// 100% net is booked to employee account to see how much money is made by him
+				b := kontrol.Booking{
+					Amount: booking.Extras.Net[benefited],
+					Typ:    kontrol.Nettoanteil,
+					Text:   booking.Text + "#NetShare#" + benefited.Id,
+					Month:  booking.Month,
+					Year:   booking.Year}
+				account := kontrol.Accounts[benefited.Id]
+				account.Book(b)
+
+				// book kommitment share
+				kommitmentShare := kontrol.Booking{
+					Amount: booking.Extras.Net[benefited] * kontrol.KommmitmentEmployeeShare,
+					Typ:    kontrol.Kommitmentanteil,
+					Text:   booking.Text + "#Kommitment#" + benefited.Id,
+					Month:  booking.Month,
+					Year:   booking.Year}
+				kommitmentAccount := kontrol.Accounts[kontrol.SH_KM.Id]
+				kommitmentAccount.Book(kommitmentShare)
+			}
+
+			// book cost center provision
 			account := kontrol.Accounts[booking.Extras.CostCenter]
 			b := kontrol.Booking{
 				Amount: booking.Extras.Net[benefited] * kontrol.PartnerProvision,

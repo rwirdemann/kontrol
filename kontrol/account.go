@@ -16,7 +16,9 @@ var Accounts map[string]*Account
 func init() {
 	Accounts = make(map[string]*Account)
 	for _, sh := range AllStakeholder {
-		Accounts[sh.Id] = &Account{Owner: sh}
+		if sh.Type != STAKEHOLDER_TYPE_EXTERN {
+			Accounts[sh.Id] = &Account{Owner: sh}
+		}
 	}
 }
 

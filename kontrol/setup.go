@@ -1,10 +1,11 @@
 package kontrol
 
 const (
-	PartnerShare           = 0.7
-	KommmitmentShare       = 0.25
-	KommmitmentExternShare = 0.95
-	PartnerProvision       = 0.05
+	PartnerShare             = 0.7
+	KommmitmentShare         = 0.25
+	KommmitmentExternShare   = 0.95
+	KommmitmentEmployeeShare = 0.95
+	PartnerProvision         = 0.05
 )
 
 var SH_RW = Stakeholder{Id: "RW", Name: "Ralf Wirdemann", Type: STAKEHOLDER_TYPE_PARTNER}

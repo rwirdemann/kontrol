@@ -14,9 +14,7 @@ func StartService() {
 	r := mux.NewRouter()
 	r.HandleFunc("/kontrol", index)
 	r.HandleFunc("/kontrol/accounts", accounts)
-
-	// todo: should be account instead of booking
-	r.HandleFunc("/kontrol/accounts/{id}/bookings", bookings)
+	r.HandleFunc("/kontrol/accounts/{id}", account)
 
 	fmt.Printf("http://localhost:8991/kontrol/accounts/RW/bookings")
 	http.ListenAndServe(":8991", r)
@@ -44,7 +42,7 @@ func accounts(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, json)
 }
 
-func bookings(w http.ResponseWriter, r *http.Request) {
+func account(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	accountId := vars["id"]
 	account := kontrol.Accounts[accountId]
