@@ -3,6 +3,7 @@ package kontrol
 import (
 	"fmt"
 	"sort"
+	"strings"
 )
 
 type Account struct {
@@ -43,3 +44,9 @@ func (a Account) Print() {
 	fmt.Println("-------------------------------------------------------------------------------------------")
 	fmt.Printf("[Saldo: \t\t\t\t\t\t\t\t\t%10.2f]\n", a.Saldo)
 }
+
+type ByOwner []Account
+
+func (a ByOwner) Len() int           { return len(a) }
+func (a ByOwner) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByOwner) Less(i, j int) bool { return strings.Compare(a[i].Owner.Name, a[j].Owner.Name) < 0 }

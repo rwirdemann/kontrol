@@ -37,6 +37,7 @@ func accounts(w http.ResponseWriter, r *http.Request) {
 		accounts = append(accounts, *a)
 	}
 
+	sort.Sort(kontrol.ByOwner(accounts))
 	json := util.Json(AccountsResponse{Accounts: accounts})
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, json)

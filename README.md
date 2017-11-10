@@ -7,7 +7,7 @@ R1#S1Partner: Leistung wurde von Partner erbracht
 - Kommitment bekommt 25% der Partnernettoposition
 - Vertrieb bekommt 5% der Partnernettoposition
 
-R1#S2#Extern: Leistung wurde von Partner erbracht
+R1#S2#Extern: Leistung wurde von Extern erbracht
 - Kommitment bekommt 95% der Extern-Nettoposition
 - Vertrieb bekommt 5% der Partner-Nettoposition
 
@@ -17,8 +17,10 @@ R1#S3#Employee: Leistung wurde vom Angestellten erbracht
 - 100% der Nettoposition weden auf das Angestelltenkonto verbucht
 
 R2: ER = Eingangsrechnung
+- 100% des Nettobetrags werden gegen das Kommitment-Konto gebucht
 
 R3: GV = Geschäftsführerentnahmen
+- 100% der Entnahme werden gegen das Kommitment-Konto gebucht
 
 # Run all tests
 

@@ -11,7 +11,7 @@ const (
 var SH_RW = Stakeholder{Id: "RW", Name: "Ralf Wirdemann", Type: STAKEHOLDER_TYPE_PARTNER}
 var SH_AN = Stakeholder{Id: "AN", Name: "Anke Nehrenberg", Type: STAKEHOLDER_TYPE_PARTNER}
 var SH_JM = Stakeholder{Id: "JM", Name: "Johannes Mainusch", Type: STAKEHOLDER_TYPE_PARTNER}
-var SH_BW = Stakeholder{Id: "BW", Name: "Ben Wiedemann", Type: STAKEHOLDER_TYPE_EMPLOYEE}
+var SH_BW = Stakeholder{Id: "BW", Name: "Ben Wiedenmann", Type: STAKEHOLDER_TYPE_EMPLOYEE}
 var SH_KM = Stakeholder{Id: "K", Name: "Kommitment", Type: STAKEHOLDER_TYPE_COMPANY}
 var SH_EX = Stakeholder{Id: "EX", Name: "Extern", Type: STAKEHOLDER_TYPE_EXTERN}
 
