@@ -1,10 +1,11 @@
 package kontrol
 
+// Stakeholder types
 const (
-	STAKEHOLDER_TYPE_EMPLOYEE = "employee"
-	STAKEHOLDER_TYPE_PARTNER  = "partner"
-	STAKEHOLDER_TYPE_COMPANY  = "company"
-	STAKEHOLDER_TYPE_EXTERN   = "extern"
+	StakeholderTypeEmployee = "employee"
+	StakeholderTypePartner  = "partner"
+	StakeholderTypeCompany  = "company"
+	StakeholderTypeExtern   = "extern"
 )
 
 type Stakeholder struct {

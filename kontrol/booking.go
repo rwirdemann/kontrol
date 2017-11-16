@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// Zusatzinformationen einer Buchung, deren Quelle die CSV-Datei ist, und die für die weitere
+// Zusatzinformationen einer Booking, deren Quelle die CSV-Datei ist, und die für die weitere
 // Bearbeitung erforderlich sind.
 type CsvBookingExtras struct {
 	Typ        string                  // ER, AR, GV

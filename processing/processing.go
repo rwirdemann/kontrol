@@ -22,7 +22,7 @@ func Process(booking kontrol.Booking) {
 		benefitees := stakeholderWithNetPositions(booking)
 		for _, benefited := range benefitees {
 
-			if benefited.Type == kontrol.STAKEHOLDER_TYPE_PARTNER {
+			if benefited.Type == kontrol.StakeholderTypePartner {
 
 				// book partner share
 				b := kontrol.Booking{
@@ -45,7 +45,7 @@ func Process(booking kontrol.Booking) {
 				kommitmentAccount.Book(kommitmentShare)
 			}
 
-			if benefited.Type == kontrol.STAKEHOLDER_TYPE_EXTERN {
+			if benefited.Type == kontrol.StakeholderTypeExtern {
 
 				// book kommitment share
 				kommitmentShare := kontrol.Booking{
@@ -58,7 +58,7 @@ func Process(booking kontrol.Booking) {
 				kommitmentAccount.Book(kommitmentShare)
 			}
 
-			if benefited.Type == kontrol.STAKEHOLDER_TYPE_EMPLOYEE {
+			if benefited.Type == kontrol.StakeholderTypeEmployee {
 
 				// 100% net is booked to employee account to see how much money is made by him
 				b := kontrol.Booking{

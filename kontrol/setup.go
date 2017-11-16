@@ -8,12 +8,12 @@ const (
 	PartnerProvision         = 0.05
 )
 
-var SH_RW = Stakeholder{Id: "RW", Name: "Ralf Wirdemann", Type: STAKEHOLDER_TYPE_PARTNER}
-var SH_AN = Stakeholder{Id: "AN", Name: "Anke Nehrenberg", Type: STAKEHOLDER_TYPE_PARTNER}
-var SH_JM = Stakeholder{Id: "JM", Name: "Johannes Mainusch", Type: STAKEHOLDER_TYPE_PARTNER}
-var SH_BW = Stakeholder{Id: "BW", Name: "Ben Wiedenmann", Type: STAKEHOLDER_TYPE_EMPLOYEE}
-var SH_KM = Stakeholder{Id: "K", Name: "Kommitment", Type: STAKEHOLDER_TYPE_COMPANY}
-var SH_EX = Stakeholder{Id: "EX", Name: "Extern", Type: STAKEHOLDER_TYPE_EXTERN}
+var SH_RW = Stakeholder{Id: "RW", Name: "Ralf Wirdemann", Type: StakeholderTypePartner}
+var SH_AN = Stakeholder{Id: "AN", Name: "Anke Nehrenberg", Type: StakeholderTypePartner}
+var SH_JM = Stakeholder{Id: "JM", Name: "Johannes Mainusch", Type: StakeholderTypePartner}
+var SH_BW = Stakeholder{Id: "BW", Name: "Ben Wiedenmann", Type: StakeholderTypeEmployee}
+var SH_KM = Stakeholder{Id: "K", Name: "Kommitment", Type: StakeholderTypeCompany}
+var SH_EX = Stakeholder{Id: "EX", Name: "Extern", Type: StakeholderTypeExtern}
 
 var AllStakeholder = []Stakeholder{SH_RW, SH_AN, SH_JM, SH_BW, SH_EX, SH_KM}
 
