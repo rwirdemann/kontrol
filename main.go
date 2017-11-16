@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bitbucket.org/rwirdemann/kontrol/kontrol"
 	"bitbucket.org/rwirdemann/kontrol/rest"
 
 	"bitbucket.org/rwirdemann/kontrol/processing"
@@ -15,7 +14,6 @@ func main() {
 		processing.Process(p)
 	}
 
-	kontrol.Accounts[kontrol.SH_KM.Id].Print()
 
 	rest.StartService()
 }

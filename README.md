@@ -34,6 +34,11 @@ curl -s http://localhost:8991/kontrol/accounts | python -m json.tool
 curl -s http://localhost:8991/kontrol/accounts/AN | python -m json.tool
 ```
 
+## Regenerate HTML assets
+```
+go-bindata -pkg html -o html/assets.go html/
+```
+
 ## Build for different Linux
 ```
 env GOOS=linux GOARCH=amd64 go build bitbucket.org/rwirdemann/kontrol

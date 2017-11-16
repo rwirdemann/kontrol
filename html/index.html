@@ -1,0 +1,25 @@
+<h1>Kommmitment Kontrol Service</h1>
+<pre>
+    <strong>Request:</strong>
+    GET http://{{.Hostname}}:{{.Port}}/kontrol/accounts
+
+    <strong>Description:</strong>
+    List of accounts.
+
+    <strong>Response Codes:</strong>
+    200: Success
+
+    <strong>Response Body:</strong>
+    {
+        "Accounts": [
+            {
+                Owner: {
+                    Id: "AN",
+                    Name: "Anke Nehrenberg",
+                    Type: "partner"
+                }
+            },
+            ...
+        ]
+    }
+</pre>

@@ -6,9 +6,14 @@ import (
 	"sort"
 
 	"bitbucket.org/rwirdemann/kontrol/kontrol"
-	"bitbucket.org/rwirdemann/notux/util"
 	"github.com/gorilla/mux"
+	"github.com/arschles/go-bindata-html-template"
+	"bitbucket.org/rwirdemann/kontrol/html"
+	"strconv"
+	"bitbucket.org/rwirdemann/kontrol/util"
 )
+
+const port = 8991
 
 func StartService() {
 	r := mux.NewRouter()
@@ -16,12 +21,8 @@ func StartService() {
 	r.HandleFunc("/kontrol/accounts", accounts)
 	r.HandleFunc("/kontrol/accounts/{id}", account)
 
-	fmt.Printf("http://localhost:8991/kontrol/accounts/RW/bookings")
-	http.ListenAndServe(":8991", r)
-}
-
-func index(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
+	fmt.Printf("Visit http://%s:8991/kontrol...", util.GetHostname())
+	http.ListenAndServe(":"+strconv.Itoa(port), r)
 }
 
 type AccountsResponse struct {
@@ -56,4 +57,17 @@ func account(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusNotFound)
 	}
+}
+
+// Data struct for index.html
+type Index struct {
+	Hostname string
+	Port     int
+}
+
+func index(w http.ResponseWriter, r *http.Request) {
+	hostname := util.GetHostname()
+	index := Index{Hostname: hostname, Port: port}
+	t, _ := template.New("index", html.Asset).Parse("html/index.html")
+	t.Execute(w, struct{ Index }{index})
 }
