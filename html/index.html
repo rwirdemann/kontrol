@@ -23,3 +23,41 @@
         ]
     }
 </pre>
+
+<pre>
+    <strong>Request:</strong>
+    GET http://{{.Hostname}}:{{.Port}}/kontrol/accounts/{ID}
+
+    <strong>Description:</strong>
+    Account details including booking
+
+    <strong>Response Codes:</strong>
+    200: Success
+    404: Not found
+
+    <strong>Response Body:</strong>
+    {
+        "Bookings": [
+            {
+                "Amount": 7559.999999999999,
+                "Month": 1,
+                "Text": "RN_20170131-picue#NetShare#RW",
+                "Typ": "Nettoanteil",
+                "Year": 2017
+            },
+            {
+                "Amount": -6000,
+                "Month": 1,
+                "Text": "GV Entnahme",
+                "Typ": "Entnahme",
+                "Year": 2017
+            }
+        ],
+        "Owner": {
+            "Id": "RW",
+            "Name": "Ralf Wirdemann",
+            "Type": "partner"
+        },
+        "Saldo": 0
+    }
+</pre>
