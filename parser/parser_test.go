@@ -27,7 +27,7 @@ func assertPosition(t *testing.T, p kontrol.Booking, typ string, costCenter stri
 	util.AssertEquals(t, year, p.Year)
 	util.AssertEquals(t, month, p.Month)
 
-	util.AssertEquals(t, nettoRW, p.Extras.Net[kontrol.SH_RW])
-	util.AssertEquals(t, nettoJM, p.Extras.Net[kontrol.SH_JM])
-	util.AssertEquals(t, nettoAN, p.Extras.Net[kontrol.SH_AN])
+	util.AssertEquals(t, nettoRW, p.Extras.Net[kontrol.StakeholderRW])
+	util.AssertEquals(t, nettoJM, p.Extras.Net[kontrol.StakeholderJM])
+	util.AssertEquals(t, nettoAN, p.Extras.Net[kontrol.StakeholderAN])
 }

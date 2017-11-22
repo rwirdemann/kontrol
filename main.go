@@ -14,6 +14,5 @@ func main() {
 		processing.Process(p)
 	}
 
-
 	rest.StartService()
 }

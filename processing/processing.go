@@ -41,7 +41,7 @@ func Process(booking kontrol.Booking) {
 					Text:   booking.Text + "#Kommitment#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
-				kommitmentAccount := kontrol.Accounts[kontrol.SH_KM.Id]
+				kommitmentAccount := kontrol.Accounts[kontrol.StakeholderKM.Id]
 				kommitmentAccount.Book(kommitmentShare)
 			}
 
@@ -54,7 +54,7 @@ func Process(booking kontrol.Booking) {
 					Text:   booking.Text + "#Kommitment#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
-				kommitmentAccount := kontrol.Accounts[kontrol.SH_KM.Id]
+				kommitmentAccount := kontrol.Accounts[kontrol.StakeholderKM.Id]
 				kommitmentAccount.Book(kommitmentShare)
 			}
 
@@ -77,7 +77,7 @@ func Process(booking kontrol.Booking) {
 					Text:   booking.Text + "#Kommitment#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
-				kommitmentAccount := kontrol.Accounts[kontrol.SH_KM.Id]
+				kommitmentAccount := kontrol.Accounts[kontrol.StakeholderKM.Id]
 				kommitmentAccount.Book(kommitmentShare)
 			}
 
@@ -100,7 +100,7 @@ func Process(booking kontrol.Booking) {
 			Text:   booking.Text,
 			Month:  booking.Month,
 			Year:   booking.Year}
-		kommitmentAccount := kontrol.Accounts[kontrol.SH_KM.Id]
+		kommitmentAccount := kontrol.Accounts[kontrol.StakeholderKM.Id]
 		kommitmentAccount.Book(kommitmentShare)
 	}
 }

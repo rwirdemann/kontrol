@@ -1,3 +1,39 @@
+# Setup instructions
+
+cd PROJECTROOT
+
+## Run main
+
+go run kontrol/main.go
+
+## Run all tests
+
+go test ./...
+
+## Build and install
+
+go install bitbucket.org/rwirdemann/kontrol
+
+## Regenerate HTML assets
+
+Only necessary after html/index.html was changed
+
+```
+go-bindata -pkg html -o html/assets.go html/
+```
+
+## Build for different Linux
+```
+env GOOS=linux GOARCH=amd64 go build bitbucket.org/rwirdemann/kontrol
+scp kontrol root@94.130.79.196:~
+```
+
+# Query accounts
+```
+curl -s http://localhost:8991/kontrol/accounts | python -m json.tool
+curl -s http://localhost:8991/kontrol/accounts/AN | python -m json.tool
+```
+
 # Rules
 
 R1: AR = Ausgangsrechnungen
@@ -21,26 +57,3 @@ R2: ER = Eingangsrechnung
 
 R3: GV = Geschäftsführerentnahmen
 - 100% der Entnahme werden gegen das Kommitment-Konto gebucht
-
-# Run all tests
-
-go test ./...
-
-go install bitbucket.org/rwirdemann/kontrol
-
-# Query accounts
-```
-curl -s http://localhost:8991/kontrol/accounts | python -m json.tool
-curl -s http://localhost:8991/kontrol/accounts/AN | python -m json.tool
-```
-
-## Regenerate HTML assets
-```
-go-bindata -pkg html -o html/assets.go html/
-```
-
-## Build for different Linux
-```
-env GOOS=linux GOARCH=amd64 go build bitbucket.org/rwirdemann/kontrol
-scp kontrol root@94.130.79.196:~
-```
