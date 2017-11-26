@@ -1,6 +1,6 @@
 # Setup instructions
 
-cd PROJECTROOT
+cd $PROJECTROOT
 
 ## Run main
 
