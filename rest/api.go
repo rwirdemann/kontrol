@@ -11,6 +11,7 @@ import (
 	"bitbucket.org/rwirdemann/kontrol/html"
 	"strconv"
 	"bitbucket.org/rwirdemann/kontrol/util"
+	"github.com/rs/cors"
 )
 
 const port = 8991
@@ -21,8 +22,13 @@ func StartService() {
 	r.HandleFunc("/kontrol/accounts", accounts)
 	r.HandleFunc("/kontrol/accounts/{id}", account)
 
-	fmt.Printf("Visit http://%s:8991/kontrol...", util.GetHostname())
-	http.ListenAndServe(":"+strconv.Itoa(port), r)
+	fmt.Printf("Visit http://%s:8991/kontrol...", util.GetHostname());
+
+	// cors.Default() setup the middleware with default options being all origins accepted with simple
+	// methods (GET, POST)
+	handler := cors.Default().Handler(r)
+
+	http.ListenAndServe(":"+strconv.Itoa(port), handler)
 }
 
 type AccountsResponse struct {

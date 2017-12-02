@@ -84,7 +84,7 @@ func htmlAssetsGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "html/assets.go", size: 0, mode: os.FileMode(436), modTime: time.Unix(1511721831, 0)}
+	info := bindataFileInfo{name: "html/assets.go", size: 0, mode: os.FileMode(436), modTime: time.Unix(1512027008, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
