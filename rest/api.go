@@ -5,12 +5,13 @@ import (
 	"net/http"
 	"sort"
 
-	"bitbucket.org/rwirdemann/kontrol/kontrol"
-	"github.com/gorilla/mux"
-	"github.com/arschles/go-bindata-html-template"
-	"bitbucket.org/rwirdemann/kontrol/html"
 	"strconv"
+
+	"bitbucket.org/rwirdemann/kontrol/html"
+	"bitbucket.org/rwirdemann/kontrol/kontrol"
 	"bitbucket.org/rwirdemann/kontrol/util"
+	"github.com/arschles/go-bindata-html-template"
+	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )
 
@@ -22,7 +23,7 @@ func StartService() {
 	r.HandleFunc("/kontrol/accounts", accounts)
 	r.HandleFunc("/kontrol/accounts/{id}", account)
 
-	fmt.Printf("Visit http://%s:8991/kontrol...", util.GetHostname());
+	fmt.Printf("Visit http://%s:8991/kontrol...", util.GetHostname())
 
 	// cors.Default() setup the middleware with default options being all origins accepted with simple
 	// methods (GET, POST)
@@ -54,6 +55,7 @@ func account(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	accountId := vars["id"]
 	account := kontrol.Accounts[accountId]
+	account.UpdateSaldo()
 
 	if account != nil {
 		w.WriteHeader(http.StatusOK)
