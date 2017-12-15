@@ -47,7 +47,7 @@ func accounts(w http.ResponseWriter, r *http.Request) {
 
 	sort.Sort(kontrol.ByOwner(accounts))
 	json := util.Json(AccountsResponse{Accounts: accounts})
-	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprintf(w, json)
 }
 
@@ -58,7 +58,7 @@ func account(w http.ResponseWriter, r *http.Request) {
 	account.UpdateSaldo()
 
 	if account != nil {
-		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
 		sort.Sort(kontrol.ByMonth(account.Bookings))
 		json := util.Json(account)
 		fmt.Fprintf(w, json)

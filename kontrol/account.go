@@ -15,6 +15,10 @@ type Account struct {
 var Accounts map[string]*Account
 
 func init() {
+	ResetAccounts()
+}
+
+func ResetAccounts() {
 	Accounts = make(map[string]*Account)
 	for _, sh := range AllStakeholder {
 		if sh.Type != StakeholderTypeExtern {

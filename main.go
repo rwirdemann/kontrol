@@ -1,25 +1,33 @@
 package main
 
 import (
+	"time"
+
+	"bitbucket.org/rwirdemann/kontrol/kontrol"
 	"bitbucket.org/rwirdemann/kontrol/rest"
 
 	"bitbucket.org/rwirdemann/kontrol/processing"
 
-	"bitbucket.org/rwirdemann/kontrol/parser"
 	"log"
+
+	"bitbucket.org/rwirdemann/kontrol/parser"
 	"github.com/howeyc/fsnotify"
 )
 
 var FileName = "2017-Buchungen-KG - Buchungen 2017.csv"
 
 func main() {
+	watchBookingFile()
+	importAndProcessBookings()
+	rest.StartService()
+}
+
+func importAndProcessBookings() {
+	kontrol.ResetAccounts()
 	bookings := parser.Import(FileName)
-	//watchBookingFile()
 	for _, p := range bookings {
 		processing.Process(p)
 	}
-
-	rest.StartService()
 }
 
 func watchBookingFile() {
@@ -28,28 +36,21 @@ func watchBookingFile() {
 		log.Fatal(err)
 	}
 
-	//done := make(chan bool)
-
-	// Process events
 	go func() {
 		for {
 			select {
-			case ev := <-watcher.Event:
-				log.Println("event:", ev)
+			case <-watcher.Event:
+				log.Printf("booking reimport start: %s\n", time.Now())
+				importAndProcessBookings()
+				log.Printf("booking reimport end: %s\n", time.Now())
 			case err := <-watcher.Error:
 				log.Println("error:", err)
 			}
 		}
 	}()
 
-	err = watcher.Watch("main.go")
+	err = watcher.Watch(FileName)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// Hang so program doesn't exit
-	//<-done
-
-	/* ... do stuff ... */
-	watcher.Close()
 }

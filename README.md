@@ -1,3 +1,10 @@
+# Kontrol Backend
+
+## Todos
+- watch bookings file
+- use make to build
+- GET /accounts soll keine bookings liefern
+
 # Setup instructions
 
 cd $PROJECTROOT
