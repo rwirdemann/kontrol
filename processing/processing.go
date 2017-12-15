@@ -1,20 +1,20 @@
 package processing
 
 import (
-	"bitbucket.org/rwirdemann/kontrol/kontrol"
+	"bitbucket.org/rwirdemann/kontrol/domain"
 	"bitbucket.org/rwirdemann/kontrol/util"
 )
 
-func Process(booking kontrol.Booking) {
+func Process(booking domain.Booking) {
 
 	if booking.Extras.Typ == "GV" {
-		b := kontrol.Booking{
+		b := domain.Booking{
 			Amount: -1 * booking.Amount,
-			Typ:    kontrol.Entnahme,
+			Typ:    domain.Entnahme,
 			Text:   "GV Entnahme",
 			Month:  booking.Month,
 			Year:   booking.Year}
-		account := kontrol.Accounts[booking.Extras.CostCenter]
+		account := domain.Accounts[booking.Extras.CostCenter]
 		account.Book(b)
 	}
 
@@ -22,70 +22,70 @@ func Process(booking kontrol.Booking) {
 		benefitees := stakeholderWithNetPositions(booking)
 		for _, benefited := range benefitees {
 
-			if benefited.Type == kontrol.StakeholderTypePartner {
+			if benefited.Type == domain.StakeholderTypePartner {
 
 				// book partner share
-				b := kontrol.Booking{
-					Amount: booking.Extras.Net[benefited] * kontrol.PartnerShare,
-					Typ:    kontrol.Nettoanteil,
+				b := domain.Booking{
+					Amount: booking.Extras.Net[benefited] * domain.PartnerShare,
+					Typ:    domain.Nettoanteil,
 					Text:   booking.Text + "#NetShare#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
-				account := kontrol.Accounts[benefited.Id]
+				account := domain.Accounts[benefited.Id]
 				account.Book(b)
 
 				// book kommitment share
-				kommitmentShare := kontrol.Booking{
-					Amount: booking.Extras.Net[benefited] * kontrol.KommmitmentShare,
-					Typ:    kontrol.Kommitmentanteil,
+				kommitmentShare := domain.Booking{
+					Amount: booking.Extras.Net[benefited] * domain.KommmitmentShare,
+					Typ:    domain.Kommitmentanteil,
 					Text:   booking.Text + "#Kommitment#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
-				kommitmentAccount := kontrol.Accounts[kontrol.StakeholderKM.Id]
+				kommitmentAccount := domain.Accounts[domain.StakeholderKM.Id]
 				kommitmentAccount.Book(kommitmentShare)
 			}
 
-			if benefited.Type == kontrol.StakeholderTypeExtern {
+			if benefited.Type == domain.StakeholderTypeExtern {
 
 				// book kommitment share
-				kommitmentShare := kontrol.Booking{
-					Amount: booking.Extras.Net[benefited] * kontrol.KommmitmentExternShare,
-					Typ:    kontrol.Kommitmentanteil,
+				kommitmentShare := domain.Booking{
+					Amount: booking.Extras.Net[benefited] * domain.KommmitmentExternShare,
+					Typ:    domain.Kommitmentanteil,
 					Text:   booking.Text + "#Kommitment#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
-				kommitmentAccount := kontrol.Accounts[kontrol.StakeholderKM.Id]
+				kommitmentAccount := domain.Accounts[domain.StakeholderKM.Id]
 				kommitmentAccount.Book(kommitmentShare)
 			}
 
-			if benefited.Type == kontrol.StakeholderTypeEmployee {
+			if benefited.Type == domain.StakeholderTypeEmployee {
 
 				// 100% net is booked to employee account to see how much money is made by him
-				b := kontrol.Booking{
+				b := domain.Booking{
 					Amount: booking.Extras.Net[benefited],
-					Typ:    kontrol.Nettoanteil,
+					Typ:    domain.Nettoanteil,
 					Text:   booking.Text + "#NetShare#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
-				account := kontrol.Accounts[benefited.Id]
+				account := domain.Accounts[benefited.Id]
 				account.Book(b)
 
 				// book kommitment share
-				kommitmentShare := kontrol.Booking{
-					Amount: booking.Extras.Net[benefited] * kontrol.KommmitmentEmployeeShare,
-					Typ:    kontrol.Kommitmentanteil,
+				kommitmentShare := domain.Booking{
+					Amount: booking.Extras.Net[benefited] * domain.KommmitmentEmployeeShare,
+					Typ:    domain.Kommitmentanteil,
 					Text:   booking.Text + "#Kommitment#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
-				kommitmentAccount := kontrol.Accounts[kontrol.StakeholderKM.Id]
+				kommitmentAccount := domain.Accounts[domain.StakeholderKM.Id]
 				kommitmentAccount.Book(kommitmentShare)
 			}
 
 			// book cost center provision
-			account := kontrol.Accounts[booking.Extras.CostCenter]
-			b := kontrol.Booking{
-				Amount: booking.Extras.Net[benefited] * kontrol.PartnerProvision,
-				Typ:    kontrol.Vertriebsprovision,
+			account := domain.Accounts[booking.Extras.CostCenter]
+			b := domain.Booking{
+				Amount: booking.Extras.Net[benefited] * domain.PartnerProvision,
+				Typ:    domain.Vertriebsprovision,
 				Text:   booking.Text + "#Provision#" + benefited.Id,
 				Month:  booking.Month,
 				Year:   booking.Year}
@@ -94,21 +94,21 @@ func Process(booking kontrol.Booking) {
 	}
 
 	if booking.Extras.Typ == "ER" {
-		kommitmentShare := kontrol.Booking{
+		kommitmentShare := domain.Booking{
 			Amount: util.Net(booking.Amount) * -1,
-			Typ:    kontrol.Eingangsrechnung,
+			Typ:    domain.Eingangsrechnung,
 			Text:   booking.Text,
 			Month:  booking.Month,
 			Year:   booking.Year}
-		kommitmentAccount := kontrol.Accounts[kontrol.StakeholderKM.Id]
+		kommitmentAccount := domain.Accounts[domain.StakeholderKM.Id]
 		kommitmentAccount.Book(kommitmentShare)
 	}
 }
 
 // Eine Buchung kann mehrere Nettopositionen enthalten, den je einem Stakeholder zugeschrieben wird.
 // Diese Funktion liefert ein Array mit Stateholder, deren Nettoanteil in der Buchung > 0 ist.
-func stakeholderWithNetPositions(booking kontrol.Booking) []kontrol.Stakeholder {
-	var result []kontrol.Stakeholder
+func stakeholderWithNetPositions(booking domain.Booking) []domain.Stakeholder {
+	var result []domain.Stakeholder
 
 	for k, v := range booking.Extras.Net {
 		if v > 0 {

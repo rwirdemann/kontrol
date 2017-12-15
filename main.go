@@ -3,8 +3,8 @@ package main
 import (
 	"time"
 
+	"bitbucket.org/rwirdemann/kontrol/domain"
 	"bitbucket.org/rwirdemann/kontrol/handler"
-	"bitbucket.org/rwirdemann/kontrol/kontrol"
 
 	"bitbucket.org/rwirdemann/kontrol/processing"
 
@@ -24,7 +24,7 @@ func main() {
 }
 
 func importAndProcessBookings() {
-	kontrol.ResetAccounts()
+	domain.ResetAccounts()
 	bookings := parser.Import(FileName)
 	for _, p := range bookings {
 		processing.Process(p)

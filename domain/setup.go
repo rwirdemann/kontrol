@@ -1,4 +1,4 @@
-package kontrol
+package domain
 
 const (
 	PartnerShare             = 0.7

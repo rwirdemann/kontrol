@@ -3,8 +3,7 @@ package parser
 import (
 	"testing"
 
-	"bitbucket.org/rwirdemann/kontrol/kontrol"
-
+	"bitbucket.org/rwirdemann/kontrol/domain"
 	"bitbucket.org/rwirdemann/kontrol/util"
 )
 
@@ -17,7 +16,7 @@ func TestImport(t *testing.T) {
 	assertPosition(t, positions[3], "GV", "RW", "Ralf", 6000, 2017, 1, 0, 0, 0)
 }
 
-func assertPosition(t *testing.T, p kontrol.Booking, typ string, costCenter string, subject string,
+func assertPosition(t *testing.T, p domain.Booking, typ string, costCenter string, subject string,
 	amount float64, year int, month int,
 	nettoRW float64, nettoJM float64, nettoAN float64) {
 	util.AssertEquals(t, typ, p.Extras.Typ)
@@ -27,7 +26,7 @@ func assertPosition(t *testing.T, p kontrol.Booking, typ string, costCenter stri
 	util.AssertEquals(t, year, p.Year)
 	util.AssertEquals(t, month, p.Month)
 
-	util.AssertEquals(t, nettoRW, p.Extras.Net[kontrol.StakeholderRW])
-	util.AssertEquals(t, nettoJM, p.Extras.Net[kontrol.StakeholderJM])
-	util.AssertEquals(t, nettoAN, p.Extras.Net[kontrol.StakeholderAN])
+	util.AssertEquals(t, nettoRW, p.Extras.Net[domain.StakeholderRW])
+	util.AssertEquals(t, nettoJM, p.Extras.Net[domain.StakeholderJM])
+	util.AssertEquals(t, nettoAN, p.Extras.Net[domain.StakeholderAN])
 }

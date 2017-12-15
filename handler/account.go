@@ -7,7 +7,7 @@ import (
 
 	"strconv"
 
-	"bitbucket.org/rwirdemann/kontrol/kontrol"
+	"bitbucket.org/rwirdemann/kontrol/domain"
 	"bitbucket.org/rwirdemann/kontrol/util"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -20,7 +20,7 @@ func StartService() {
 	r.HandleFunc("/kontrol/accounts", accounts)
 	r.HandleFunc("/kontrol/accounts/{id}", account)
 
-	fmt.Printf("Visit http://%s:8991/kontrol...", util.GetHostname())
+	fmt.Printf("Visit http://%s:8991/domain....", util.GetHostname())
 
 	// cors.Default() setup the middleware with default options being all origins accepted with simple
 	// methods (GET, POST)
@@ -30,19 +30,19 @@ func StartService() {
 }
 
 type AccountsResponse struct {
-	Accounts []kontrol.Account
+	Accounts []domain.Account
 }
 
 func accounts(w http.ResponseWriter, r *http.Request) {
 
 	// convert account map to array
-	accounts := make([]kontrol.Account, 0, len(kontrol.Accounts))
-	for _, a := range kontrol.Accounts {
+	accounts := make([]domain.Account, 0, len(domain.Accounts))
+	for _, a := range domain.Accounts {
 		a.UpdateSaldo()
 		accounts = append(accounts, *a)
 	}
 
-	sort.Sort(kontrol.ByOwner(accounts))
+	sort.Sort(domain.ByOwner(accounts))
 	json := util.Json(AccountsResponse{Accounts: accounts})
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprintf(w, json)
@@ -51,12 +51,12 @@ func accounts(w http.ResponseWriter, r *http.Request) {
 func account(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	accountId := vars["id"]
-	account := kontrol.Accounts[accountId]
+	account := domain.Accounts[accountId]
 	account.UpdateSaldo()
 
 	if account != nil {
 		w.Header().Set("Content-Type", "application/json")
-		sort.Sort(kontrol.ByMonth(account.Bookings))
+		sort.Sort(domain.ByMonth(account.Bookings))
 		json := util.Json(account)
 		fmt.Fprintf(w, json)
 	} else {

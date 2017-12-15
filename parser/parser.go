@@ -9,11 +9,11 @@ import (
 	"strconv"
 	"strings"
 
-	"bitbucket.org/rwirdemann/kontrol/kontrol"
+	"bitbucket.org/rwirdemann/kontrol/domain"
 )
 
-func Import(file string) []kontrol.Booking {
-	var positions []kontrol.Booking
+func Import(file string) []domain.Booking {
+	var positions []domain.Booking
 
 	if f, err := openCsvFile(file); err == nil {
 		r := csv.NewReader(bufio.NewReader(f))
@@ -28,12 +28,12 @@ func Import(file string) []kontrol.Booking {
 				subject := strings.Replace(record[2], "\n", ",", -1)
 				amount := parseAmount(record[3])
 				year, month := parseMonth(record[4])
-				extras := kontrol.CsvBookingExtras{Typ: typ, CostCenter: cs}
-				extras.Net = make(map[kontrol.Stakeholder]float64)
-				for _, p := range kontrol.NetBookings {
+				extras := domain.CsvBookingExtras{Typ: typ, CostCenter: cs}
+				extras.Net = make(map[domain.Stakeholder]float64)
+				for _, p := range domain.NetBookings {
 					extras.Net[p.Owner] = parseAmount(record[p.Column])
 				}
-				position := kontrol.Booking{Extras: extras, Text: subject, Amount: amount, Year: year, Month: month}
+				position := domain.Booking{Extras: extras, Text: subject, Amount: amount, Year: year, Month: month}
 				positions = append(positions, position)
 			}
 		}

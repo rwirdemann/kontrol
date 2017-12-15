@@ -1,4 +1,4 @@
-package kontrol
+package domain
 
 // Stakeholder types
 const (
