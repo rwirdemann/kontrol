@@ -3,8 +3,8 @@ package main
 import (
 	"time"
 
+	"bitbucket.org/rwirdemann/kontrol/handler"
 	"bitbucket.org/rwirdemann/kontrol/kontrol"
-	"bitbucket.org/rwirdemann/kontrol/rest"
 
 	"bitbucket.org/rwirdemann/kontrol/processing"
 
@@ -19,7 +19,8 @@ var FileName = "2017-Buchungen-KG - Buchungen 2017.csv"
 func main() {
 	watchBookingFile()
 	importAndProcessBookings()
-	rest.StartService()
+
+	handler.StartService()
 }
 
 func importAndProcessBookings() {

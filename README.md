@@ -1,8 +1,8 @@
 # Kontrol Backend
 
 ## Todos
-- watch bookings file
-- use make to build
+- port und filename über flags
+- Monats Report
 - GET /accounts soll keine bookings liefern
 
 # Setup instructions
@@ -39,6 +39,7 @@ scp kontrol root@94.130.79.196:~
 ```
 curl -s http://localhost:8991/kontrol/accounts | python -m json.tool
 curl -s http://localhost:8991/kontrol/accounts/AN | python -m json.tool
+curl -s http://localhost:8991/kontrol/accounts/AN?year=2107&month=12 | python -m json.tool
 ```
 
 # Rules

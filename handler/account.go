@@ -1,4 +1,4 @@
-package rest
+package handler
 
 import (
 	"fmt"
@@ -7,10 +7,8 @@ import (
 
 	"strconv"
 
-	"bitbucket.org/rwirdemann/kontrol/html"
 	"bitbucket.org/rwirdemann/kontrol/kontrol"
 	"bitbucket.org/rwirdemann/kontrol/util"
-	"github.com/arschles/go-bindata-html-template"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )
@@ -19,7 +17,6 @@ const port = 8991
 
 func StartService() {
 	r := mux.NewRouter()
-	r.HandleFunc("/kontrol", index)
 	r.HandleFunc("/kontrol/accounts", accounts)
 	r.HandleFunc("/kontrol/accounts/{id}", account)
 
@@ -65,17 +62,4 @@ func account(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusNotFound)
 	}
-}
-
-// Data struct for index.html
-type Index struct {
-	Hostname string
-	Port     int
-}
-
-func index(w http.ResponseWriter, r *http.Request) {
-	hostname := util.GetHostname()
-	index := Index{Hostname: hostname, Port: port}
-	t, _ := template.New("index", html.Asset).Parse("html/index.html")
-	t.Execute(w, struct{ Index }{index})
 }
