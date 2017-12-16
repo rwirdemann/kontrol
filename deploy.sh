@@ -14,11 +14,9 @@ export SPREADSHEET_KEY="1xkTQDGJkq9UKvZfFJTEK_W1EdM2AAy7xIFikxTCGhnk"
 
 echo "setting of variables done for deployment to >$TARGETSERVER"
 
-# cross-compile the $TARGETPROGRAM server for rpi
-# env GOOS=linux GOARCH=arm GOARM=6 go build -v $TARGETPROGRAM
-echo "cross compilation with: env GOOS=linux GOARCH=amd64 go build -o $TARGETPROGRAM -v $SOURCE"
-env GOOS=linux GOARCH=amd64 go build -o $TARGETPROGRAM -v $SOURCE
-echo "done with cross compilation..."
+echo "make linux..."
+make linux
+echo "done."
 echo
 echo
 

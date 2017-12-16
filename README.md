@@ -35,6 +35,8 @@ env GOOS=linux GOARCH=amd64 go build bitbucket.org/rwirdemann/kontrol
 scp kontrol root@94.130.79.196:~
 ```
 
+go build -ldflags "-X main.Buildstamp=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.Githash=`git rev-parse HEAD`"
+
 # Query accounts
 ```
 curl -s http://localhost:8991/kontrol/accounts | python -m json.tool

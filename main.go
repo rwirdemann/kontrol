@@ -1,6 +1,9 @@
 package main
 
 import (
+	"flag"
+	"fmt"
+	"os"
 	"time"
 
 	"bitbucket.org/rwirdemann/kontrol/domain"
@@ -14,12 +17,22 @@ import (
 	"github.com/howeyc/fsnotify"
 )
 
-var FileName = "2017-Buchungen-KG - Buchungen 2017.csv"
+var (
+	FileName = "2017-Buchungen-KG - Buchungen 2017.csv"
+	Version  string
+	Build    string
+)
 
 func main() {
+	version := flag.Bool("version", false, "prints current kontrol version")
+	flag.Parse()
+	if *version {
+		fmt.Printf("Build: %s Git: %s\n", Build, Version)
+		os.Exit(0)
+	}
+
 	watchBookingFile()
 	importAndProcessBookings()
-
 	handler.StartService()
 }
 
