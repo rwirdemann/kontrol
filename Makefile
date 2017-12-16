@@ -8,9 +8,6 @@ LDFLAGS=-ldflags "-X main.githash=${VERSION} -X main.buildstamp=${BUILD}"
 ENVLINUX=env GOOS=linux GOARCH=amd64
 ENVPI=env GOOS=linux GOARCH=arm GOARM=6
 
-run: 
-	go run ${MAIN}
-
 build:
 	go build ${LDFLAGS} -o ${BINARY}
 
@@ -25,5 +22,8 @@ clean:
 
 test:
 	go test ./...
+
+run: 
+	go run ${MAIN}
 	
-.PHONY: clean build
+.PHONY: clean build linux pi clean test run
