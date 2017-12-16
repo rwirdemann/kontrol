@@ -42,7 +42,7 @@ func main() {
 	importAndProcessBookings()
 
 	r := mux.NewRouter()
-	r.HandleFunc("/kontrol/version", handler.MakeVersionHandler(buildstamp, buildstamp))
+	r.HandleFunc("/kontrol/version", handler.MakeVersionHandler(githash, buildstamp))
 	r.HandleFunc("/kontrol/accounts", handler.Accounts)
 	r.HandleFunc("/kontrol/accounts/{id}", handler.Account)
 
