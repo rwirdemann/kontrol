@@ -50,5 +50,6 @@ echo
 
 
 sleep 2
-curl -s http://94.130.79.196:8991/kontrol/accounts/AN | python -m json.tool
+curl -s http://94.130.79.196:8991/kontrol/version
+echo
 
