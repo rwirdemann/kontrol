@@ -1,50 +1,47 @@
 # Kontrol Backend
 
+## API
+
+```
+GET http://localhost:8991/kontrol/accounts
+
+GET http://localhost:8991/kontrol/accounts/AN
+
+GET http://localhost:8991/kontrol/accounts/AN?year=2017&month=12
+```
+
+## Run, Test, Build and Deploy
+
+```
+make run
+
+Startet lokalen Server auf Port 8891.
+```
+
+```
+make test
+
+Führt alle Tests aus.
+```
+
+```
+make build
+
+Erzeugt das Binary kontrol-main im aktuellen Verzeichnis.
+```
+
+```
+./deploy.sh 
+
+Erzeugt Binary, Deployment auf 94.130.79.196, Neustart des Backend.
+```
+    
 ## Todos
 - port und filename über flags
 - Monats Report
 - GET /accounts soll keine bookings liefern
 
-# Setup instructions
-
-cd $PROJECTROOT
-
-## Run main
-
-go run kontrol/main.go
-
-## Run all tests
-
-go test ./...
-
-## Build and install
-
-go install bitbucket.org/rwirdemann/kontrol
-
-## Regenerate HTML assets
-
-Only necessary after html/index.html was changed
-
-```
-go-bindata -pkg html -o html/assets.go html/
-```
-
-## Build for different Linux
-```
-env GOOS=linux GOARCH=amd64 go build bitbucket.org/rwirdemann/kontrol
-scp kontrol root@94.130.79.196:~
-```
-
-go build -ldflags "-X main.Buildstamp=`date -u '+%Y-%m-%d_%I:%M:%S%p'` -X main.Githash=`git rev-parse HEAD`"
-
-# Query accounts
-```
-curl -s http://localhost:8991/kontrol/accounts | python -m json.tool
-curl -s http://localhost:8991/kontrol/accounts/AN | python -m json.tool
-curl -s http://localhost:8991/kontrol/accounts/AN?year=2107&month=12 | python -m json.tool
-```
-
-# Rules
+## Rules
 
 R1: AR = Ausgangsrechnungen
 
