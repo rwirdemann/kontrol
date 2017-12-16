@@ -3,37 +3,56 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"bitbucket.org/rwirdemann/kontrol/domain"
-	"bitbucket.org/rwirdemann/kontrol/handler"
+	"bitbucket.org/rwirdemann/notux/util"
 
 	"bitbucket.org/rwirdemann/kontrol/processing"
 
 	"log"
 
+	"bitbucket.org/rwirdemann/kontrol/handler"
 	"bitbucket.org/rwirdemann/kontrol/parser"
+	"github.com/gorilla/mux"
 	"github.com/howeyc/fsnotify"
+	"github.com/rs/cors"
 )
 
 var (
-	FileName = "2017-Buchungen-KG - Buchungen 2017.csv"
-	Version  string
-	Build    string
+	FileName   = "2017-Buchungen-KG - Buchungen 2017.csv"
+	githash    string
+	buildstamp string
 )
+
+const port = 8991
 
 func main() {
 	version := flag.Bool("version", false, "prints current kontrol version")
 	flag.Parse()
 	if *version {
-		fmt.Printf("Build: %s Git: %s\n", Build, Version)
+		fmt.Printf("Build: %s Git: %s\n", buildstamp, githash)
 		os.Exit(0)
 	}
 
 	watchBookingFile()
 	importAndProcessBookings()
-	handler.StartService()
+
+	r := mux.NewRouter()
+	r.HandleFunc("/kontrol/version", handler.MakeVersionHandler(buildstamp, buildstamp))
+	r.HandleFunc("/kontrol/accounts", handler.Accounts)
+	r.HandleFunc("/kontrol/accounts/{id}", handler.Account)
+
+	fmt.Printf("http://%s:8991/kontrol/accounts", util.GetHostname())
+
+	// cors.Default() setup the middleware with default options being all origins accepted with simple
+	// methods (GET, POST)
+	handler := cors.Default().Handler(r)
+
+	http.ListenAndServe(":"+strconv.Itoa(port), handler)
 }
 
 func importAndProcessBookings() {

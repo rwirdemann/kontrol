@@ -4,7 +4,7 @@ BINARY=kontrol-main
 VERSION=`git rev-parse HEAD`
 BUILD=`date +%FT%T%z`
 
-LDFLAGS=-ldflags "-X main.Version=${VERSION} -X main.Build=${BUILD}"
+LDFLAGS=-ldflags "-X main.githash=${VERSION} -X main.buildstamp=${BUILD}"
 ENVLINUX=env GOOS=linux GOARCH=amd64
 ENVPI=env GOOS=linux GOARCH=arm GOARM=6
 
