@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"bitbucket.org/rwirdemann/kontrol/domain"
-	"bitbucket.org/rwirdemann/notux/util"
 
 	"bitbucket.org/rwirdemann/kontrol/processing"
 
@@ -46,7 +45,7 @@ func main() {
 	r.HandleFunc("/kontrol/accounts", handler.Accounts)
 	r.HandleFunc("/kontrol/accounts/{id}", handler.Account)
 
-	fmt.Printf("http://%s:8991/kontrol/accounts", util.GetHostname())
+	fmt.Printf("http://localhost:8991/kontrol/accounts\n")
 
 	// cors.Default() setup the middleware with default options being all origins accepted with simple
 	// methods (GET, POST)
