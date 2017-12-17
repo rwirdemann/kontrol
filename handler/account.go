@@ -10,10 +10,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type AccountsResponse struct {
-	Accounts []domain.Account
-}
-
 func Accounts(w http.ResponseWriter, r *http.Request) {
 
 	// convert account map to array
@@ -24,7 +20,14 @@ func Accounts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sort.Sort(domain.ByOwner(accounts))
-	json := util.Json(AccountsResponse{Accounts: accounts})
+
+	// wrap response with "Accounts" element
+	response := struct {
+		Accounts []domain.Account
+	}{
+		accounts,
+	}
+	json := util.Json(response)
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprintf(w, json)
 }
