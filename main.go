@@ -16,7 +16,6 @@ import (
 
 	"bitbucket.org/rwirdemann/kontrol/handler"
 	"bitbucket.org/rwirdemann/kontrol/parser"
-	"github.com/gorilla/mux"
 	"github.com/howeyc/fsnotify"
 	"github.com/rs/cors"
 )
@@ -39,18 +38,7 @@ func main() {
 
 	watchBookingFile()
 	importAndProcessBookings()
-
-	r := mux.NewRouter()
-	r.HandleFunc("/kontrol/version", handler.MakeVersionHandler(githash, buildstamp))
-	r.HandleFunc("/kontrol/accounts", handler.Accounts)
-	r.HandleFunc("/kontrol/accounts/{id}", handler.Account)
-
-	fmt.Printf("http://localhost:8991/kontrol/accounts\n")
-
-	// cors.Default() setup the middleware with default options being all origins accepted with simple
-	// methods (GET, POST)
-	handler := cors.Default().Handler(r)
-
+	handler := cors.Default().Handler(handler.NewRouter(githash, buildstamp))
 	http.ListenAndServe(":"+strconv.Itoa(port), handler)
 }
 
