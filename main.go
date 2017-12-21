@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"bitbucket.org/rwirdemann/kontrol/account"
 	"bitbucket.org/rwirdemann/kontrol/domain"
 
 	"bitbucket.org/rwirdemann/kontrol/processing"
@@ -38,7 +39,9 @@ func main() {
 
 	watchBookingFile()
 	importAndProcessBookings()
-	handler := cors.Default().Handler(handler.NewRouter(githash, buildstamp))
+
+	repository := account.NewDefaultRepository()
+	handler := cors.Default().Handler(handler.NewRouter(githash, buildstamp, repository))
 	http.ListenAndServe(":"+strconv.Itoa(port), handler)
 }
 

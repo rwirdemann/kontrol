@@ -10,11 +10,9 @@ type DefaultRepository struct {
 	Accounts map[string]*domain.Account
 }
 
-var Repository Repository
-
-func init() {
-
+func NewDefaultRepository() Repository {
+	return &DefaultRepository{}
 }
 
-func Add(a domain.Account) {
+func (r *DefaultRepository) Add(a domain.Account) {
 }

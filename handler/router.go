@@ -1,13 +1,14 @@
 package handler
 
 import (
+	"bitbucket.org/rwirdemann/kontrol/account"
 	"github.com/gorilla/mux"
 )
 
-func NewRouter(githash string, buildstamp string) *mux.Router {
+func NewRouter(githash string, buildstamp string, repository account.Repository) *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/kontrol/version", MakeVersionHandler(githash, buildstamp))
-	r.HandleFunc("/kontrol/accounts", Accounts)
-	r.HandleFunc("/kontrol/accounts/{id}", Account)
+	r.HandleFunc("/kontrol/accounts", MakeGetAccountsHandler(repository))
+	r.HandleFunc("/kontrol/accounts/{id}", MakeGetAccountHandler(repository))
 	return r
 }
