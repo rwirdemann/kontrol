@@ -37,6 +37,9 @@ Erzeugt Binary, Deployment auf 94.130.79.196, Neustart des Backend.
 ```
     
 ## Todos
+- figo api einbinden: anke.nehrenberg@kommitment.biz
+- BN: Bonus, etc. verbuchen
+
 - port und filename über flags
 - Monats Report
 - GET /accounts soll keine bookings liefern

@@ -1,12 +1,14 @@
 package processing
 
 import (
+	"bitbucket.org/rwirdemann/kontrol/account"
 	"bitbucket.org/rwirdemann/kontrol/domain"
 	"bitbucket.org/rwirdemann/kontrol/util"
 )
 
-func Process(booking domain.Booking) {
+func Process(repository account.Repository, booking domain.Booking) {
 
+	// GV Entnahme
 	if booking.Extras.Typ == "GV" {
 		b := domain.Booking{
 			Amount: -1 * booking.Amount,
@@ -14,10 +16,11 @@ func Process(booking domain.Booking) {
 			Text:   "GV Entnahme",
 			Month:  booking.Month,
 			Year:   booking.Year}
-		account := domain.Accounts[booking.Extras.CostCenter]
+		account, _ := repository.Get(booking.Extras.CostCenter)
 		account.Book(b)
 	}
 
+	// Ausgangsrechnungen
 	if booking.Extras.Typ == "AR" {
 		benefitees := stakeholderWithNetPositions(booking)
 		for _, benefited := range benefitees {
@@ -31,7 +34,7 @@ func Process(booking domain.Booking) {
 					Text:   booking.Text + "#NetShare#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
-				account := domain.Accounts[benefited.Id]
+				account, _ := repository.Get(benefited.Id)
 				account.Book(b)
 
 				// book kommitment share
@@ -41,7 +44,8 @@ func Process(booking domain.Booking) {
 					Text:   booking.Text + "#Kommitment#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
-				kommitmentAccount := domain.Accounts[domain.StakeholderKM.Id]
+
+				kommitmentAccount, _ := repository.Get(domain.StakeholderKM.Id)
 				kommitmentAccount.Book(kommitmentShare)
 			}
 
@@ -54,7 +58,7 @@ func Process(booking domain.Booking) {
 					Text:   booking.Text + "#Kommitment#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
-				kommitmentAccount := domain.Accounts[domain.StakeholderKM.Id]
+				kommitmentAccount, _ := repository.Get(domain.StakeholderKM.Id)
 				kommitmentAccount.Book(kommitmentShare)
 			}
 
@@ -67,7 +71,7 @@ func Process(booking domain.Booking) {
 					Text:   booking.Text + "#NetShare#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
-				account := domain.Accounts[benefited.Id]
+				account, _ := repository.Get(benefited.Id)
 				account.Book(b)
 
 				// book kommitment share
@@ -77,12 +81,12 @@ func Process(booking domain.Booking) {
 					Text:   booking.Text + "#Kommitment#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
-				kommitmentAccount := domain.Accounts[domain.StakeholderKM.Id]
+				kommitmentAccount, _ := repository.Get(domain.StakeholderKM.Id)
 				kommitmentAccount.Book(kommitmentShare)
 			}
 
 			// book cost center provision
-			account := domain.Accounts[booking.Extras.CostCenter]
+			account, _ := repository.Get(booking.Extras.CostCenter)
 			b := domain.Booking{
 				Amount: booking.Extras.Net[benefited] * domain.PartnerProvision,
 				Typ:    domain.Vertriebsprovision,
@@ -100,7 +104,7 @@ func Process(booking domain.Booking) {
 			Text:   booking.Text,
 			Month:  booking.Month,
 			Year:   booking.Year}
-		kommitmentAccount := domain.Accounts[domain.StakeholderKM.Id]
+		kommitmentAccount, _ := repository.Get(domain.StakeholderKM.Id)
 		kommitmentAccount.Book(kommitmentShare)
 	}
 }

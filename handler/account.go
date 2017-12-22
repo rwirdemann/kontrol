@@ -13,14 +13,7 @@ import (
 
 func MakeGetAccountsHandler(repository account.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
-		// convert account map to array
-		accounts := make([]domain.Account, 0, len(domain.Accounts))
-		for _, a := range domain.Accounts {
-			a.UpdateSaldo()
-			accounts = append(accounts, *a)
-		}
-
+		accounts := repository.All()
 		sort.Sort(domain.ByOwner(accounts))
 
 		// wrap response with "Accounts" element
@@ -40,7 +33,7 @@ func MakeGetAccountHandler(repository account.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		accountId := vars["id"]
-		account := domain.Accounts[accountId]
+		account, _ := repository.Get(accountId)
 		account.UpdateSaldo()
 
 		if account != nil {

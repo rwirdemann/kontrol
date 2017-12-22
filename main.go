@@ -37,23 +37,29 @@ func main() {
 		os.Exit(0)
 	}
 
-	watchBookingFile()
-	importAndProcessBookings()
-
 	repository := account.NewDefaultRepository()
+	for _, sh := range domain.AllStakeholder {
+		if sh.Type != domain.StakeholderTypeExtern {
+			repository.Add(domain.NewAccount(sh))
+		}
+	}
+
+	watchBookingFile(repository)
+	importAndProcessBookings(repository)
+
 	handler := cors.Default().Handler(handler.NewRouter(githash, buildstamp, repository))
 	http.ListenAndServe(":"+strconv.Itoa(port), handler)
 }
 
-func importAndProcessBookings() {
-	domain.ResetAccounts()
+func importAndProcessBookings(repository account.Repository) {
+	repository.ClearBookings()
 	bookings := parser.Import(FileName)
 	for _, p := range bookings {
-		processing.Process(p)
+		processing.Process(repository, p)
 	}
 }
 
-func watchBookingFile() {
+func watchBookingFile(repository account.Repository) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)
@@ -64,7 +70,7 @@ func watchBookingFile() {
 			select {
 			case <-watcher.Event:
 				log.Printf("booking reimport start: %s\n", time.Now())
-				importAndProcessBookings()
+				importAndProcessBookings(repository)
 				log.Printf("booking reimport end: %s\n", time.Now())
 			case err := <-watcher.Error:
 				log.Println("error:", err)

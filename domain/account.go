@@ -12,19 +12,8 @@ type Account struct {
 	Saldo    float64
 }
 
-var Accounts map[string]*Account
-
-func init() {
-	ResetAccounts()
-}
-
-func ResetAccounts() {
-	Accounts = make(map[string]*Account)
-	for _, sh := range AllStakeholder {
-		if sh.Type != StakeholderTypeExtern {
-			Accounts[sh.Id] = &Account{Owner: sh}
-		}
-	}
+func NewAccount(o Stakeholder) *Account {
+	return &Account{Owner: o}
 }
 
 func (a *Account) Book(booking Booking) {
