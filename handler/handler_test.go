@@ -25,7 +25,6 @@ func TestGetAllAccounts(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, rr.Code)
 
-	// And: Body contains 1 product
-	//	expected := `[{"Id":"1","Name":"Schuhe","Description":"","Category":"","Price":0}]`
-	//	assert.Equal(t, expected, rr.Body.String())
+	expected := `{"Accounts":[{"Owner":{"Id":"AN","Name":"Anke Nehrenberg","Type":"partner"},"Bookings":null,"Saldo":0},{"Owner":{"Id":"BW","Name":"Ben Wiedenmann","Type":"employee"},"Bookings":null,"Saldo":0},{"Owner":{"Id":"JM","Name":"Johannes Mainusch","Type":"partner"},"Bookings":null,"Saldo":0},{"Owner":{"Id":"K","Name":"Kommitment","Type":"company"},"Bookings":null,"Saldo":0},{"Owner":{"Id":"RW","Name":"Ralf Wirdemann","Type":"partner"},"Bookings":null,"Saldo":0}]}`
+	assert.Equal(t, expected, rr.Body.String())
 }
