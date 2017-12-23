@@ -189,9 +189,15 @@ func TestInterneStunden(t *testing.T) {
 	Process(repository, p)
 
 	// the booking is booked to anke's account
-	accountAnke, _ := repository.Get(domain.StakeholderAN.Id)
-	util.AssertEquals(t, 1, len(accountAnke.Bookings))
-	booking := accountAnke.Bookings[0]
-	util.AssertFloatEquals(t, 8250.00, booking.Amount)
-	util.AssertEquals(t, domain.InterneStunden, booking.Typ)
+	a1, _ := repository.Get(domain.StakeholderAN.Id)
+	util.AssertEquals(t, 1, len(a1.Bookings))
+	b1 := a1.Bookings[0]
+	util.AssertFloatEquals(t, 8250.00, b1.Amount)
+	util.AssertEquals(t, domain.InterneStunden, b1.Typ)
+
+	// the booking is booked against kommitment account
+	a2, _ := repository.Get(domain.StakeholderKM.Id)
+	b2 := a2.Bookings[0]
+	util.AssertFloatEquals(t, -8250.00, b2.Amount)
+	util.AssertEquals(t, domain.InterneStunden, b1.Typ)
 }

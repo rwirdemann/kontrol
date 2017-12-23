@@ -110,6 +110,8 @@ func Process(repository account.Repository, booking domain.Booking) {
 
 	// Interne Stunden, werden direkt Netto verbucht
 	if booking.Extras.Typ == "IS" {
+
+		// Buchung aufs Partner-Konto
 		b := domain.Booking{
 			Amount: booking.Amount,
 			Typ:    domain.InterneStunden,
@@ -118,6 +120,16 @@ func Process(repository account.Repository, booking domain.Booking) {
 			Year:   booking.Year}
 		account, _ := repository.Get(booking.Extras.CostCenter)
 		account.Book(b)
+
+		// Gegenbuchung Kommitment-Konto
+		counterBooking := domain.Booking{
+			Amount: booking.Amount * -1,
+			Typ:    domain.InterneStunden,
+			Text:   booking.Text,
+			Month:  booking.Month,
+			Year:   booking.Year}
+		kommitmentAccount, _ := repository.Get(domain.StakeholderKM.Id)
+		kommitmentAccount.Book(counterBooking)
 	}
 }
 
