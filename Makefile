@@ -1,4 +1,5 @@
 MAIN=main.go
+MAIN_CLI=cli/main.go
 BINARY=kontrol-main
 
 VERSION=`git rev-parse HEAD`
@@ -26,8 +27,12 @@ test:
 run: 
 	go run ${MAIN}
 
+install: 
+	go install bitbucket.org/rwirdemann/kontrol
+	go install bitbucket.org/rwirdemann/kontrol/cli
+
 SPREADSHEET_KEY="1xkTQDGJkq9UKvZfFJTEK_W1EdM2AAy7xIFikxTCGhnk"
 getdatafile:
 	curl "https://docs.google.com/spreadsheets/d/$(SPREADSHEET_KEY)/export?exportFormat=csv" > "2017-Buchungen-KG - Buchungen 2017.csv"
 	
-.PHONY: clean build linux pi clean test run
+.PHONY: clean build linux pi clean test run install

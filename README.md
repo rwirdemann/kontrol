@@ -10,6 +10,12 @@ GET http://localhost:8991/kontrol/accounts/AN
 GET http://localhost:8991/kontrol/accounts/AN?year=2017&month=12
 ```
 
+## CLI
+
+```
+cli --account=RW
+```
+
 ## Run, Test, Build and Deploy
 
 ```
@@ -28,6 +34,12 @@ Führt alle Tests aus.
 make build
 
 Erzeugt das Binary kontrol-main im aktuellen Verzeichnis.
+```
+
+```
+make install
+
+Erzeugt das Binary kontrol und cli in $GOPATH/bin.
 ```
 
 ```
