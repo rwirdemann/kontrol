@@ -177,3 +177,21 @@ func TestPartnerWithdrawals(t *testing.T) {
 	util.AssertFloatEquals(t, -6000, bRalf.Amount)
 	util.AssertEquals(t, domain.Entnahme, bRalf.Typ)
 }
+
+func TestInterneStunden(t *testing.T) {
+	setUp()
+
+	// given: a internal hours booking
+	extras := domain.CsvBookingExtras{Typ: "IS", CostCenter: "AN"}
+	p := domain.Booking{Extras: extras, Amount: 8250.00, Text: "Internet Stunden 2017", Month: 12, Year: 2017}
+
+	// when: the position is processed
+	Process(repository, p)
+
+	// the booking is booked to anke's account
+	accountAnke, _ := repository.Get(domain.StakeholderAN.Id)
+	util.AssertEquals(t, 1, len(accountAnke.Bookings))
+	booking := accountAnke.Bookings[0]
+	util.AssertFloatEquals(t, 8250.00, booking.Amount)
+	util.AssertEquals(t, domain.InterneStunden, booking.Typ)
+}

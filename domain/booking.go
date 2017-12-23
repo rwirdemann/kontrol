@@ -18,6 +18,7 @@ const (
 	Kommitmentanteil   = "Kommitmentanteil"
 	Entnahme           = "Entnahme"
 	Eingangsrechnung   = "Eingangsrechnung"
+	InterneStunden     = "Interne Stunden"
 )
 
 type Booking struct {

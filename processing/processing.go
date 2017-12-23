@@ -107,6 +107,18 @@ func Process(repository account.Repository, booking domain.Booking) {
 		kommitmentAccount, _ := repository.Get(domain.StakeholderKM.Id)
 		kommitmentAccount.Book(kommitmentShare)
 	}
+
+	// Interne Stunden, werden direkt Netto verbucht
+	if booking.Extras.Typ == "IS" {
+		b := domain.Booking{
+			Amount: booking.Amount,
+			Typ:    domain.InterneStunden,
+			Text:   booking.Text,
+			Month:  booking.Month,
+			Year:   booking.Year}
+		account, _ := repository.Get(booking.Extras.CostCenter)
+		account.Book(b)
+	}
 }
 
 // Eine Buchung kann mehrere Nettopositionen enthalten, den je einem Stakeholder zugeschrieben wird.
