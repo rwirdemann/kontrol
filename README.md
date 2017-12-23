@@ -79,3 +79,7 @@ R2: ER = Eingangsrechnung
 
 R3: GV = Geschäftsführerentnahmen
 - 100% der Entnahme werden gegen das Kommitment-Konto gebucht
+
+R4: IS = Interne Stunden
+- 100% werden auf das Partner-Konto gebucht
+- 100% werden gegen das Kommitment-Konto gebucht
