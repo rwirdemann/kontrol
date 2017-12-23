@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/csv"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"strconv"
@@ -35,6 +36,8 @@ func Import(file string) []domain.Booking {
 				}
 				position := domain.Booking{Extras: extras, Text: subject, Amount: amount, Year: year, Month: month}
 				positions = append(positions, position)
+			} else {
+				fmt.Printf("unknown booking type %s: %s\n", record[0], record[3])
 			}
 		}
 	} else {
