@@ -9,17 +9,17 @@ import (
 	"net/http"
 	"os"
 
-	"bitbucket.org/rwirdemann/kontrol/domain"
+	"bitbucket.org/rwirdemann/kontrol/account"
 )
 
 func main() {
 	baseUrl := "http://localhost:8991/kontrol"
 
-	account := flag.String("account", "", "fetches account")
+	accountFlag := flag.String("account", "", "fetches account")
 	flag.Parse()
 
-	if *account != "" {
-		url := fmt.Sprintf("%s/accounts/%s", baseUrl, *account)
+	if *accountFlag != "" {
+		url := fmt.Sprintf("%s/accounts/%s", baseUrl, *accountFlag)
 		response, err := http.Get(url)
 		if err != nil {
 			fmt.Printf("%s", err)
@@ -32,12 +32,12 @@ func main() {
 				os.Exit(1)
 			}
 
-			var account domain.Account
-			if err := json.Unmarshal(contents, &account); err != nil {
+			var a account.Account
+			if err := json.Unmarshal(contents, &a); err != nil {
 				log.Fatal(err)
 			}
 
-			account.Print()
+			a.Print()
 		}
 
 	}

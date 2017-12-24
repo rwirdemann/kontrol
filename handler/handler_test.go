@@ -15,7 +15,7 @@ var router *mux.Router
 
 func init() {
 	repository := account.NewDefaultRepository()
-	repository.Add(domain.NewAccount(domain.StakeholderAN))
+	repository.Add(account.NewAccount(domain.StakeholderAN))
 	router = NewRouter("githash", "buildtime", repository)
 }
 

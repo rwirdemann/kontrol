@@ -40,7 +40,7 @@ func main() {
 	repository := account.NewDefaultRepository()
 	for _, sh := range domain.AllStakeholder {
 		if sh.Type != domain.StakeholderTypeExtern {
-			repository.Add(domain.NewAccount(sh))
+			repository.Add(account.NewAccount(sh))
 		}
 	}
 

@@ -2,9 +2,7 @@
 
 ## API
 
-```
 ### GET http://localhost:8991/kontrol/version
-```
 
 Aktuelle Version.
 
@@ -25,11 +23,33 @@ Alle "virtuellen" Konten.
         },
         ...
     ]
-}```
-
-‰GET http://localhost:8991/kontrol/accounts/AN
+}
 ```
 
+### GET http://localhost:8991/kontrol/accounts/AN
+
+Ein einzelnes Konto inkl. Buchungen.
+
+```
+{
+    "Owner": {
+        "Id": "RW",
+        "Name": "Ralf Wirdemann",
+        "Type": "partner"
+    },
+    "Bookings": [
+        {
+            "Typ": "Nettoanteil",
+            "Amount": 7559.999999999999,
+            "Text": "RN_20170131-picue#NetShare#RW",
+            "Year": 2017,
+            "Month": 1
+        },
+        ...
+    ],
+    "Saldo": 18281.85
+}
+```
 
 ### GET http://localhost:8991/kontrol/accounts/collective
 

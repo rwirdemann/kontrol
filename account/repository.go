@@ -1,28 +1,26 @@
 package account
 
-import "bitbucket.org/rwirdemann/kontrol/domain"
-
 type Repository interface {
-	Add(a *domain.Account)
-	All() []domain.Account
-	Get(id string) (*domain.Account, bool)
+	Add(a *Account)
+	All() []Account
+	Get(id string) (*Account, bool)
 	ClearBookings()
 }
 
 type DefaultRepository struct {
-	accounts map[string]*domain.Account
+	accounts map[string]*Account
 }
 
 func NewDefaultRepository() Repository {
-	return &DefaultRepository{accounts: make(map[string]*domain.Account)}
+	return &DefaultRepository{accounts: make(map[string]*Account)}
 }
 
-func (r *DefaultRepository) Add(a *domain.Account) {
+func (r *DefaultRepository) Add(a *Account) {
 	r.accounts[a.Owner.Id] = a
 }
 
-func (r *DefaultRepository) All() []domain.Account {
-	result := make([]domain.Account, 0, len(r.accounts))
+func (r *DefaultRepository) All() []Account {
+	result := make([]Account, 0, len(r.accounts))
 	for _, a := range r.accounts {
 		clone := *a
 		clone.Bookings = nil
@@ -32,7 +30,7 @@ func (r *DefaultRepository) All() []domain.Account {
 	return result
 }
 
-func (r *DefaultRepository) Get(id string) (*domain.Account, bool) {
+func (r *DefaultRepository) Get(id string) (*Account, bool) {
 	if a, ok := r.accounts[id]; ok {
 		return a, true
 	}
@@ -41,6 +39,6 @@ func (r *DefaultRepository) Get(id string) (*domain.Account, bool) {
 
 func (r *DefaultRepository) ClearBookings() {
 	for _, account := range r.accounts {
-		account.Bookings = []domain.Booking{}
+		account.Bookings = []Booking{}
 	}
 }

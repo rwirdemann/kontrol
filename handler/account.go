@@ -6,7 +6,6 @@ import (
 	"sort"
 
 	"bitbucket.org/rwirdemann/kontrol/account"
-	"bitbucket.org/rwirdemann/kontrol/domain"
 	"bitbucket.org/rwirdemann/kontrol/util"
 	"github.com/gorilla/mux"
 )
@@ -14,11 +13,11 @@ import (
 func MakeGetAccountsHandler(repository account.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		accounts := repository.All()
-		sort.Sort(domain.ByOwner(accounts))
+		sort.Sort(account.ByOwner(accounts))
 
 		// wrap response with "Accounts" element
 		response := struct {
-			Accounts []domain.Account
+			Accounts []account.Account
 		}{
 			accounts,
 		}
@@ -33,13 +32,11 @@ func MakeGetAccountHandler(repository account.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		accountId := vars["id"]
-		account, _ := repository.Get(accountId)
-		account.UpdateSaldo()
-
-		if account != nil {
+		if a, ok := repository.Get(accountId); ok {
+			a.UpdateSaldo()
 			w.Header().Set("Content-Type", "application/json")
-			sort.Sort(domain.ByMonth(account.Bookings))
-			json := util.Json(account)
+			sort.Sort(account.ByMonth(a.Bookings))
+			json := util.Json(a)
 			fmt.Fprintf(w, json)
 		} else {
 			w.WriteHeader(http.StatusNotFound)

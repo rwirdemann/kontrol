@@ -11,10 +11,11 @@ import (
 	"strings"
 
 	"bitbucket.org/rwirdemann/kontrol/domain"
+	"bitbucket.org/rwirdemann/kontrol/account"
 )
 
-func Import(file string) []domain.Booking {
-	var positions []domain.Booking
+func Import(file string) []account.Booking {
+	var positions []account.Booking
 
 	if f, err := openCsvFile(file); err == nil {
 		r := csv.NewReader(bufio.NewReader(f))
@@ -29,12 +30,12 @@ func Import(file string) []domain.Booking {
 				subject := strings.Replace(record[2], "\n", ",", -1)
 				amount := parseAmount(record[3])
 				year, month := parseMonth(record[4])
-				extras := domain.CsvBookingExtras{Typ: typ, CostCenter: cs}
+				extras := account.CsvBookingExtras{Typ: typ, CostCenter: cs}
 				extras.Net = make(map[domain.Stakeholder]float64)
 				for _, p := range domain.NetBookings {
 					extras.Net[p.Owner] = parseAmount(record[p.Column])
 				}
-				position := domain.Booking{Extras: extras, Text: subject, Amount: amount, Year: year, Month: month}
+				position := account.Booking{Extras: extras, Text: subject, Amount: amount, Year: year, Month: month}
 				positions = append(positions, position)
 			} else {
 				fmt.Printf("unknown booking type %s: %s\n", record[0], record[3])
