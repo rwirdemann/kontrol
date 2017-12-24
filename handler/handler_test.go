@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"bitbucket.org/rwirdemann/kontrol/account"
-	"bitbucket.org/rwirdemann/kontrol/domain"
+	"bitbucket.org/rwirdemann/kontrol/owner"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )
@@ -15,7 +15,7 @@ var router *mux.Router
 
 func init() {
 	repository := account.NewDefaultRepository()
-	repository.Add(account.NewAccount(domain.StakeholderAN))
+	repository.Add(account.NewAccount(owner.StakeholderAN))
 	router = NewRouter("githash", "buildtime", repository)
 }
 

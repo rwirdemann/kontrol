@@ -2,15 +2,16 @@ package account
 
 import (
 	"fmt"
-	"bitbucket.org/rwirdemann/kontrol/domain"
+
+	"bitbucket.org/rwirdemann/kontrol/owner"
 )
 
 // Zusatzinformationen einer Booking, deren Quelle die CSV-Datei ist, und die für die weitere
 // Bearbeitung erforderlich sind.
 type CsvBookingExtras struct {
-	Typ        string                  // ER, AR, GV
-	CostCenter string                  // JM, AN, K, usw.
-	Net        map[domain.Stakeholder]float64 // Verteilung der netto Rechnungspositionen auf Stakeholder
+	Typ        string                        // ER, AR, GV
+	CostCenter string                        // JM, AN, K, usw.
+	Net        map[owner.Stakeholder]float64 // Verteilung der netto Rechnungspositionen auf Stakeholder
 }
 
 const (
@@ -32,7 +33,7 @@ type Booking struct {
 	Extras CsvBookingExtras `json:"-"`
 }
 
-func (b Booking) Print(owner domain.Stakeholder) {
+func (b Booking) Print(owner owner.Stakeholder) {
 	text := b.Text
 	if len(text) > 37 {
 		text = text[:37] + "..."

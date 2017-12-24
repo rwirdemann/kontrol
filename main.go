@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"bitbucket.org/rwirdemann/kontrol/account"
-	"bitbucket.org/rwirdemann/kontrol/domain"
+	"bitbucket.org/rwirdemann/kontrol/owner"
 
 	"bitbucket.org/rwirdemann/kontrol/processing"
 
@@ -38,8 +38,8 @@ func main() {
 	}
 
 	repository := account.NewDefaultRepository()
-	for _, sh := range domain.AllStakeholder {
-		if sh.Type != domain.StakeholderTypeExtern {
+	for _, sh := range owner.AllStakeholder {
+		if sh.Type != owner.StakeholderTypeExtern {
 			repository.Add(account.NewAccount(sh))
 		}
 	}

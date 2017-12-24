@@ -4,16 +4,17 @@ import (
 	"fmt"
 	"sort"
 	"strings"
-	"bitbucket.org/rwirdemann/kontrol/domain"
+
+	"bitbucket.org/rwirdemann/kontrol/owner"
 )
 
 type Account struct {
-	Owner    domain.Stakeholder
+	Owner    owner.Stakeholder
 	Bookings []Booking `json:",omitempty"`
 	Saldo    float64
 }
 
-func NewAccount(o domain.Stakeholder) *Account {
+func NewAccount(o owner.Stakeholder) *Account {
 	return &Account{Owner: o}
 }
 

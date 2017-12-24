@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"bitbucket.org/rwirdemann/kontrol/account"
-	"bitbucket.org/rwirdemann/kontrol/domain"
+	"bitbucket.org/rwirdemann/kontrol/owner"
 	"bitbucket.org/rwirdemann/kontrol/util"
 )
 
@@ -28,7 +28,7 @@ func assertPosition(t *testing.T, p account.Booking, typ string, costCenter stri
 	util.AssertEquals(t, year, p.Year)
 	util.AssertEquals(t, month, p.Month)
 
-	util.AssertEquals(t, nettoRW, p.Extras.Net[domain.StakeholderRW])
-	util.AssertEquals(t, nettoJM, p.Extras.Net[domain.StakeholderJM])
-	util.AssertEquals(t, nettoAN, p.Extras.Net[domain.StakeholderAN])
+	util.AssertEquals(t, nettoRW, p.Extras.Net[owner.StakeholderRW])
+	util.AssertEquals(t, nettoJM, p.Extras.Net[owner.StakeholderJM])
+	util.AssertEquals(t, nettoAN, p.Extras.Net[owner.StakeholderAN])
 }

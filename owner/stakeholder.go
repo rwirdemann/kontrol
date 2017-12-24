@@ -1,4 +1,4 @@
-package domain
+package owner
 
 // Stakeholder types
 const (

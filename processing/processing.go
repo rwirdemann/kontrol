@@ -2,7 +2,7 @@ package processing
 
 import (
 	"bitbucket.org/rwirdemann/kontrol/account"
-	"bitbucket.org/rwirdemann/kontrol/domain"
+	"bitbucket.org/rwirdemann/kontrol/owner"
 	"bitbucket.org/rwirdemann/kontrol/util"
 )
 
@@ -25,11 +25,11 @@ func Process(repository account.Repository, booking account.Booking) {
 		benefitees := stakeholderWithNetPositions(booking)
 		for _, benefited := range benefitees {
 
-			if benefited.Type == domain.StakeholderTypePartner {
+			if benefited.Type == owner.StakeholderTypePartner {
 
 				// book partner share
 				b := account.Booking{
-					Amount: booking.Extras.Net[benefited] * domain.PartnerShare,
+					Amount: booking.Extras.Net[benefited] * owner.PartnerShare,
 					Typ:    account.Nettoanteil,
 					Text:   booking.Text + "#NetShare#" + benefited.Id,
 					Month:  booking.Month,
@@ -39,30 +39,30 @@ func Process(repository account.Repository, booking account.Booking) {
 
 				// book kommitment share
 				kommitmentShare := account.Booking{
-					Amount: booking.Extras.Net[benefited] * domain.KommmitmentShare,
+					Amount: booking.Extras.Net[benefited] * owner.KommmitmentShare,
 					Typ:    account.Kommitmentanteil,
 					Text:   booking.Text + "#Kommitment#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
 
-				kommitmentAccount, _ := repository.Get(domain.StakeholderKM.Id)
+				kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
 				kommitmentAccount.Book(kommitmentShare)
 			}
 
-			if benefited.Type == domain.StakeholderTypeExtern {
+			if benefited.Type == owner.StakeholderTypeExtern {
 
 				// book kommitment share
 				kommitmentShare := account.Booking{
-					Amount: booking.Extras.Net[benefited] * domain.KommmitmentExternShare,
+					Amount: booking.Extras.Net[benefited] * owner.KommmitmentExternShare,
 					Typ:    account.Kommitmentanteil,
 					Text:   booking.Text + "#Kommitment#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
-				kommitmentAccount, _ := repository.Get(domain.StakeholderKM.Id)
+				kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
 				kommitmentAccount.Book(kommitmentShare)
 			}
 
-			if benefited.Type == domain.StakeholderTypeEmployee {
+			if benefited.Type == owner.StakeholderTypeEmployee {
 
 				// 100% net is booked to employee account to see how much money is made by him
 				b := account.Booking{
@@ -76,19 +76,19 @@ func Process(repository account.Repository, booking account.Booking) {
 
 				// book kommitment share
 				kommitmentShare := account.Booking{
-					Amount: booking.Extras.Net[benefited] * domain.KommmitmentEmployeeShare,
+					Amount: booking.Extras.Net[benefited] * owner.KommmitmentEmployeeShare,
 					Typ:    account.Kommitmentanteil,
 					Text:   booking.Text + "#Kommitment#" + benefited.Id,
 					Month:  booking.Month,
 					Year:   booking.Year}
-				kommitmentAccount, _ := repository.Get(domain.StakeholderKM.Id)
+				kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
 				kommitmentAccount.Book(kommitmentShare)
 			}
 
 			// book cost center provision
 			a, _ := repository.Get(booking.Extras.CostCenter)
 			b := account.Booking{
-				Amount: booking.Extras.Net[benefited] * domain.PartnerProvision,
+				Amount: booking.Extras.Net[benefited] * owner.PartnerProvision,
 				Typ:    account.Vertriebsprovision,
 				Text:   booking.Text + "#Provision#" + benefited.Id,
 				Month:  booking.Month,
@@ -104,7 +104,7 @@ func Process(repository account.Repository, booking account.Booking) {
 			Text:   booking.Text,
 			Month:  booking.Month,
 			Year:   booking.Year}
-		kommitmentAccount, _ := repository.Get(domain.StakeholderKM.Id)
+		kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
 		kommitmentAccount.Book(kommitmentShare)
 	}
 
@@ -128,15 +128,15 @@ func Process(repository account.Repository, booking account.Booking) {
 			Text:   booking.Text,
 			Month:  booking.Month,
 			Year:   booking.Year}
-		kommitmentAccount, _ := repository.Get(domain.StakeholderKM.Id)
+		kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
 		kommitmentAccount.Book(counterBooking)
 	}
 }
 
 // Eine Buchung kann mehrere Nettopositionen enthalten, den je einem Stakeholder zugeschrieben wird.
 // Diese Funktion liefert ein Array mit Stateholder, deren Nettoanteil in der Buchung > 0 ist.
-func stakeholderWithNetPositions(booking account.Booking) []domain.Stakeholder {
-	var result []domain.Stakeholder
+func stakeholderWithNetPositions(booking account.Booking) []owner.Stakeholder {
+	var result []owner.Stakeholder
 
 	for k, v := range booking.Extras.Net {
 		if v > 0 {

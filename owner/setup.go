@@ -1,4 +1,4 @@
-package domain
+package owner
 
 const (
 	PartnerShare             = 0.7

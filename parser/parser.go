@@ -11,19 +11,19 @@ import (
 	"strings"
 
 	"bitbucket.org/rwirdemann/kontrol/account"
-	"bitbucket.org/rwirdemann/kontrol/domain"
+	"bitbucket.org/rwirdemann/kontrol/owner"
 )
 
 // Beschreibt, dass die netto (Rechnungs-)Position in Spalte X der CSV-Datei dem Stakeholder Y gehört
 var netBookings = []struct {
-	Owner  domain.Stakeholder
+	Owner  owner.Stakeholder
 	Column int
 }{
-	{Owner: domain.StakeholderRW, Column: 21},
-	{Owner: domain.StakeholderAN, Column: 20},
-	{Owner: domain.StakeholderJM, Column: 22},
-	{Owner: domain.StakeholderBW, Column: 19},
-	{Owner: domain.StakeholderEX, Column: 23},
+	{Owner: owner.StakeholderRW, Column: 21},
+	{Owner: owner.StakeholderAN, Column: 20},
+	{Owner: owner.StakeholderJM, Column: 22},
+	{Owner: owner.StakeholderBW, Column: 19},
+	{Owner: owner.StakeholderEX, Column: 23},
 }
 
 func Import(file string) []account.Booking {
@@ -43,7 +43,7 @@ func Import(file string) []account.Booking {
 				amount := parseAmount(record[3])
 				year, month := parseMonth(record[4])
 				extras := account.CsvBookingExtras{Typ: typ, CostCenter: cs}
-				extras.Net = make(map[domain.Stakeholder]float64)
+				extras.Net = make(map[owner.Stakeholder]float64)
 				for _, p := range netBookings {
 					extras.Net[p.Owner] = parseAmount(record[p.Column])
 				}
