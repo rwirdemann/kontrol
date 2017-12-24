@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"bitbucket.org/rwirdemann/kontrol/account"
-	"bitbucket.org/rwirdemann/kontrol/owner"
 
 	"bitbucket.org/rwirdemann/kontrol/processing"
 
@@ -38,12 +37,6 @@ func main() {
 	}
 
 	repository := account.NewDefaultRepository()
-	for _, sh := range owner.AllStakeholder {
-		if sh.Type != owner.StakeholderTypeExtern {
-			repository.Add(account.NewAccount(sh))
-		}
-	}
-
 	watchBookingFile(repository)
 	importAndProcessBookings(repository)
 

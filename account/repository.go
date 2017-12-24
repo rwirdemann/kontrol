@@ -1,5 +1,9 @@
 package account
 
+import (
+	"bitbucket.org/rwirdemann/kontrol/owner"
+)
+
 type Repository interface {
 	Add(a *Account)
 	All() []Account
@@ -11,8 +15,18 @@ type DefaultRepository struct {
 	accounts map[string]*Account
 }
 
-func NewDefaultRepository() Repository {
+func EmptyDefaultRepository() Repository {
 	return &DefaultRepository{accounts: make(map[string]*Account)}
+}
+
+func NewDefaultRepository() Repository {
+	r := DefaultRepository{accounts: make(map[string]*Account)}
+	for _, sh := range owner.AllStakeholder {
+		if sh.Type != owner.StakeholderTypeExtern {
+			r.Add(NewAccount(sh))
+		}
+	}
+	return &r
 }
 
 func (r *DefaultRepository) Add(a *Account) {

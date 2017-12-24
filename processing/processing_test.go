@@ -14,11 +14,6 @@ var repository account.Repository
 
 func setUp() {
 	repository = account.NewDefaultRepository()
-	for _, sh := range owner.AllStakeholder {
-		if sh.Type != owner.StakeholderTypeExtern {
-			repository.Add(account.NewAccount(sh))
-		}
-	}
 }
 
 func TestPartnerNettoAnteil(t *testing.T) {
