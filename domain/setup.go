@@ -16,18 +16,3 @@ var StakeholderKM = Stakeholder{Id: "K", Name: "Kommitment", Type: StakeholderTy
 var StakeholderEX = Stakeholder{Id: "EX", Name: "Extern", Type: StakeholderTypeExtern}
 
 var AllStakeholder = []Stakeholder{StakeholderRW, StakeholderAN, StakeholderJM, StakeholderBW, StakeholderEX, StakeholderKM}
-
-// Beschreibt, dass die netto (Rechnungs-)Position in Spalte X der CSV-Datei dem Stakeholder Y gehört
-type NetBookingColumn struct {
-	Owner  Stakeholder
-	Column int
-}
-
-// Liste aller Spalten-Stateholder Positions-Mappings
-var NetBookings = []NetBookingColumn{
-	{Owner: StakeholderRW, Column: 21},
-	{Owner: StakeholderAN, Column: 20},
-	{Owner: StakeholderJM, Column: 22},
-	{Owner: StakeholderBW, Column: 19},
-	{Owner: StakeholderEX, Column: 23},
-}
