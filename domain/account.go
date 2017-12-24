@@ -8,7 +8,7 @@ import (
 
 type Account struct {
 	Owner    Stakeholder
-	Bookings []Booking
+	Bookings []Booking `json:",omitempty"`
 	Saldo    float64
 }
 

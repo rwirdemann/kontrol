@@ -3,12 +3,37 @@
 ## API
 
 ```
-GET http://localhost:8991/kontrol/accounts
-
-GET http://localhost:8991/kontrol/accounts/AN
-
-GET http://localhost:8991/kontrol/accounts/AN?year=2017&month=12
+### GET http://localhost:8991/kontrol/version
 ```
+
+Aktuelle Version.
+
+### GET http://localhost:8991/kontrol/accounts
+
+Alle "virtuellen" Konten.
+
+```
+{
+    "Accounts": [
+        {
+            "Owner": {
+                "Id": "AN",
+                "Name": "Anke Nehrenberg",
+                "Type": "partner"
+            },
+            "Saldo": 0
+        },
+        ...
+    ]
+}```
+
+‰GET http://localhost:8991/kontrol/accounts/AN
+```
+
+
+### GET http://localhost:8991/kontrol/accounts/collective
+
+Die Buchungen des Bankkontos.
 
 ## CLI
 
@@ -51,10 +76,8 @@ Erzeugt Binary, Deployment auf 94.130.79.196, Neustart des Backend.
 ## Todos
 - figo api einbinden: anke.nehrenberg@kommitment.biz
 - BN: Bonus, etc. verbuchen
-
 - port und filename über flags
 - Monats Report
-- GET /accounts soll keine bookings liefern
 
 ## Rules
 

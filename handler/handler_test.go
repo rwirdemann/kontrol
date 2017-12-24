@@ -26,6 +26,6 @@ func TestGetAllAccounts(t *testing.T) {
 	router.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
-	expected := `{"Accounts":[{"Owner":{"Id":"AN","Name":"Anke Nehrenberg","Type":"partner"},"Bookings":null,"Saldo":0}]}`
+	expected := `{"Accounts":[{"Owner":{"Id":"AN","Name":"Anke Nehrenberg","Type":"partner"},"Saldo":0}]}`
 	assert.Equal(t, expected, rr.Body.String())
 }

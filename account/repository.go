@@ -24,8 +24,10 @@ func (r *DefaultRepository) Add(a *domain.Account) {
 func (r *DefaultRepository) All() []domain.Account {
 	result := make([]domain.Account, 0, len(r.accounts))
 	for _, a := range r.accounts {
-		a.UpdateSaldo()
-		result = append(result, *a)
+		clone := *a
+		clone.Bookings = nil
+		clone.UpdateSaldo()
+		result = append(result, clone)
 	}
 	return result
 }
