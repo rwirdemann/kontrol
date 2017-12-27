@@ -36,7 +36,12 @@ func Import(file string) []account.Booking {
 			if err == io.EOF {
 				break
 			}
-			if record[0] == "GV" || record[0] == "AR" || record[0] == "ER" || record[0] == "IS" {
+
+			if isHeader(record[0]) {
+				continue
+			}
+
+			if isValidBookingType(record[0]) {
 				typ := record[0]
 				cs := record[1]
 				subject := strings.Replace(record[2], "\n", ",", -1)
@@ -50,7 +55,7 @@ func Import(file string) []account.Booking {
 				position := account.Booking{Extras: extras, Text: subject, Amount: amount, Year: year, Month: month}
 				positions = append(positions, position)
 			} else {
-				fmt.Printf("unknown booking type %s: %s\n", record[0], record[3])
+				fmt.Printf("unknown booking type '%s'\n", record[0])
 			}
 		}
 	} else {
@@ -58,6 +63,19 @@ func Import(file string) []account.Booking {
 	}
 
 	return positions
+}
+
+func isHeader(s string) bool {
+	return strings.Contains(s, ":")
+}
+
+func isValidBookingType(s string) bool {
+	for _, t := range account.ValidBookingTypes {
+		if s == t {
+			return true
+		}
+	}
+	return false
 }
 
 func parseAmount(amount string) float64 {
@@ -77,11 +95,14 @@ func parseAmount(amount string) float64 {
 	if a, err := strconv.ParseFloat(s, 64); err == nil {
 		return a
 	} else {
-		panic(err)
+		return 0
 	}
 }
 
 func parseMonth(yearMonth string) (int, int) {
+	if len(yearMonth) < 2 {
+		return 0, 0
+	}
 	s := strings.Split(yearMonth, "-")
 	y, _ := strconv.Atoi(s[0])
 	m, _ := strconv.Atoi(s[1])

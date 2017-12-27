@@ -14,6 +14,8 @@ type CsvBookingExtras struct {
 	Net        map[owner.Stakeholder]float64 // Verteilung der netto Rechnungspositionen auf Stakeholder
 }
 
+var ValidBookingTypes = [...]string{"ER", "AR", "GV", "IS"}
+
 const (
 	Vertriebsprovision = "Vertriebsprovision"
 	Nettoanteil        = "Nettoanteil"
