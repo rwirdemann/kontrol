@@ -20,7 +20,7 @@ func TestPartnerNettoAnteil(t *testing.T) {
 	setUp()
 
 	// given: a booking
-	extras := account.CsvBookingExtras{Typ: "AR", CostCenter: "JM"}
+	extras := account.CsvBookingExtras{SourceType: "AR", CostCenter: "JM"}
 	extras.Net = make(map[owner.Stakeholder]float64)
 	extras.Net[owner.StakeholderRW] = 10800.0
 	extras.Net[owner.StakeholderJM] = 3675.0
@@ -37,7 +37,7 @@ func TestPartnerNettoAnteil(t *testing.T) {
 	util.AssertFloatEquals(t, 10800.0*owner.PartnerShare, bRalf.Amount)
 	util.AssertEquals(t, 1, bRalf.Month)
 	util.AssertEquals(t, 2017, bRalf.Year)
-	util.AssertEquals(t, account.Nettoanteil, bRalf.Typ)
+	util.AssertEquals(t, account.Nettoanteil, bRalf.DestType)
 
 	// and hannes got 3 bookings: his own net share and 2 provisions
 	accountHannes, _ := repository.Get(owner.StakeholderJM.Id)
@@ -53,12 +53,12 @@ func TestPartnerNettoAnteil(t *testing.T) {
 	// provision from ralf
 	provisionRalf, _ := findBookingByText(bookingsHannes, "Rechnung 1234#Provision#RW")
 	util.AssertFloatEquals(t, 10800.0*owner.PartnerProvision, provisionRalf.Amount)
-	util.AssertEquals(t, account.Vertriebsprovision, provisionRalf.Typ)
+	util.AssertEquals(t, account.Vertriebsprovision, provisionRalf.DestType)
 
 	// // provision from hannes
 	provisionHannes, _ := findBookingByText(bookingsHannes, "Rechnung 1234#Provision#JM")
 	util.AssertFloatEquals(t, 3675.0*owner.PartnerProvision, provisionHannes.Amount)
-	util.AssertEquals(t, account.Vertriebsprovision, provisionHannes.Typ)
+	util.AssertEquals(t, account.Vertriebsprovision, provisionHannes.DestType)
 
 	// kommitment got 25% from ralfs net booking
 	accountKommitment, _ := repository.Get(owner.StakeholderKM.Id)
@@ -66,12 +66,12 @@ func TestPartnerNettoAnteil(t *testing.T) {
 	util.AssertEquals(t, 2, len(bookingsKommitment))
 	kommitmentRalf, _ := findBookingByText(bookingsKommitment, "Rechnung 1234#Kommitment#RW")
 	util.AssertFloatEquals(t, 10800.0*owner.KommmitmentShare, kommitmentRalf.Amount)
-	util.AssertEquals(t, account.Kommitmentanteil, kommitmentRalf.Typ)
+	util.AssertEquals(t, account.Kommitmentanteil, kommitmentRalf.DestType)
 
 	// and kommitment got 25% from hannes net booking
 	kommitmentHannes, _ := findBookingByText(bookingsKommitment, "Rechnung 1234#Kommitment#JM")
 	util.AssertFloatEquals(t, 3675.0*owner.KommmitmentShare, kommitmentHannes.Amount)
-	util.AssertEquals(t, account.Kommitmentanteil, kommitmentHannes.Typ)
+	util.AssertEquals(t, account.Kommitmentanteil, kommitmentHannes.DestType)
 }
 
 func findBookingByText(bookings []account.Booking, text string) (*account.Booking, error) {
@@ -87,7 +87,7 @@ func TestExternAngestellterNettoAnteil(t *testing.T) {
 	setUp()
 
 	// given: a booking
-	extras := account.CsvBookingExtras{Typ: "AR", CostCenter: "JM"}
+	extras := account.CsvBookingExtras{SourceType: "AR", CostCenter: "JM"}
 	extras.Net = make(map[owner.Stakeholder]float64)
 	extras.Net[owner.StakeholderBW] = 10800.0
 	p := account.Booking{Extras: extras, Amount: 12852.0, Text: "Rechnung 1234", Month: 1, Year: 2017}
@@ -99,14 +99,14 @@ func TestExternAngestellterNettoAnteil(t *testing.T) {
 	accountHannes, _ := repository.Get(owner.StakeholderJM.Id)
 	provision := accountHannes.Bookings[0]
 	util.AssertFloatEquals(t, 10800.0*owner.PartnerProvision, provision.Amount)
-	util.AssertEquals(t, account.Vertriebsprovision, provision.Typ)
+	util.AssertEquals(t, account.Vertriebsprovision, provision.DestType)
 
 	// and kommitment got 95%
 	util.AssertEquals(t, 1, len(accountHannes.Bookings))
 	accountKommitment, _ := repository.Get(owner.StakeholderKM.Id)
 	kommitment := accountKommitment.Bookings[0]
 	util.AssertFloatEquals(t, 10800.0*owner.KommmitmentEmployeeShare, kommitment.Amount)
-	util.AssertEquals(t, account.Kommitmentanteil, kommitment.Typ)
+	util.AssertEquals(t, account.Kommitmentanteil, kommitment.DestType)
 
 	// 100% is booked to employee account to see how much money is made by this employee
 	accountBen, _ := repository.Get(owner.StakeholderBW.Id)
@@ -119,7 +119,7 @@ func TestExternNettoAnteil(t *testing.T) {
 	setUp()
 
 	// given: a booking
-	extras := account.CsvBookingExtras{Typ: "AR", CostCenter: "JM"}
+	extras := account.CsvBookingExtras{SourceType: "AR", CostCenter: "JM"}
 	extras.Net = make(map[owner.Stakeholder]float64)
 	extras.Net[owner.StakeholderEX] = 10800.0
 	p := account.Booking{Extras: extras, Amount: 12852.0, Text: "Rechnung 1234", Month: 1, Year: 2017}
@@ -131,21 +131,21 @@ func TestExternNettoAnteil(t *testing.T) {
 	accountHannes, _ := repository.Get(owner.StakeholderJM.Id)
 	provision := accountHannes.Bookings[0]
 	util.AssertFloatEquals(t, 10800.0*owner.PartnerProvision, provision.Amount)
-	util.AssertEquals(t, account.Vertriebsprovision, provision.Typ)
+	util.AssertEquals(t, account.Vertriebsprovision, provision.DestType)
 
 	// and kommitment got 95%
 	util.AssertEquals(t, 1, len(accountHannes.Bookings))
 	accountKommitment, _ := repository.Get(owner.StakeholderKM.Id)
 	kommitment := accountKommitment.Bookings[0]
 	util.AssertFloatEquals(t, 10800.0*owner.KommmitmentExternShare, kommitment.Amount)
-	util.AssertEquals(t, account.Kommitmentanteil, kommitment.Typ)
+	util.AssertEquals(t, account.Kommitmentanteil, kommitment.DestType)
 }
 
 func TestEingangsrechnung(t *testing.T) {
 	setUp()
 
 	// given: a booking
-	extras := account.CsvBookingExtras{Typ: "ER", CostCenter: "K"}
+	extras := account.CsvBookingExtras{SourceType: "ER", CostCenter: "K"}
 	p := account.Booking{Extras: extras, Amount: 12852.0, Text: "Eingangsrechnung 1234", Month: 1, Year: 2017}
 
 	// when: the position is processed
@@ -156,13 +156,13 @@ func TestEingangsrechnung(t *testing.T) {
 	util.AssertEquals(t, 1, len(accountKommitment.Bookings))
 	kommitment := accountKommitment.Bookings[0]
 	util.AssertFloatEquals(t, util.Net(-12852.0), kommitment.Amount)
-	util.AssertEquals(t, account.Eingangsrechnung, kommitment.Typ)
+	util.AssertEquals(t, account.Eingangsrechnung, kommitment.DestType)
 }
 
 func TestPartnerWithdrawals(t *testing.T) {
 	setUp()
 
-	extras := account.CsvBookingExtras{Typ: "GV", CostCenter: "RW"}
+	extras := account.CsvBookingExtras{SourceType: "GV", CostCenter: "RW"}
 	extras.Net = make(map[owner.Stakeholder]float64)
 	b := account.Booking{Extras: extras, Amount: 6000}
 	Process(repository, b)
@@ -170,14 +170,14 @@ func TestPartnerWithdrawals(t *testing.T) {
 	util.AssertEquals(t, 1, len(accountRalf.Bookings))
 	bRalf := accountRalf.Bookings[0]
 	util.AssertFloatEquals(t, -6000, bRalf.Amount)
-	util.AssertEquals(t, account.Entnahme, bRalf.Typ)
+	util.AssertEquals(t, account.Entnahme, bRalf.DestType)
 }
 
 func TestInterneStunden(t *testing.T) {
 	setUp()
 
 	// given: a internal hours booking
-	extras := account.CsvBookingExtras{Typ: "IS", CostCenter: "AN"}
+	extras := account.CsvBookingExtras{SourceType: "IS", CostCenter: "AN"}
 	p := account.Booking{Extras: extras, Amount: 8250.00, Text: "Internet Stunden 2017", Month: 12, Year: 2017}
 
 	// when: the position is processed
@@ -188,11 +188,11 @@ func TestInterneStunden(t *testing.T) {
 	util.AssertEquals(t, 1, len(a1.Bookings))
 	b1 := a1.Bookings[0]
 	util.AssertFloatEquals(t, 8250.00, b1.Amount)
-	util.AssertEquals(t, account.InterneStunden, b1.Typ)
+	util.AssertEquals(t, account.InterneStunden, b1.DestType)
 
 	// the booking is booked against kommitment account
 	a2, _ := repository.Get(owner.StakeholderKM.Id)
 	b2 := a2.Bookings[0]
 	util.AssertFloatEquals(t, -8250.00, b2.Amount)
-	util.AssertEquals(t, account.InterneStunden, b1.Typ)
+	util.AssertEquals(t, account.InterneStunden, b1.DestType)
 }

@@ -6,16 +6,18 @@ import (
 	"bitbucket.org/rwirdemann/kontrol/owner"
 )
 
+var ValidBookingTypes = [...]string{"ER", "AR", "GV", "IS"}
+
 // Zusatzinformationen einer Booking, deren Quelle die CSV-Datei ist, und die für die weitere
 // Bearbeitung erforderlich sind.
 type CsvBookingExtras struct {
-	Typ        string                        // ER, AR, GV
+	SourceType string                        // siehe ValidBookingTypes for valid values
 	CostCenter string                        // JM, AN, K, usw.
 	Net        map[owner.Stakeholder]float64 // Verteilung der netto Rechnungspositionen auf Stakeholder
 }
 
-var ValidBookingTypes = [...]string{"ER", "AR", "GV", "IS"}
-
+// Aus einer Bankbuchung wird eine oder mehrere virtuelle Buchungen erstellt. Dis ist die Liste
+// mögliche Werte für den DestType einer virtuellen Buchung
 const (
 	Vertriebsprovision = "Vertriebsprovision"
 	Nettoanteil        = "Nettoanteil"
@@ -26,11 +28,11 @@ const (
 )
 
 type Booking struct {
-	Typ    string // Vertriebsprovision, Nettoanteil, Kommitmentanteil
-	Amount float64
-	Text   string
-	Year   int
-	Month  int
+	DestType string // siehe const-Block hier drüber für gültige Werte
+	Amount   float64
+	Text     string
+	Year     int
+	Month    int
 
 	Extras CsvBookingExtras `json:"-"`
 }
@@ -41,7 +43,7 @@ func (b Booking) Print(owner owner.Stakeholder) {
 		text = text[:37] + "..."
 	}
 
-	fmt.Printf("[%s: %2d-%d %-22s %-40s \t %9.2f]\n", owner.Id, b.Month, b.Year, b.Typ, text, b.Amount)
+	fmt.Printf("[%s: %2d-%d %-22s %-40s \t %9.2f]\n", owner.Id, b.Month, b.Year, b.DestType, text, b.Amount)
 }
 
 type ByMonth []Booking

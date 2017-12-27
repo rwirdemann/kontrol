@@ -21,7 +21,7 @@ func TestImport(t *testing.T) {
 func assertPosition(t *testing.T, p account.Booking, typ string, costCenter string, subject string,
 	amount float64, year int, month int,
 	nettoRW float64, nettoJM float64, nettoAN float64) {
-	util.AssertEquals(t, typ, p.Extras.Typ)
+	util.AssertEquals(t, typ, p.Extras.SourceType)
 	util.AssertEquals(t, costCenter, p.Extras.CostCenter)
 	util.AssertEquals(t, subject, p.Text)
 	util.AssertEquals(t, amount, p.Amount)
