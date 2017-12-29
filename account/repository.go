@@ -18,12 +18,12 @@ type DefaultRepository struct {
 }
 
 func EmptyDefaultRepository() Repository {
-	o := owner.Stakeholder{Name: "Kommitment GmbH & Co. KG", Type: owner.StakeholderTypeBank}
+	o := owner.Stakeholder{Id: "GLS", Name: "Kommitment GmbH & Co. KG", Type: owner.StakeholderTypeBank}
 	return &DefaultRepository{collectiveAccount: &Account{Owner: o}, accounts: make(map[string]*Account)}
 }
 
 func NewDefaultRepository() Repository {
-	o := owner.Stakeholder{Name: "Kommitment GmbH & Co. KG", Type: owner.StakeholderTypeBank}
+	o := owner.Stakeholder{Id: "GLS", Name: "Kommitment GmbH & Co. KG", Type: owner.StakeholderTypeBank}
 	r := DefaultRepository{collectiveAccount: &Account{Owner: o}, accounts: make(map[string]*Account)}
 	for _, sh := range owner.AllStakeholder {
 		if sh.Type != owner.StakeholderTypeExtern {
