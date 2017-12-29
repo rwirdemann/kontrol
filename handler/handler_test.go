@@ -29,3 +29,12 @@ func TestGetAllAccounts(t *testing.T) {
 	expected := `{"Accounts":[{"Owner":{"Id":"AN","Name":"Anke Nehrenberg","Type":"partner"},"Saldo":0}]}`
 	assert.Equal(t, expected, rr.Body.String())
 }
+
+func TestGetBankAccount(t *testing.T) {
+	req, _ := http.NewRequest("GET", "/kontrol/bankaccount", nil)
+	rr := httptest.NewRecorder()
+
+	router.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusOK, rr.Code)
+}

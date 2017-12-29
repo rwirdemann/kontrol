@@ -199,7 +199,7 @@ func TestInterneStunden(t *testing.T) {
 
 func TestBookCollectiveAccount(t *testing.T) {
 	setUp()
-	extras := account.CsvBookingExtras{SourceType: "GV", CostCenter: "RW"}
+	extras := account.CsvBookingExtras{SourceType: "ER", CostCenter: "K"}
 	extras.Net = make(map[owner.Stakeholder]float64)
 	b := account.Booking{Extras: extras, Amount: 6000}
 
@@ -209,4 +209,5 @@ func TestBookCollectiveAccount(t *testing.T) {
 	expected := repository.CollectiveAccount().Bookings[0]
 	util.AssertFloatEquals(t, expected.Amount, b.Amount)
 	util.AssertEquals(t, expected.Text, b.Text)
+	util.AssertEquals(t, expected.DestType, "ER")
 }

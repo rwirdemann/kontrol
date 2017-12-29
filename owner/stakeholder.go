@@ -2,6 +2,7 @@ package owner
 
 // Stakeholder types
 const (
+	StakeholderTypeBank     = "bank"
 	StakeholderTypeEmployee = "employee"
 	StakeholderTypePartner  = "partner"
 	StakeholderTypeCompany  = "company"
@@ -9,7 +10,7 @@ const (
 )
 
 type Stakeholder struct {
-	Id   string
+	Id   string `json:",omitempty"`
 	Name string
 	Type string
 }

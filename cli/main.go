@@ -39,6 +39,5 @@ func main() {
 
 			a.Print()
 		}
-
 	}
 }

@@ -1,8 +1,39 @@
 # Kontrol Backend
 
+## Todos
+- Buchungen auf Bank-Account korrekt verbuchen (Vorzeichen)
+- Client für Bank-Account erweitern
+- figo api einbinden: anke.nehrenberg@kommitment.biz
+
 ## API
 
 ### GET http://localhost:8991/kontrol/version
+
+Aktuelle Version.
+
+### GET http://localhost:8991/kontrol/bankaccount
+
+Das Bankkonto inkl. Buchungen.
+
+```
+{
+    "Owner": {
+        "Name": "Kommitment GmbH & Co. KG",
+        "Type": "bank"
+    },
+    "Bookings": [
+        {
+            "Typ": "ER",
+            "Amount": 830.29,
+            "Text": "hauptsache.net, Büro- und Konfimiete",
+            "Year": 2017,
+            "Month": 1
+        },
+        ...
+    ],
+    "Saldo": 18281.85
+}
+```
 
 Aktuelle Version.
 
@@ -93,12 +124,6 @@ Erzeugt das Binary kontrol und cli in $GOPATH/bin.
 Erzeugt Binary, Deployment auf 94.130.79.196, Neustart des Backend.
 ```
     
-## Todos
-- figo api einbinden: anke.nehrenberg@kommitment.biz
-- BN: Bonus, etc. verbuchen
-- port und filename über flags
-- Monats Report
-
 ## Rules
 
 ### R1: AR = Ausgangsrechnungen

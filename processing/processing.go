@@ -9,7 +9,9 @@ import (
 )
 
 func Process(repository account.Repository, booking account.Booking) {
-	repository.CollectiveAccount().Book(booking)
+	b := booking
+	b.DestType = booking.Extras.SourceType
+	repository.CollectiveAccount().Book(b)
 
 	switch booking.Extras.SourceType {
 	case "GV":
