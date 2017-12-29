@@ -5,6 +5,7 @@ import (
 )
 
 type Repository interface {
+	CollectiveAccount() *Account
 	Add(a *Account)
 	All() []Account
 	Get(id string) (*Account, bool)
@@ -12,21 +13,26 @@ type Repository interface {
 }
 
 type DefaultRepository struct {
-	accounts map[string]*Account
+	collectiveAccount *Account
+	accounts          map[string]*Account
 }
 
 func EmptyDefaultRepository() Repository {
-	return &DefaultRepository{accounts: make(map[string]*Account)}
+	return &DefaultRepository{collectiveAccount: &Account{}, accounts: make(map[string]*Account)}
 }
 
 func NewDefaultRepository() Repository {
-	r := DefaultRepository{accounts: make(map[string]*Account)}
+	r := DefaultRepository{collectiveAccount: &Account{}, accounts: make(map[string]*Account)}
 	for _, sh := range owner.AllStakeholder {
 		if sh.Type != owner.StakeholderTypeExtern {
 			r.Add(NewAccount(sh))
 		}
 	}
 	return &r
+}
+
+func (r *DefaultRepository) CollectiveAccount() *Account {
+	return r.collectiveAccount
 }
 
 func (r *DefaultRepository) Add(a *Account) {

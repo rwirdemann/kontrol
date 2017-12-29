@@ -196,3 +196,17 @@ func TestInterneStunden(t *testing.T) {
 	util.AssertFloatEquals(t, -8250.00, b2.Amount)
 	util.AssertEquals(t, account.InterneStunden, b1.DestType)
 }
+
+func TestBookCollectiveAccount(t *testing.T) {
+	setUp()
+	extras := account.CsvBookingExtras{SourceType: "GV", CostCenter: "RW"}
+	extras.Net = make(map[owner.Stakeholder]float64)
+	b := account.Booking{Extras: extras, Amount: 6000}
+
+	Process(repository, b)
+
+	util.AssertEquals(t, 1, len(repository.CollectiveAccount().Bookings))
+	expected := repository.CollectiveAccount().Bookings[0]
+	util.AssertFloatEquals(t, expected.Amount, b.Amount)
+	util.AssertEquals(t, expected.Text, b.Text)
+}

@@ -1,12 +1,16 @@
 package processing
 
 import (
+	"log"
+
 	"bitbucket.org/rwirdemann/kontrol/account"
 	"bitbucket.org/rwirdemann/kontrol/owner"
 	"bitbucket.org/rwirdemann/kontrol/util"
 )
 
 func Process(repository account.Repository, booking account.Booking) {
+	repository.CollectiveAccount().Book(booking)
+
 	switch booking.Extras.SourceType {
 	case "GV":
 		bookPartnerWithdrawal(repository, booking)
@@ -16,6 +20,8 @@ func Process(repository account.Repository, booking account.Booking) {
 		bookIncomingInvoice(repository, booking)
 	case "IS":
 		bookInternalHours(repository, booking)
+	default:
+		log.Printf("could not process booking type '%s'", booking.Extras.SourceType)
 	}
 }
 
