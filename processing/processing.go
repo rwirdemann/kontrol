@@ -9,10 +9,17 @@ import (
 )
 
 func Process(repository account.Repository, booking account.Booking) {
+
+	// Book booking to bank account
 	b := booking
 	b.DestType = booking.Extras.SourceType
+	switch b.DestType {
+	case "GV", "ER", "AS":
+		b.Amount = b.Amount * -1
+	}
 	repository.CollectiveAccount().Book(b)
 
+	// Assign booking to one or more virtual stakeholder accounts
 	switch booking.Extras.SourceType {
 	case "GV":
 		bookPartnerWithdrawal(repository, booking)

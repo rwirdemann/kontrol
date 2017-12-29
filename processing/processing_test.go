@@ -197,17 +197,32 @@ func TestInterneStunden(t *testing.T) {
 	util.AssertEquals(t, account.InterneStunden, b1.DestType)
 }
 
-func TestBookCollectiveAccount(t *testing.T) {
+func TestBookEingangsrechnungToBankAccount(t *testing.T) {
 	setUp()
 	extras := account.CsvBookingExtras{SourceType: "ER", CostCenter: "K"}
 	extras.Net = make(map[owner.Stakeholder]float64)
-	b := account.Booking{Extras: extras, Amount: 6000}
+	b := account.Booking{Extras: extras, Amount: 6000, Text: "Eingangsrechnung"}
 
 	Process(repository, b)
 
 	util.AssertEquals(t, 1, len(repository.CollectiveAccount().Bookings))
-	expected := repository.CollectiveAccount().Bookings[0]
-	util.AssertFloatEquals(t, expected.Amount, b.Amount)
-	util.AssertEquals(t, expected.Text, b.Text)
-	util.AssertEquals(t, expected.DestType, "ER")
+	actual := repository.CollectiveAccount().Bookings[0]
+	util.AssertFloatEquals(t, -6000, actual.Amount)
+	util.AssertEquals(t, "Eingangsrechnung", actual.Text)
+	util.AssertEquals(t, "ER", actual.DestType)
+}
+
+func TestBookAusgangsrechnungToBankAccount(t *testing.T) {
+	setUp()
+	extras := account.CsvBookingExtras{SourceType: "AR", CostCenter: "K"}
+	extras.Net = make(map[owner.Stakeholder]float64)
+	b := account.Booking{Extras: extras, Amount: 6000, Text: "Ausgangsrechnung"}
+
+	Process(repository, b)
+
+	util.AssertEquals(t, 1, len(repository.CollectiveAccount().Bookings))
+	actual := repository.CollectiveAccount().Bookings[0]
+	util.AssertFloatEquals(t, 6000, actual.Amount)
+	util.AssertEquals(t, "Ausgangsrechnung", actual.Text)
+	util.AssertEquals(t, "AR", actual.DestType)
 }
