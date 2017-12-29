@@ -1,8 +1,6 @@
 # Kontrol Backend
 
 ## Todos
-- Buchungen auf Bank-Account korrekt verbuchen (Vorzeichen)
-- Client für Bank-Account erweitern
 - figo api einbinden: anke.nehrenberg@kommitment.biz
 
 ## API
