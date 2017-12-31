@@ -20,8 +20,10 @@ import (
 	"github.com/rs/cors"
 )
 
+const DefaultBookingFile = "2017-Buchungen-KG - Buchungen 2017.csv"
+
 var (
-	FileName   = "2017-Buchungen-KG - Buchungen 2017.csv"
+	fileName   string
 	githash    string
 	buildstamp string
 )
@@ -30,11 +32,13 @@ const port = 8991
 
 func main() {
 	version := flag.Bool("version", false, "prints current kontrol version")
+	file := flag.String("file", DefaultBookingFile, "booking file")
 	flag.Parse()
 	if *version {
 		fmt.Printf("Build: %s Git: %s\n", buildstamp, githash)
 		os.Exit(0)
 	}
+	fileName = *file
 
 	repository := account.NewDefaultRepository()
 	watchBookingFile(repository)
@@ -47,7 +51,7 @@ func main() {
 
 func importAndProcessBookings(repository account.Repository) {
 	repository.ClearBookings()
-	bookings := parser.Import(FileName)
+	bookings := parser.Import(fileName)
 	for _, p := range bookings {
 		processing.Process(repository, p)
 	}
@@ -72,7 +76,7 @@ func watchBookingFile(repository account.Repository) {
 		}
 	}()
 
-	err = watcher.Watch(FileName)
+	err = watcher.Watch(fileName)
 	if err != nil {
 		log.Fatal(err)
 	}
