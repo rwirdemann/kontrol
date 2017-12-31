@@ -207,7 +207,7 @@ func TestBookEingangsrechnungToBankAccount(t *testing.T) {
 
 	util.AssertEquals(t, 1, len(repository.CollectiveAccount().Bookings))
 	actual := repository.CollectiveAccount().Bookings[0]
-	util.AssertFloatEquals(t, -6000, actual.Amount)
+	util.AssertFloatEquals(t, util.Net(-6000), actual.Amount)
 	util.AssertEquals(t, "Eingangsrechnung", actual.Text)
 	util.AssertEquals(t, "ER", actual.DestType)
 }
@@ -222,7 +222,7 @@ func TestBookAusgangsrechnungToBankAccount(t *testing.T) {
 
 	util.AssertEquals(t, 1, len(repository.CollectiveAccount().Bookings))
 	actual := repository.CollectiveAccount().Bookings[0]
-	util.AssertFloatEquals(t, 6000, actual.Amount)
+	util.AssertFloatEquals(t, util.Net(6000), actual.Amount)
 	util.AssertEquals(t, "Ausgangsrechnung", actual.Text)
 	util.AssertEquals(t, "AR", actual.DestType)
 }

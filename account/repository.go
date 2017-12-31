@@ -60,6 +60,7 @@ func (r *DefaultRepository) Get(id string) (*Account, bool) {
 }
 
 func (r *DefaultRepository) ClearBookings() {
+	r.collectiveAccount.Bookings = []Booking{}
 	for _, account := range r.accounts {
 		account.Bookings = []Booking{}
 	}

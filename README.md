@@ -1,6 +1,7 @@
 # Kontrol Backend
 
 ## Todos
+- plausi check
 - figo api einbinden: anke.nehrenberg@kommitment.biz
 
 ## API

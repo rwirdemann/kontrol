@@ -14,7 +14,11 @@ func Process(repository account.Repository, booking account.Booking) {
 	b := booking
 	b.DestType = booking.Extras.SourceType
 	switch b.DestType {
-	case "GV", "ER", "AS":
+	case "ER":
+		b.Amount = util.Net(b.Amount) * -1
+	case "AR":
+		b.Amount = util.Net(b.Amount)
+	case "GV", "IS":
 		b.Amount = b.Amount * -1
 	}
 	repository.CollectiveAccount().Book(b)
