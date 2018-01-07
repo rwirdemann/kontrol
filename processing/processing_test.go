@@ -197,6 +197,23 @@ func TestInterneStunden(t *testing.T) {
 	util.AssertEquals(t, account.InterneStunden, b1.DestType)
 }
 
+func TestSVBeitrag(t *testing.T) {
+	setUp()
+
+	// given: a sv-beitrag booking
+	extras := account.CsvBookingExtras{SourceType: "SV-Beitrag", CostCenter: "BEN"}
+	b := account.Booking{Extras: extras, Amount: 1385.10, Text: "KKH, Ben"}
+
+	// when: the booking is processed
+	Process(repository, b)
+
+	// the booking is booked against kommitment account
+	a, _ := repository.Get(owner.StakeholderKM.Id)
+	b1 := a.Bookings[0]
+	util.AssertFloatEquals(t, -1385.10, b1.Amount)
+	util.AssertEquals(t, account.SVBeitrag, b1.DestType)
+}
+
 func TestBookEingangsrechnungToBankAccount(t *testing.T) {
 	setUp()
 	extras := account.CsvBookingExtras{SourceType: "ER", CostCenter: "K"}
@@ -225,4 +242,18 @@ func TestBookAusgangsrechnungToBankAccount(t *testing.T) {
 	util.AssertFloatEquals(t, util.Net(6000), actual.Amount)
 	util.AssertEquals(t, "Ausgangsrechnung", actual.Text)
 	util.AssertEquals(t, "AR", actual.DestType)
+}
+
+func TestBookSVBeitragToBankAccount(t *testing.T) {
+	setUp()
+	extras := account.CsvBookingExtras{SourceType: "SV-Beitrag", CostCenter: "BEN"}
+	b := account.Booking{Extras: extras, Amount: 1385.10, Text: "KKH, Ben"}
+
+	Process(repository, b)
+
+	util.AssertEquals(t, 1, len(repository.CollectiveAccount().Bookings))
+	actual := repository.CollectiveAccount().Bookings[0]
+	util.AssertFloatEquals(t, -1385.10, actual.Amount)
+	util.AssertEquals(t, "KKH, Ben", actual.Text)
+	util.AssertEquals(t, "SV-Beitrag", actual.DestType)
 }

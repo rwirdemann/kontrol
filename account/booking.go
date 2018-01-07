@@ -25,6 +25,7 @@ const (
 	Entnahme           = "Entnahme"
 	Eingangsrechnung   = "Eingangsrechnung"
 	InterneStunden     = "Interne Stunden"
+	SVBeitrag          = "SV-Beitrag"
 )
 
 type Booking struct {

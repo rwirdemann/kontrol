@@ -145,7 +145,7 @@ Erzeugt Binary, Deployment auf 94.130.79.196, Neustart des Backend.
 - 100% des Nettobetrags werden gegen das Kommitment-Konto gebucht
 
 ### R3: GV = Geschäftsführerentnahmen
-- 100% der Entnahme werden gegen das Kommitment-Konto gebucht
+- 100% der Entnahme werden gegen das Partner-Konto gebucht
 
 ### R4: IS = Interne Stunden
 - 100% werden auf das Partner-Konto gebucht
@@ -153,7 +153,8 @@ Erzeugt Binary, Deployment auf 94.130.79.196, Neustart des Backend.
 
 ### Offen R5: GWSteuer = Gewerbesteuer
 
-### Offen R6: SV-Beitrag
+### R6: SV-Beitrag
+- 100% werden gegen das Kommitment-Konto gebucht
 
 ### Offen R7: LNSteuer
 

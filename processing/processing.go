@@ -18,7 +18,10 @@ func Process(repository account.Repository, booking account.Booking) {
 		b.Amount = util.Net(b.Amount) * -1
 	case "AR":
 		b.Amount = util.Net(b.Amount)
-	case "GV", "IS":
+	case "IS":
+		// Interne Stunden werden als Zahlungsausgang auf dem Bankkonto verbucht
+		b.Amount = b.Amount * -1
+	case "GV", "SV-Beitrag":
 		b.Amount = b.Amount * -1
 	}
 	repository.CollectiveAccount().Book(b)
@@ -33,6 +36,8 @@ func Process(repository account.Repository, booking account.Booking) {
 		bookIncomingInvoice(repository, booking)
 	case "IS":
 		bookInternalHours(repository, booking)
+	case "SV-Beitrag":
+		bookSVBeitrag(repository, booking)
 	default:
 		log.Printf("could not process booking type '%s'", booking.Extras.SourceType)
 	}
@@ -154,6 +159,20 @@ func bookInternalHours(repository account.Repository, booking account.Booking) {
 	counterBooking := account.Booking{
 		Amount:   booking.Amount * -1,
 		DestType: account.InterneStunden,
+		Text:     booking.Text,
+		Month:    booking.Month,
+		Year:     booking.Year}
+	kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
+	kommitmentAccount.Book(counterBooking)
+}
+
+// SV-Beitrag wird direkt netto gegen das Kommitment-Konto gebucht
+func bookSVBeitrag(repository account.Repository, booking account.Booking) {
+
+	// Gegenbuchung Kommitment-Konto
+	counterBooking := account.Booking{
+		Amount:   booking.Amount * -1,
+		DestType: account.SVBeitrag,
 		Text:     booking.Text,
 		Month:    booking.Month,
 		Year:     booking.Year}
