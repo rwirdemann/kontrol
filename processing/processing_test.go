@@ -195,6 +195,9 @@ func TestInterneStunden(t *testing.T) {
 	b2 := a2.Bookings[0]
 	util.AssertFloatEquals(t, -8250.00, b2.Amount)
 	util.AssertEquals(t, account.InterneStunden, b1.DestType)
+
+	// internal hours are not booked on bank account
+	util.AssertEquals(t, 0, len(repository.CollectiveAccount().Bookings))
 }
 
 func TestSVBeitrag(t *testing.T) {
