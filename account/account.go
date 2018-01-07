@@ -35,7 +35,6 @@ func (a Account) Print() {
 	for _, b := range a.Bookings {
 		b.Print(a.Owner)
 	}
-	a.UpdateSaldo()
 	fmt.Println("-------------------------------------------------------------------------------------------")
 	fmt.Printf("[Saldo: \t\t\t\t\t\t\t\t\t%10.2f]\n", a.Saldo)
 }

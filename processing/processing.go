@@ -18,13 +18,14 @@ func Process(repository account.Repository, booking account.Booking) {
 		b.Amount = util.Net(b.Amount) * -1
 	case "AR":
 		b.Amount = util.Net(b.Amount)
-	case "IS":
-		// Interne Stunden werden als Zahlungsausgang auf dem Bankkonto verbucht
-		b.Amount = b.Amount * -1
 	case "GV", "SV-Beitrag":
 		b.Amount = b.Amount * -1
 	}
-	repository.CollectiveAccount().Book(b)
+
+	// Interne Stunden werden nicht auf dem Bankkonto verbucht
+	if b.DestType != "IS" {
+		repository.CollectiveAccount().Book(b)
+	}
 
 	// Assign booking to one or more virtual stakeholder accounts
 	switch booking.Extras.SourceType {

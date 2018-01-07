@@ -15,6 +15,7 @@ func main() {
 
 	accountFlag := flag.String("account", "", "fetches given account")
 	bankFlag := flag.Bool("bank", false, "fetches bank account")
+	vSaldoFlag := flag.Bool("vsaldo", false, "saldo sum virtual accounts")
 	flag.Parse()
 
 	var a account.Account
@@ -25,6 +26,17 @@ func main() {
 	case *accountFlag != "":
 		get(fmt.Sprintf("%s/accounts/%s", baseUrl, *accountFlag), &a)
 		a.Print()
+	case *vSaldoFlag:
+		response := struct {
+			Accounts []account.Account
+		}{}
+		get(fmt.Sprintf("%s/accounts", baseUrl), &response)
+		saldo := 0.0
+		for _, a := range response.Accounts {
+			saldo += a.Saldo
+		}
+		fmt.Println("-------------------------------------------------------------------------------------------")
+		fmt.Printf("[Saldo vAccounts: \t\t\t\t\t\t\t\t%10.2f]\n", saldo)
 	}
 }
 

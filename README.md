@@ -148,6 +148,7 @@ Erzeugt Binary, Deployment auf 94.130.79.196, Neustart des Backend.
 - 100% der Entnahme werden gegen das Partner-Konto gebucht
 
 ### R4: IS = Interne Stunden
+- werden nicht auf das Bankkonto gebucht
 - 100% werden auf das Partner-Konto gebucht
 - 100% werden gegen das Kommitment-Konto gebucht
 
