@@ -81,10 +81,6 @@ Ein einzelnes Konto inkl. Buchungen.
 }
 ```
 
-### GET http://localhost:8991/kontrol/accounts/collective
-
-Die Buchungen des Bankkontos.
-
 ## CLI
 
 ```
