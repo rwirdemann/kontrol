@@ -156,3 +156,15 @@ Erzeugt Binary, Deployment auf 94.130.79.196, Neustart des Backend.
 ### Offen R7: LNSteuer
 
 ### Offen R8: Mitarbeiter Bonuszahlungen
+
+# Client
+```
+cli -h
+Usage of cli:
+  -account string
+    	fetches given account
+  -bank
+    	fetches bank account
+  -vsaldo
+    	saldo sum virtual accounts
+```

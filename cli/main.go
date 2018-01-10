@@ -16,28 +16,45 @@ func main() {
 	accountFlag := flag.String("account", "", "fetches given account")
 	bankFlag := flag.Bool("bank", false, "fetches bank account")
 	vSaldoFlag := flag.Bool("vsaldo", false, "saldo sum virtual accounts")
+	checkFlag := flag.Bool("check", false, "checks virtual accounts against bank account saldo")
 	flag.Parse()
 
 	var a account.Account
 	switch {
 	case *bankFlag:
-		get(fmt.Sprintf("%s/bankaccount", baseUrl), &a)
-		a.Print()
+		bankAccount(baseUrl).Print()
 	case *accountFlag != "":
 		get(fmt.Sprintf("%s/accounts/%s", baseUrl, *accountFlag), &a)
 		a.Print()
 	case *vSaldoFlag:
-		response := struct {
-			Accounts []account.Account
-		}{}
-		get(fmt.Sprintf("%s/accounts", baseUrl), &response)
-		saldo := 0.0
-		for _, a := range response.Accounts {
-			saldo += a.Saldo
-		}
+		saldo := virtualAccountsSaldo(baseUrl)
 		fmt.Println("-------------------------------------------------------------------------------------------")
 		fmt.Printf("[Saldo vAccounts: \t\t\t\t\t\t\t\t%10.2f]\n", saldo)
+	case *checkFlag:
+		banksaldo := bankAccount(baseUrl).Saldo
+		saldo := virtualAccountsSaldo(baseUrl)
+		fmt.Printf("Saldo Bank Accoount:\t%10.2f\n"+
+			"Saldo vAccounts:\t\t%10.2f\n"+
+			"Diff:\t\t\t\t\t%10.2f\n", banksaldo, saldo, banksaldo-saldo)
 	}
+}
+
+func virtualAccountsSaldo(baseUrl string) float64 {
+	response := struct {
+		Accounts []account.Account
+	}{}
+	get(fmt.Sprintf("%s/accounts", baseUrl), &response)
+	saldo := 0.0
+	for _, a := range response.Accounts {
+		saldo += a.Saldo
+	}
+	return saldo
+}
+
+func bankAccount(baseUrl string) *account.Account {
+	var a account.Account
+	get(fmt.Sprintf("%s/bankaccount", baseUrl), &a)
+	return &a
 }
 
 func get(url string, entity interface{}) error {
