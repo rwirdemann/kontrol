@@ -2,7 +2,6 @@ package util
 
 import (
 	"testing"
-	"bitbucket.org/rwirdemann/kontrol/account"
 )
 
 func AssertEquals(t *testing.T, expect interface{}, actual interface{}) {
@@ -10,12 +9,6 @@ func AssertEquals(t *testing.T, expect interface{}, actual interface{}) {
 		t.Errorf("wanted: %v, got: %v", expect, actual)
 		t.FailNow()
 	}
-}
-
-func AssertBooking(t *testing.T, b account.Booking, amount float64, text string, destType string) {
-	AssertFloatEquals(t, amount, b.Amount)
-	AssertEquals(t, text, b.Text)
-	AssertEquals(t, destType, b.DestType)
 }
 
 func AssertTrue(t *testing.T, b bool) {

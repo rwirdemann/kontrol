@@ -200,23 +200,6 @@ func TestInterneStunden(t *testing.T) {
 	util.AssertEquals(t, 0, len(repository.BankAccount().Bookings))
 }
 
-func TestSVBeitrag(t *testing.T) {
-	setUp()
-
-	// given: a sv-beitrag booking
-	extras := account.CsvBookingExtras{SourceType: "SV-Beitrag", CostCenter: "BEN"}
-	b := account.Booking{Extras: extras, Amount: 1385.10, Text: "KKH, Ben"}
-
-	// when: the booking is processed
-	Process(repository, b)
-
-	// the booking is booked against kommitment account
-	a, _ := repository.Get(owner.StakeholderKM.Id)
-	b1 := a.Bookings[0]
-	util.AssertFloatEquals(t, -1385.10, b1.Amount)
-	util.AssertEquals(t, account.SVBeitrag, b1.DestType)
-}
-
 func TestBookEingangsrechnungToBankAccount(t *testing.T) {
 	setUp()
 	extras := account.CsvBookingExtras{SourceType: "ER", CostCenter: "K"}
@@ -247,6 +230,23 @@ func TestBookAusgangsrechnungToBankAccount(t *testing.T) {
 	util.AssertEquals(t, "AR", actual.DestType)
 }
 
+func TestBookSVBeitragAgainstKommitmentAccount(t *testing.T) {
+	setUp()
+
+	// given: a sv-beitrag booking
+	extras := account.CsvBookingExtras{SourceType: "SV-Beitrag", CostCenter: "BEN"}
+	b := account.Booking{Extras: extras, Amount: 1385.10, Text: "KKH, Ben"}
+
+	// when: the booking is processed
+	Process(repository, b)
+
+	// the booking is booked against kommitment account
+	a, _ := repository.Get(owner.StakeholderKM.Id)
+	b1 := a.Bookings[0]
+	util.AssertFloatEquals(t, -1385.10, b1.Amount)
+	util.AssertEquals(t, account.SVBeitrag, b1.DestType)
+}
+
 func TestBookSVBeitragToBankAccount(t *testing.T) {
 	setUp()
 	extras := account.CsvBookingExtras{SourceType: "SV-Beitrag", CostCenter: "BEN"}
@@ -261,6 +261,19 @@ func TestBookSVBeitragToBankAccount(t *testing.T) {
 	util.AssertEquals(t, "SV-Beitrag", actual.DestType)
 }
 
+func TestBookGWSteuerAgainstKommitmentAccount(t *testing.T) {
+	setUp()
+
+	extras := account.CsvBookingExtras{SourceType: "GWSteuer", CostCenter: "K"}
+	b := account.Booking{Extras: extras, Amount: 2385.10, Text: "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17"}
+
+	Process(repository, b)
+
+	a, _ := repository.Get(owner.StakeholderKM.Id)
+	b1 := a.Bookings[0]
+	assertBooking(t, b1,-2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", account.GWSteuer)
+}
+
 func TestBookGWSteuerToBankAccount(t *testing.T) {
 	setUp()
 	extras := account.CsvBookingExtras{SourceType: "GWSteuer", CostCenter: "K"}
@@ -270,5 +283,13 @@ func TestBookGWSteuerToBankAccount(t *testing.T) {
 
 	util.AssertEquals(t, 1, len(repository.BankAccount().Bookings))
 	actual := repository.BankAccount().Bookings[0]
-	util.AssertBooking(t, actual,2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", "GWSteuer")
+	assertBooking(t, actual,-2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", "GWSteuer")
 }
+
+func assertBooking(t *testing.T, b account.Booking, amount float64, text string, destType string) {
+	util.AssertFloatEquals(t, amount, b.Amount)
+	util.AssertEquals(t, text, b.Text)
+	util.AssertEquals(t, destType, b.DestType)
+}
+
+

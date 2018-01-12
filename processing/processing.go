@@ -18,7 +18,7 @@ func Process(repository account.Repository, booking account.Booking) {
 		b.Amount = util.Net(b.Amount) * -1
 	case "AR":
 		b.Amount = util.Net(b.Amount)
-	case "GV", "SV-Beitrag":
+	case "GV", "SV-Beitrag", "GWSteuer":
 		b.Amount = b.Amount * -1
 	}
 
@@ -40,6 +40,8 @@ func Process(repository account.Repository, booking account.Booking) {
 		bookInternalHours(repository, booking)
 	case "SV-Beitrag":
 		bookSVBeitrag(repository, booking)
+	case "GWSteuer":
+		bookGWSteuer(repository, booking)
 	default:
 		log.Printf("could not process booking type '%s'", booking.Extras.SourceType)
 	}
@@ -175,6 +177,20 @@ func bookSVBeitrag(repository account.Repository, booking account.Booking) {
 	counterBooking := account.Booking{
 		Amount:   booking.Amount * -1,
 		DestType: account.SVBeitrag,
+		Text:     booking.Text,
+		Month:    booking.Month,
+		Year:     booking.Year}
+	kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
+	kommitmentAccount.Book(counterBooking)
+}
+
+// GWSteuer wird direkt netto gegen das Kommitment-Konto gebucht
+func bookGWSteuer(repository account.Repository, booking account.Booking) {
+
+	// Gegenbuchung Kommitment-Konto
+	counterBooking := account.Booking{
+		Amount:   booking.Amount * -1,
+		DestType: account.GWSteuer,
 		Text:     booking.Text,
 		Month:    booking.Month,
 		Year:     booking.Year}
