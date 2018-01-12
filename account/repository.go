@@ -5,7 +5,7 @@ import (
 )
 
 type Repository interface {
-	CollectiveAccount() *Account
+	BankAccount() *Account
 	Add(a *Account)
 	All() []Account
 	Get(id string) (*Account, bool)
@@ -33,7 +33,7 @@ func NewDefaultRepository() Repository {
 	return &r
 }
 
-func (r *DefaultRepository) CollectiveAccount() *Account {
+func (r *DefaultRepository) BankAccount() *Account {
 	return r.collectiveAccount
 }
 

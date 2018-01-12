@@ -197,7 +197,7 @@ func TestInterneStunden(t *testing.T) {
 	util.AssertEquals(t, account.InterneStunden, b1.DestType)
 
 	// internal hours are not booked on bank account
-	util.AssertEquals(t, 0, len(repository.CollectiveAccount().Bookings))
+	util.AssertEquals(t, 0, len(repository.BankAccount().Bookings))
 }
 
 func TestSVBeitrag(t *testing.T) {
@@ -225,8 +225,8 @@ func TestBookEingangsrechnungToBankAccount(t *testing.T) {
 
 	Process(repository, b)
 
-	util.AssertEquals(t, 1, len(repository.CollectiveAccount().Bookings))
-	actual := repository.CollectiveAccount().Bookings[0]
+	util.AssertEquals(t, 1, len(repository.BankAccount().Bookings))
+	actual := repository.BankAccount().Bookings[0]
 	util.AssertFloatEquals(t, util.Net(-6000), actual.Amount)
 	util.AssertEquals(t, "Eingangsrechnung", actual.Text)
 	util.AssertEquals(t, "ER", actual.DestType)
@@ -240,8 +240,8 @@ func TestBookAusgangsrechnungToBankAccount(t *testing.T) {
 
 	Process(repository, b)
 
-	util.AssertEquals(t, 1, len(repository.CollectiveAccount().Bookings))
-	actual := repository.CollectiveAccount().Bookings[0]
+	util.AssertEquals(t, 1, len(repository.BankAccount().Bookings))
+	actual := repository.BankAccount().Bookings[0]
 	util.AssertFloatEquals(t, util.Net(6000), actual.Amount)
 	util.AssertEquals(t, "Ausgangsrechnung", actual.Text)
 	util.AssertEquals(t, "AR", actual.DestType)
@@ -254,9 +254,21 @@ func TestBookSVBeitragToBankAccount(t *testing.T) {
 
 	Process(repository, b)
 
-	util.AssertEquals(t, 1, len(repository.CollectiveAccount().Bookings))
-	actual := repository.CollectiveAccount().Bookings[0]
+	util.AssertEquals(t, 1, len(repository.BankAccount().Bookings))
+	actual := repository.BankAccount().Bookings[0]
 	util.AssertFloatEquals(t, -1385.10, actual.Amount)
 	util.AssertEquals(t, "KKH, Ben", actual.Text)
 	util.AssertEquals(t, "SV-Beitrag", actual.DestType)
+}
+
+func TestBookGWSteuerToBankAccount(t *testing.T) {
+	setUp()
+	extras := account.CsvBookingExtras{SourceType: "GWSteuer", CostCenter: "K"}
+	b := account.Booking{Extras: extras, Amount: 2385.10, Text: "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17"}
+
+	Process(repository, b)
+
+	util.AssertEquals(t, 1, len(repository.BankAccount().Bookings))
+	actual := repository.BankAccount().Bookings[0]
+	util.AssertBooking(t, actual,2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", "GWSteuer")
 }

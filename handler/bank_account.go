@@ -12,7 +12,7 @@ import (
 func MakeGetBankAccountHandler(repository account.Repository) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		a := repository.CollectiveAccount()
+		a := repository.BankAccount()
 		a.UpdateSaldo()
 		w.Header().Set("Content-Type", "application/json")
 		sort.Sort(account.ByMonth(a.Bookings))
