@@ -148,7 +148,8 @@ Erzeugt Binary, Deployment auf 94.130.79.196, Neustart des Backend.
 - 100% werden auf das Partner-Konto gebucht
 - 100% werden gegen das Kommitment-Konto gebucht
 
-### Offen R5: GWSteuer = Gewerbesteuer
+### R5: GWSteuer = Gewerbesteuer
+- 100% werden gegen das Kommitment-Konto gebucht
 
 ### R6: SV-Beitrag
 - 100% werden gegen das Kommitment-Konto gebucht

@@ -6,7 +6,7 @@ import (
 	"bitbucket.org/rwirdemann/kontrol/owner"
 )
 
-var ValidBookingTypes = [...]string{"ER", "AR", "GV", "IS", "SV-Beitrag"}
+var ValidBookingTypes = [...]string{"ER", "AR", "GV", "IS", "SV-Beitrag", "GWSteuer"}
 
 // Zusatzinformationen einer Booking, deren Quelle die CSV-Datei ist, und die für die weitere
 // Bearbeitung erforderlich sind.

@@ -22,7 +22,8 @@ func Process(repository account.Repository, booking account.Booking) {
 		b.Amount = b.Amount * -1
 	}
 
-	// Interne Stunden werden nicht auf dem Bankkonto verbucht
+	// Interne Stunden werden nicht auf dem Bankkonto verbucht. Sie sind da nie eingegangen, sondern werden durch
+	// Einnahmen bestritten
 	if b.DestType != "IS" {
 		repository.CollectiveAccount().Book(b)
 	}
