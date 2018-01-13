@@ -44,7 +44,7 @@ func main() {
 	watchBookingFile(repository)
 	importAndProcessBookings(repository)
 
-	handler := cors.Default().Handler(handler.NewRouter(githash, buildstamp, repository))
+	handler := cors.AllowAll().Handler(handler.NewRouter(githash, buildstamp, repository))
 	fmt.Printf("listing on http://localhost:%d...\n", port)
 	http.ListenAndServe(":"+strconv.Itoa(port), handler)
 }
