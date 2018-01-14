@@ -8,7 +8,7 @@ export TARGETPROGRAM=kontrol-main
 export TARGETUSER=kommitment
 export TARGETSERVER=94.130.79.196
 export SSHPORT=22
-export SSHSERVER="ssh -p"$SSHPORT" $TARGETUSER@$TARGETSERVER"
+export SSHSERVER="ssh -p"${SSHPORT}" $TARGETUSER@$TARGETSERVER"
 export SPREADSHEET_KEY="1xkTQDGJkq9UKvZfFJTEK_W1EdM2AAy7xIFikxTCGhnk"
                         
 
@@ -22,28 +22,28 @@ echo
 
 
 # clear
-echo "Deploy stuff to "$TARGETSERVER
-echo " ... "$DEPLOYMENTTARGET
-$SSHSERVER mv $TARGETPROGRAM $TARGETPROGRAM.old
-scp $TARGETPROGRAM $TARGETUSER@$TARGETSERVER:$TARGETPROGRAM
-$SSHSERVER ls -al
+echo "Deploy stuff to "${TARGETSERVER}
+echo " ... "${DEPLOYMENTTARGET}
+${SSHSERVER} mv ${TARGETPROGRAM} ${TARGETPROGRAM}.old
+scp ${TARGETPROGRAM} ${TARGETUSER}@${TARGETSERVER}:${TARGETPROGRAM}
+${SSHSERVER} ls -al
 echo "done with file transfer..."
 echo
 echo
 
-echo "get data file from google on "$TARGETSERVER
+echo "get data file from google on "${TARGETSERVER}
 echo "curl https://docs.google.com/spreadsheets/d/$SPREADSHEET_KEY/export?exportFormat=csv > '2017-Buchungen-KG - Buchungen 2017.csv'"
-$SSHSERVER "curl https://docs.google.com/spreadsheets/d/$SPREADSHEET_KEY/export?exportFormat=csv > '2017-Buchungen-KG - Buchungen 2017.csv'"
+${SSHSERVER} "curl https://docs.google.com/spreadsheets/d/$SPREADSHEET_KEY/export?exportFormat=csv > '2017-Buchungen-KG - Buchungen 2017.csv'"
 echo "done with data file..."
 echo
 echo
 
 #
-echo "run kontrol on "$TARGETSERVER 
+echo "run kontrol on "${TARGETSERVER}
 set +e
-$SSHSERVER killall $TARGETPROGRAM
-echo killed running $TARGETPROGRAM
-$SSHSERVER ./$TARGETPROGRAM > /tmp/$TARGETPROGRAM.log 2>&1 &
+${SSHSERVER} killall ${TARGETPROGRAM}
+echo killed running ${TARGETPROGRAM}
+${SSHSERVER} ./${TARGETPROGRAM} > /tmp/${TARGETPROGRAM}.log 2>&1 &
 set -e
 echo
 echo
