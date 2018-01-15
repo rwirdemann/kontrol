@@ -149,9 +149,13 @@ Erzeugt Binary, Deployment auf 94.130.79.196, Neustart des Backend.
 - 100% werden gegen das Kommitment-Konto gebucht
 
 ### R5: GWSteuer = Gewerbesteuer
-- 100% werden gegen das Kommitment-Konto gebucht
+- 100% werden auf das Bankkonto gebucht
+- 100% werden gegen das Kommitment-Konto gebucht. Diese Regel ist nich unscharf:
+  eigentlich müssen die 100% aufgeteilt werden auf: 70% auf Partner, 25% auf 
+  Kommitment und 5% auf Dealbringer
 
 ### R6: SV-Beitrag
+- 100% werden auf das Bankkonto gebucht
 - 100% werden gegen das Kommitment-Konto gebucht
 
 ### Offen R7: LNSteuer

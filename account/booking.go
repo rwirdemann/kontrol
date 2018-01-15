@@ -36,7 +36,29 @@ type Booking struct {
 	Year     int
 	Month    int
 
-	Extras CsvBookingExtras `json:"-"`
+	CsvBookingExtras `json:"-"`
+}
+
+func NewBooking(
+	sourceType string,
+	costCenter string,
+	net map[owner.Stakeholder]float64,
+	amount float64,
+	text string,
+	month int,
+	year int) *Booking {
+
+	return &Booking{
+		CsvBookingExtras: CsvBookingExtras{
+			SourceType: sourceType,
+			CostCenter: costCenter,
+			Net:        net,
+		},
+		Amount: amount,
+		Text:   text,
+		Month:  month,
+		Year:   year,
+	}
 }
 
 func (b Booking) Print(owner owner.Stakeholder) {
@@ -46,6 +68,10 @@ func (b Booking) Print(owner owner.Stakeholder) {
 	}
 
 	fmt.Printf("[%s: %2d-%d %-22s %-40s \t %9.2f]\n", owner.Id, b.Month, b.Year, b.DestType, text, b.Amount)
+}
+
+func (b *Booking) isOnBankAccount() bool {
+	return false
 }
 
 type ByMonth []Booking

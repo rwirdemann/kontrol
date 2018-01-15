@@ -47,13 +47,12 @@ func Import(file string) []account.Booking {
 				subject := strings.Replace(record[2], "\n", ",", -1)
 				amount := parseAmount(record[3])
 				year, month := parseMonth(record[4])
-				extras := account.CsvBookingExtras{SourceType: typ, CostCenter: cs}
-				extras.Net = make(map[owner.Stakeholder]float64)
+				m := make(map[owner.Stakeholder]float64)
 				for _, p := range netBookings {
-					extras.Net[p.Owner] = parseAmount(record[p.Column])
+					m[p.Owner] = parseAmount(record[p.Column])
 				}
-				position := account.Booking{Extras: extras, Text: subject, Amount: amount, Year: year, Month: month}
-				positions = append(positions, position)
+				position := account.NewBooking(typ, cs, m, amount, subject, month, year)
+				positions = append(positions, *position)
 			} else {
 				fmt.Printf("unknown booking type '%s'\n", record[0])
 			}

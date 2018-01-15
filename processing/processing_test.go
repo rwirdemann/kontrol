@@ -20,14 +20,13 @@ func TestPartnerNettoAnteil(t *testing.T) {
 	setUp()
 
 	// given: a booking
-	extras := account.CsvBookingExtras{SourceType: "AR", CostCenter: "JM"}
-	extras.Net = make(map[owner.Stakeholder]float64)
-	extras.Net[owner.StakeholderRW] = 10800.0
-	extras.Net[owner.StakeholderJM] = 3675.0
-	p := account.Booking{Extras: extras, Amount: 17225.25, Text: "Rechnung 1234", Month: 1, Year: 2017}
+	net := make(map[owner.Stakeholder]float64)
+	net[owner.StakeholderRW] = 10800.0
+	net[owner.StakeholderJM] = 3675.0
+	p := account.NewBooking("AR", "JM", net, 17225.25, "Rechnung 1234", 1, 2017)
 
 	// when: the position is processed
-	Process(repository, p)
+	Process(repository, *p)
 
 	// then ralf 1 booking: his own net share
 	accountRalf, _ := repository.Get(owner.StakeholderRW.Id)
@@ -87,13 +86,13 @@ func TestExternAngestellterNettoAnteil(t *testing.T) {
 	setUp()
 
 	// given: a booking
-	extras := account.CsvBookingExtras{SourceType: "AR", CostCenter: "JM"}
-	extras.Net = make(map[owner.Stakeholder]float64)
-	extras.Net[owner.StakeholderBW] = 10800.0
-	p := account.Booking{Extras: extras, Amount: 12852.0, Text: "Rechnung 1234", Month: 1, Year: 2017}
+	net := map[owner.Stakeholder]float64{
+		owner.StakeholderBW: 10800.0,
+	}
+	p := account.NewBooking("AR", "JM", net, 12852.0, "Rechnung 1234", 1, 2017)
 
 	// when: the position is processed
-	Process(repository, p)
+	Process(repository, *p)
 
 	// and hannes got his provision
 	accountHannes, _ := repository.Get(owner.StakeholderJM.Id)
@@ -119,13 +118,13 @@ func TestExternNettoAnteil(t *testing.T) {
 	setUp()
 
 	// given: a booking
-	extras := account.CsvBookingExtras{SourceType: "AR", CostCenter: "JM"}
-	extras.Net = make(map[owner.Stakeholder]float64)
-	extras.Net[owner.StakeholderEX] = 10800.0
-	p := account.Booking{Extras: extras, Amount: 12852.0, Text: "Rechnung 1234", Month: 1, Year: 2017}
+	net := map[owner.Stakeholder]float64{
+		owner.StakeholderEX: 10800.0,
+	}
+	p := account.NewBooking("AR", "JM", net, 12852.0, "Rechnung 1234", 1, 2017)
 
 	// when: the position is processed
-	Process(repository, p)
+	Process(repository, *p)
 
 	// and hannes got his provision
 	accountHannes, _ := repository.Get(owner.StakeholderJM.Id)
@@ -145,11 +144,10 @@ func TestEingangsrechnung(t *testing.T) {
 	setUp()
 
 	// given: a booking
-	extras := account.CsvBookingExtras{SourceType: "ER", CostCenter: "K"}
-	p := account.Booking{Extras: extras, Amount: 12852.0, Text: "Eingangsrechnung 1234", Month: 1, Year: 2017}
+	p := account.NewBooking("ER", "k", nil, 12852.0, "Eingangsrechnung 1234", 1, 2017)
 
 	// when: the position is processed
-	Process(repository, p)
+	Process(repository, *p)
 
 	// the invoice is booked to the kommitment account
 	accountKommitment, _ := repository.Get(owner.StakeholderKM.Id)
@@ -164,8 +162,8 @@ func TestPartnerWithdrawals(t *testing.T) {
 
 	extras := account.CsvBookingExtras{SourceType: "GV", CostCenter: "RW"}
 	extras.Net = make(map[owner.Stakeholder]float64)
-	b := account.Booking{Extras: extras, Amount: 6000}
-	Process(repository, b)
+	b := account.NewBooking("GV", "RW", nil, 6000, "", 1, 2017)
+	Process(repository, *b)
 	accountRalf, _ := repository.Get(owner.StakeholderRW.Id)
 	util.AssertEquals(t, 1, len(accountRalf.Bookings))
 	bRalf := accountRalf.Bookings[0]
@@ -177,11 +175,10 @@ func TestInterneStunden(t *testing.T) {
 	setUp()
 
 	// given: a internal hours booking
-	extras := account.CsvBookingExtras{SourceType: "IS", CostCenter: "AN"}
-	p := account.Booking{Extras: extras, Amount: 8250.00, Text: "Internet Stunden 2017", Month: 12, Year: 2017}
+	p := account.NewBooking("IS", "AN", nil, 8250.0, "Interne Stunden 2017", 12, 2017)
 
 	// when: the position is processed
-	Process(repository, p)
+	Process(repository, *p)
 
 	// the booking is booked to anke's account
 	a1, _ := repository.Get(owner.StakeholderAN.Id)
@@ -202,11 +199,9 @@ func TestInterneStunden(t *testing.T) {
 
 func TestBookEingangsrechnungToBankAccount(t *testing.T) {
 	setUp()
-	extras := account.CsvBookingExtras{SourceType: "ER", CostCenter: "K"}
-	extras.Net = make(map[owner.Stakeholder]float64)
-	b := account.Booking{Extras: extras, Amount: 6000, Text: "Eingangsrechnung"}
+	b := account.NewBooking("ER", "K", nil, 6000, "Eingangsrechnung", 1, 2017)
 
-	Process(repository, b)
+	Process(repository, *b)
 
 	util.AssertEquals(t, 1, len(repository.BankAccount().Bookings))
 	actual := repository.BankAccount().Bookings[0]
@@ -217,11 +212,9 @@ func TestBookEingangsrechnungToBankAccount(t *testing.T) {
 
 func TestBookAusgangsrechnungToBankAccount(t *testing.T) {
 	setUp()
-	extras := account.CsvBookingExtras{SourceType: "AR", CostCenter: "K"}
-	extras.Net = make(map[owner.Stakeholder]float64)
-	b := account.Booking{Extras: extras, Amount: 6000, Text: "Ausgangsrechnung"}
+	b := account.NewBooking("AR", "K", nil, 6000, "Ausgangsrechnung", 1, 2017)
 
-	Process(repository, b)
+	Process(repository, *b)
 
 	util.AssertEquals(t, 1, len(repository.BankAccount().Bookings))
 	actual := repository.BankAccount().Bookings[0]
@@ -230,60 +223,49 @@ func TestBookAusgangsrechnungToBankAccount(t *testing.T) {
 	util.AssertEquals(t, "AR", actual.DestType)
 }
 
-func TestBookSVBeitragAgainstKommitmentAccount(t *testing.T) {
+// 100% werden auf das Bankkonto gebucht
+// 100% werden gegen das Kommitment-Konto gebucht
+func TestProcessSVBeitrag(t *testing.T) {
 	setUp()
+	b := account.NewBooking("SV-Beitrag", "BEN", nil, 1385.10, "KKH, Ben", 5, 2017)
 
-	// given: a sv-beitrag booking
-	extras := account.CsvBookingExtras{SourceType: "SV-Beitrag", CostCenter: "BEN"}
-	b := account.Booking{Extras: extras, Amount: 1385.10, Text: "KKH, Ben"}
+	Process(repository, *b)
 
-	// when: the booking is processed
-	Process(repository, b)
-
-	// the booking is booked against kommitment account
+	// Buchung wurde gegen Kommitment-Konto gebucht
 	a, _ := repository.Get(owner.StakeholderKM.Id)
 	b1 := a.Bookings[0]
 	util.AssertFloatEquals(t, -1385.10, b1.Amount)
 	util.AssertEquals(t, account.SVBeitrag, b1.DestType)
-}
 
-func TestBookSVBeitragToBankAccount(t *testing.T) {
-	setUp()
-	extras := account.CsvBookingExtras{SourceType: "SV-Beitrag", CostCenter: "BEN"}
-	b := account.Booking{Extras: extras, Amount: 1385.10, Text: "KKH, Ben"}
-
-	Process(repository, b)
-
+	// Buchung wurde aufs Bankkonto gebucht
 	util.AssertEquals(t, 1, len(repository.BankAccount().Bookings))
 	actual := repository.BankAccount().Bookings[0]
 	util.AssertFloatEquals(t, -1385.10, actual.Amount)
 	util.AssertEquals(t, "KKH, Ben", actual.Text)
 	util.AssertEquals(t, "SV-Beitrag", actual.DestType)
+
 }
 
-func TestBookGWSteuerAgainstKommitmentAccount(t *testing.T) {
+// 100% werden auf das Bankkonto gebucht
+// 100% werden gegen das Kommitment-Konto gebucht. Diese Regel ist nich unscharf:
+// eigentlich müssen die 100% aufgeteilt werden auf: 70% auf Partner, 25% auf
+// Kommitment und 5% auf Dealbringer
+func TestProcessGWSteuer(t *testing.T) {
 	setUp()
 
-	extras := account.CsvBookingExtras{SourceType: "GWSteuer", CostCenter: "K"}
-	b := account.Booking{Extras: extras, Amount: 2385.10, Text: "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17"}
+	b := account.NewBooking("GWSteuer", "K", nil, 2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", 9, 2017)
 
-	Process(repository, b)
+	Process(repository, *b)
 
+	// Buchung wurde gegen Kommitment-Konto gebucht
 	a, _ := repository.Get(owner.StakeholderKM.Id)
 	b1 := a.Bookings[0]
-	assertBooking(t, b1,-2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", account.GWSteuer)
-}
+	assertBooking(t, b1, -2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", account.GWSteuer)
 
-func TestBookGWSteuerToBankAccount(t *testing.T) {
-	setUp()
-	extras := account.CsvBookingExtras{SourceType: "GWSteuer", CostCenter: "K"}
-	b := account.Booking{Extras: extras, Amount: 2385.10, Text: "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17"}
-
-	Process(repository, b)
-
+	// Buchung wurde aufs Bankkonto gebucht
 	util.AssertEquals(t, 1, len(repository.BankAccount().Bookings))
 	actual := repository.BankAccount().Bookings[0]
-	assertBooking(t, actual,-2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", "GWSteuer")
+	assertBooking(t, actual, -2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", "GWSteuer")
 }
 
 func assertBooking(t *testing.T, b account.Booking, amount float64, text string, destType string) {
@@ -291,5 +273,3 @@ func assertBooking(t *testing.T, b account.Booking, amount float64, text string,
 	util.AssertEquals(t, text, b.Text)
 	util.AssertEquals(t, destType, b.DestType)
 }
-
-

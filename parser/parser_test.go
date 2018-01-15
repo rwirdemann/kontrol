@@ -23,14 +23,14 @@ func TestImport(t *testing.T) {
 func assertPosition(t *testing.T, p account.Booking, typ string, costCenter string, subject string,
 	amount float64, year int, month int,
 	nettoRW float64, nettoJM float64, nettoAN float64) {
-	util.AssertEquals(t, typ, p.Extras.SourceType)
-	util.AssertEquals(t, costCenter, p.Extras.CostCenter)
+	util.AssertEquals(t, typ, p.SourceType)
+	util.AssertEquals(t, costCenter, p.CostCenter)
 	util.AssertEquals(t, subject, p.Text)
 	util.AssertEquals(t, amount, p.Amount)
 	util.AssertEquals(t, year, p.Year)
 	util.AssertEquals(t, month, p.Month)
 
-	util.AssertEquals(t, nettoRW, p.Extras.Net[owner.StakeholderRW])
-	util.AssertEquals(t, nettoJM, p.Extras.Net[owner.StakeholderJM])
-	util.AssertEquals(t, nettoAN, p.Extras.Net[owner.StakeholderAN])
+	util.AssertEquals(t, nettoRW, p.Net[owner.StakeholderRW])
+	util.AssertEquals(t, nettoJM, p.Net[owner.StakeholderJM])
+	util.AssertEquals(t, nettoAN, p.Net[owner.StakeholderAN])
 }
