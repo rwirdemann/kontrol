@@ -2,6 +2,7 @@ package account
 
 import (
 	"bitbucket.org/rwirdemann/kontrol/owner"
+	"bitbucket.org/rwirdemann/kontrol/booking"
 )
 
 type Repository interface {
@@ -60,8 +61,8 @@ func (r *DefaultRepository) Get(id string) (*Account, bool) {
 }
 
 func (r *DefaultRepository) ClearBookings() {
-	r.collectiveAccount.Bookings = []Booking{}
+	r.collectiveAccount.Bookings = []booking.Booking{}
 	for _, account := range r.accounts {
-		account.Bookings = []Booking{}
+		account.Bookings = []booking.Booking{}
 	}
 }

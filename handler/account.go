@@ -8,6 +8,7 @@ import (
 	"bitbucket.org/rwirdemann/kontrol/account"
 	"bitbucket.org/rwirdemann/kontrol/util"
 	"github.com/gorilla/mux"
+	"bitbucket.org/rwirdemann/kontrol/booking"
 )
 
 func MakeGetAccountsHandler(repository account.Repository) http.HandlerFunc {
@@ -35,7 +36,7 @@ func MakeGetAccountHandler(repository account.Repository) http.HandlerFunc {
 		if a, ok := repository.Get(accountId); ok {
 			a.UpdateSaldo()
 			w.Header().Set("Content-Type", "application/json")
-			sort.Sort(account.ByMonth(a.Bookings))
+			sort.Sort(booking.ByMonth(a.Bookings))
 			json := util.Json(a)
 			fmt.Fprintf(w, json)
 		} else {

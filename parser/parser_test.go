@@ -3,9 +3,9 @@ package parser
 import (
 	"testing"
 
-	"bitbucket.org/rwirdemann/kontrol/account"
 	"bitbucket.org/rwirdemann/kontrol/owner"
 	"bitbucket.org/rwirdemann/kontrol/util"
+	"bitbucket.org/rwirdemann/kontrol/booking"
 )
 
 func TestImport(t *testing.T) {
@@ -20,7 +20,7 @@ func TestImport(t *testing.T) {
 	assertPosition(t, positions[6], "GWSteuer", "K", "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", 5160, 2017, 11, 0, 0, 0)
 }
 
-func assertPosition(t *testing.T, p account.Booking, typ string, costCenter string, subject string,
+func assertPosition(t *testing.T, p booking.Booking, typ string, costCenter string, subject string,
 	amount float64, year int, month int,
 	nettoRW float64, nettoJM float64, nettoAN float64) {
 	util.AssertEquals(t, typ, p.SourceType)

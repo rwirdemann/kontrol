@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	"bitbucket.org/rwirdemann/kontrol/account"
 	"bitbucket.org/rwirdemann/kontrol/owner"
+	"bitbucket.org/rwirdemann/kontrol/booking"
 )
 
 // Beschreibt, dass die netto (Rechnungs-)Position in Spalte X der CSV-Datei dem Stakeholder Y gehört
@@ -26,8 +26,8 @@ var netBookings = []struct {
 	{Owner: owner.StakeholderEX, Column: 23},
 }
 
-func Import(file string) []account.Booking {
-	var positions []account.Booking
+func Import(file string) []booking.Booking {
+	var positions []booking.Booking
 
 	if f, err := openCsvFile(file); err == nil {
 		r := csv.NewReader(bufio.NewReader(f))
@@ -51,7 +51,7 @@ func Import(file string) []account.Booking {
 				for _, p := range netBookings {
 					m[p.Owner] = parseAmount(record[p.Column])
 				}
-				position := account.NewBooking(typ, cs, m, amount, subject, month, year)
+				position := booking.NewBooking(typ, cs, m, amount, subject, month, year)
 				positions = append(positions, *position)
 			} else {
 				fmt.Printf("unknown booking type '%s'\n", record[0])
@@ -69,7 +69,7 @@ func isHeader(s string) bool {
 }
 
 func isValidBookingType(s string) bool {
-	for _, t := range account.ValidBookingTypes {
+	for _, t := range booking.ValidBookingTypes {
 		if s == t {
 			return true
 		}

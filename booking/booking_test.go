@@ -1,4 +1,4 @@
-package account
+package booking
 
 import (
 	"testing"

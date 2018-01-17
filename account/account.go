@@ -6,11 +6,12 @@ import (
 	"strings"
 
 	"bitbucket.org/rwirdemann/kontrol/owner"
+	"bitbucket.org/rwirdemann/kontrol/booking"
 )
 
 type Account struct {
 	Owner    owner.Stakeholder
-	Bookings []Booking `json:",omitempty"`
+	Bookings []booking.Booking `json:",omitempty"`
 	Saldo    float64
 }
 
@@ -18,7 +19,7 @@ func NewAccount(o owner.Stakeholder) *Account {
 	return &Account{Owner: o}
 }
 
-func (a *Account) Book(booking Booking) {
+func (a *Account) Book(booking booking.Booking) {
 	a.Bookings = append(a.Bookings, booking)
 }
 
@@ -31,7 +32,7 @@ func (a *Account) UpdateSaldo() {
 }
 
 func (a Account) Print() {
-	sort.Sort(ByMonth(a.Bookings))
+	sort.Sort(booking.ByMonth(a.Bookings))
 	for _, b := range a.Bookings {
 		b.Print(a.Owner)
 	}
