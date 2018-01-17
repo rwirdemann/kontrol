@@ -123,37 +123,29 @@ Erzeugt Binary, Deployment auf 94.130.79.196, Neustart des Backend.
 Die Regeln beschreiben, wie eine Buchung im Spreadsheet verbucht werden. Debei bedeutet R# eine Regel, S# eine Buchungsposition. "R1#S1Partner" ist also Regel 1, Buchungsposition S1 für Partner. "Vertrieb" ebntspricht der Spalte "Cost Center" im Spreadsheet.
 
 ### R1: AR = Ausgangsrechnungen
-
-==> werden nicht alle Ausgangsrechnungen gegen das Bankkonto gebucht?
+- alle Ausgangsrechnungen werden netto auf das Bankkonto gebucht
 
 #### R1#S1Partner: Leistung wurde von Partner erbracht
 - Partner bekommt 70% seiner Nettoposition
 - Kommitment bekommt 25% der Partnernettoposition
 - Vertrieb bekommt 5% der Partnernettoposition
 
-==> Check JM, OK, 20180117
-
 #### R1#S2#Extern: Leistung wurde von Extern erbracht
 - Vertrieb bekommt 5% der Nettoposition
-- Kommitment bekommt den Rest...
-
-==> geändert JM, OK, 20180117
- 
+- Kommitment bekommt 95% des Nettorechnungsbetrags
 
 #### R1#S3#Employee: Leistung wurde vom Angestellten erbracht
 - Vertrieb bekommt 5% der Nettoposition
 - Kommitment bekommt den Rest
 - zusätzlich werden 100% der Nettoposition weden auf das Angestelltenkonto verbucht
 
-==> geändert JM, OK, 20180117
+TODO ==> geändert JM, OK, 20180117
 
 #### R2: ER = Eingangsrechnung
- 
-==> werden nicht alle ER gegen das Bankkonto gebucht?
-
+- 100% werden netto gegen das Bankkonto gebucht
 - 100% des Nettobetrags werden gegen das Kommitment-Konto gebucht
 
-==> wie machen wir das Kosten-Monitoring? Ich glaube hierfür wären Kostenkonten gut...
+TODO ==> wie machen wir das Kosten-Monitoring? Ich glaube hierfür wären Kostenkonten gut...
 
 ### R3: GV = Geschäftsführerentnahmen
 - 100% der Entnahme werden gegen das Partner-Konto gebucht

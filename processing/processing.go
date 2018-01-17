@@ -56,8 +56,8 @@ func bookPartnerWithdrawal(repository account.Repository, booking account.Bookin
 			Text:     "GV Entnahme",
 			Month:    booking.Month,
 			Year:     booking.Year}
-		account, _ := repository.Get(booking.CostCenter)
-		account.Book(b)
+		a, _ := repository.Get(booking.CostCenter)
+		a.Book(b)
 	}
 }
 
