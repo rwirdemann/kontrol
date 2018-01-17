@@ -8,6 +8,7 @@ import (
 	"bitbucket.org/rwirdemann/kontrol/util"
 )
 
+// Implementiert den Kommitment-Verteilungsalgorithmus
 func Process(repository account.Repository, booking account.Booking) {
 
 	// Book booking to bank account
