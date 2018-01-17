@@ -171,6 +171,12 @@ func TestPartnerWithdrawals(t *testing.T) {
 	util.AssertEquals(t, account.Entnahme, bRalf.DestType)
 }
 
+
+
+// Interne Stunden
+// - werden nicht auf das Bankkonto gebucht
+// - 100% werden auf das Partner-Konto gebucht
+// - 100% werden gegen das Kommitment-Konto gebucht
 func TestInterneStunden(t *testing.T) {
 	setUp()
 

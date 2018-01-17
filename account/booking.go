@@ -70,8 +70,11 @@ func (b Booking) Print(owner owner.Stakeholder) {
 	fmt.Printf("[%s: %2d-%d %-22s %-40s \t %9.2f]\n", owner.Id, b.Month, b.Year, b.DestType, text, b.Amount)
 }
 
-func (b *Booking) isOnBankAccount() bool {
-	return false
+func (b *Booking) BookOnBankAccount() bool {
+	if b.SourceType == "IS" {
+		return false
+	}
+	return true
 }
 
 type ByMonth []Booking
