@@ -8,12 +8,22 @@ import (
 
 var ValidBookingTypes = [...]string{"ER", "AR", "GV", "IS", "SV-Beitrag", "GWSteuer"}
 
-// Zusatzinformationen einer Booking, deren Quelle die CSV-Datei ist, und die für die weitere
+// Zusatzinformationen einer Buchung, deren Quelle die CSV-Datei ist, und die für die weitere
 // Bearbeitung erforderlich sind.
 type CsvBookingExtras struct {
-	CSVType     string                        // siehe ValidBookingTypes for valid values
-	DealBringer string                        // JM, AN, K, usw.
-	Net         map[owner.Stakeholder]float64 // Verteilung der netto Rechnungspositionen auf Stakeholder
+	// "ER", "AR", "GV", "IS", "SV-Beitrag", "GWSteuer"
+	Typ string
+
+	// Wer für die Buchung verantwortlich ist. Unterschiedliche Bedeutung für unterschiedliche Buchungsarten:
+	// - "ER": Wer die Kosten verursacht hat
+	// - "AR": Wer den Auftrag gebracht hat.
+	// - "GV": Wer die Entnahme getätigt hat
+	// - "IS": Wer die internen Stunden geleistet hat
+	// - "SV-Beitrag": Für wen der SV-Beitrag gezhalt wurde
+	Responsible string
+
+	// Verteilung der netto Rechnungspositionen auf Stakeholder
+	Net map[owner.Stakeholder]float64
 }
 
 // Aus einer Bankbuchung wird eine oder mehrere virtuelle Buchungen erstellt. Dis ist die Liste
@@ -30,11 +40,12 @@ const (
 )
 
 type Booking struct {
-	Type   string // siehe const-Block hier drüber für gültige Werte
-	Amount float64
-	Text   string
-	Year   int
-	Month  int
+	Type       string // siehe const-Block hier drüber für gültige Werte
+	CostCenter string
+	Amount     float64
+	Text       string
+	Year       int
+	Month      int
 
 	CsvBookingExtras `json:"-"`
 }
@@ -50,8 +61,8 @@ func NewBooking(
 
 	return &Booking{
 		CsvBookingExtras: CsvBookingExtras{
-			CSVType:     csvType,
-			DealBringer: dealBringer,
+			Typ:         csvType,
+			Responsible: dealBringer,
 			Net:         net,
 		},
 		Amount: amount,
@@ -71,7 +82,7 @@ func (b Booking) Print(owner owner.Stakeholder) {
 }
 
 func (b *Booking) BookOnBankAccount() bool {
-	if b.CSVType == "IS" {
+	if b.Typ == "IS" {
 		return false
 	}
 	return true

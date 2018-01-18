@@ -14,7 +14,7 @@ func Process(repository account.Repository, booking booking.Booking) {
 
 	// Book booking to bank account
 	b := booking
-	b.Type = booking.CSVType
+	b.Type = booking.Typ
 	switch b.Type {
 	case "ER":
 		b.Amount = util.Net(b.Amount) * -1
@@ -31,7 +31,7 @@ func Process(repository account.Repository, booking booking.Booking) {
 	}
 
 	// Assign booking to one or more virtual stakeholder accounts
-	switch booking.CSVType {
+	switch booking.Typ {
 	case "GV":
 		bookPartnerWithdrawal(repository, booking)
 	case "AR":
@@ -45,19 +45,19 @@ func Process(repository account.Repository, booking booking.Booking) {
 	case "GWSteuer":
 		bookGWSteuer(repository, booking)
 	default:
-		log.Printf("could not process booking type '%s'", booking.CSVType)
+		log.Printf("could not process booking type '%s'", booking.Typ)
 	}
 }
 
 func bookPartnerWithdrawal(repository account.Repository, sourceBooking booking.Booking) {
-	if sourceBooking.CSVType == "GV" {
+	if sourceBooking.Typ == "GV" {
 		b := booking.Booking{
 			Amount: -1 * sourceBooking.Amount,
 			Type:   booking.Entnahme,
 			Text:   "GV Entnahme",
 			Month:  sourceBooking.Month,
 			Year:   sourceBooking.Year}
-		a, _ := repository.Get(sourceBooking.DealBringer)
+		a, _ := repository.Get(sourceBooking.Responsible)
 		a.Book(b)
 	}
 }
@@ -127,7 +127,7 @@ func bookOutgoingInvoice(repository account.Repository, sourceBooking booking.Bo
 		}
 
 		// book cost center provision
-		a, _ := repository.Get(sourceBooking.DealBringer)
+		a, _ := repository.Get(sourceBooking.Responsible)
 		b := booking.Booking{
 			Amount: sourceBooking.Net[benefited] * owner.PartnerProvision,
 			Type:   booking.Vertriebsprovision,
@@ -158,7 +158,7 @@ func bookInternalHours(repository account.Repository, sourceBooking booking.Book
 		Text:   sourceBooking.Text,
 		Month:  sourceBooking.Month,
 		Year:   sourceBooking.Year}
-	a, _ := repository.Get(sourceBooking.DealBringer)
+	a, _ := repository.Get(sourceBooking.Responsible)
 	a.Book(b)
 
 	// Gegenbuchung Kommitment-Konto

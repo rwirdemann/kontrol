@@ -147,7 +147,7 @@ func TestExternNettoAnteil(t *testing.T) {
 func TestEingangsrechnung(t *testing.T) {
 	setUp()
 
-	p := booking.NewBooking("ER", "k", nil, 12852.0, "Eingangsrechnung 1234", 1, 2017)
+	p := booking.NewBooking("ER", "K", nil, 12852.0, "Eingangsrechnung 1234", 1, 2017)
 
 	Process(repository, *p)
 
@@ -169,7 +169,7 @@ func TestEingangsrechnung(t *testing.T) {
 func TestPartnerWithdrawals(t *testing.T) {
 	setUp()
 
-	extras := booking.CsvBookingExtras{CSVType: "GV", DealBringer: "RW"}
+	extras := booking.CsvBookingExtras{Typ: "GV", Responsible: "RW"}
 	extras.Net = make(map[owner.Stakeholder]float64)
 	b := booking.NewBooking("GV", "RW", nil, 6000, "", 1, 2017)
 	Process(repository, *b)
