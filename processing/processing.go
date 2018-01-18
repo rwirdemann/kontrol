@@ -14,8 +14,8 @@ func Process(repository account.Repository, booking booking.Booking) {
 
 	// Book booking to bank account
 	b := booking
-	b.DestType = booking.SourceType
-	switch b.DestType {
+	b.Type = booking.CSVType
+	switch b.Type {
 	case "ER":
 		b.Amount = util.Net(b.Amount) * -1
 	case "AR":
@@ -31,7 +31,7 @@ func Process(repository account.Repository, booking booking.Booking) {
 	}
 
 	// Assign booking to one or more virtual stakeholder accounts
-	switch booking.SourceType {
+	switch booking.CSVType {
 	case "GV":
 		bookPartnerWithdrawal(repository, booking)
 	case "AR":
@@ -45,18 +45,18 @@ func Process(repository account.Repository, booking booking.Booking) {
 	case "GWSteuer":
 		bookGWSteuer(repository, booking)
 	default:
-		log.Printf("could not process booking type '%s'", booking.SourceType)
+		log.Printf("could not process booking type '%s'", booking.CSVType)
 	}
 }
 
 func bookPartnerWithdrawal(repository account.Repository, sourceBooking booking.Booking) {
-	if sourceBooking.SourceType == "GV" {
+	if sourceBooking.CSVType == "GV" {
 		b := booking.Booking{
-			Amount:   -1 * sourceBooking.Amount,
-			DestType: booking.Entnahme,
-			Text:     "GV Entnahme",
-			Month:    sourceBooking.Month,
-			Year:     sourceBooking.Year}
+			Amount: -1 * sourceBooking.Amount,
+			Type:   booking.Entnahme,
+			Text:   "GV Entnahme",
+			Month:  sourceBooking.Month,
+			Year:   sourceBooking.Year}
 		a, _ := repository.Get(sourceBooking.CostCenter)
 		a.Book(b)
 	}
@@ -70,21 +70,21 @@ func bookOutgoingInvoice(repository account.Repository, sourceBooking booking.Bo
 
 			// book partner share
 			b := booking.Booking{
-				Amount:   sourceBooking.Net[benefited] * owner.PartnerShare,
-				DestType: booking.Nettoanteil,
-				Text:     sourceBooking.Text + "#NetShare#" + benefited.Id,
-				Month:    sourceBooking.Month,
-				Year:     sourceBooking.Year}
+				Amount: sourceBooking.Net[benefited] * owner.PartnerShare,
+				Type:   booking.Nettoanteil,
+				Text:   sourceBooking.Text + "#NetShare#" + benefited.Id,
+				Month:  sourceBooking.Month,
+				Year:   sourceBooking.Year}
 			a, _ := repository.Get(benefited.Id)
 			a.Book(b)
 
 			// book kommitment share
 			kommitmentShare := booking.Booking{
-				Amount:   sourceBooking.Net[benefited] * owner.KommmitmentShare,
-				DestType: booking.Kommitmentanteil,
-				Text:     sourceBooking.Text + "#Kommitment#" + benefited.Id,
-				Month:    sourceBooking.Month,
-				Year:     sourceBooking.Year}
+				Amount: sourceBooking.Net[benefited] * owner.KommmitmentShare,
+				Type:   booking.Kommitmentanteil,
+				Text:   sourceBooking.Text + "#Kommitment#" + benefited.Id,
+				Month:  sourceBooking.Month,
+				Year:   sourceBooking.Year}
 
 			kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
 			kommitmentAccount.Book(kommitmentShare)
@@ -94,11 +94,11 @@ func bookOutgoingInvoice(repository account.Repository, sourceBooking booking.Bo
 
 			// book kommitment share
 			kommitmentShare := booking.Booking{
-				Amount:   sourceBooking.Net[benefited] * owner.KommmitmentExternShare,
-				DestType: booking.Kommitmentanteil,
-				Text:     sourceBooking.Text + "#Kommitment#" + benefited.Id,
-				Month:    sourceBooking.Month,
-				Year:     sourceBooking.Year}
+				Amount: sourceBooking.Net[benefited] * owner.KommmitmentExternShare,
+				Type:   booking.Kommitmentanteil,
+				Text:   sourceBooking.Text + "#Kommitment#" + benefited.Id,
+				Month:  sourceBooking.Month,
+				Year:   sourceBooking.Year}
 			kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
 			kommitmentAccount.Book(kommitmentShare)
 		}
@@ -107,21 +107,21 @@ func bookOutgoingInvoice(repository account.Repository, sourceBooking booking.Bo
 
 			// 100% net is booked to employee account to see how much money is made by him
 			b := booking.Booking{
-				Amount:   sourceBooking.Net[benefited],
-				DestType: booking.Nettoanteil,
-				Text:     sourceBooking.Text + "#NetShare#" + benefited.Id,
-				Month:    sourceBooking.Month,
-				Year:     sourceBooking.Year}
+				Amount: sourceBooking.Net[benefited],
+				Type:   booking.Nettoanteil,
+				Text:   sourceBooking.Text + "#NetShare#" + benefited.Id,
+				Month:  sourceBooking.Month,
+				Year:   sourceBooking.Year}
 			a, _ := repository.Get(benefited.Id)
 			a.Book(b)
 
 			// book kommitment share
 			kommitmentShare := booking.Booking{
-				Amount:   sourceBooking.Net[benefited] * owner.KommmitmentEmployeeShare,
-				DestType: booking.Kommitmentanteil,
-				Text:     sourceBooking.Text + "#Kommitment#" + benefited.Id,
-				Month:    sourceBooking.Month,
-				Year:     sourceBooking.Year}
+				Amount: sourceBooking.Net[benefited] * owner.KommmitmentEmployeeShare,
+				Type:   booking.Kommitmentanteil,
+				Text:   sourceBooking.Text + "#Kommitment#" + benefited.Id,
+				Month:  sourceBooking.Month,
+				Year:   sourceBooking.Year}
 			kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
 			kommitmentAccount.Book(kommitmentShare)
 		}
@@ -129,22 +129,22 @@ func bookOutgoingInvoice(repository account.Repository, sourceBooking booking.Bo
 		// book cost center provision
 		a, _ := repository.Get(sourceBooking.CostCenter)
 		b := booking.Booking{
-			Amount:   sourceBooking.Net[benefited] * owner.PartnerProvision,
-			DestType: booking.Vertriebsprovision,
-			Text:     sourceBooking.Text + "#Provision#" + benefited.Id,
-			Month:    sourceBooking.Month,
-			Year:     sourceBooking.Year}
+			Amount: sourceBooking.Net[benefited] * owner.PartnerProvision,
+			Type:   booking.Vertriebsprovision,
+			Text:   sourceBooking.Text + "#Provision#" + benefited.Id,
+			Month:  sourceBooking.Month,
+			Year:   sourceBooking.Year}
 		a.Book(b)
 	}
 }
 
 func bookIncomingInvoice(repository account.Repository, sourceBooking booking.Booking) {
 	kommitmentShare := booking.Booking{
-		Amount:   util.Net(sourceBooking.Amount) * -1,
-		DestType: booking.Eingangsrechnung,
-		Text:     sourceBooking.Text,
-		Month:    sourceBooking.Month,
-		Year:     sourceBooking.Year}
+		Amount: util.Net(sourceBooking.Amount) * -1,
+		Type:   booking.Eingangsrechnung,
+		Text:   sourceBooking.Text,
+		Month:  sourceBooking.Month,
+		Year:   sourceBooking.Year}
 	kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
 	kommitmentAccount.Book(kommitmentShare)
 }
@@ -153,21 +153,21 @@ func bookIncomingInvoice(repository account.Repository, sourceBooking booking.Bo
 func bookInternalHours(repository account.Repository, sourceBooking booking.Booking) {
 	// Buchung aufs Partner-Konto
 	b := booking.Booking{
-		Amount:   sourceBooking.Amount,
-		DestType: booking.InterneStunden,
-		Text:     sourceBooking.Text,
-		Month:    sourceBooking.Month,
-		Year:     sourceBooking.Year}
+		Amount: sourceBooking.Amount,
+		Type:   booking.InterneStunden,
+		Text:   sourceBooking.Text,
+		Month:  sourceBooking.Month,
+		Year:   sourceBooking.Year}
 	a, _ := repository.Get(sourceBooking.CostCenter)
 	a.Book(b)
 
 	// Gegenbuchung Kommitment-Konto
 	counterBooking := booking.Booking{
-		Amount:   sourceBooking.Amount * -1,
-		DestType: booking.InterneStunden,
-		Text:     sourceBooking.Text,
-		Month:    sourceBooking.Month,
-		Year:     sourceBooking.Year}
+		Amount: sourceBooking.Amount * -1,
+		Type:   booking.InterneStunden,
+		Text:   sourceBooking.Text,
+		Month:  sourceBooking.Month,
+		Year:   sourceBooking.Year}
 	kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
 	kommitmentAccount.Book(counterBooking)
 }
@@ -177,11 +177,11 @@ func bookSVBeitrag(repository account.Repository, sourceBooking booking.Booking)
 
 	// Gegenbuchung Kommitment-Konto
 	counterBooking := booking.Booking{
-		Amount:   sourceBooking.Amount * -1,
-		DestType: booking.SVBeitrag,
-		Text:     sourceBooking.Text,
-		Month:    sourceBooking.Month,
-		Year:     sourceBooking.Year}
+		Amount: sourceBooking.Amount * -1,
+		Type:   booking.SVBeitrag,
+		Text:   sourceBooking.Text,
+		Month:  sourceBooking.Month,
+		Year:   sourceBooking.Year}
 	kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
 	kommitmentAccount.Book(counterBooking)
 }
@@ -191,11 +191,11 @@ func bookGWSteuer(repository account.Repository, sourceBooking booking.Booking) 
 
 	// Gegenbuchung Kommitment-Konto
 	counterBooking := booking.Booking{
-		Amount:   sourceBooking.Amount * -1,
-		DestType: booking.GWSteuer,
-		Text:     sourceBooking.Text,
-		Month:    sourceBooking.Month,
-		Year:     sourceBooking.Year}
+		Amount: sourceBooking.Amount * -1,
+		Type:   booking.GWSteuer,
+		Text:   sourceBooking.Text,
+		Month:  sourceBooking.Month,
+		Year:   sourceBooking.Year}
 	kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
 	kommitmentAccount.Book(counterBooking)
 }

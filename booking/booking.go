@@ -11,13 +11,13 @@ var ValidBookingTypes = [...]string{"ER", "AR", "GV", "IS", "SV-Beitrag", "GWSte
 // Zusatzinformationen einer Booking, deren Quelle die CSV-Datei ist, und die für die weitere
 // Bearbeitung erforderlich sind.
 type CsvBookingExtras struct {
-	SourceType string                        // siehe ValidBookingTypes for valid values
+	CSVType    string                        // siehe ValidBookingTypes for valid values
 	CostCenter string                        // JM, AN, K, usw.
 	Net        map[owner.Stakeholder]float64 // Verteilung der netto Rechnungspositionen auf Stakeholder
 }
 
 // Aus einer Bankbuchung wird eine oder mehrere virtuelle Buchungen erstellt. Dis ist die Liste
-// mögliche Werte für den DestType einer virtuellen Buchung
+// mögliche Werte für den Type einer virtuellen Buchung
 const (
 	Vertriebsprovision = "Vertriebsprovision"
 	Nettoanteil        = "Nettoanteil"
@@ -30,17 +30,17 @@ const (
 )
 
 type Booking struct {
-	DestType string // siehe const-Block hier drüber für gültige Werte
-	Amount   float64
-	Text     string
-	Year     int
-	Month    int
+	Type   string // siehe const-Block hier drüber für gültige Werte
+	Amount float64
+	Text   string
+	Year   int
+	Month  int
 
 	CsvBookingExtras `json:"-"`
 }
 
 func NewBooking(
-	sourceType string,
+	csvType string,
 	costCenter string,
 	net map[owner.Stakeholder]float64,
 	amount float64,
@@ -50,7 +50,7 @@ func NewBooking(
 
 	return &Booking{
 		CsvBookingExtras: CsvBookingExtras{
-			SourceType: sourceType,
+			CSVType:    csvType,
 			CostCenter: costCenter,
 			Net:        net,
 		},
@@ -67,11 +67,11 @@ func (b Booking) Print(owner owner.Stakeholder) {
 		text = text[:37] + "..."
 	}
 
-	fmt.Printf("[%s: %2d-%d %-22s %-40s \t %9.2f]\n", owner.Id, b.Month, b.Year, b.DestType, text, b.Amount)
+	fmt.Printf("[%s: %2d-%d %-22s %-40s \t %9.2f]\n", owner.Id, b.Month, b.Year, b.Type, text, b.Amount)
 }
 
 func (b *Booking) BookOnBankAccount() bool {
-	if b.SourceType == "IS" {
+	if b.CSVType == "IS" {
 		return false
 	}
 	return true
