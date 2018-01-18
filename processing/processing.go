@@ -57,7 +57,7 @@ func bookPartnerWithdrawal(repository account.Repository, sourceBooking booking.
 			Text:   "GV Entnahme",
 			Month:  sourceBooking.Month,
 			Year:   sourceBooking.Year}
-		a, _ := repository.Get(sourceBooking.CostCenter)
+		a, _ := repository.Get(sourceBooking.DealBringer)
 		a.Book(b)
 	}
 }
@@ -127,7 +127,7 @@ func bookOutgoingInvoice(repository account.Repository, sourceBooking booking.Bo
 		}
 
 		// book cost center provision
-		a, _ := repository.Get(sourceBooking.CostCenter)
+		a, _ := repository.Get(sourceBooking.DealBringer)
 		b := booking.Booking{
 			Amount: sourceBooking.Net[benefited] * owner.PartnerProvision,
 			Type:   booking.Vertriebsprovision,
@@ -158,7 +158,7 @@ func bookInternalHours(repository account.Repository, sourceBooking booking.Book
 		Text:   sourceBooking.Text,
 		Month:  sourceBooking.Month,
 		Year:   sourceBooking.Year}
-	a, _ := repository.Get(sourceBooking.CostCenter)
+	a, _ := repository.Get(sourceBooking.DealBringer)
 	a.Book(b)
 
 	// Gegenbuchung Kommitment-Konto

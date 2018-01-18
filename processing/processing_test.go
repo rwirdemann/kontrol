@@ -6,9 +6,9 @@ import (
 
 	"bitbucket.org/rwirdemann/kontrol/account"
 
+	"bitbucket.org/rwirdemann/kontrol/booking"
 	"bitbucket.org/rwirdemann/kontrol/owner"
 	"bitbucket.org/rwirdemann/kontrol/util"
-	"bitbucket.org/rwirdemann/kontrol/booking"
 )
 
 var repository account.Repository
@@ -141,27 +141,35 @@ func TestExternNettoAnteil(t *testing.T) {
 	util.AssertEquals(t, booking.Kommitmentanteil, kommitment.Type)
 }
 
+// Eingangsrechnungen
+// - 100% werden netto gegen das Bankkonto gebucht
+// - 100% des Nettobetrags werden gegen das Kommitment-Konto gebucht
 func TestEingangsrechnung(t *testing.T) {
 	setUp()
 
-	// given: a booking
 	p := booking.NewBooking("ER", "k", nil, 12852.0, "Eingangsrechnung 1234", 1, 2017)
 
-	// when: the position is processed
 	Process(repository, *p)
 
-	// the invoice is booked to the kommitment account
+	// Buchung wurde gegen das Kommitment-Konto gebucht
 	accountKommitment, _ := repository.Get(owner.StakeholderKM.Id)
 	util.AssertEquals(t, 1, len(accountKommitment.Bookings))
 	kommitment := accountKommitment.Bookings[0]
 	util.AssertFloatEquals(t, util.Net(-12852.0), kommitment.Amount)
 	util.AssertEquals(t, booking.Eingangsrechnung, kommitment.Type)
+
+	// Buchung wurde gegen das Bankkonto gebucht
+	util.AssertEquals(t, 1, len(repository.BankAccount().Bookings))
+	actual := repository.BankAccount().Bookings[0]
+	util.AssertFloatEquals(t, util.Net(-12852.0), actual.Amount)
+	util.AssertEquals(t, "Eingangsrechnung 1234", actual.Text)
+	util.AssertEquals(t, "ER", actual.Type)
 }
 
 func TestPartnerWithdrawals(t *testing.T) {
 	setUp()
 
-	extras := booking.CsvBookingExtras{CSVType: "GV", CostCenter: "RW"}
+	extras := booking.CsvBookingExtras{CSVType: "GV", DealBringer: "RW"}
 	extras.Net = make(map[owner.Stakeholder]float64)
 	b := booking.NewBooking("GV", "RW", nil, 6000, "", 1, 2017)
 	Process(repository, *b)
@@ -171,8 +179,6 @@ func TestPartnerWithdrawals(t *testing.T) {
 	util.AssertFloatEquals(t, -6000, bRalf.Amount)
 	util.AssertEquals(t, booking.Entnahme, bRalf.Type)
 }
-
-
 
 // Interne Stunden
 // - werden nicht auf das Bankkonto gebucht
@@ -202,19 +208,6 @@ func TestInterneStunden(t *testing.T) {
 
 	// internal hours are not booked on bank account
 	util.AssertEquals(t, 0, len(repository.BankAccount().Bookings))
-}
-
-func TestBookEingangsrechnungToBankAccount(t *testing.T) {
-	setUp()
-	b := booking.NewBooking("ER", "K", nil, 6000, "Eingangsrechnung", 1, 2017)
-
-	Process(repository, *b)
-
-	util.AssertEquals(t, 1, len(repository.BankAccount().Bookings))
-	actual := repository.BankAccount().Bookings[0]
-	util.AssertFloatEquals(t, util.Net(-6000), actual.Amount)
-	util.AssertEquals(t, "Eingangsrechnung", actual.Text)
-	util.AssertEquals(t, "ER", actual.Type)
 }
 
 func TestBookAusgangsrechnungToBankAccount(t *testing.T) {

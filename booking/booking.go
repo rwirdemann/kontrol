@@ -11,9 +11,9 @@ var ValidBookingTypes = [...]string{"ER", "AR", "GV", "IS", "SV-Beitrag", "GWSte
 // Zusatzinformationen einer Booking, deren Quelle die CSV-Datei ist, und die für die weitere
 // Bearbeitung erforderlich sind.
 type CsvBookingExtras struct {
-	CSVType    string                        // siehe ValidBookingTypes for valid values
-	CostCenter string                        // JM, AN, K, usw.
-	Net        map[owner.Stakeholder]float64 // Verteilung der netto Rechnungspositionen auf Stakeholder
+	CSVType     string                        // siehe ValidBookingTypes for valid values
+	DealBringer string                        // JM, AN, K, usw.
+	Net         map[owner.Stakeholder]float64 // Verteilung der netto Rechnungspositionen auf Stakeholder
 }
 
 // Aus einer Bankbuchung wird eine oder mehrere virtuelle Buchungen erstellt. Dis ist die Liste
@@ -41,7 +41,7 @@ type Booking struct {
 
 func NewBooking(
 	csvType string,
-	costCenter string,
+	dealBringer string,
 	net map[owner.Stakeholder]float64,
 	amount float64,
 	text string,
@@ -50,9 +50,9 @@ func NewBooking(
 
 	return &Booking{
 		CsvBookingExtras: CsvBookingExtras{
-			CSVType:    csvType,
-			CostCenter: costCenter,
-			Net:        net,
+			CSVType:     csvType,
+			DealBringer: dealBringer,
+			Net:         net,
 		},
 		Amount: amount,
 		Text:   text,

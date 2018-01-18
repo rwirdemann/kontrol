@@ -24,7 +24,7 @@ func assertPosition(t *testing.T, p booking.Booking, typ string, costCenter stri
 	amount float64, year int, month int,
 	nettoRW float64, nettoJM float64, nettoAN float64) {
 	util.AssertEquals(t, typ, p.CSVType)
-	util.AssertEquals(t, costCenter, p.CostCenter)
+	util.AssertEquals(t, costCenter, p.DealBringer)
 	util.AssertEquals(t, subject, p.Text)
 	util.AssertEquals(t, amount, p.Amount)
 	util.AssertEquals(t, year, p.Year)
