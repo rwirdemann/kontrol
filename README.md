@@ -1,6 +1,9 @@
 # Kontrol Backend
 
 ## Todos
+Costcenter in Booking ausliefern
+/kontrol/accounts/K?cs=JM
+
 - plausi check
 - figo api einbinden: anke.nehrenberg@kommitment.biz
 
@@ -122,6 +125,11 @@ Erzeugt Binary, Deployment auf 94.130.79.196, Neustart des Backend.
 ## Rules
 Die Regeln beschreiben, wie eine Buchung im Spreadsheet verbucht werden. Debei bedeutet R# eine Regel, S# eine Buchungsposition. "R1#S1Partner" ist also Regel 1, Buchungsposition S1 für Partner. "Vertrieb" ebntspricht der Spalte "Cost Center" im Spreadsheet.
 
+Alle Beträge im Buchungssheet sind vorzeichenklos.
+
+gegen: Betrag * -1
+auf  : Betrag * 1
+
 ### R1: AR = Ausgangsrechnungen
 - alle Ausgangsrechnungen werden netto auf das Bankkonto gebucht
 
@@ -137,17 +145,13 @@ Die Regeln beschreiben, wie eine Buchung im Spreadsheet verbucht werden. Debei b
 #### R1#S3#Employee: Leistung wurde vom Angestellten erbracht
 - Vertrieb bekommt 5% der Nettoposition
 - Kommitment bekommt den Rest
-- zusätzlich werden 100% der Nettoposition weden auf das Angestelltenkonto verbucht
-
-TODO ==> geändert JM, OK, 20180117
 
 #### R2: ER = Eingangsrechnung
 - 100% werden netto gegen das Bankkonto gebucht
 - 100% des Nettobetrags werden gegen das Kommitment-Konto gebucht
 
-TODO ==> wie machen wir das Kosten-Monitoring? Ich glaube hierfür wären Kostenkonten gut...
-
-### R3: GV = Geschäftsführerentnahmen
+### R3: GV = Partnerentnahme
+- 100% werden gegen das Bankkonto gebucht
 - 100% der Entnahme werden gegen das Partner-Konto gebucht
 
 ### R4: IS = Interne Stunden
@@ -162,7 +166,7 @@ TODO ==> wie machen wir das Kosten-Monitoring? Ich glaube hierfür wären Kosten
   Kommitment und 5% auf Dealbringer
 
 ### R6: SV-Beitrag
-- 100% werden auf das Bankkonto gebucht
+- 100% werden gegen das Bankkonto gebucht
 - 100% werden gegen das Kommitment-Konto gebucht
 
 ### Offen R7: LNSteuer
