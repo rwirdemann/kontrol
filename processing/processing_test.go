@@ -9,12 +9,17 @@ import (
 	"bitbucket.org/rwirdemann/kontrol/booking"
 	"bitbucket.org/rwirdemann/kontrol/owner"
 	"bitbucket.org/rwirdemann/kontrol/util"
+	"github.com/stretchr/testify/assert"
 )
 
 var repository account.Repository
+var accountHannes *account.Account
+var accountKommitment*account.Account
 
 func setUp() {
 	repository = account.NewDefaultRepository()
+	accountHannes, _ = repository.Get(owner.StakeholderJM.Id)
+	accountKommitment, _ = repository.Get(owner.StakeholderKM.Id)
 }
 
 func TestPartnerNettoAnteil(t *testing.T) {
@@ -74,45 +79,34 @@ func TestPartnerNettoAnteil(t *testing.T) {
 	util.AssertEquals(t, booking.Kommitmentanteil, kommitmentHannes.Type)
 }
 
-func findBookingByText(bookings []booking.Booking, text string) (*booking.Booking, error) {
-	for _, b := range bookings {
-		if b.Text == text {
-			return &b, nil
-		}
-	}
-	return nil, errors.New("booking with test '" + text + " not found")
-}
 
-func TestExternAngestellterNettoAnteil(t *testing.T) {
+// Ausgangsrechnung Angestellter
+// - 5% Provision für Dealbringer
+// - 95% für Kommitmentment, Kostenstelle Angestellter
+func TestAusgangsrechnungAngestellter(t *testing.T) {
 	setUp()
 
-	// given: a booking
+	// Ben hat auf einer Buchung nett 10.800 EUR erwirtschaftet
 	net := map[owner.Stakeholder]float64{
 		owner.StakeholderBW: 10800.0,
 	}
 	p := booking.NewBooking("AR", "JM", net, 12852.0, "Rechnung 1234", 1, 2017)
 
-	// when: the position is processed
 	Process(repository, *p)
 
-	// and hannes got his provision
-	accountHannes, _ := repository.Get(owner.StakeholderJM.Id)
+	// Johannes kriegt 5% Provision
 	provision := accountHannes.Bookings[0]
 	util.AssertFloatEquals(t, 10800.0*owner.PartnerProvision, provision.Amount)
 	util.AssertEquals(t, booking.Vertriebsprovision, provision.Type)
 
-	// and kommitment got 95%
+	// Kommitment kriegt 95% der Nettorechnung
 	util.AssertEquals(t, 1, len(accountHannes.Bookings))
-	accountKommitment, _ := repository.Get(owner.StakeholderKM.Id)
 	kommitment := accountKommitment.Bookings[0]
 	util.AssertFloatEquals(t, 10800.0*owner.KommmitmentEmployeeShare, kommitment.Amount)
 	util.AssertEquals(t, booking.Kommitmentanteil, kommitment.Type)
 
-	// 100% is booked to employee account to see how much money is made by this employee
-	accountBen, _ := repository.Get(owner.StakeholderBW.Id)
-	util.AssertEquals(t, 1, len(accountBen.Bookings))
-	bookingBen := accountBen.Bookings[0]
-	util.AssertFloatEquals(t, 10800.0, bookingBen.Amount)
+	// Kommitment-Buchung ist der Kostenstelle "BW" zugeordnet
+	assert.Equal(t, "BW", kommitment.CostCenter)
 }
 
 func TestExternNettoAnteil(t *testing.T) {
@@ -272,4 +266,13 @@ func assertBooking(t *testing.T, b booking.Booking, amount float64, text string,
 	util.AssertFloatEquals(t, amount, b.Amount)
 	util.AssertEquals(t, text, b.Text)
 	util.AssertEquals(t, destType, b.Type)
+}
+
+func findBookingByText(bookings []booking.Booking, text string) (*booking.Booking, error) {
+	for _, b := range bookings {
+		if b.Text == text {
+			return &b, nil
+		}
+	}
+	return nil, errors.New("booking with test '" + text + " not found")
 }

@@ -34,6 +34,13 @@ func MakeGetAccountHandler(repository account.Repository) http.HandlerFunc {
 		vars := mux.Vars(r)
 		accountId := vars["id"]
 		if a, ok := repository.Get(accountId); ok {
+
+			// Check to filter account by costcenter
+			costcenter := r.URL.Query().Get("cs")
+			if costcenter != "" {
+				a = a.FilterBookingsByCostcenter(costcenter)
+			}
+
 			a.UpdateSaldo()
 			w.Header().Set("Content-Type", "application/json")
 			sort.Sort(booking.ByMonth(a.Bookings))

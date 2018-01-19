@@ -78,7 +78,7 @@ func (b Booking) Print(owner owner.Stakeholder) {
 		text = text[:37] + "..."
 	}
 
-	fmt.Printf("[%s: %2d-%d %-22s %-40s \t %9.2f]\n", owner.Id, b.Month, b.Year, b.Type, text, b.Amount)
+	fmt.Printf("[%s: %2d-%d %2s %-22s %-40s \t %9.2f]\n", owner.Id, b.Month, b.Year, b.CostCenter, b.Type, text, b.Amount)
 }
 
 func (b *Booking) BookOnBankAccount() bool {

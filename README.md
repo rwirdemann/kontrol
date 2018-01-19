@@ -144,7 +144,7 @@ auf  : Betrag * 1
 
 #### R1#S3#Employee: Leistung wurde vom Angestellten erbracht
 - Vertrieb bekommt 5% der Nettoposition
-- Kommitment bekommt den Rest
+- Kommitment bekommt den 95% der Nettoposition
 
 #### R2: ER = Eingangsrechnung
 - 100% werden netto gegen das Bankkonto gebucht

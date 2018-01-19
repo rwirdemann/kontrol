@@ -105,23 +105,14 @@ func bookOutgoingInvoice(repository account.Repository, sourceBooking booking.Bo
 
 		if benefited.Type == owner.StakeholderTypeEmployee {
 
-			// 100% net is booked to employee account to see how much money is made by him
-			b := booking.Booking{
-				Amount: sourceBooking.Net[benefited],
-				Type:   booking.Nettoanteil,
-				Text:   sourceBooking.Text + "#NetShare#" + benefited.Id,
-				Month:  sourceBooking.Month,
-				Year:   sourceBooking.Year}
-			a, _ := repository.Get(benefited.Id)
-			a.Book(b)
-
 			// book kommitment share
 			kommitmentShare := booking.Booking{
-				Amount: sourceBooking.Net[benefited] * owner.KommmitmentEmployeeShare,
-				Type:   booking.Kommitmentanteil,
-				Text:   sourceBooking.Text + "#Kommitment#" + benefited.Id,
-				Month:  sourceBooking.Month,
-				Year:   sourceBooking.Year}
+				Amount:     sourceBooking.Net[benefited] * owner.KommmitmentEmployeeShare,
+				Type:       booking.Kommitmentanteil,
+				Text:       sourceBooking.Text,
+				Month:      sourceBooking.Month,
+				Year:       sourceBooking.Year,
+				CostCenter: benefited.Id}
 			kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
 			kommitmentAccount.Book(kommitmentShare)
 		}

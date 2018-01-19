@@ -40,6 +40,17 @@ func (a Account) Print() {
 	fmt.Printf("[Saldo: \t\t\t\t\t\t\t\t\t%10.2f]\n", a.Saldo)
 }
 
+func (a Account) FilterBookingsByCostcenter(costcenter string) *Account {
+	var filtered []booking.Booking
+	for _, b := range a.Bookings {
+		if b.CostCenter == costcenter {
+			filtered = append(filtered, b)
+		}
+	}
+	a.Bookings = filtered
+	return &a
+}
+
 type ByOwner []Account
 
 func (a ByOwner) Len() int           { return len(a) }
