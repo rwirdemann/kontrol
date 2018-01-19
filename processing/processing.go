@@ -20,13 +20,13 @@ func Process(repository account.Repository, booking booking.Booking) {
 		b.Amount = util.Net(b.Amount) * -1
 	case "AR":
 		b.Amount = util.Net(b.Amount)
-	case "GV", "SV-Beitrag", "GWSteuer", "Gehalt":
+	case "GV", "SV-Beitrag", "GWSteuer":
 		b.Amount = b.Amount * -1
 	}
 
 	// Interne Stunden werden nicht auf dem Bankkonto verbucht. Sie sind da nie eingegangen, sondern werden durch
 	// Einnahmen bestritten
-	if b.BookOnBankAccount() {
+	if b.BookOnBankAccount() && b.Type != "Gehalt"{
 		repository.BankAccount().Book(b)
 	}
 
@@ -195,17 +195,8 @@ func bookGWSteuer(repository account.Repository, sourceBooking booking.Booking) 
 
 // Gehalt wird direkt netto gegen das Kommitment-Konto gebucht
 func bookGehalt(repository account.Repository, sourceBooking booking.Booking) {
-
-	// Gegenbuchung Kommitment-Konto
-	counterBooking := booking.Booking{
-		Amount:     sourceBooking.Amount * -1,
-		Type:       booking.Gehalt,
-		Text:       sourceBooking.Text,
-		Month:      sourceBooking.Month,
-		Year:       sourceBooking.Year,
-		CostCenter: sourceBooking.Responsible}
-	kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
-	kommitmentAccount.Book(counterBooking)
+	c := BookGehaltCommand{}
+	c.run(repository, sourceBooking)
 }
 
 // Eine Buchung kann mehrere Nettopositionen enthalten, den je einem Stakeholder zugeschrieben wird.

@@ -168,6 +168,7 @@ auf  : Betrag * 1
 ### R6: SV-Beitrag
 - 100% werden gegen das Bankkonto gebucht
 - 100% werden gegen das Kommitment-Konto gebucht
+- Kostenstelle: Kürzel des Angestellten
 
 ### Offen R7: LNSteuer
 
