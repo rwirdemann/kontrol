@@ -254,15 +254,15 @@ func TestProcessSVBeitrag(t *testing.T) {
 	// Buchung wurde gegen Kommitment-Konto gebucht
 	a, _ := repository.Get(owner.StakeholderKM.Id)
 	b1 := a.Bookings[0]
-	util.AssertFloatEquals(t, -1385.10, b1.Amount)
-	util.AssertEquals(t, booking.SVBeitrag, b1.Type)
+	assert.Equal(t, -1385.10, b1.Amount)
+	assert.Equal(t, booking.SVBeitrag, b1.Type)
 
 	// Buchung wurde aufs Bankkonto gebucht
-	util.AssertEquals(t, 1, len(repository.BankAccount().Bookings))
+	assert.Equal(t, 1, len(repository.BankAccount().Bookings))
 	actual := repository.BankAccount().Bookings[0]
-	util.AssertFloatEquals(t, -1385.10, actual.Amount)
-	util.AssertEquals(t, "KKH, Ben", actual.Text)
-	util.AssertEquals(t, "SV-Beitrag", actual.Type)
+	assert.Equal(t, -1385.10, actual.Amount)
+	assert.Equal(t, "KKH, Ben", actual.Text)
+	assert.Equal(t, "SV-Beitrag", actual.Type)
 
 }
 

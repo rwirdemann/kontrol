@@ -73,6 +73,16 @@ func NewBooking(
 	}
 }
 
+func CloneBooking(b Booking, factor float64, typ string, costcenter string) Booking {
+	return Booking{
+		Amount:     b.Amount * factor,
+		Type:       typ,
+		Text:       b.Text,
+		Month:      b.Month,
+		Year:       b.Year,
+		CostCenter: costcenter}
+}
+
 func (b Booking) Print(owner owner.Stakeholder) {
 	text := b.Text
 	if len(text) > 37 {

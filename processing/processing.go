@@ -20,13 +20,13 @@ func Process(repository account.Repository, booking booking.Booking) {
 		b.Amount = util.Net(b.Amount) * -1
 	case "AR":
 		b.Amount = util.Net(b.Amount)
-	case "GV", "SV-Beitrag", "GWSteuer":
+	case "GV", "GWSteuer":
 		b.Amount = b.Amount * -1
 	}
 
 	// Interne Stunden werden nicht auf dem Bankkonto verbucht. Sie sind da nie eingegangen, sondern werden durch
 	// Einnahmen bestritten
-	if b.BookOnBankAccount() && b.Type != "Gehalt"{
+	if b.BookOnBankAccount() && b.Type != "Gehalt" && b.Type != "SV-Beitrag" {
 		repository.BankAccount().Book(b)
 	}
 
@@ -167,16 +167,8 @@ func bookInternalHours(repository account.Repository, sourceBooking booking.Book
 
 // SV-Beitrag wird direkt netto gegen das Kommitment-Konto gebucht
 func bookSVBeitrag(repository account.Repository, sourceBooking booking.Booking) {
-
-	// Gegenbuchung Kommitment-Konto
-	counterBooking := booking.Booking{
-		Amount: sourceBooking.Amount * -1,
-		Type:   booking.SVBeitrag,
-		Text:   sourceBooking.Text,
-		Month:  sourceBooking.Month,
-		Year:   sourceBooking.Year}
-	kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
-	kommitmentAccount.Book(counterBooking)
+	c := BookSVBeitragCommand{}
+	c.run(repository, sourceBooking)
 }
 
 // GWSteuer wird direkt netto gegen das Kommitment-Konto gebucht

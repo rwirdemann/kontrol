@@ -25,20 +25,6 @@ func AssertFalse(t *testing.T, b bool) {
 	}
 }
 
-func AssertNotNil(t *testing.T, actual interface{}) {
-	if actual == nil {
-		t.Errorf("actial = %v is nil", actual)
-		t.FailNow()
-	}
-}
-
-func AssertNil(t *testing.T, actual interface{}) {
-	if actual != nil {
-		t.Errorf("actial = %v is not nil", actual)
-		t.FailNow()
-	}
-}
-
 func AssertFloatEquals(t *testing.T, expect float64, actual float64) {
 	const EPSILON float64 = 0.00000001
 
