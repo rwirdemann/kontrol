@@ -13,11 +13,13 @@ import (
 )
 
 var repository account.Repository
+var accountBank *account.Account
 var accountHannes *account.Account
 var accountKommitment*account.Account
 
 func setUp() {
 	repository = account.NewDefaultRepository()
+	accountBank = repository.BankAccount()
 	accountHannes, _ = repository.Get(owner.StakeholderJM.Id)
 	accountKommitment, _ = repository.Get(owner.StakeholderKM.Id)
 }
@@ -107,6 +109,30 @@ func TestAusgangsrechnungAngestellter(t *testing.T) {
 
 	// Kommitment-Buchung ist der Kostenstelle "BW" zugeordnet
 	assert.Equal(t, "BW", kommitment.CostCenter)
+}
+
+// Gehalt Angestellter
+// - 100% Brutto gegen Bankkonto
+// - 100% Brutto gegen Kommitmentkonto
+// - Kostenstelle: Kürzel des Angestellten
+func TestGehaltAngestellter(t *testing.T) {
+	setUp()
+
+	p := booking.NewBooking("Gehalt", "BW", nil, 3869.65, "Gehalt Ben", 1, 2017)
+
+	Process(repository, *p)
+
+	// 100% Brutto gegen Bankkonto
+	assert.Equal(t, -3869.65, accountBank.Bookings[0].Amount)
+	assert.Equal(t, "Gehalt Ben", accountBank.Bookings[0].Text)
+	assert.Equal(t, "Gehalt", accountBank.Bookings[0].Type)
+
+	// 100% Brutto gegen Kommitment
+	assert.Equal(t, -3869.65, accountKommitment.Bookings[0].Amount)
+	assert.Equal(t, booking.Gehalt, accountKommitment.Bookings[0].Type)
+
+	// Kommitment-Buchung ist der Kostenstelle "BW" zugeordnet
+	assert.Equal(t, "BW", accountKommitment.Bookings[0].CostCenter)
 }
 
 func TestExternNettoAnteil(t *testing.T) {

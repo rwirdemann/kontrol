@@ -10,7 +10,7 @@ import (
 
 func TestImport(t *testing.T) {
 	positions := Import("bookings.csv")
-	util.AssertEquals(t, 7, len(positions))
+	util.AssertEquals(t, 9, len(positions))
 	assertPosition(t, positions[0], "ER", "K", "Ulrike Klode", 2142, 2017, 2, 0, 0, 0)
 	assertPosition(t, positions[1], "AR", "AN", "moebel.de", 4730.25, 2017, 1, 0, 0, 3975)
 	assertPosition(t, positions[2], "AR", "JM", "RN_20170131-picue", 17225.25, 2017, 1, 10800, 3675, 0)
@@ -18,6 +18,7 @@ func TestImport(t *testing.T) {
 	assertPosition(t, positions[4], "IS", "AN", "165", 8250, 2017, 12, 0, 0, 0)
 	assertPosition(t, positions[5], "SV-Beitrag", "BW", "KKH, Ben", 1385.1, 2017, 7, 0, 0, 0)
 	assertPosition(t, positions[6], "GWSteuer", "K", "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", 5160, 2017, 11, 0, 0, 0)
+	assertPosition(t, positions[7], "Gehalt", "BW", "Gehalt Ben 2017-07", 3869.65, 2017, 7, 0, 0, 0)
 }
 
 func assertPosition(t *testing.T, p booking.Booking, typ string, costCenter string, subject string,

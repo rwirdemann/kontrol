@@ -6,7 +6,7 @@ import (
 	"bitbucket.org/rwirdemann/kontrol/owner"
 )
 
-var ValidBookingTypes = [...]string{"ER", "AR", "GV", "IS", "SV-Beitrag", "GWSteuer"}
+var ValidBookingTypes = [...]string{"ER", "AR", "GV", "IS", "SV-Beitrag", "GWSteuer", "Gehalt"}
 
 // Zusatzinformationen einer Buchung, deren Quelle die CSV-Datei ist, und die für die weitere
 // Bearbeitung erforderlich sind.
@@ -37,6 +37,7 @@ const (
 	InterneStunden     = "Interne Stunden"
 	SVBeitrag          = "SV-Beitrag"
 	GWSteuer           = "GWSteuer"
+	Gehalt             = "Gehalt"
 )
 
 type Booking struct {

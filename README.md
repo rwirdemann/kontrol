@@ -171,7 +171,10 @@ auf  : Betrag * 1
 
 ### Offen R7: LNSteuer
 
-==> ich glaube, wie SV-Betrag...
+### R8: Gehalt Angestellter
+- 100% Brutto gegen Bankkonto
+- 100% Brutto gegen Kommitmentkonto
+- Kostenstelle: Kürzel des Angestellten
 
 ### Offen R8: Mitarbeiter Bonuszahlungen
 
