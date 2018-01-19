@@ -7,37 +7,62 @@ import (
 )
 
 type Command interface {
-	run(r account.Repository, b booking.Booking)
+	run()
 }
 
-type BookGehaltCommand struct{}
+type BookGehaltCommand struct {
+	Booking    booking.Booking
+	Repository account.Repository
+}
 
-func (BookGehaltCommand) run(r account.Repository, b booking.Booking) {
+func (c BookGehaltCommand) run() {
 
 	// Bankbuchung
-	bankBooking := b
-	bankBooking.Type = b.Typ
+	bankBooking := c.Booking
+	bankBooking.Type = c.Booking.Typ
 	bankBooking.Amount = bankBooking.Amount * -1
-	r.BankAccount().Book(bankBooking)
+	c.Repository.BankAccount().Book(bankBooking)
 
 	// Buchung Kommitment-Konto
-	kBooking := booking.CloneBooking(b, -1, booking.Gehalt, b.Responsible)
-	kommitmentAccount, _ := r.Get(owner.StakeholderKM.Id)
+	kBooking := booking.CloneBooking(c.Booking, -1, booking.Gehalt, c.Booking.Responsible)
+	kommitmentAccount, _ := c.Repository.Get(owner.StakeholderKM.Id)
 	kommitmentAccount.Book(kBooking)
 }
 
-type BookSVBeitragCommand struct{}
+type BookSVBeitragCommand struct {
+	Booking    booking.Booking
+	Repository account.Repository
+}
 
-func (BookSVBeitragCommand) run(r account.Repository, b booking.Booking) {
+func (c BookSVBeitragCommand) run() {
 
 	// Bankbuchung
-	bankBooking := b
-	bankBooking.Type = b.Typ
+	bankBooking := c.Booking
+	bankBooking.Type = c.Booking.Typ
 	bankBooking.Amount = bankBooking.Amount * -1
-	r.BankAccount().Book(bankBooking)
+	c.Repository.BankAccount().Book(bankBooking)
 
 	// Buchung Kommitment-Konto
-	kBooking := booking.CloneBooking(b, -1, booking.SVBeitrag, b.Responsible)
-	kommitmentAccount, _ := r.Get(owner.StakeholderKM.Id)
+	kBooking := booking.CloneBooking(c.Booking, -1, booking.SVBeitrag, c.Booking.Responsible)
+	kommitmentAccount, _ := c.Repository.Get(owner.StakeholderKM.Id)
+	kommitmentAccount.Book(kBooking)
+}
+
+type BookLNSteuerCommand struct {
+	Booking    booking.Booking
+	Repository account.Repository
+}
+
+func (c BookLNSteuerCommand) run() {
+
+	// Bankbuchung
+	bankBooking := c.Booking
+	bankBooking.Type = c.Booking.Typ
+	bankBooking.Amount = bankBooking.Amount * -1
+	c.Repository.BankAccount().Book(bankBooking)
+
+	// Buchung Kommitment-Konto
+	kBooking := booking.CloneBooking(c.Booking, -1, booking.LNSteuer, c.Booking.Responsible)
+	kommitmentAccount, _ := c.Repository.Get(owner.StakeholderKM.Id)
 	kommitmentAccount.Book(kBooking)
 }

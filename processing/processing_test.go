@@ -247,7 +247,7 @@ func TestBookAusgangsrechnungToBankAccount(t *testing.T) {
 // 100% werden gegen das Kommitment-Konto gebucht
 func TestProcessSVBeitrag(t *testing.T) {
 	setUp()
-	b := booking.NewBooking("SV-Beitrag", "BEN", nil, 1385.10, "KKH, Ben", 5, 2017)
+	b := booking.NewBooking("SV-Beitrag", "BW", nil, 1385.10, "KKH, Ben", 5, 2017)
 
 	Process(repository, *b)
 
@@ -256,6 +256,7 @@ func TestProcessSVBeitrag(t *testing.T) {
 	b1 := a.Bookings[0]
 	assert.Equal(t, -1385.10, b1.Amount)
 	assert.Equal(t, booking.SVBeitrag, b1.Type)
+	assert.Equal(t, "BW", b1.CostCenter)
 
 	// Buchung wurde aufs Bankkonto gebucht
 	assert.Equal(t, 1, len(repository.BankAccount().Bookings))
@@ -263,7 +264,23 @@ func TestProcessSVBeitrag(t *testing.T) {
 	assert.Equal(t, -1385.10, actual.Amount)
 	assert.Equal(t, "KKH, Ben", actual.Text)
 	assert.Equal(t, "SV-Beitrag", actual.Type)
+}
 
+// 100% werden auf das Bankkonto gebucht
+// 100% werden gegen das Kommitment-Konto gebucht
+// Kostenstelle: Angestellter, für den Lohnsteuer gezahlt wurde
+func TestProcessLNSteuer(t *testing.T) {
+	setUp()
+	b := booking.NewBooking("LNSteuer", "BW", nil, 1511.45, "Lohnsteuer Ben", 5, 2017)
+
+	Process(repository, *b)
+
+	// Buchung wurde gegen Kommitment-Konto gebucht
+	assertBooking(t, accountKommitment.Bookings[0], -1511.45, "Lohnsteuer Ben", "LNSteuer")
+	assert.Equal(t, "BW", accountKommitment.Bookings[0].CostCenter)
+
+	// Buchung wurde aufs Bankkonto gebucht
+	assertBooking(t, accountBank.Bookings[0], -1511.45, "Lohnsteuer Ben", "LNSteuer")
 }
 
 // 100% werden auf das Bankkonto gebucht

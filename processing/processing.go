@@ -26,11 +26,12 @@ func Process(repository account.Repository, booking booking.Booking) {
 
 	// Interne Stunden werden nicht auf dem Bankkonto verbucht. Sie sind da nie eingegangen, sondern werden durch
 	// Einnahmen bestritten
-	if b.BookOnBankAccount() && b.Type != "Gehalt" && b.Type != "SV-Beitrag" {
+	if b.BookOnBankAccount() && b.Type != "Gehalt" && b.Type != "SV-Beitrag" && b.Type != "LNSteuer" {
 		repository.BankAccount().Book(b)
 	}
 
 	// Assign booking to one or more virtual stakeholder accounts
+	var command Command
 	switch booking.Typ {
 	case "GV":
 		bookPartnerWithdrawal(repository, booking)
@@ -46,6 +47,9 @@ func Process(repository account.Repository, booking booking.Booking) {
 		bookGWSteuer(repository, booking)
 	case "Gehalt":
 		bookGehalt(repository, booking)
+	case "LNSteuer":
+		command = BookLNSteuerCommand{Repository: repository, Booking: booking}
+		command.run()
 	default:
 		log.Printf("could not process booking type '%s'", booking.Typ)
 	}
@@ -167,8 +171,8 @@ func bookInternalHours(repository account.Repository, sourceBooking booking.Book
 
 // SV-Beitrag wird direkt netto gegen das Kommitment-Konto gebucht
 func bookSVBeitrag(repository account.Repository, sourceBooking booking.Booking) {
-	c := BookSVBeitragCommand{}
-	c.run(repository, sourceBooking)
+	c := BookSVBeitragCommand{Booking: sourceBooking, Repository: repository}
+	c.run()
 }
 
 // GWSteuer wird direkt netto gegen das Kommitment-Konto gebucht
@@ -187,8 +191,8 @@ func bookGWSteuer(repository account.Repository, sourceBooking booking.Booking) 
 
 // Gehalt wird direkt netto gegen das Kommitment-Konto gebucht
 func bookGehalt(repository account.Repository, sourceBooking booking.Booking) {
-	c := BookGehaltCommand{}
-	c.run(repository, sourceBooking)
+	c := BookGehaltCommand{Repository: repository, Booking: sourceBooking}
+	c.run()
 }
 
 // Eine Buchung kann mehrere Nettopositionen enthalten, den je einem Stakeholder zugeschrieben wird.
