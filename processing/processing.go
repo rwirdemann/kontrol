@@ -26,7 +26,11 @@ func Process(repository account.Repository, booking booking.Booking) {
 
 	// Interne Stunden werden nicht auf dem Bankkonto verbucht. Sie sind da nie eingegangen, sondern werden durch
 	// Einnahmen bestritten
-	if b.BookOnBankAccount() && b.Type != "Gehalt" && b.Type != "SV-Beitrag" && b.Type != "LNSteuer" {
+	if b.BookOnBankAccount() &&
+		b.Type != "Gehalt" &&
+		b.Type != "SV-Beitrag" &&
+		b.Type != "LNSteuer" &&
+		b.Type != "GWSteuer" {
 		repository.BankAccount().Book(b)
 	}
 
@@ -42,11 +46,14 @@ func Process(repository account.Repository, booking booking.Booking) {
 	case "IS":
 		bookInternalHours(repository, booking)
 	case "SV-Beitrag":
-		bookSVBeitrag(repository, booking)
+		command = BookSVBeitragCommand{Repository: repository, Booking: booking}
+		command.run()
 	case "GWSteuer":
-		bookGWSteuer(repository, booking)
+		command = BookGWSteuerCommand{Repository: repository, Booking: booking}
+		command.run()
 	case "Gehalt":
-		bookGehalt(repository, booking)
+		command = BookGehaltCommand{Repository: repository, Booking: booking}
+		command.run()
 	case "LNSteuer":
 		command = BookLNSteuerCommand{Repository: repository, Booking: booking}
 		command.run()
@@ -167,32 +174,6 @@ func bookInternalHours(repository account.Repository, sourceBooking booking.Book
 		Year:   sourceBooking.Year}
 	kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
 	kommitmentAccount.Book(counterBooking)
-}
-
-// SV-Beitrag wird direkt netto gegen das Kommitment-Konto gebucht
-func bookSVBeitrag(repository account.Repository, sourceBooking booking.Booking) {
-	c := BookSVBeitragCommand{Booking: sourceBooking, Repository: repository}
-	c.run()
-}
-
-// GWSteuer wird direkt netto gegen das Kommitment-Konto gebucht
-func bookGWSteuer(repository account.Repository, sourceBooking booking.Booking) {
-
-	// Gegenbuchung Kommitment-Konto
-	counterBooking := booking.Booking{
-		Amount: sourceBooking.Amount * -1,
-		Type:   booking.GWSteuer,
-		Text:   sourceBooking.Text,
-		Month:  sourceBooking.Month,
-		Year:   sourceBooking.Year}
-	kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
-	kommitmentAccount.Book(counterBooking)
-}
-
-// Gehalt wird direkt netto gegen das Kommitment-Konto gebucht
-func bookGehalt(repository account.Repository, sourceBooking booking.Booking) {
-	c := BookGehaltCommand{Repository: repository, Booking: sourceBooking}
-	c.run()
 }
 
 // Eine Buchung kann mehrere Nettopositionen enthalten, den je einem Stakeholder zugeschrieben wird.
