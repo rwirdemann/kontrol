@@ -74,6 +74,17 @@ func NewBooking(
 	}
 }
 
+func Ausgangsrechnung(
+	dealbringer string,
+	net map[owner.Stakeholder]float64,
+	amount float64,
+	text string,
+	month int,
+	year int) *Booking {
+
+	return NewBooking("AR", dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017)
+}
+
 func CloneBooking(b Booking, factor float64, typ string, costcenter string) Booking {
 	return Booking{
 		Amount:     b.Amount * factor,

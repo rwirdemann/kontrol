@@ -83,3 +83,37 @@ func (suite *AusgangsrechnungTestSuite) TestPartnerNettoAnteil() {
 	suite.Equal(3675.0*owner.KommmitmentShare, kommitmentHannes.Amount)
 	suite.Equal(booking.Kommitmentanteil, kommitmentHannes.Type)
 }
+
+//
+// Tests für Vertriebsprovision
+//
+
+// - Kommitment bekommt den 95% der Nettoposition
+// - Dealbringer ist Partner => Partner bekommt je 5% der Nettoposition(en)
+func (suite *AusgangsrechnungTestSuite) TestDealbringerIstPartner() {
+
+	// Eine Buchung mit 2 Nettopositionen
+	net := make(map[owner.Stakeholder]float64)
+	net[owner.StakeholderRW] = 10800.0
+	net[owner.StakeholderJM] = 3675.0
+	dealbringer := "JM"
+	p := booking.Ausgangsrechnung(dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017)
+
+	Process(suite.repository, *p)
+
+	// Hannes bekommt Provision für Ralf's Nettoanteil
+	provisionRalf, _ := findBookingByText(suite.accountHannes.Bookings, "Rechnung 1234#Provision#RW")
+	suite.Equal(10800.0*owner.PartnerProvision, provisionRalf.Amount)
+	suite.Equal(booking.Vertriebsprovision, provisionRalf.Type)
+
+	// Hannes bekommt Provision für Hanne's Nettoanteil
+	provisionHannes, _ := findBookingByText(suite.accountHannes.Bookings, "Rechnung 1234#Provision#JM")
+	suite.Equal(3675.0*owner.PartnerProvision, provisionHannes.Amount)
+	suite.Equal(booking.Vertriebsprovision, provisionHannes.Type)
+}
+
+// - Kommitment bekommt den 95% der Nettoposition
+// - Dealbringer ist Angestellter => Kommitment bekommt 5% der Nettoposition,
+//   Kostenstelle Dealbringer
+func (suite *AusgangsrechnungTestSuite) TestDealbringerIstAngestellter() {
+}
