@@ -1,7 +1,6 @@
 package processing
 
 import (
-	"errors"
 	"testing"
 
 	"bitbucket.org/rwirdemann/kontrol/account"
@@ -15,7 +14,7 @@ import (
 var repository account.Repository
 var accountBank *account.Account
 var accountHannes *account.Account
-var accountKommitment*account.Account
+var accountKommitment *account.Account
 
 func setUp() {
 	repository = account.NewDefaultRepository()
@@ -23,64 +22,6 @@ func setUp() {
 	accountHannes, _ = repository.Get(owner.StakeholderJM.Id)
 	accountKommitment, _ = repository.Get(owner.StakeholderKM.Id)
 }
-
-func TestPartnerNettoAnteil(t *testing.T) {
-	setUp()
-
-	// given: a booking
-	net := make(map[owner.Stakeholder]float64)
-	net[owner.StakeholderRW] = 10800.0
-	net[owner.StakeholderJM] = 3675.0
-	p := booking.NewBooking("AR", "JM", net, 17225.25, "Rechnung 1234", 1, 2017)
-
-	// when: the position is processed
-	Process(repository, *p)
-
-	// then ralf 1 booking: his own net share
-	accountRalf, _ := repository.Get(owner.StakeholderRW.Id)
-	bookingsRalf := accountRalf.Bookings
-	util.AssertEquals(t, 1, len(bookingsRalf))
-	bRalf, _ := findBookingByText(bookingsRalf, "Rechnung 1234#NetShare#RW")
-	util.AssertFloatEquals(t, 10800.0*owner.PartnerShare, bRalf.Amount)
-	util.AssertEquals(t, 1, bRalf.Month)
-	util.AssertEquals(t, 2017, bRalf.Year)
-	util.AssertEquals(t, booking.Nettoanteil, bRalf.Type)
-
-	// and hannes got 3 bookings: his own net share and 2 provisions
-	accountHannes, _ := repository.Get(owner.StakeholderJM.Id)
-	bookingsHannes := accountHannes.Bookings
-	util.AssertEquals(t, 3, len(bookingsHannes))
-
-	// net share
-	b, _ := findBookingByText(bookingsHannes, "Rechnung 1234#NetShare#JM")
-	util.AssertFloatEquals(t, 3675.0*owner.PartnerShare, b.Amount)
-	util.AssertEquals(t, 1, b.Month)
-	util.AssertEquals(t, 2017, b.Year)
-
-	// provision from ralf
-	provisionRalf, _ := findBookingByText(bookingsHannes, "Rechnung 1234#Provision#RW")
-	util.AssertFloatEquals(t, 10800.0*owner.PartnerProvision, provisionRalf.Amount)
-	util.AssertEquals(t, booking.Vertriebsprovision, provisionRalf.Type)
-
-	// // provision from hannes
-	provisionHannes, _ := findBookingByText(bookingsHannes, "Rechnung 1234#Provision#JM")
-	util.AssertFloatEquals(t, 3675.0*owner.PartnerProvision, provisionHannes.Amount)
-	util.AssertEquals(t, booking.Vertriebsprovision, provisionHannes.Type)
-
-	// kommitment got 25% from ralfs net booking
-	accountKommitment, _ := repository.Get(owner.StakeholderKM.Id)
-	bookingsKommitment := accountKommitment.Bookings
-	util.AssertEquals(t, 2, len(bookingsKommitment))
-	kommitmentRalf, _ := findBookingByText(bookingsKommitment, "Rechnung 1234#Kommitment#RW")
-	util.AssertFloatEquals(t, 10800.0*owner.KommmitmentShare, kommitmentRalf.Amount)
-	util.AssertEquals(t, booking.Kommitmentanteil, kommitmentRalf.Type)
-
-	// and kommitment got 25% from hannes net booking
-	kommitmentHannes, _ := findBookingByText(bookingsKommitment, "Rechnung 1234#Kommitment#JM")
-	util.AssertFloatEquals(t, 3675.0*owner.KommmitmentShare, kommitmentHannes.Amount)
-	util.AssertEquals(t, booking.Kommitmentanteil, kommitmentHannes.Type)
-}
-
 
 // Ausgangsrechnung Angestellter
 // - 5% Provision für Dealbringer
@@ -309,13 +250,4 @@ func assertBooking(t *testing.T, b booking.Booking, amount float64, text string,
 	util.AssertFloatEquals(t, amount, b.Amount)
 	util.AssertEquals(t, text, b.Text)
 	util.AssertEquals(t, destType, b.Type)
-}
-
-func findBookingByText(bookings []booking.Booking, text string) (*booking.Booking, error) {
-	for _, b := range bookings {
-		if b.Text == text {
-			return &b, nil
-		}
-	}
-	return nil, errors.New("booking with test '" + text + " not found")
 }
