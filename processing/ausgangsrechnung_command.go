@@ -12,7 +12,7 @@ type BookAusgangsrechnungCommand struct {
 }
 
 func (this BookAusgangsrechnungCommand) run() {
-	benefitees := stakeholderWithNetPositions(this.Booking)
+	benefitees := this.stakeholderWithNetPositions()
 	for _, benefited := range benefitees {
 
 		if benefited.Type == owner.StakeholderTypePartner {
@@ -92,10 +92,10 @@ func (this BookAusgangsrechnungCommand) run() {
 
 // Eine Buchung kann mehrere Nettopositionen enthalten, den je einem Stakeholder zugeschrieben wird.
 // Diese Funktion liefert ein Array mit Stateholder, deren Nettoanteil in der Buchung > 0 ist.
-func stakeholderWithNetPositions(booking booking.Booking) []owner.Stakeholder {
+func (this BookAusgangsrechnungCommand) stakeholderWithNetPositions() []owner.Stakeholder {
 	var result []owner.Stakeholder
 
-	for k, v := range booking.Net {
+	for k, v := range this.Booking.Net {
 		if v > 0 {
 			result = append(result, k)
 		}
