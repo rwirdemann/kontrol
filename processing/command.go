@@ -146,15 +146,27 @@ func (this BookAusgangsrechnungCommand) run() {
 			kommitmentAccount.Book(kommitmentShare)
 		}
 
-		// book cost center provision
-		a, _ := this.Repository.Get(this.Booking.Responsible)
+		// Die Vertriebsprovision bekommt entweder ein Partner, oder wird dem K-Account gut geschrieben.
+		// Letzters, wenn der Vertriebserfolg einem Angestellten zuzuordnen ist. In diesem Fall wird die
+		// Kostenstelle auf die Id des Angestellten gesetzt, so dass die Gutschrift diesem zugeordnet
+		// werden kann.
+		var provisionAccount *account.Account
+		var costcenter string
+		stakeholderRepository := owner.StakeholderRepository{}
+		if stakeholderRepository.TypeOf(this.Booking.Responsible) == owner.StakeholderTypeEmployee {
+			provisionAccount, _ = this.Repository.Get(owner.StakeholderKM.Id)
+			costcenter = this.Booking.Responsible
+		} else {
+			provisionAccount, _ = this.Repository.Get(this.Booking.Responsible)
+		}
 		b := booking.Booking{
-			Amount: this.Booking.Net[benefited] * owner.PartnerProvision,
-			Type:   booking.Vertriebsprovision,
-			Text:   this.Booking.Text + "#Provision#" + benefited.Id,
-			Month:  this.Booking.Month,
-			Year:   this.Booking.Year}
-		a.Book(b)
+			Amount:     this.Booking.Net[benefited] * owner.PartnerProvision,
+			Type:       booking.Vertriebsprovision,
+			Text:       this.Booking.Text + "#Provision#" + benefited.Id,
+			Month:      this.Booking.Month,
+			Year:       this.Booking.Year,
+			CostCenter: costcenter}
+		provisionAccount.Book(b)
 	}
 }
 

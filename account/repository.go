@@ -1,8 +1,8 @@
 package account
 
 import (
-	"bitbucket.org/rwirdemann/kontrol/owner"
 	"bitbucket.org/rwirdemann/kontrol/booking"
+	"bitbucket.org/rwirdemann/kontrol/owner"
 )
 
 type Repository interface {
@@ -26,7 +26,8 @@ func EmptyDefaultRepository() Repository {
 func NewDefaultRepository() Repository {
 	o := owner.Stakeholder{Id: "GLS", Name: "Kommitment GmbH & Co. KG", Type: owner.StakeholderTypeBank}
 	r := DefaultRepository{collectiveAccount: &Account{Owner: o}, accounts: make(map[string]*Account)}
-	for _, sh := range owner.AllStakeholder {
+	stakeholderRepository := owner.StakeholderRepository{}
+	for _, sh := range stakeholderRepository.All() {
 		if sh.Type != owner.StakeholderTypeExtern {
 			r.Add(NewAccount(sh))
 		}

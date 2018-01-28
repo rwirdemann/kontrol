@@ -103,17 +103,33 @@ func (suite *AusgangsrechnungTestSuite) TestDealbringerIstPartner() {
 
 	// Hannes bekommt Provision für Ralf's Nettoanteil
 	provisionRalf, _ := findBookingByText(suite.accountHannes.Bookings, "Rechnung 1234#Provision#RW")
-	suite.Equal(10800.0*owner.PartnerProvision, provisionRalf.Amount)
-	suite.Equal(booking.Vertriebsprovision, provisionRalf.Type)
+	suite.assertBooking(10800.0*owner.PartnerProvision, booking.Vertriebsprovision, provisionRalf)
 
 	// Hannes bekommt Provision für Hanne's Nettoanteil
 	provisionHannes, _ := findBookingByText(suite.accountHannes.Bookings, "Rechnung 1234#Provision#JM")
-	suite.Equal(3675.0*owner.PartnerProvision, provisionHannes.Amount)
-	suite.Equal(booking.Vertriebsprovision, provisionHannes.Type)
+	suite.assertBooking(3675.0*owner.PartnerProvision, booking.Vertriebsprovision, provisionHannes)
 }
 
 // - Kommitment bekommt den 95% der Nettoposition
 // - Dealbringer ist Angestellter => Kommitment bekommt 5% der Nettoposition,
 //   Kostenstelle Dealbringer
 func (suite *AusgangsrechnungTestSuite) TestDealbringerIstAngestellter() {
+
+	net := make(map[owner.Stakeholder]float64)
+	net[owner.StakeholderRW] = 10800.0
+	dealbringer := "BW"
+	b := booking.Ausgangsrechnung(dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017)
+
+	Process(suite.repository, *b)
+
+	// Provision ist auf K-Account gebucht
+	provision, err := findBookingByText(suite.accountKommitment.Bookings, "Rechnung 1234#Provision#RW")
+	suite.Nil(err)
+	suite.assertBooking(10800.0*owner.PartnerProvision, booking.Vertriebsprovision, provision)
+	suite.Equal("BW", provision.CostCenter)
+}
+
+func (suite *AusgangsrechnungTestSuite) assertBooking(amount float64, _type string, b *booking.Booking) {
+	suite.Equal(amount, b.Amount)
+	suite.Equal(_type, b.Type)
 }

@@ -1,5 +1,9 @@
 package owner
 
+import (
+	"fmt"
+)
+
 const (
 	PartnerShare             = 0.7
 	KommmitmentShare         = 0.25
@@ -15,4 +19,18 @@ var StakeholderBW = Stakeholder{Id: "BW", Name: "Ben Wiedenmann", Type: Stakehol
 var StakeholderKM = Stakeholder{Id: "K", Name: "Kommitment", Type: StakeholderTypeCompany}
 var StakeholderEX = Stakeholder{Id: "EX", Name: "Extern", Type: StakeholderTypeExtern}
 
-var AllStakeholder = []Stakeholder{StakeholderRW, StakeholderAN, StakeholderJM, StakeholderBW, StakeholderEX, StakeholderKM}
+type StakeholderRepository struct {
+}
+
+func (this StakeholderRepository) All() []Stakeholder {
+	return []Stakeholder{StakeholderRW, StakeholderAN, StakeholderJM, StakeholderBW, StakeholderEX, StakeholderKM}
+}
+
+func (this StakeholderRepository) TypeOf(id string) string {
+	for _, s := range this.All() {
+		if s.Id == id {
+			return s.Type
+		}
+	}
+	panic(fmt.Sprintf("stakeholder '%s' not found", id))
+}
