@@ -45,7 +45,8 @@ func Process(repository account.Repository, booking booking.Booking) {
 		command = BookAusgangsrechnungCommand{Repository: repository, Booking: booking}
 		command.run()
 	case "ER":
-		bookIncomingInvoice(repository, booking)
+		command = BookEingangsrechnungCommand{Repository: repository, Booking: booking}
+		command.run()
 	case "IS":
 		bookInternalHours(repository, booking)
 	case "SV-Beitrag":

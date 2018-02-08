@@ -116,17 +116,18 @@ func TestEingangsrechnung(t *testing.T) {
 
 	// Buchung wurde gegen das Kommitment-Konto gebucht
 	accountKommitment, _ := repository.Get(owner.StakeholderKM.Id)
-	util.AssertEquals(t, 1, len(accountKommitment.Bookings))
+	assert.Equal(t, 1, len(accountKommitment.Bookings))
 	kommitment := accountKommitment.Bookings[0]
-	util.AssertFloatEquals(t, util.Net(-12852.0), kommitment.Amount)
-	util.AssertEquals(t, booking.Eingangsrechnung, kommitment.Type)
+	assert.Equal(t, util.Net(-12852.0), kommitment.Amount)
+	assert.Equal(t, kommitment.Type, booking.Eingangsrechnung)
+	assert.Equal(t, "K", kommitment.CostCenter)
 
 	// Buchung wurde gegen das Bankkonto gebucht
-	util.AssertEquals(t, 1, len(repository.BankAccount().Bookings))
+	assert.Equal(t, 1, len(repository.BankAccount().Bookings))
 	actual := repository.BankAccount().Bookings[0]
-	util.AssertFloatEquals(t, util.Net(-12852.0), actual.Amount)
-	util.AssertEquals(t, "Eingangsrechnung 1234", actual.Text)
-	util.AssertEquals(t, "ER", actual.Type)
+	assert.Equal(t, util.Net(-12852.0), actual.Amount)
+	assert.Equal(t, "Eingangsrechnung 1234", actual.Text)
+	assert.Equal(t, "ER", actual.Type)
 }
 
 func TestPartnerEntnahme(t *testing.T) {
