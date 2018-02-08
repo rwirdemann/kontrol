@@ -20,7 +20,7 @@ func Process(repository account.Repository, booking booking.Booking) {
 		b.Amount = util.Net(b.Amount) * -1
 	case "AR":
 		b.Amount = util.Net(b.Amount)
-	case "GV", "GWSteuer":
+	case "GWSteuer":
 		b.Amount = b.Amount * -1
 	}
 
@@ -30,7 +30,8 @@ func Process(repository account.Repository, booking booking.Booking) {
 		b.Type != "Gehalt" &&
 		b.Type != "SV-Beitrag" &&
 		b.Type != "LNSteuer" &&
-		b.Type != "GWSteuer" {
+		b.Type != "GWSteuer" &&
+		b.Type != "GV" {
 		repository.BankAccount().Book(b)
 	}
 
@@ -38,7 +39,8 @@ func Process(repository account.Repository, booking booking.Booking) {
 	var command Command
 	switch booking.Typ {
 	case "GV":
-		bookPartnerWithdrawal(repository, booking)
+		command = BookPartnerEntnahmeCommand{Repository: repository, Booking: booking}
+		command.run()
 	case "AR":
 		command = BookAusgangsrechnungCommand{Repository: repository, Booking: booking}
 		command.run()
@@ -60,19 +62,6 @@ func Process(repository account.Repository, booking booking.Booking) {
 		command.run()
 	default:
 		log.Printf("could not process booking type '%s'", booking.Typ)
-	}
-}
-
-func bookPartnerWithdrawal(repository account.Repository, sourceBooking booking.Booking) {
-	if sourceBooking.Typ == "GV" {
-		b := booking.Booking{
-			Amount: -1 * sourceBooking.Amount,
-			Type:   booking.Entnahme,
-			Text:   "GV Entnahme",
-			Month:  sourceBooking.Month,
-			Year:   sourceBooking.Year}
-		a, _ := repository.Get(sourceBooking.Responsible)
-		a.Book(b)
 	}
 }
 

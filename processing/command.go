@@ -85,3 +85,22 @@ func (c BookGWSteuerCommand) run() {
 	kommitmentAccount, _ := c.Repository.Get(owner.StakeholderKM.Id)
 	kommitmentAccount.Book(kBooking)
 }
+
+type BookPartnerEntnahmeCommand struct {
+	Booking    booking.Booking
+	Repository account.Repository
+}
+
+func (c BookPartnerEntnahmeCommand) run() {
+
+	// Bankbuchung
+	bankBooking := c.Booking
+	bankBooking.Type = c.Booking.Typ
+	bankBooking.Amount = bankBooking.Amount * -1
+	c.Repository.BankAccount().Book(bankBooking)
+
+	// Buchung gegen Kommanditstenkonto
+	b := booking.CloneBooking(c.Booking, -1, booking.Entnahme, c.Booking.Responsible)
+	a, _ := c.Repository.Get(c.Booking.Responsible)
+	a.Book(b)
+}
