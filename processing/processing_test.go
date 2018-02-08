@@ -14,12 +14,14 @@ import (
 var repository account.Repository
 var accountBank *account.Account
 var accountHannes *account.Account
+var accountRalf *account.Account
 var accountKommitment *account.Account
 
 func setUp() {
 	repository = account.NewDefaultRepository()
 	accountBank = repository.BankAccount()
 	accountHannes, _ = repository.Get(owner.StakeholderJM.Id)
+	accountRalf, _ = repository.Get(owner.StakeholderRW.Id)
 	accountKommitment, _ = repository.Get(owner.StakeholderKM.Id)
 }
 
@@ -127,18 +129,24 @@ func TestEingangsrechnung(t *testing.T) {
 	util.AssertEquals(t, "ER", actual.Type)
 }
 
-func TestPartnerWithdrawals(t *testing.T) {
+func TestPartnerEntnahme(t *testing.T) {
 	setUp()
 
 	extras := booking.CsvBookingExtras{Typ: "GV", Responsible: "RW"}
 	extras.Net = make(map[owner.Stakeholder]float64)
 	b := booking.NewBooking("GV", "RW", nil, 6000, "", 1, 2017)
+
 	Process(repository, *b)
-	accountRalf, _ := repository.Get(owner.StakeholderRW.Id)
-	util.AssertEquals(t, 1, len(accountRalf.Bookings))
+
 	bRalf := accountRalf.Bookings[0]
 	util.AssertFloatEquals(t, -6000, bRalf.Amount)
 	util.AssertEquals(t, booking.Entnahme, bRalf.Type)
+
+	// Buchung wurde gegen das Bankkonto gebucht
+	util.AssertEquals(t, 1, len(repository.BankAccount().Bookings))
+	actual := repository.BankAccount().Bookings[0]
+	util.AssertFloatEquals(t, -6000, actual.Amount)
+	util.AssertEquals(t, "GV", actual.Type)
 }
 
 // Interne Stunden
