@@ -33,6 +33,7 @@ const port = 8991
 func main() {
 	version := flag.Bool("version", false, "prints current kontrol version")
 	file := flag.String("file", DefaultBookingFile, "booking file")
+	year := flag.Int("year", 2017, "year to control")
 	flag.Parse()
 	if *version {
 		fmt.Printf("Build: %s Git: %s\n", buildstamp, githash)
@@ -41,23 +42,23 @@ func main() {
 	fileName = *file
 
 	repository := account.NewDefaultRepository()
-	watchBookingFile(repository)
-	importAndProcessBookings(repository)
+	watchBookingFile(repository, *year)
+	importAndProcessBookings(repository, *year)
 
 	handler := cors.AllowAll().Handler(handler.NewRouter(githash, buildstamp, repository))
 	fmt.Printf("listing on http://localhost:%d...\n", port)
 	http.ListenAndServe(":"+strconv.Itoa(port), handler)
 }
 
-func importAndProcessBookings(repository account.Repository) {
+func importAndProcessBookings(repository account.Repository, year int) {
 	repository.ClearBookings()
-	bookings := parser.Import(fileName)
+	bookings := parser.Import(fileName, year)
 	for _, p := range bookings {
 		processing.Process(repository, p)
 	}
 }
 
-func watchBookingFile(repository account.Repository) {
+func watchBookingFile(repository account.Repository, year int) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)
@@ -68,7 +69,7 @@ func watchBookingFile(repository account.Repository) {
 			select {
 			case <-watcher.Event:
 				log.Printf("booking reimport start: %s\n", time.Now())
-				importAndProcessBookings(repository)
+				importAndProcessBookings(repository, year)
 				log.Printf("booking reimport end: %s\n", time.Now())
 			case err := <-watcher.Error:
 				log.Println("error:", err)

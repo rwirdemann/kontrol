@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	"bitbucket.org/rwirdemann/kontrol/owner"
 	"bitbucket.org/rwirdemann/kontrol/booking"
+	"bitbucket.org/rwirdemann/kontrol/owner"
 )
 
 // Beschreibt, dass die netto (Rechnungs-)Position in Spalte X der CSV-Datei dem Stakeholder Y gehört
@@ -26,7 +26,7 @@ var netBookings = []struct {
 	{Owner: owner.StakeholderEX, Column: 23},
 }
 
-func Import(file string) []booking.Booking {
+func Import(file string, aYear int) []booking.Booking {
 	var positions []booking.Booking
 
 	if f, err := openCsvFile(file); err == nil {
@@ -47,12 +47,14 @@ func Import(file string) []booking.Booking {
 				subject := strings.Replace(record[2], "\n", ",", -1)
 				amount := parseAmount(record[3])
 				year, month := parseMonth(record[4])
-				m := make(map[owner.Stakeholder]float64)
-				for _, p := range netBookings {
-					m[p.Owner] = parseAmount(record[p.Column])
+				if year == aYear {
+					m := make(map[owner.Stakeholder]float64)
+					for _, p := range netBookings {
+						m[p.Owner] = parseAmount(record[p.Column])
+					}
+					position := booking.NewBooking(typ, cs, m, amount, subject, month, year)
+					positions = append(positions, *position)
 				}
-				position := booking.NewBooking(typ, cs, m, amount, subject, month, year)
-				positions = append(positions, *position)
 			} else {
 				fmt.Printf("unknown booking type '%s'\n", record[0])
 			}
