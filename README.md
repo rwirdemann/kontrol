@@ -1,11 +1,10 @@
 # Kontrol Backend
 
 ## Todos
-Costcenter in Booking ausliefern
-/kontrol/accounts/K?cs=JM
 
-- plausi check
-- figo api einbinden: anke.nehrenberg@kommitment.biz
+* Deployment automatisieren
+* Excel Dartei regelmäßg abholen und parsen
+* Vertriebsprovision für Angestellte auf deren Accounts buchen
 
 ## API
 
