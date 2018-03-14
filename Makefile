@@ -25,7 +25,7 @@ test:
 	go test ./...
 
 run: 
-	go run ${MAIN}
+	go run ${MAIN} > /tmp/${MAIN}.log 2>&1 &
 
 install: 
 	go install bitbucket.org/rwirdemann/kontrol
