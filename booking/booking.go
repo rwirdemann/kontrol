@@ -3,7 +3,10 @@ package booking
 import (
 	"fmt"
 
+	"golang.org/x/text/language"
+
 	"bitbucket.org/rwirdemann/kontrol/owner"
+	"golang.org/x/text/message"
 )
 
 var ValidBookingTypes = [...]string{"ER", "AR", "GV", "IS", "SV-Beitrag", "GWSteuer", "Gehalt", "LNSteuer"}
@@ -102,6 +105,16 @@ func (b Booking) Print(owner owner.Stakeholder) {
 	}
 
 	fmt.Printf("[%s: %2d-%d %2s %-22s %-40s \t %9.2f]\n", owner.Id, b.Month, b.Year, b.CostCenter, b.Type, text, b.Amount)
+}
+
+func (b Booking) CSV(owner owner.Stakeholder) string {
+	p := message.NewPrinter(language.German)
+	text := b.Text
+	if len(text) > 37 {
+		text = text[:37] + "..."
+	}
+	amount := p.Sprintf("%9.2f", b.Amount)
+	return fmt.Sprintf("%s;%2d;%d;%s;%s;%s;%s\n", owner.Id, b.Month, b.Year, b.CostCenter, b.Type, text, amount)
 }
 
 func (b *Booking) BookOnBankAccount() bool {

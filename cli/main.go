@@ -15,6 +15,7 @@ func main() {
 
 	accountFlag := flag.String("account", "", "fetches given account")
 	costcenterFlag := flag.String("costcenter", "", "fetches kommitmentaccount filtered by costcenter")
+	format := flag.String("format", "", "csv")
 	bankFlag := flag.Bool("bank", false, "fetches bank account")
 	vSaldoFlag := flag.Bool("vsaldo", false, "saldo sum virtual accounts")
 	checkFlag := flag.Bool("check", false, "checks virtual accounts against bank account saldo")
@@ -30,7 +31,11 @@ func main() {
 		} else {
 			get(fmt.Sprintf("%s/accounts/%s", baseUrl, *accountFlag), &a)
 		}
-		a.Print()
+		if *format == "csv" {
+			fmt.Println(a.CSV())
+		} else {
+			a.Print()
+		}
 	case *vSaldoFlag:
 		saldo := virtualAccountsSaldo(baseUrl)
 		fmt.Println("-------------------------------------------------------------------------------------------")
