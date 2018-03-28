@@ -2,14 +2,15 @@ package parser
 
 import (
 	"testing"
+	"time"
 
-	"bitbucket.org/rwirdemann/kontrol/owner"
 	"bitbucket.org/rwirdemann/kontrol/booking"
+	"bitbucket.org/rwirdemann/kontrol/owner"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestImport(t *testing.T) {
-	positions := Import("bookings.csv")
+	positions := Import("bookings.csv", 2017)
 	assert.Equal(t, 10, len(positions))
 	assertPosition(t, positions[0], "ER", "K", "Ulrike Klode", 2142, 2017, 2, 0, 0, 0)
 	assertPosition(t, positions[1], "AR", "AN", "moebel.de", 4730.25, 2017, 1, 0, 0, 3975)
@@ -36,4 +37,10 @@ func assertPosition(t *testing.T, p booking.Booking, typ string, costCenter stri
 	assert.Equal(t, nettoRW, p.Net[owner.StakeholderRW])
 	assert.Equal(t, nettoJM, p.Net[owner.StakeholderJM])
 	assert.Equal(t, nettoAN, p.Net[owner.StakeholderAN])
+}
+
+func TestParseFileCreated(t *testing.T) {
+	assert.Equal(t, time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC), parseFileCreated("1.1.2017"))
+	assert.Equal(t, time.Date(2017, 12, 1, 0, 0, 0, 0, time.UTC), parseFileCreated("1.12.2017"))
+	assert.Equal(t, time.Date(2017, 7, 31, 0, 0, 0, 0, time.UTC), parseFileCreated("31.7.2017"))
 }

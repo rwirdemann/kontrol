@@ -25,10 +25,12 @@ Das Bankkonto inkl. Buchungen.
     "Bookings": [
         {
             "Typ": "ER",
+            "CostCenter": "RW"
             "Amount": 830.29,
             "Text": "hauptsache.net, Büro- und Konfimiete",
             "Year": 2017,
-            "Month": 1
+            "Month": 1,
+            "FileCreated": "2017-02-06T00:00:00Z"
         },
         ...
     ],
@@ -62,6 +64,9 @@ Alle "virtuellen" Konten.
 
 Ein einzelnes Konto inkl. Buchungen.
 
+Parameter: 
+- cs="BW"   # Filter auf Costcenter (optional)
+
 ```
 {
     "Owner": {
@@ -72,10 +77,12 @@ Ein einzelnes Konto inkl. Buchungen.
     "Bookings": [
         {
             "Typ": "Nettoanteil",
+            "CostCenter": "JM"
             "Amount": 7559.999999999999,
             "Text": "RN_20170131-picue#NetShare#RW",
             "Year": 2017,
-            "Month": 1
+            "Month": 1,
+            "FileCreated": "2017-02-06T00:00:00Z"
         },
         ...
     ],

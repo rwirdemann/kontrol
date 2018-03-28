@@ -2,6 +2,7 @@ package booking
 
 import (
 	"fmt"
+	"time"
 
 	"golang.org/x/text/language"
 
@@ -45,12 +46,13 @@ const (
 )
 
 type Booking struct {
-	Type       string // siehe const-Block hier drüber für gültige Werte
-	CostCenter string
-	Amount     float64
-	Text       string
-	Year       int
-	Month      int
+	Type        string // siehe const-Block hier drüber für gültige Werte
+	CostCenter  string
+	Amount      float64
+	Text        string
+	Year        int
+	Month       int
+	FileCreated time.Time
 
 	CsvBookingExtras `json:"-"`
 }
@@ -62,7 +64,8 @@ func NewBooking(
 	amount float64,
 	text string,
 	month int,
-	year int) *Booking {
+	year int,
+	fileCreated time.Time) *Booking {
 
 	return &Booking{
 		CsvBookingExtras: CsvBookingExtras{
@@ -70,10 +73,11 @@ func NewBooking(
 			Responsible: dealBringer,
 			Net:         net,
 		},
-		Amount: amount,
-		Text:   text,
-		Month:  month,
-		Year:   year,
+		Amount:      amount,
+		Text:        text,
+		Month:       month,
+		Year:        year,
+		FileCreated: fileCreated,
 	}
 }
 
@@ -83,9 +87,10 @@ func Ausgangsrechnung(
 	amount float64,
 	text string,
 	month int,
-	year int) *Booking {
+	year int,
+	fileCreated time.Time) *Booking {
 
-	return NewBooking("AR", dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017)
+	return NewBooking("AR", dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, fileCreated)
 }
 
 func CloneBooking(b Booking, amount float64, typ string, costcenter string) Booking {
