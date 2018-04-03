@@ -5,8 +5,8 @@ import (
 	"sort"
 	"strings"
 
-	"bitbucket.org/rwirdemann/kontrol/owner"
 	"bitbucket.org/rwirdemann/kontrol/booking"
+	"bitbucket.org/rwirdemann/kontrol/owner"
 )
 
 type Account struct {
@@ -38,6 +38,15 @@ func (a Account) Print() {
 	}
 	fmt.Println("-------------------------------------------------------------------------------------------")
 	fmt.Printf("[Saldo: \t\t\t\t\t\t\t\t\t%10.2f]\n", a.Saldo)
+}
+
+func (a Account) CSV() string {
+	result := "Konto;Monat;Jahr;Mitarbeiter;Typ;Buchungstext;Betrag\n"
+	sort.Sort(booking.ByMonth(a.Bookings))
+	for _, b := range a.Bookings {
+		result = result + b.CSV(a.Owner)
+	}
+	return result
 }
 
 func (a Account) FilterBookingsByCostcenter(costcenter string) *Account {

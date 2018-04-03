@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"bitbucket.org/rwirdemann/kontrol/booking"
 	"bitbucket.org/rwirdemann/kontrol/owner"
@@ -47,12 +48,13 @@ func Import(file string, aYear int) []booking.Booking {
 				subject := strings.Replace(record[2], "\n", ",", -1)
 				amount := parseAmount(record[3])
 				year, month := parseMonth(record[4])
+				fileCreated := parseFileCreated(record[5])
 				if year == aYear {
 					m := make(map[owner.Stakeholder]float64)
 					for _, p := range netBookings {
 						m[p.Owner] = parseAmount(record[p.Column])
 					}
-					position := booking.NewBooking(typ, cs, m, amount, subject, month, year)
+					position := booking.NewBooking(typ, cs, m, amount, subject, month, year, fileCreated)
 					positions = append(positions, *position)
 				}
 			} else {
@@ -108,6 +110,18 @@ func parseMonth(yearMonth string) (int, int) {
 	y, _ := strconv.Atoi(s[0])
 	m, _ := strconv.Atoi(s[1])
 	return y, m
+}
+
+func parseFileCreated(fileCreated string) time.Time {
+	s := strings.Split(fileCreated, ".")
+	if len(s) != 3 {
+		return time.Time{}
+	}
+
+	day, _ := strconv.Atoi(s[0])
+	month, _ := strconv.Atoi(s[1])
+	year, _ := strconv.Atoi(s[2])
+	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 }
 
 func openCsvFile(fileName string) (*os.File, error) {

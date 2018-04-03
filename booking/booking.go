@@ -2,8 +2,12 @@ package booking
 
 import (
 	"fmt"
+	"time"
+
+	"golang.org/x/text/language"
 
 	"bitbucket.org/rwirdemann/kontrol/owner"
+	"golang.org/x/text/message"
 )
 
 var ValidBookingTypes = [...]string{"ER", "AR", "GV", "IS", "SV-Beitrag", "GWSteuer", "Gehalt", "LNSteuer"}
@@ -42,12 +46,13 @@ const (
 )
 
 type Booking struct {
-	Type       string // siehe const-Block hier drüber für gültige Werte
-	CostCenter string
-	Amount     float64
-	Text       string
-	Year       int
-	Month      int
+	Type        string // siehe const-Block hier drüber für gültige Werte
+	CostCenter  string
+	Amount      float64
+	Text        string
+	Year        int
+	Month       int
+	FileCreated time.Time
 
 	CsvBookingExtras `json:"-"`
 }
@@ -59,7 +64,8 @@ func NewBooking(
 	amount float64,
 	text string,
 	month int,
-	year int) *Booking {
+	year int,
+	fileCreated time.Time) *Booking {
 
 	return &Booking{
 		CsvBookingExtras: CsvBookingExtras{
@@ -67,10 +73,11 @@ func NewBooking(
 			Responsible: dealBringer,
 			Net:         net,
 		},
-		Amount: amount,
-		Text:   text,
-		Month:  month,
-		Year:   year,
+		Amount:      amount,
+		Text:        text,
+		Month:       month,
+		Year:        year,
+		FileCreated: fileCreated,
 	}
 }
 
@@ -80,9 +87,10 @@ func Ausgangsrechnung(
 	amount float64,
 	text string,
 	month int,
-	year int) *Booking {
+	year int,
+	fileCreated time.Time) *Booking {
 
-	return NewBooking("AR", dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017)
+	return NewBooking("AR", dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, fileCreated)
 }
 
 func CloneBooking(b Booking, amount float64, typ string, costcenter string) Booking {
@@ -102,6 +110,16 @@ func (b Booking) Print(owner owner.Stakeholder) {
 	}
 
 	fmt.Printf("[%s: %2d-%d %2s %-22s %-40s \t %9.2f]\n", owner.Id, b.Month, b.Year, b.CostCenter, b.Type, text, b.Amount)
+}
+
+func (b Booking) CSV(owner owner.Stakeholder) string {
+	p := message.NewPrinter(language.German)
+	text := b.Text
+	if len(text) > 37 {
+		text = text[:37] + "..."
+	}
+	amount := p.Sprintf("%9.2f", b.Amount)
+	return fmt.Sprintf("%s;%2d;%d;%s;%s;%s;%s\n", owner.Id, b.Month, b.Year, b.CostCenter, b.Type, text, amount)
 }
 
 func (b *Booking) BookOnBankAccount() bool {

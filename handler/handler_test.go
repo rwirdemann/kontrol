@@ -4,12 +4,13 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"bitbucket.org/rwirdemann/kontrol/account"
+	"bitbucket.org/rwirdemann/kontrol/booking"
 	"bitbucket.org/rwirdemann/kontrol/owner"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
-	"bitbucket.org/rwirdemann/kontrol/booking"
 )
 
 var router *mux.Router
@@ -19,10 +20,10 @@ func init() {
 	repository.Add(account.NewAccount(owner.StakeholderAN))
 
 	k := account.NewAccount(owner.StakeholderKM)
-	ar := booking.NewBooking("AR", "JM", nil, 2000, "Rechnung WLW", 1, 2018)
+	ar := booking.NewBooking("AR", "JM", nil, 2000, "Rechnung WLW", 1, 2018, time.Time{})
 	ar.CostCenter = "BW"
 	k.Book(*ar)
-	ar2 := booking.NewBooking("AR", "JM", nil, 2400, "Rechnung JH", 1, 2018)
+	ar2 := booking.NewBooking("AR", "JM", nil, 2400, "Rechnung JH", 1, 2018, time.Time{})
 	ar2.CostCenter = "RW"
 	k.Book(*ar2)
 	repository.Add(k)
@@ -57,6 +58,6 @@ func TestGetAccountFilterByCostcenter(t *testing.T) {
 	router.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
-	expected := "{\"Owner\":{\"Id\":\"K\",\"Name\":\"Kommitment\",\"Type\":\"company\"},\"Bookings\":[{\"Type\":\"\",\"CostCenter\":\"BW\",\"Amount\":2000,\"Text\":\"Rechnung WLW\",\"Year\":2018,\"Month\":1}],\"Saldo\":2000}"
+	expected := "{\"Owner\":{\"Id\":\"K\",\"Name\":\"Kommitment\",\"Type\":\"company\"},\"Bookings\":[{\"Type\":\"\",\"CostCenter\":\"BW\",\"Amount\":2000,\"Text\":\"Rechnung WLW\",\"Year\":2018,\"Month\":1,\"FileCreated\":\"0001-01-01T00:00:00Z\"}],\"Saldo\":2000}"
 	assert.Equal(t, expected, rr.Body.String())
 }

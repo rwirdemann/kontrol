@@ -6,7 +6,7 @@ set -e
 export SOURCE=./
 export TARGETPROGRAM=kontrol-main
 export TARGETUSER=kommitment
-//export TARGETSERVER=94.130.79.196
+export TARGETSERVER=94.130.79.196
 export TARGETSERVER=kommitment.dyn.amicdns.de
 export SSHPORT=22
 export SSHSERVER="ssh -p"${SSHPORT}" $TARGETUSER@$TARGETSERVER"
@@ -51,5 +51,5 @@ echo
 
 
 sleep 2
-curl -s http://94.130.79.196:8991/kontrol/version
+curl -s http://${TARGETSERVER}:8991/kontrol/version
 echo
