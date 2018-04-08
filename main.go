@@ -26,14 +26,35 @@ var (
 	fileName   string
 	githash    string
 	buildstamp string
+	certFile string
+	keyFile string
 )
 
 const port = 8991
+const httpsPort = 8992
+
+func isProduction() bool {
+	name, err := os.Hostname()
+	if err != nil {
+		panic(err)
+	}
+	if (name == "kommitment.dyn.amicdns.de" || name ==	"Ubuntu-1704-zesty-64-minimal") {
+		return true
+	}
+	return false
+}
 
 func main() {
 	version := flag.Bool("version", false, "prints current kontrol version")
 	file := flag.String("file", DefaultBookingFile, "booking file")
 	year := flag.Int("year", 2017, "year to control")
+	if (isProduction() ) {
+		certFile = *flag.String("certFile", "/home/kommitment/certificates/fullchain.pem", "https certificate")
+		keyFile = *flag.String("keyFile", "/home/kommitment/certificates/privkey.pem", "https key")
+	} else {
+		certFile = *flag.String("certFile", "/Users/docjoe/mystuff/development/kontrol-frontend/devcert/fullchain.pem", "https certificate")
+		keyFile = *flag.String("keyFile", "/Users/docjoe/mystuff/development/kontrol-frontend/devcert/privkey.pem", "https key")
+	}
 	flag.Parse()
 	if *version {
 		fmt.Printf("Build: %s Git: %s\n", buildstamp, githash)
@@ -46,8 +67,14 @@ func main() {
 	importAndProcessBookings(repository, *year)
 
 	handler := cors.AllowAll().Handler(handler.NewRouter(githash, buildstamp, repository))
-	fmt.Printf("listing on http://localhost:%d...\n", port)
-	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(port), handler))
+	go func() {
+		fmt.Printf("listing on http://localhost:%d...\n", port)
+		log.Fatal(http.ListenAndServe(":"+strconv.Itoa(port), handler))
+	} ()
+	log.Println("    started http server... ")
+	// start HTTPS
+	log.Println("    starting https server \n    try https://localhost:"+strconv.Itoa(httpsPort)+"/")
+	log.Fatal(http.ListenAndServeTLS(":"+strconv.Itoa(httpsPort), certFile, keyFile, handler))
 }
 
 func importAndProcessBookings(repository account.Repository, year int) {
