@@ -7,6 +7,8 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"io/ioutil"
+	"encoding/json"
 
 	"bitbucket.org/rwirdemann/kontrol/account"
 
@@ -30,31 +32,53 @@ var (
 	keyFile string
 )
 
+// environments and HTTPS certificate locations.
+type Environment struct {
+		Hostname string  `json:"hostname"`
+		CertFile string  `json:"certfile"`
+		KeyFile  string  `json:"keyfile"`
+}
+
 const port = 8991
 const httpsPort = 8992
 
-func isProduction() bool {
-	name, err := os.Hostname()
+func getEnvironment() *Environment {
+    raw, err := ioutil.ReadFile("./httpsconfig.env")
+    if err != nil {
+        fmt.Println(err.Error())
+        os.Exit(1)
+    }
+		var environments []Environment
+		hostname := getHostname()
+		json.Unmarshal(raw, &environments)
+		for i := range environments {
+		    if environments[i].Hostname == hostname {
+		        // Found hostname
+						return &environments[i]
+		        break
+		    }
+		}
+		return nil
+}
+
+func getHostname() string {
+	hostname, err := os.Hostname()
 	if err != nil {
 		panic(err)
 	}
-	if (name == "kommitment.dyn.amicdns.de" || name ==	"Ubuntu-1704-zesty-64-minimal") {
-		return true
-	}
-	return false
+	return hostname
 }
 
 func main() {
+	environment := getEnvironment()
+	log.Println ("Environment: ", environment.Hostname)
+	log.Println ("    keyfile: ", environment.CertFile)
+	log.Println ("   certfile: ", environment.KeyFile)
 	version := flag.Bool("version", false, "prints current kontrol version")
 	file := flag.String("file", DefaultBookingFile, "booking file")
 	year := flag.Int("year", 2017, "year to control")
-	if (isProduction() ) {
-		certFile = *flag.String("certFile", "/home/kommitment/certificates/fullchain.pem", "https certificate")
-		keyFile = *flag.String("keyFile", "/home/kommitment/certificates/privkey.pem", "https key")
-	} else {
-		certFile = *flag.String("certFile", "/Users/docjoe/mystuff/development/kontrol-frontend/devcert/fullchain.pem", "https certificate")
-		keyFile = *flag.String("keyFile", "/Users/docjoe/mystuff/development/kontrol-frontend/devcert/privkey.pem", "https key")
-	}
+	certFile = *flag.String("certFile", environment.CertFile, "https certificate")
+	keyFile = *flag.String("keyFile", environment.KeyFile, "https key")
 	flag.Parse()
 	if *version {
 		fmt.Printf("Build: %s Git: %s\n", buildstamp, githash)
@@ -73,7 +97,7 @@ func main() {
 	} ()
 	log.Println("    started http server... ")
 	// start HTTPS
-	log.Println("    starting https server \n    try https://localhost:"+strconv.Itoa(httpsPort)+"/")
+	log.Println("    starting https server \n    try https://localhost:"+strconv.Itoa(httpsPort)+"/kontrol/accounts")
 	log.Fatal(http.ListenAndServeTLS(":"+strconv.Itoa(httpsPort), certFile, keyFile, handler))
 }
 
