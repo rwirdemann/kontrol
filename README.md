@@ -1,5 +1,8 @@
 # Kontrol Backend
 
+## Konfiguration
+Damit HTTPS funktioniert müssen Zertifikate hinterlegt sein und der Ort, wo diese sich auf dem Server befinden müssen in **environments.json** eingetragen sein.
+
 ## Todos
 
 * Deployment automatisieren
@@ -64,7 +67,7 @@ Alle "virtuellen" Konten.
 
 Ein einzelnes Konto inkl. Buchungen.
 
-Parameter: 
+Parameter:
 - cs="BW"   # Filter auf Costcenter (optional)
 
 ```
@@ -123,11 +126,11 @@ Erzeugt das Binary kontrol und cli in $GOPATH/bin.
 ```
 
 ```
-./deploy.sh 
+./deploy.sh
 
 Erzeugt Binary, Deployment auf 94.130.79.196, Neustart des Backend.
 ```
-    
+
 ## Rules
 Die Regeln beschreiben, wie eine Buchung im Spreadsheet verbucht werden. Debei bedeutet R# eine Regel, S# eine Buchungsposition. "R1#S1Partner" ist also Regel 1, Buchungsposition S1 für Partner. "Vertrieb" ebntspricht der Spalte "Cost Center" im Spreadsheet.
 
@@ -168,7 +171,7 @@ auf  : Betrag * 1
 ### R5: GWSteuer = Gewerbesteuer
 - 100% werden auf das Bankkonto gebucht
 - 100% werden gegen das Kommitment-Konto gebucht. Diese Regel ist noch unscharf:
-  eigentlich müssen die 100% aufgeteilt werden auf: 70% auf Partner, 25% auf 
+  eigentlich müssen die 100% aufgeteilt werden auf: 70% auf Partner, 25% auf
   Kommitment und 5% auf Dealbringer
 
 ### R6: SV-Beitrag
