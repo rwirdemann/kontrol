@@ -1,7 +1,7 @@
 # Kontrol Backend
 
 ## Konfiguration
-Damit HTTPS funktioniert müssen Zertifikate hinterlegt sein und der Ort, wo diese sich auf dem Server befinden müssen in **environments.json** eingetragen sein.
+Damit HTTPS funktioniert müssen Zertifikate hinterlegt sein und der Ort, wo diese sich auf dem Server befinden müssen in **./httpsconfig.env** eingetragen sein.
 
 ## Todos
 
