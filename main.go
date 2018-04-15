@@ -43,6 +43,7 @@ const port = 8991
 const httpsPort = 8992
 
 func getEnvironment() *Environment {
+	log.Println ("getEnvironment: ")
     raw, err := ioutil.ReadFile("./httpsconfig.env")
     if err != nil {
         fmt.Println(err.Error())
@@ -58,6 +59,7 @@ func getEnvironment() *Environment {
 		        break
 		    }
 		}
+		log.Fatal ("there is no environment configured for '", hostname, "' in ./httpsconfig.env")
 		return nil
 }
 
@@ -71,9 +73,6 @@ func getHostname() string {
 
 func main() {
 	environment := getEnvironment()
-	log.Println ("Environment: ", environment.Hostname)
-	log.Println ("    keyfile: ", environment.CertFile)
-	log.Println ("   certfile: ", environment.KeyFile)
 	version := flag.Bool("version", false, "prints current kontrol version")
 	file := flag.String("file", DefaultBookingFile, "booking file")
 	year := flag.Int("year", 2017, "year to control")

@@ -53,6 +53,7 @@ type Booking struct {
 	Year        int
 	Month       int
 	FileCreated time.Time
+	BankCreated time.Time
 
 	CsvBookingExtras `json:"-"`
 }
@@ -65,7 +66,8 @@ func NewBooking(
 	text string,
 	month int,
 	year int,
-	fileCreated time.Time) *Booking {
+	fileCreated time.Time,
+	bankCreated time.Time) *Booking {
 
 	return &Booking{
 		CsvBookingExtras: CsvBookingExtras{
@@ -78,6 +80,7 @@ func NewBooking(
 		Month:       month,
 		Year:        year,
 		FileCreated: fileCreated,
+		BankCreated: bankCreated,
 	}
 }
 
@@ -88,9 +91,10 @@ func Ausgangsrechnung(
 	text string,
 	month int,
 	year int,
-	fileCreated time.Time) *Booking {
+	fileCreated time.Time,
+	bankCreated time.Time) *Booking {
 
-	return NewBooking("AR", dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, fileCreated)
+	return NewBooking("AR", dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, fileCreated, bankCreated)
 }
 
 func CloneBooking(b Booking, amount float64, typ string, costcenter string) Booking {

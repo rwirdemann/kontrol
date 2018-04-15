@@ -49,12 +49,13 @@ func Import(file string, aYear int) []booking.Booking {
 				amount := parseAmount(record[3])
 				year, month := parseMonth(record[4])
 				fileCreated := parseFileCreated(record[5])
+				bankCreated := parseFileCreated(record[7])
 				if year == aYear {
 					m := make(map[owner.Stakeholder]float64)
 					for _, p := range netBookings {
 						m[p.Owner] = parseAmount(record[p.Column])
 					}
-					position := booking.NewBooking(typ, cs, m, amount, subject, month, year, fileCreated)
+					position := booking.NewBooking(typ, cs, m, amount, subject, month, year, fileCreated, bankCreated)
 					positions = append(positions, *position)
 				}
 			} else {
