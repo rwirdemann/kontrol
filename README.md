@@ -3,6 +3,16 @@
 ## Konfiguration
 Damit HTTPS funktioniert müssen Zertifikate hinterlegt sein und der Ort, wo diese sich auf dem Server befinden müssen in **./httpsconfig.env** eingetragen sein.
 
+## HTTPS
+Use the following to generate your test cetificates (or similar)
+    #!/bin/bash
+    #
+    openssl req -nodes -x509 -newkey rsa:4096 \
+      -keyout privkey.pem \
+      -out fullchain.pem \
+      -days 365 \
+      -subj "/C=DE/ST=Hamburg/L=Hamburg/O=kommitment/OU=kommitment/CN=localhost/emailAddress=johannes.mainusch@kommitment.biz"
+
 ## Todos
 
 * Deployment automatisieren
