@@ -20,11 +20,12 @@ var netBookings = []struct {
 	Owner  owner.Stakeholder
 	Column int
 }{
-	{Owner: owner.StakeholderRW, Column: 21},
-	{Owner: owner.StakeholderAN, Column: 20},
-	{Owner: owner.StakeholderJM, Column: 22},
-	{Owner: owner.StakeholderBW, Column: 19},
-	{Owner: owner.StakeholderEX, Column: 23},
+	{Owner: owner.StakeholderBW, Column: 21},
+	{Owner: owner.StakeholderAN, Column: 22},
+	{Owner: owner.StakeholderRW, Column: 23},
+	{Owner: owner.StakeholderJM, Column: 24},
+	{Owner: owner.StakeholderKR, Column: 25},
+	{Owner: owner.StakeholderEX, Column: 26},
 }
 
 func Import(file string, aYear int) []booking.Booking {

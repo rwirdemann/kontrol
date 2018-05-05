@@ -16,6 +16,7 @@ var StakeholderRW = Stakeholder{Id: "RW", Name: "Ralf Wirdemann", Type: Stakehol
 var StakeholderAN = Stakeholder{Id: "AN", Name: "Anke Nehrenberg", Type: StakeholderTypePartner}
 var StakeholderJM = Stakeholder{Id: "JM", Name: "Johannes Mainusch", Type: StakeholderTypePartner}
 var StakeholderBW = Stakeholder{Id: "BW", Name: "Ben Wiedenmann", Type: StakeholderTypeEmployee}
+var StakeholderKR = Stakeholder{Id: "KR", Name: "Katja Roth", Type: StakeholderTypeEmployee}
 var StakeholderKM = Stakeholder{Id: "K", Name: "Kommitment", Type: StakeholderTypeCompany}
 var StakeholderEX = Stakeholder{Id: "EX", Name: "Extern", Type: StakeholderTypeExtern}
 
@@ -23,7 +24,7 @@ type StakeholderRepository struct {
 }
 
 func (this StakeholderRepository) All() []Stakeholder {
-	return []Stakeholder{StakeholderRW, StakeholderAN, StakeholderJM, StakeholderBW, StakeholderEX, StakeholderKM}
+	return []Stakeholder{StakeholderRW, StakeholderAN, StakeholderJM, StakeholderBW, StakeholderEX, StakeholderKM, StakeholderKR}
 }
 
 func (this StakeholderRepository) TypeOf(id string) string {
