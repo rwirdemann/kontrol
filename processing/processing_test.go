@@ -36,7 +36,7 @@ func TestAusgangsrechnungAngestellter(t *testing.T) {
 	net := map[owner.Stakeholder]float64{
 		owner.StakeholderBW: 10800.0,
 	}
-	p := booking.NewBooking("AR", "JM", net, 12852.0, "Rechnung 1234", 1, 2017, time.Time{})
+	p := booking.NewBooking("AR", "JM", net, 12852.0, "Rechnung 1234", 1, 2017, time.Time{}, time.Time{})
 
 	Process(repository, *p)
 
@@ -62,7 +62,7 @@ func TestAusgangsrechnungAngestellter(t *testing.T) {
 func TestGehaltAngestellter(t *testing.T) {
 	setUp()
 
-	p := booking.NewBooking("Gehalt", "BW", nil, 3869.65, "Gehalt Ben", 1, 2017, time.Time{})
+	p := booking.NewBooking("Gehalt", "BW", nil, 3869.65, "Gehalt Ben", 1, 2017, time.Time{}, time.Time{})
 
 	Process(repository, *p)
 
@@ -86,7 +86,7 @@ func TestExternNettoAnteil(t *testing.T) {
 	net := map[owner.Stakeholder]float64{
 		owner.StakeholderEX: 10800.0,
 	}
-	p := booking.NewBooking("AR", "JM", net, 12852.0, "Rechnung 1234", 1, 2017, time.Time{})
+	p := booking.NewBooking("AR", "JM", net, 12852.0, "Rechnung 1234", 1, 2017, time.Time{}, time.Time{})
 
 	// when: the position is processed
 	Process(repository, *p)
@@ -111,7 +111,7 @@ func TestExternNettoAnteil(t *testing.T) {
 func TestEingangsrechnung(t *testing.T) {
 	setUp()
 
-	p := booking.NewBooking("ER", "K", nil, 12852.0, "Eingangsrechnung 1234", 1, 2017, time.Time{})
+	p := booking.NewBooking("ER", "K", nil, 12852.0, "Eingangsrechnung 1234", 1, 2017, time.Time{}, time.Time{})
 
 	Process(repository, *p)
 
@@ -136,7 +136,7 @@ func TestPartnerEntnahme(t *testing.T) {
 
 	extras := booking.CsvBookingExtras{Typ: "GV", Responsible: "RW"}
 	extras.Net = make(map[owner.Stakeholder]float64)
-	b := booking.NewBooking("GV", "RW", nil, 6000, "", 1, 2017, time.Time{})
+	b := booking.NewBooking("GV", "RW", nil, 6000, "", 1, 2017, time.Time{}, time.Time{})
 
 	Process(repository, *b)
 
@@ -159,7 +159,7 @@ func TestInterneStunden(t *testing.T) {
 	setUp()
 
 	// given: a internal hours booking
-	p := booking.NewBooking("IS", "AN", nil, 8250.0, "Interne Stunden 2017", 12, 2017, time.Time{})
+	p := booking.NewBooking("IS", "AN", nil, 8250.0, "Interne Stunden 2017", 12, 2017, time.Time{}, time.Time{})
 
 	// when: the position is processed
 	Process(repository, *p)
@@ -183,7 +183,7 @@ func TestInterneStunden(t *testing.T) {
 
 func TestBookAusgangsrechnungToBankAccount(t *testing.T) {
 	setUp()
-	b := booking.NewBooking("AR", "K", nil, 6000, "Ausgangsrechnung", 1, 2017, time.Time{})
+	b := booking.NewBooking("AR", "K", nil, 6000, "Ausgangsrechnung", 1, 2017, time.Time{}, time.Time{})
 
 	Process(repository, *b)
 
@@ -198,7 +198,7 @@ func TestBookAusgangsrechnungToBankAccount(t *testing.T) {
 // 100% werden gegen das Kommitment-Konto gebucht
 func TestProcessSVBeitrag(t *testing.T) {
 	setUp()
-	b := booking.NewBooking("SV-Beitrag", "BW", nil, 1385.10, "KKH, Ben", 5, 2017, time.Time{})
+	b := booking.NewBooking("SV-Beitrag", "BW", nil, 1385.10, "KKH, Ben", 5, 2017, time.Time{}, time.Time{})
 
 	Process(repository, *b)
 
@@ -222,7 +222,7 @@ func TestProcessSVBeitrag(t *testing.T) {
 // Kostenstelle: Angestellter, für den Lohnsteuer gezahlt wurde
 func TestProcessLNSteuer(t *testing.T) {
 	setUp()
-	b := booking.NewBooking("LNSteuer", "BW", nil, 1511.45, "Lohnsteuer Ben", 5, 2017, time.Time{})
+	b := booking.NewBooking("LNSteuer", "BW", nil, 1511.45, "Lohnsteuer Ben", 5, 2017, time.Time{}, time.Time{})
 
 	Process(repository, *b)
 
@@ -241,7 +241,7 @@ func TestProcessLNSteuer(t *testing.T) {
 func TestProcessGWSteuer(t *testing.T) {
 	setUp()
 
-	b := booking.NewBooking("GWSteuer", "K", nil, 2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", 9, 2017, time.Time{})
+	b := booking.NewBooking("GWSteuer", "K", nil, 2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", 9, 2017, time.Time{}, time.Time{})
 
 	Process(repository, *b)
 

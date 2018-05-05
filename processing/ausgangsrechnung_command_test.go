@@ -35,7 +35,7 @@ func (suite *AusgangsrechnungTestSuite) TestPartnerNettoAnteil() {
 	net := make(map[owner.Stakeholder]float64)
 	net[owner.StakeholderRW] = 10800.0
 	net[owner.StakeholderJM] = 3675.0
-	p := booking.NewBooking("AR", "JM", net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{})
+	p := booking.NewBooking("AR", "JM", net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{}, time.Time{})
 
 	// when: the position is processed
 	Process(suite.repository, *p)
@@ -98,7 +98,7 @@ func (suite *AusgangsrechnungTestSuite) TestDealbringerIstPartner() {
 	net[owner.StakeholderRW] = 10800.0
 	net[owner.StakeholderJM] = 3675.0
 	dealbringer := "JM"
-	p := booking.Ausgangsrechnung(dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{})
+	p := booking.Ausgangsrechnung(dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{}, time.Time{})
 
 	Process(suite.repository, *p)
 
@@ -119,7 +119,7 @@ func (suite *AusgangsrechnungTestSuite) TestDealbringerIstAngestellter() {
 	net := make(map[owner.Stakeholder]float64)
 	net[owner.StakeholderRW] = 10800.0
 	dealbringer := "BW"
-	b := booking.Ausgangsrechnung(dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{})
+	b := booking.Ausgangsrechnung(dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{}, time.Time{})
 
 	Process(suite.repository, *b)
 

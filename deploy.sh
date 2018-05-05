@@ -12,6 +12,7 @@ export SSHPORT=22
 export SSHSERVER="ssh -p"${SSHPORT}" $TARGETUSER@$TARGETSERVER"
 export SPREADSHEET_KEY="1xkTQDGJkq9UKvZfFJTEK_W1EdM2AAy7xIFikxTCGhnk"
 
+go test ./...
 
 echo "setting of variables done for deployment to >$TARGETSERVER"
 
