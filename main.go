@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 	"io/ioutil"
 	"encoding/json"
@@ -28,8 +27,6 @@ var (
 	fileName   string
 	githash    string
 	buildstamp string
-	certFile string
-	keyFile string
 )
 
 // environments and HTTPS certificate locations.
@@ -38,9 +35,6 @@ type Environment struct {
 		CertFile string  `json:"certfile"`
 		KeyFile  string  `json:"keyfile"`
 }
-
-const port = 8991
-const httpsPort = 8992
 
 func getEnvironment() *Environment {
 	log.Println ("getEnvironment: ")
@@ -73,12 +67,15 @@ func getHostname() string {
 
 func main() {
 	environment := getEnvironment()
-	version := flag.Bool("version", false, "prints current kontrol version")
-	file := flag.String("file", DefaultBookingFile, "booking file")
-	year := flag.Int("year", 2018, "year to control")
-	certFile = *flag.String("certFile", environment.CertFile, "https certificate")
-	keyFile = *flag.String("keyFile", environment.KeyFile, "https key")
+	version 		:= flag.Bool("version", false, "prints current kontrol version")
+	file 				:= flag.String("file", DefaultBookingFile, "booking file")
+	year 				:= flag.Int("year", 2018, "year to control")
+	httpPort		:= flag.String("httpPort", "8991", "http server port")
+	httpsPort		:= flag.String("httpsPort", "8992", "https server port")
+	certFile 		:= flag.String("certFile", environment.CertFile, "https certificate")
+	keyFile		 	:= flag.String("keyFile", environment.KeyFile, "https key")
 	flag.Parse()
+
 	if *version {
 		fmt.Printf("Build: %s Git: %s\n", buildstamp, githash)
 		os.Exit(0)
@@ -91,13 +88,13 @@ func main() {
 
 	handler := cors.AllowAll().Handler(handler.NewRouter(githash, buildstamp, repository))
 	go func() {
-		fmt.Printf("listing on http://localhost:%d...\n", port)
-		log.Fatal(http.ListenAndServe(":"+strconv.Itoa(port), handler))
+		fmt.Printf("listing on http://localhost:%s...\n", *httpPort)
+		log.Fatal(http.ListenAndServe(":"+ *httpPort, handler))
 	} ()
-	log.Println("    started http server... ")
+	log.Println("started http server... ")
 	// start HTTPS
-	log.Println("    starting https server \n    try https://localhost:"+strconv.Itoa(httpsPort)+"/kontrol/accounts")
-	log.Fatal(http.ListenAndServeTLS(":"+strconv.Itoa(httpsPort), certFile, keyFile, handler))
+	log.Println("starting https server	 \n  try https://localhost:"+ *httpsPort+"/kontrol/accounts")
+	log.Fatal(http.ListenAndServeTLS(":"+ *httpsPort, *certFile, *keyFile, handler))
 }
 
 func importAndProcessBookings(repository account.Repository, year int) {
