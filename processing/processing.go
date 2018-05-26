@@ -61,6 +61,9 @@ func Process(repository account.Repository, booking booking.Booking) {
 	case "LNSteuer":
 		command = BookLNSteuerCommand{Repository: repository, Booking: booking}
 		command.run()
+	case "Rückstellung":
+		command = BookRueckstellungCommand{Repository: repository, Booking: booking}
+		command.run()
 	default:
 		log.Printf("could not process booking type '%s'", booking.Typ)
 	}

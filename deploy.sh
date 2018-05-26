@@ -46,8 +46,8 @@ set +e
 ${SSHSERVER} killall ${TARGETPROGRAM}
 echo killed running ${TARGETPROGRAM}
 set -x
-${SSHSERVER} ./${TARGETPROGRAM} > /tmp/${TARGETPROGRAM}.log 2>&1 &
-${SSHSERVER} ./${TARGETPROGRAM} -httpPort=20171 -httpsPort=20172 -year=2017 > /tmp/${TARGETPROGRAM}-2017.log 2>&1 &
+${SSHSERVER} "./${TARGETPROGRAM} > /tmp/${TARGETPROGRAM}.log 2>&1 &"
+${SSHSERVER} "./${TARGETPROGRAM} -httpPort=20171 -httpsPort=20172 -year=2017 > /tmp/${TARGETPROGRAM}-2017.log 2>&1 &"
 set +x
 set -e
 echo

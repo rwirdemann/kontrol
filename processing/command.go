@@ -11,6 +11,27 @@ type Command interface {
 	run()
 }
 
+type BookRueckstellungCommand struct {
+	Booking    booking.Booking
+	Repository account.Repository
+}
+
+func (c BookRueckstellungCommand) run() {
+
+	// Bankbuchung
+	bankBooking := c.Booking
+	bankBooking.Type = c.Booking.Typ
+	bankBooking.Amount = bankBooking.Amount * -1
+	c.Repository.BankAccount().Book(bankBooking)
+
+	// Buchung Kommitment-Konto
+	kBooking := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.Rueckstellung, c.Booking.Responsible)
+	kommitmentAccount, _ := c.Repository.Get(owner.StakeholderKM.Id)
+	kommitmentAccount.Book(kBooking)
+}
+
+
+
 type BookGehaltCommand struct {
 	Booking    booking.Booking
 	Repository account.Repository
