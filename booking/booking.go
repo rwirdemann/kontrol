@@ -128,6 +128,7 @@ func (b Booking) CSV(owner owner.Stakeholder) string {
 }
 
 func (b *Booking) BookOnBankAccount() bool {
+	fmt.Printf ("in BookOnBankAccount %s\n", b.Typ)
 	if b.Typ == "IS" {
 		return false
 	}
