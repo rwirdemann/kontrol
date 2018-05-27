@@ -126,20 +126,22 @@ func main() {
 					timer.Reset(3*time.Second)
 				case err := <-watcher.Error:
 					log.Println("error:", err)
-				case <-timer.C:
+				case c := <-timer.C:
 					// now wait until no further event has been written for one second...
 					// to prevent the process from reading the file while it is still
 					// being written...
-					log.Printf("booking reimport start: %s\n", time.Now())
+					log.Printf("booking reimport start: %s, %s\n", time.Now(), c)
 					importAndProcessBookings(repository, year)
 					log.Printf("booking reimport end: %s\n", time.Now())
 				}
 				timer.Stop()
 			}
-			}()
+			} ()
 
 			err = watcher.Watch(fileName)
 			if err != nil {
 				log.Fatal(err)
 			}
+
+
 		}

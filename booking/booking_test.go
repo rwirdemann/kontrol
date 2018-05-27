@@ -21,6 +21,7 @@ func TestBookOnBankAccount(t *testing.T) {
 	start, _ 	:= time.Parse(time.RFC822, "01 Jan 17 10:12 UTC")
 	end, _ 	:= time.Parse(time.RFC822, "01 Jan 17 10:18 UTC")
 	util.AssertTrue(t, inTimeSpan(start, end, gv.FileCreated) )
+	util.AssertTrue(t, inTimeSpan(start, end, is.FileCreated) )
 
 }
 

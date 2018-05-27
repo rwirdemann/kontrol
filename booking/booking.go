@@ -105,6 +105,8 @@ func CloneBooking(b Booking, amount float64, typ string, costcenter string) Book
 		Text:       b.Text,
 		Month:      b.Month,
 		Year:       b.Year,
+		FileCreated: b.FileCreated,
+		BankCreated: b.BankCreated,
 		CostCenter: costcenter}
 }
 
@@ -128,7 +130,6 @@ func (b Booking) CSV(owner owner.Stakeholder) string {
 }
 
 func (b *Booking) BookOnBankAccount() bool {
-	fmt.Printf ("in BookOnBankAccount %s\n", b.Typ)
 	if b.Typ == "IS" {
 		return false
 	}

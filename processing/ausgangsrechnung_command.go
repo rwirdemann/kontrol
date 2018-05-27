@@ -23,7 +23,9 @@ func (this BookAusgangsrechnungCommand) run() {
 				Type:   booking.Nettoanteil,
 				Text:   this.Booking.Text + "#NetShare#" + benefited.Id,
 				Month:  this.Booking.Month,
-				Year:   this.Booking.Year}
+				Year:   this.Booking.Year,
+				FileCreated: this.Booking.FileCreated,
+				BankCreated: this.Booking.BankCreated}
 			a, _ := this.Repository.Get(benefited.Id)
 			a.Book(b)
 
@@ -33,7 +35,9 @@ func (this BookAusgangsrechnungCommand) run() {
 				Type:   booking.Kommitmentanteil,
 				Text:   this.Booking.Text + "#Kommitment#" + benefited.Id,
 				Month:  this.Booking.Month,
-				Year:   this.Booking.Year}
+				Year:   this.Booking.Year,
+				FileCreated: this.Booking.FileCreated,
+				BankCreated: this.Booking.BankCreated}
 
 			kommitmentAccount, _ := this.Repository.Get(owner.StakeholderKM.Id)
 			kommitmentAccount.Book(kommitmentShare)
@@ -47,7 +51,9 @@ func (this BookAusgangsrechnungCommand) run() {
 				Type:   booking.Kommitmentanteil,
 				Text:   this.Booking.Text + "#Kommitment#" + benefited.Id,
 				Month:  this.Booking.Month,
-				Year:   this.Booking.Year}
+				Year:   this.Booking.Year,
+				FileCreated: this.Booking.FileCreated,
+				BankCreated: this.Booking.BankCreated}
 			kommitmentAccount, _ := this.Repository.Get(owner.StakeholderKM.Id)
 			kommitmentAccount.Book(kommitmentShare)
 		}
@@ -61,6 +67,8 @@ func (this BookAusgangsrechnungCommand) run() {
 				Text:       this.Booking.Text,
 				Month:      this.Booking.Month,
 				Year:       this.Booking.Year,
+				FileCreated: this.Booking.FileCreated,
+				BankCreated: this.Booking.BankCreated,
 				CostCenter: benefited.Id}
 			kommitmentAccount, _ := this.Repository.Get(owner.StakeholderKM.Id)
 			kommitmentAccount.Book(kommitmentShare)
@@ -85,6 +93,8 @@ func (this BookAusgangsrechnungCommand) run() {
 			Text:       this.Booking.Text + "#Provision#" + benefited.Id,
 			Month:      this.Booking.Month,
 			Year:       this.Booking.Year,
+			FileCreated: this.Booking.FileCreated,
+			BankCreated: this.Booking.BankCreated,
 			CostCenter: costcenter}
 		provisionAccount.Book(b)
 	}
