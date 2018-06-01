@@ -38,7 +38,7 @@ func TestGetAllAccounts(t *testing.T) {
 	router.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
-	expected := "{\"Accounts\":[{\"Owner\":{\"Id\":\"AN\",\"Name\":\"Anke Nehrenberg\",\"Type\":\"partner\"},\"Saldo\":0},{\"Owner\":{\"Id\":\"K\",\"Name\":\"Kommitment\",\"Type\":\"company\"},\"Saldo\":4400}]}"
+	expected := "{\"Accounts\":[{\"Owner\":{\"Id\":\"AN\",\"Name\":\"Anke Nehrenberg\",\"Type\":\"partner\"},\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0},{\"Owner\":{\"Id\":\"K\",\"Name\":\"Kommitment\",\"Type\":\"company\"},\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":4400}]}"
 	assert.Equal(t, expected, rr.Body.String())
 }
 
@@ -58,6 +58,6 @@ func TestGetAccountFilterByCostcenter(t *testing.T) {
 	router.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
-	expected := "{\"Owner\":{\"Id\":\"K\",\"Name\":\"Kommitment\",\"Type\":\"company\"},\"Bookings\":[{\"Type\":\"\",\"CostCenter\":\"BW\",\"Amount\":2000,\"Text\":\"Rechnung WLW\",\"Year\":2018,\"Month\":1,\"FileCreated\":\"0001-01-01T00:00:00Z\",\"BankCreated\":\"0001-01-01T00:00:00Z\"}],\"Saldo\":2000}"
+	expected := "{\"Owner\":{\"Id\":\"K\",\"Name\":\"Kommitment\",\"Type\":\"company\"},\"Bookings\":[{\"Type\":\"\",\"CostCenter\":\"BW\",\"Amount\":2000,\"Text\":\"Rechnung WLW\",\"Year\":2018,\"Month\":1,\"FileCreated\":\"0001-01-01T00:00:00Z\",\"BankCreated\":\"0001-01-01T00:00:00Z\"}],\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":2000}"
 	assert.Equal(t, expected, rr.Body.String())
 }

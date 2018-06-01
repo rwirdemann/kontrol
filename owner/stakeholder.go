@@ -7,6 +7,7 @@ const (
 	StakeholderTypePartner  = "partner"
 	StakeholderTypeCompany  = "company"
 	StakeholderTypeExtern   = "extern"
+	StakeholderTypeOthers   = "Rest"
 )
 
 type Stakeholder struct {

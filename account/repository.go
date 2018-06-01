@@ -28,7 +28,8 @@ func NewDefaultRepository() Repository {
 	r := DefaultRepository{collectiveAccount: &Account{Owner: o}, accounts: make(map[string]*Account)}
 	stakeholderRepository := owner.StakeholderRepository{}
 	for _, sh := range stakeholderRepository.All() {
-		if sh.Type != owner.StakeholderTypeExtern {
+		if sh.Type != owner.StakeholderTypeExtern &&
+			 sh.Type != owner.StakeholderTypeOthers {
 			r.Add(NewAccount(sh))
 		}
 	}

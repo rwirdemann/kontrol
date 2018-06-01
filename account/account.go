@@ -10,9 +10,16 @@ import (
 )
 
 type Account struct {
-	Owner    owner.Stakeholder
-	Bookings []booking.Booking `json:",omitempty"`
-	Saldo    float64
+	Owner    	owner.Stakeholder
+	Bookings 	[]booking.Booking `json:",omitempty"`
+	Costs			float64
+	Advances	float64
+	Reserves	float64
+	Provision	float64
+	Revenue		float64
+	Taxes			float64
+	Internals	float64
+	Saldo    	float64
 }
 
 func NewAccount(o owner.Stakeholder) *Account {
@@ -24,11 +31,46 @@ func (a *Account) Book(booking booking.Booking) {
 }
 
 func (a *Account) UpdateSaldo() {
+	costs := 0.0
+	provision := 0.0
+	revenue := 0.0
+	reserves := 0.0
+	taxes := 0.0
 	saldo := 0.0
+	internals := 0.0
+	advances := 0.0
 	for _, b := range a.Bookings {
 		saldo += b.Amount
+		if (b.Type == "Entnahme") {
+			advances += b.Amount
+		}
+		if (b.Type == "Vertriebsprovision" ) {
+			provision += b.Amount
+		}
+		if (b.Type == "Vertriebsprovision" || b.Type == "Nettoanteil" || b.Type == "Kommitmentanteil") {
+			revenue += b.Amount
+		}
+		if (b.Type == "GWSteuer" ) {
+			taxes += b.Amount
+		}
+		if (b.Type == "Eingangsrechnung" || b.Type == "Gehalt" || b.Type == "SV-Beitrag") {
+			costs += b.Amount
+		}
+		if (b.Type == "Rückstellungen" ) {
+			reserves += b.Amount
+		}
+		if (b.Type == "Interne Stunden" ) {
+			internals += b.Amount
+		}
 	}
 	a.Saldo = saldo
+	a.Advances = advances
+	a.Reserves = reserves
+	a.Costs = costs
+	a.Revenue = revenue
+	a.Taxes = taxes
+	a.Provision = provision
+	a.Internals = internals
 }
 
 func (a Account) Print() {

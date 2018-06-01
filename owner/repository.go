@@ -8,6 +8,7 @@ const (
 	PartnerShare             = 0.7
 	KommmitmentShare         = 0.25
 	KommmitmentExternShare   = 0.95
+	KommmitmentOthersShare   = 1.00
 	KommmitmentEmployeeShare = 0.95
 	PartnerProvision         = 0.05
 )
@@ -19,12 +20,13 @@ var StakeholderBW = Stakeholder{Id: "BW", Name: "Ben Wiedenmann", Type: Stakehol
 var StakeholderKR = Stakeholder{Id: "KR", Name: "Katja Roth", Type: StakeholderTypeEmployee}
 var StakeholderKM = Stakeholder{Id: "K", Name: "Kommitment", Type: StakeholderTypeCompany}
 var StakeholderEX = Stakeholder{Id: "EX", Name: "Extern", Type: StakeholderTypeExtern}
+var StakeholderRR = Stakeholder{Id: "RR", Name: "Rest", Type: StakeholderTypeOthers}
 
 type StakeholderRepository struct {
 }
 
 func (this StakeholderRepository) All() []Stakeholder {
-	return []Stakeholder{StakeholderRW, StakeholderAN, StakeholderJM, StakeholderBW, StakeholderEX, StakeholderKM, StakeholderKR}
+	return []Stakeholder{StakeholderRW, StakeholderAN, StakeholderJM, StakeholderBW, StakeholderEX, StakeholderKM, StakeholderKR, StakeholderRR}
 }
 
 func (this StakeholderRepository) TypeOf(id string) string {

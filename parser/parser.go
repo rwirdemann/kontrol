@@ -26,6 +26,7 @@ var netBookings = []struct {
 	{Owner: owner.StakeholderJM, Column: 24},
 	{Owner: owner.StakeholderKR, Column: 25},
 	{Owner: owner.StakeholderEX, Column: 26},
+	{Owner: owner.StakeholderRR, Column: 27},
 }
 
 func Import(file string, aYear int) []booking.Booking {
@@ -100,6 +101,7 @@ func parseAmount(amount string) float64 {
 	if a, err := strconv.ParseFloat(s, 64); err == nil {
 		return a
 	} else {
+		fmt.Printf("parsing error '%s'\n", err)
 		return 0
 	}
 }
