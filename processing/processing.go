@@ -5,7 +5,6 @@ import (
 
 	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/booking"
-	"github.com/ahojsenn/kontrol/owner"
 	"github.com/ahojsenn/kontrol/util"
 )
 
@@ -48,7 +47,8 @@ func Process(repository account.Repository, booking booking.Booking) {
 		command = BookEingangsrechnungCommand{Repository: repository, Booking: booking}
 		command.run()
 	case "IS":
-		bookInternalHours(repository, booking)
+		command = BookInterneStundenCommand{Repository: repository, Booking: booking}
+		command.run()
 	case "SV-Beitrag":
 		command = BookSVBeitragCommand{Repository: repository, Booking: booking}
 		command.run()
@@ -67,38 +67,4 @@ func Process(repository account.Repository, booking booking.Booking) {
 	default:
 		log.Printf("could not process booking type '%s'", booking.Typ)
 	}
-}
-
-func bookIncomingInvoice(repository account.Repository, sourceBooking booking.Booking) {
-	kommitmentShare := booking.Booking{
-		Amount: util.Net(sourceBooking.Amount) * -1,
-		Type:   booking.Eingangsrechnung,
-		Text:   sourceBooking.Text,
-		Month:  sourceBooking.Month,
-		Year:   sourceBooking.Year}
-	kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
-	kommitmentAccount.Book(kommitmentShare)
-}
-
-// Interne Stunden werden direkt netto verbucht
-func bookInternalHours(repository account.Repository, sourceBooking booking.Booking) {
-	// Buchung aufs Partner-Konto
-	b := booking.Booking{
-		Amount: sourceBooking.Amount,
-		Type:   booking.InterneStunden,
-		Text:   sourceBooking.Text,
-		Month:  sourceBooking.Month,
-		Year:   sourceBooking.Year}
-	a, _ := repository.Get(sourceBooking.Responsible)
-	a.Book(b)
-
-	// Gegenbuchung Kommitment-Konto
-	counterBooking := booking.Booking{
-		Amount: sourceBooking.Amount * -1,
-		Type:   booking.InterneStunden,
-		Text:   sourceBooking.Text,
-		Month:  sourceBooking.Month,
-		Year:   sourceBooking.Year}
-	kommitmentAccount, _ := repository.Get(owner.StakeholderKM.Id)
-	kommitmentAccount.Book(counterBooking)
 }

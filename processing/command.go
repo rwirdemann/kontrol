@@ -1,6 +1,8 @@
 package processing
 
 import (
+	"log"
+
 	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/owner"
@@ -136,4 +138,25 @@ func (c BookEingangsrechnungCommand) run() {
 	b := booking.CloneBooking(c.Booking, util.Net(c.Booking.Amount)*-1, booking.Eingangsrechnung, c.Booking.Responsible)
 	kommitmentAccount, _ := c.Repository.Get(owner.StakeholderKM.Id)
 	kommitmentAccount.Book(b)
+}
+
+type BookInterneStundenCommand struct {
+	Booking    booking.Booking
+	Repository account.Repository
+}
+
+func (c BookInterneStundenCommand) run() {
+
+	log.Println("in BookInterneStundenCommand", c)
+	// Buchung interner Stunden auf Kommanditstenkonto
+	a := booking.CloneBooking(c.Booking, c.Booking.Amount, booking.InterneStunden, c.Booking.Responsible)
+	partnerAccount, _ := c.Repository.Get(c.Booking.Responsible)
+	log.Println("in BookInterneStundenCommand, partnerAccount=", partnerAccount)
+	partnerAccount.Book(a)
+
+	// Buchung interner Stunden von kommitment Konto auf Stakeholder
+	b := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.InterneStunden, c.Booking.Responsible)
+	kommitmentAccount, _ := c.Repository.Get(owner.StakeholderKM.Id)
+	kommitmentAccount.Book(b)
+
 }
