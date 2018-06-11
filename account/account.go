@@ -5,21 +5,21 @@ import (
 	"sort"
 	"strings"
 
-	"bitbucket.org/rwirdemann/kontrol/booking"
-	"bitbucket.org/rwirdemann/kontrol/owner"
+	"github.com/ahojsenn/kontrol/booking"
+	"github.com/ahojsenn/kontrol/owner"
 )
 
 type Account struct {
-	Owner    	owner.Stakeholder
-	Bookings 	[]booking.Booking `json:",omitempty"`
-	Costs			float64
-	Advances	float64
-	Reserves	float64
-	Provision	float64
-	Revenue		float64
-	Taxes			float64
-	Internals	float64
-	Saldo    	float64
+	Owner     owner.Stakeholder
+	Bookings  []booking.Booking `json:",omitempty"`
+	Costs     float64
+	Advances  float64
+	Reserves  float64
+	Provision float64
+	Revenue   float64
+	Taxes     float64
+	Internals float64
+	Saldo     float64
 }
 
 func NewAccount(o owner.Stakeholder) *Account {
@@ -41,25 +41,25 @@ func (a *Account) UpdateSaldo() {
 	advances := 0.0
 	for _, b := range a.Bookings {
 		saldo += b.Amount
-		if (b.Type == "Entnahme") {
+		if b.Type == "Entnahme" {
 			advances += b.Amount
 		}
-		if (b.Type == "Vertriebsprovision" ) {
+		if b.Type == "Vertriebsprovision" {
 			provision += b.Amount
 		}
-		if (b.Type == "Vertriebsprovision" || b.Type == "Nettoanteil" || b.Type == "Kommitmentanteil") {
+		if b.Type == "Vertriebsprovision" || b.Type == "Nettoanteil" || b.Type == "Kommitmentanteil" {
 			revenue += b.Amount
 		}
-		if (b.Type == "GWSteuer" ) {
+		if b.Type == "GWSteuer" {
 			taxes += b.Amount
 		}
-		if (b.Type == "Eingangsrechnung" || b.Type == "Gehalt" || b.Type == "SV-Beitrag") {
+		if b.Type == "Eingangsrechnung" || b.Type == "Gehalt" || b.Type == "SV-Beitrag" {
 			costs += b.Amount
 		}
-		if (b.Type == "Rückstellungen" ) {
+		if b.Type == "Rückstellungen" {
 			reserves += b.Amount
 		}
-		if (b.Type == "Interne Stunden" ) {
+		if b.Type == "Interne Stunden" {
 			internals += b.Amount
 		}
 	}

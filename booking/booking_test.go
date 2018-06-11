@@ -3,7 +3,8 @@ package booking
 import (
 	"testing"
 	"time"
-	"bitbucket.org/rwirdemann/kontrol/util"
+
+	"github.com/ahojsenn/kontrol/util"
 )
 
 // Eine aus der CSV-Datei imporierte Buchung muss nicht zwingend über das Bankkonto in System gekommen sein.
@@ -18,14 +19,13 @@ func TestBookOnBankAccount(t *testing.T) {
 	gv := NewBooking("GV", "RW", nil, 0, "Booking", 1, 2017, bankCreated, fileCreated)
 	util.AssertTrue(t, gv.BookOnBankAccount())
 
-	start, _ 	:= time.Parse(time.RFC822, "01 Jan 17 10:12 UTC")
-	end, _ 	:= time.Parse(time.RFC822, "01 Jan 17 10:18 UTC")
-	util.AssertTrue(t, inTimeSpan(start, end, gv.FileCreated) )
-	util.AssertTrue(t, inTimeSpan(start, end, is.FileCreated) )
+	start, _ := time.Parse(time.RFC822, "01 Jan 17 10:12 UTC")
+	end, _ := time.Parse(time.RFC822, "01 Jan 17 10:18 UTC")
+	util.AssertTrue(t, inTimeSpan(start, end, gv.FileCreated))
+	util.AssertTrue(t, inTimeSpan(start, end, is.FileCreated))
 
 }
 
-
 func inTimeSpan(start, end, check time.Time) bool {
-    return check.After(start) && check.Before(end)
+	return check.After(start) && check.Before(end)
 }

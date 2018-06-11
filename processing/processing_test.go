@@ -4,11 +4,11 @@ import (
 	"testing"
 	"time"
 
-	"bitbucket.org/rwirdemann/kontrol/account"
+	"github.com/ahojsenn/kontrol/account"
 
-	"bitbucket.org/rwirdemann/kontrol/booking"
-	"bitbucket.org/rwirdemann/kontrol/owner"
-	"bitbucket.org/rwirdemann/kontrol/util"
+	"github.com/ahojsenn/kontrol/booking"
+	"github.com/ahojsenn/kontrol/owner"
+	"github.com/ahojsenn/kontrol/util"
 	"github.com/stretchr/testify/assert"
 )
 

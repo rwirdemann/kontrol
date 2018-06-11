@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"bitbucket.org/rwirdemann/kontrol/account"
+	"github.com/ahojsenn/kontrol/account"
 )
 
 func main() {

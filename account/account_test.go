@@ -3,8 +3,8 @@ package account
 import (
 	"testing"
 
-	"bitbucket.org/rwirdemann/kontrol/util"
-	"bitbucket.org/rwirdemann/kontrol/booking"
+	"github.com/ahojsenn/kontrol/booking"
+	"github.com/ahojsenn/kontrol/util"
 )
 
 func TestSaldo(t *testing.T) {

@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"bitbucket.org/rwirdemann/kontrol/account"
-	"bitbucket.org/rwirdemann/kontrol/booking"
-	"bitbucket.org/rwirdemann/kontrol/owner"
+	"github.com/ahojsenn/kontrol/account"
+	"github.com/ahojsenn/kontrol/booking"
+	"github.com/ahojsenn/kontrol/owner"
 	"github.com/stretchr/testify/suite"
 )
 

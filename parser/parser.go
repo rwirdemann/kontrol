@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"bitbucket.org/rwirdemann/kontrol/booking"
-	"bitbucket.org/rwirdemann/kontrol/owner"
+	"github.com/ahojsenn/kontrol/booking"
+	"github.com/ahojsenn/kontrol/owner"
 )
 
 // Beschreibt, dass die netto (Rechnungs-)Position in Spalte X der CSV-Datei dem Stakeholder Y gehört
@@ -138,7 +138,7 @@ func openCsvFile(fileName string) (*os.File, error) {
 	// Open file from GOPATH
 	gopath := os.Getenv("GOPATH")
 	if gopath != "" {
-		if file, err := os.Open(gopath + "/src/bitbucket.org/rwirdemann/kontrol/" + fileName); err == nil {
+		if file, err := os.Open(gopath + "/src/github.com/ahojsenn/kontrol/" + fileName); err == nil {
 			return file, nil
 		}
 	}

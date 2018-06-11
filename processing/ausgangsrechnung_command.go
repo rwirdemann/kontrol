@@ -1,9 +1,9 @@
 package processing
 
 import (
-	"bitbucket.org/rwirdemann/kontrol/account"
-	"bitbucket.org/rwirdemann/kontrol/booking"
-	"bitbucket.org/rwirdemann/kontrol/owner"
+	"github.com/ahojsenn/kontrol/account"
+	"github.com/ahojsenn/kontrol/booking"
+	"github.com/ahojsenn/kontrol/owner"
 )
 
 type BookAusgangsrechnungCommand struct {
@@ -19,11 +19,11 @@ func (this BookAusgangsrechnungCommand) run() {
 
 			// book partner share
 			b := booking.Booking{
-				Amount: this.Booking.Net[benefited] * owner.PartnerShare,
-				Type:   booking.Nettoanteil,
-				Text:   this.Booking.Text + "#NetShare#" + benefited.Id,
-				Month:  this.Booking.Month,
-				Year:   this.Booking.Year,
+				Amount:      this.Booking.Net[benefited] * owner.PartnerShare,
+				Type:        booking.Nettoanteil,
+				Text:        this.Booking.Text + "#NetShare#" + benefited.Id,
+				Month:       this.Booking.Month,
+				Year:        this.Booking.Year,
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated}
 			a, _ := this.Repository.Get(benefited.Id)
@@ -31,11 +31,11 @@ func (this BookAusgangsrechnungCommand) run() {
 
 			// book kommitment share
 			kommitmentShare := booking.Booking{
-				Amount: this.Booking.Net[benefited] * owner.KommmitmentShare,
-				Type:   booking.Kommitmentanteil,
-				Text:   this.Booking.Text + "#Kommitment#" + benefited.Id,
-				Month:  this.Booking.Month,
-				Year:   this.Booking.Year,
+				Amount:      this.Booking.Net[benefited] * owner.KommmitmentShare,
+				Type:        booking.Kommitmentanteil,
+				Text:        this.Booking.Text + "#Kommitment#" + benefited.Id,
+				Month:       this.Booking.Month,
+				Year:        this.Booking.Year,
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated}
 
@@ -47,11 +47,11 @@ func (this BookAusgangsrechnungCommand) run() {
 
 			// book kommitment share
 			kommitmentShare := booking.Booking{
-				Amount: this.Booking.Net[benefited] * owner.KommmitmentExternShare,
-				Type:   booking.Kommitmentanteil,
-				Text:   this.Booking.Text + "#Kommitment#" + benefited.Id,
-				Month:  this.Booking.Month,
-				Year:   this.Booking.Year,
+				Amount:      this.Booking.Net[benefited] * owner.KommmitmentExternShare,
+				Type:        booking.Kommitmentanteil,
+				Text:        this.Booking.Text + "#Kommitment#" + benefited.Id,
+				Month:       this.Booking.Month,
+				Year:        this.Booking.Year,
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated}
 			kommitmentAccount, _ := this.Repository.Get(owner.StakeholderKM.Id)
@@ -65,11 +65,11 @@ func (this BookAusgangsrechnungCommand) run() {
 
 			// book kommitment share
 			kommitmentShare := booking.Booking{
-				Amount: this.Booking.Net[benefited] * owner.KommmitmentOthersShare,
-				Type:   booking.Kommitmentanteil,
-				Text:   this.Booking.Text + "#Kommitment#Rest#" + benefited.Id,
-				Month:  this.Booking.Month,
-				Year:   this.Booking.Year,
+				Amount:      this.Booking.Net[benefited] * owner.KommmitmentOthersShare,
+				Type:        booking.Kommitmentanteil,
+				Text:        this.Booking.Text + "#Kommitment#Rest#" + benefited.Id,
+				Month:       this.Booking.Month,
+				Year:        this.Booking.Year,
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated}
 			kommitmentAccount, _ := this.Repository.Get(owner.StakeholderKM.Id)
@@ -80,14 +80,14 @@ func (this BookAusgangsrechnungCommand) run() {
 
 			// book kommitment share
 			kommitmentShare := booking.Booking{
-				Amount:     this.Booking.Net[benefited] * owner.KommmitmentEmployeeShare,
-				Type:       booking.Kommitmentanteil,
-				Text:       this.Booking.Text,
-				Month:      this.Booking.Month,
-				Year:       this.Booking.Year,
+				Amount:      this.Booking.Net[benefited] * owner.KommmitmentEmployeeShare,
+				Type:        booking.Kommitmentanteil,
+				Text:        this.Booking.Text,
+				Month:       this.Booking.Month,
+				Year:        this.Booking.Year,
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated,
-				CostCenter: benefited.Id}
+				CostCenter:  benefited.Id}
 			kommitmentAccount, _ := this.Repository.Get(owner.StakeholderKM.Id)
 			kommitmentAccount.Book(kommitmentShare)
 		}
@@ -96,26 +96,26 @@ func (this BookAusgangsrechnungCommand) run() {
 		// Letzters, wenn der Vertriebserfolg einem Angestellten zuzuordnen ist. In diesem Fall wird die
 		// Kostenstelle auf die Id des Angestellten gesetzt, so dass die Gutschrift diesem zugeordnet
 		// werden kann.
-		if benefited.Type != owner.StakeholderTypeOthers {  // DON'T givr 5% for travel expenses and co...
+		if benefited.Type != owner.StakeholderTypeOthers { // DON'T givr 5% for travel expenses and co...
 			var provisionAccount *account.Account
 			var costcenter string
 			stakeholderRepository := owner.StakeholderRepository{}
 			if stakeholderRepository.TypeOf(this.Booking.Responsible) == owner.StakeholderTypeEmployee {
 				provisionAccount, _ = this.Repository.Get(owner.StakeholderKM.Id)
 				costcenter = this.Booking.Responsible
-				} else {
-					provisionAccount, _ = this.Repository.Get(this.Booking.Responsible)
-				}
+			} else {
+				provisionAccount, _ = this.Repository.Get(this.Booking.Responsible)
+			}
 			b := booking.Booking{
-			Amount:     this.Booking.Net[benefited] * owner.PartnerProvision,
-			Type:       booking.Vertriebsprovision,
-			Text:       this.Booking.Text + "#Provision#" + benefited.Id,
-			Month:      this.Booking.Month,
-			Year:       this.Booking.Year,
-			FileCreated: this.Booking.FileCreated,
-			BankCreated: this.Booking.BankCreated,
-			CostCenter: costcenter}
-		provisionAccount.Book(b)
+				Amount:      this.Booking.Net[benefited] * owner.PartnerProvision,
+				Type:        booking.Vertriebsprovision,
+				Text:        this.Booking.Text + "#Provision#" + benefited.Id,
+				Month:       this.Booking.Month,
+				Year:        this.Booking.Year,
+				FileCreated: this.Booking.FileCreated,
+				BankCreated: this.Booking.BankCreated,
+				CostCenter:  costcenter}
+			provisionAccount.Book(b)
 		}
 	}
 }

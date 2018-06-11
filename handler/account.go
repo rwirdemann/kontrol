@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"sort"
 
-	"bitbucket.org/rwirdemann/kontrol/account"
-	"bitbucket.org/rwirdemann/kontrol/util"
+	"github.com/ahojsenn/kontrol/account"
+	"github.com/ahojsenn/kontrol/booking"
+	"github.com/ahojsenn/kontrol/util"
 	"github.com/gorilla/mux"
-	"bitbucket.org/rwirdemann/kontrol/booking"
 )
 
 func MakeGetAccountsHandler(repository account.Repository) http.HandlerFunc {

@@ -1,8 +1,8 @@
 package account
 
 import (
-	"bitbucket.org/rwirdemann/kontrol/booking"
-	"bitbucket.org/rwirdemann/kontrol/owner"
+	"github.com/ahojsenn/kontrol/booking"
+	"github.com/ahojsenn/kontrol/owner"
 )
 
 type Repository interface {
@@ -29,7 +29,7 @@ func NewDefaultRepository() Repository {
 	stakeholderRepository := owner.StakeholderRepository{}
 	for _, sh := range stakeholderRepository.All() {
 		if sh.Type != owner.StakeholderTypeExtern &&
-			 sh.Type != owner.StakeholderTypeOthers {
+			sh.Type != owner.StakeholderTypeOthers {
 			r.Add(NewAccount(sh))
 		}
 	}

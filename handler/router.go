@@ -1,10 +1,11 @@
 package handler
 
 import (
-	"bitbucket.org/rwirdemann/kontrol/account"
-	"github.com/gorilla/mux"
-	"bitbucket.org/rwirdemann/kontrol/middleware"
 	"io/ioutil"
+
+	"github.com/ahojsenn/kontrol/account"
+	"github.com/ahojsenn/kontrol/middleware"
+	"github.com/gorilla/mux"
 )
 
 func NewRouter(githash string, buildstamp string, repository account.Repository) *mux.Router {

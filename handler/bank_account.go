@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"sort"
 
-	"bitbucket.org/rwirdemann/kontrol/account"
-	"bitbucket.org/rwirdemann/kontrol/util"
-	"bitbucket.org/rwirdemann/kontrol/booking"
+	"github.com/ahojsenn/kontrol/account"
+	"github.com/ahojsenn/kontrol/booking"
+	"github.com/ahojsenn/kontrol/util"
 )
 
 func MakeGetBankAccountHandler(repository account.Repository) http.HandlerFunc {

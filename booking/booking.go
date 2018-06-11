@@ -6,7 +6,7 @@ import (
 
 	"golang.org/x/text/language"
 
-	"bitbucket.org/rwirdemann/kontrol/owner"
+	"github.com/ahojsenn/kontrol/owner"
 	"golang.org/x/text/message"
 )
 
@@ -100,14 +100,14 @@ func Ausgangsrechnung(
 
 func CloneBooking(b Booking, amount float64, typ string, costcenter string) Booking {
 	return Booking{
-		Amount:     amount,
-		Type:       typ,
-		Text:       b.Text,
-		Month:      b.Month,
-		Year:       b.Year,
+		Amount:      amount,
+		Type:        typ,
+		Text:        b.Text,
+		Month:       b.Month,
+		Year:        b.Year,
 		FileCreated: b.FileCreated,
 		BankCreated: b.BankCreated,
-		CostCenter: costcenter}
+		CostCenter:  costcenter}
 }
 
 func (b Booking) Print(owner owner.Stakeholder) {
