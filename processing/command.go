@@ -1,8 +1,6 @@
 package processing
 
 import (
-	"log"
-
 	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/owner"
@@ -11,25 +9,6 @@ import (
 
 type Command interface {
 	run()
-}
-
-type BookRueckstellungCommand struct {
-	Booking    booking.Booking
-	Repository account.Repository
-}
-
-func (c BookRueckstellungCommand) run() {
-
-	// Bankbuchung
-	bankBooking := c.Booking
-	bankBooking.Type = c.Booking.Typ
-	bankBooking.Amount = bankBooking.Amount * -1
-	c.Repository.BankAccount().Book(bankBooking)
-
-	// Buchung Kommitment-Konto
-	kBooking := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.Rueckstellung, c.Booking.Responsible)
-	kommitmentAccount, _ := c.Repository.Get(owner.StakeholderKM.Id)
-	kommitmentAccount.Book(kBooking)
 }
 
 type BookGehaltCommand struct {
@@ -147,16 +126,31 @@ type BookInterneStundenCommand struct {
 
 func (c BookInterneStundenCommand) run() {
 
-	log.Println("in BookInterneStundenCommand", c)
 	// Buchung interner Stunden auf Kommanditstenkonto
 	a := booking.CloneBooking(c.Booking, c.Booking.Amount, booking.InterneStunden, c.Booking.Responsible)
 	partnerAccount, _ := c.Repository.Get(c.Booking.Responsible)
-	log.Println("in BookInterneStundenCommand, partnerAccount=", partnerAccount)
 	partnerAccount.Book(a)
 
 	// Buchung interner Stunden von kommitment Konto auf Stakeholder
 	b := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.InterneStunden, c.Booking.Responsible)
 	kommitmentAccount, _ := c.Repository.Get(owner.StakeholderKM.Id)
 	kommitmentAccount.Book(b)
+}
 
+type BookRueckstellungCommand struct {
+	Booking    booking.Booking
+	Repository account.Repository
+}
+
+func (c BookRueckstellungCommand) run() {
+
+	// Rückstellungsbuchung
+	a := booking.CloneBooking(c.Booking, c.Booking.Amount, booking.Rueckstellung, c.Booking.Responsible)
+	rueckstellungsAccount, _ := c.Repository.Get(owner.StakeholderRueckstellung.Id)
+	rueckstellungsAccount.Book(a)
+
+	// Buchung Kommitment-Konto
+	kBooking := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.Rueckstellung, c.Booking.Responsible)
+	kommitmentAccount, _ := c.Repository.Get(owner.StakeholderKM.Id)
+	kommitmentAccount.Book(kBooking)
 }

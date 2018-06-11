@@ -30,6 +30,7 @@ func Process(repository account.Repository, booking booking.Booking) {
 		b.Type != "SV-Beitrag" &&
 		b.Type != "LNSteuer" &&
 		b.Type != "GWSteuer" &&
+		b.Type != "Rückstellung" &&
 		b.Type != "GV" {
 		repository.BankAccount().Book(b)
 	}

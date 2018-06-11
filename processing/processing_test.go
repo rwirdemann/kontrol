@@ -151,9 +151,39 @@ func TestPartnerEntnahme(t *testing.T) {
 	util.AssertEquals(t, "GV", actual.Type)
 }
 
+// Rückstellungen
+// - werden nicht auf das Bankkonto gebucht
+// - 100% werden auf das Rückstellung-Konto gebucht
+// - 100% werden gegen das Kommitment-Konto gebucht
+func TestRückstellung(t *testing.T) {
+	setUp()
+
+	// given: a Rückstellung booking
+	p := booking.NewBooking("Rückstellung", "BW", nil, 4711.0, "Bonus Rückstellung", 12, 2017, time.Time{}, time.Time{})
+
+	// when: the position is processed
+	Process(repository, *p)
+
+	// the booking is booked to Rückstellung account
+	a1, _ := repository.Get(owner.StakeholderRueckstellung.Id)
+	util.AssertEquals(t, 1, len(a1.Bookings))
+	b1 := a1.Bookings[0]
+	util.AssertFloatEquals(t, 4711.00, b1.Amount)
+	util.AssertEquals(t, booking.Rueckstellung, b1.Type)
+
+	// the booking is booked against kommitment account
+	a2, _ := repository.Get(owner.StakeholderKM.Id)
+	b2 := a2.Bookings[0]
+	util.AssertFloatEquals(t, -4711.00, b2.Amount)
+	util.AssertEquals(t, booking.Rueckstellung, b1.Type)
+
+	// Rückstellungen are not booked on bank account
+	util.AssertEquals(t, 0, len(repository.BankAccount().Bookings))
+}
+
 // Interne Stunden
 // - werden nicht auf das Bankkonto gebucht
-// - 100% werden auf das Partner-Konto gebucht
+// - 100% werden auf das Rückstellung-Konto gebucht
 // - 100% werden gegen das Kommitment-Konto gebucht
 func TestInterneStunden(t *testing.T) {
 	setUp()

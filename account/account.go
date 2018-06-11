@@ -34,7 +34,6 @@ func (a *Account) UpdateSaldo() {
 	costs := 0.0
 	provision := 0.0
 	revenue := 0.0
-	reserves := 0.0
 	taxes := 0.0
 	saldo := 0.0
 	internals := 0.0
@@ -56,16 +55,12 @@ func (a *Account) UpdateSaldo() {
 		if b.Type == "Eingangsrechnung" || b.Type == "Gehalt" || b.Type == "SV-Beitrag" {
 			costs += b.Amount
 		}
-		if b.Type == "Rückstellungen" {
-			reserves += b.Amount
-		}
 		if b.Type == "Interne Stunden" {
 			internals += b.Amount
 		}
 	}
 	a.Saldo = saldo
 	a.Advances = advances
-	a.Reserves = reserves
 	a.Costs = costs
 	a.Revenue = revenue
 	a.Taxes = taxes
