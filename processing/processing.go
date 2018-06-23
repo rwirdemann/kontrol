@@ -17,6 +17,8 @@ func Process(repository account.Repository, booking booking.Booking) {
 	switch b.Type {
 	case "ER":
 		b.Amount = util.Net(b.Amount) * -1
+	case "ERgegenRückstellung":
+		b.Amount = util.Net(b.Amount) * -1
 	case "AR":
 		b.Amount = util.Net(b.Amount)
 	case "GWSteuer":
@@ -31,6 +33,8 @@ func Process(repository account.Repository, booking booking.Booking) {
 		b.Type != "LNSteuer" &&
 		b.Type != "GWSteuer" &&
 		b.Type != "Rückstellung" &&
+		b.Type != "Anfangsbestand" &&
+		b.Type != "RückstellungAuflösen" &&
 		b.Type != "GV" {
 		repository.BankAccount().Book(b)
 	}
@@ -40,32 +44,30 @@ func Process(repository account.Repository, booking booking.Booking) {
 	switch booking.Typ {
 	case "GV":
 		command = BookPartnerEntnahmeCommand{Repository: repository, Booking: booking}
-		command.run()
 	case "AR":
 		command = BookAusgangsrechnungCommand{Repository: repository, Booking: booking}
-		command.run()
 	case "ER":
 		command = BookEingangsrechnungCommand{Repository: repository, Booking: booking}
-		command.run()
 	case "IS":
 		command = BookInterneStundenCommand{Repository: repository, Booking: booking}
-		command.run()
 	case "SV-Beitrag":
 		command = BookSVBeitragCommand{Repository: repository, Booking: booking}
-		command.run()
 	case "GWSteuer":
 		command = BookGWSteuerCommand{Repository: repository, Booking: booking}
-		command.run()
 	case "Gehalt":
 		command = BookGehaltCommand{Repository: repository, Booking: booking}
-		command.run()
 	case "LNSteuer":
 		command = BookLNSteuerCommand{Repository: repository, Booking: booking}
-		command.run()
 	case "Rückstellung":
 		command = BookRueckstellungCommand{Repository: repository, Booking: booking}
-		command.run()
+	case "Anfangsbestand":
+		command = BookAnfangsbestandCommand{Repository: repository, Booking: booking}
+	case "ERgegenRückstellung":
+		command = BookERgegenRückstellungCommand{Repository: repository, Booking: booking}
+	case "RückstellungAuflösen":
+		command = BookRückstellungAuflösenCommand{Repository: repository, Booking: booking}
 	default:
 		log.Printf("could not process booking type '%s'", booking.Typ)
 	}
+	command.run()
 }

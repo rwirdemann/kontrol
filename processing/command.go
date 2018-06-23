@@ -149,8 +149,52 @@ func (c BookRueckstellungCommand) run() {
 	rueckstellungsAccount, _ := c.Repository.Get(owner.StakeholderRueckstellung.Id)
 	rueckstellungsAccount.Book(a)
 
-	// Buchung Kommitment-Konto
+	// Buchung gegen kommitment Konto
 	kBooking := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.Rueckstellung, c.Booking.Responsible)
-	kommitmentAccount, _ := c.Repository.Get(owner.StakeholderKM.Id)
-	kommitmentAccount.Book(kBooking)
+	account, _ := c.Repository.Get(owner.StakeholderKM.Id)
+	account.Book(kBooking)
+}
+
+type BookAnfangsbestandCommand struct {
+	Booking    booking.Booking
+	Repository account.Repository
+}
+
+func (c BookAnfangsbestandCommand) run() {
+
+	// Anfangsbestand buchen
+	a := booking.CloneBooking(c.Booking, c.Booking.Amount, booking.Anfangsbestand, c.Booking.Responsible)
+	zielkonto, _ := c.Repository.Get(c.Booking.Responsible)
+	zielkonto.Book(a)
+}
+
+type BookERgegenRückstellungCommand struct {
+	Booking    booking.Booking
+	Repository account.Repository
+}
+
+func (c BookERgegenRückstellungCommand) run() {
+
+	// Buchung gegen Rückstellungskonto
+	a := booking.CloneBooking(c.Booking, util.Net(c.Booking.Amount)*-1, booking.Eingangsrechnung, c.Booking.Responsible)
+	rückstellungskonto, _ := c.Repository.Get(owner.StakeholderRueckstellung.Id)
+	rückstellungskonto.Book(a)
+}
+
+type BookRückstellungAuflösenCommand struct {
+	Booking    booking.Booking
+	Repository account.Repository
+}
+
+func (c BookRückstellungAuflösenCommand) run() {
+
+	// Buchung vom Rückstellungskonto
+	a := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.Eingangsrechnung, c.Booking.Responsible)
+	rückstellungskonto, _ := c.Repository.Get(owner.StakeholderRueckstellung.Id)
+	rückstellungskonto.Book(a)
+
+	// Buchung auf das kommitment Konto
+	kBooking := booking.CloneBooking(c.Booking, c.Booking.Amount, booking.Rueckstellung, c.Booking.Responsible)
+	account, _ := c.Repository.Get(owner.StakeholderKM.Id)
+	account.Book(kBooking)
 }

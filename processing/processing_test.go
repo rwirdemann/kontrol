@@ -131,6 +131,65 @@ func TestEingangsrechnung(t *testing.T) {
 	assert.Equal(t, "ER", actual.Type)
 }
 
+func TestEingangsrechnungGegenRückstellung(t *testing.T) {
+	setUp()
+	// Eingangserechnungen können auch gegen Rückstellungen gebucht werden
+
+	// given a Buchung Eingangsrechnung gegen Rücksttellung
+	p := booking.NewBooking("ERgegenRückstellung", "Rückstellung", nil, 12852.0, "ER 1234", 1, 2017, time.Time{}, time.Time{})
+
+	// when: the position is processed
+	Process(repository, *p)
+
+	// the booking is booked from Rückstellung account
+	a1, _ := repository.Get(owner.StakeholderRueckstellung.Id)
+	util.AssertEquals(t, 1, len(a1.Bookings))
+	b1 := a1.Bookings[0]
+	util.AssertFloatEquals(t, util.Net(-12852.0), b1.Amount)
+	util.AssertEquals(t, booking.Eingangsrechnung, b1.Type)
+
+	// the booking is not booked to K Accout
+	c1, _ := repository.Get(owner.StakeholderKM.Id)
+	util.AssertEquals(t, 0, len(c1.Bookings))
+
+	// the booking is  booked on bank account
+	assert.Equal(t, 1, len(repository.BankAccount().Bookings))
+	actual := repository.BankAccount().Bookings[0]
+	assert.Equal(t, util.Net(-12852.0), actual.Amount)
+	assert.Equal(t, "ER 1234", actual.Text)
+	assert.Equal(t, "ERgegenRückstellung", actual.Type)
+
+}
+
+func TestRückstellungAuflösen(t *testing.T) {
+	setUp()
+	// Rückstellungen können gegen das kommitment Konto aufgelöst werden
+
+	// given a Buchung Eingangsrechnung gegen Rücksttellung
+	p := booking.NewBooking("RückstellungAuflösen", "K", nil, 12852.0, "Auflösung Rückstellungsdifferenz", 1, 2017, time.Time{}, time.Time{})
+
+	// when: the position is processed
+	Process(repository, *p)
+
+	// the booking is booked from Rückstellung account
+	a1, _ := repository.Get(owner.StakeholderRueckstellung.Id)
+	util.AssertEquals(t, 1, len(a1.Bookings))
+	b1 := a1.Bookings[0]
+	util.AssertFloatEquals(t, -12852.0, b1.Amount)
+	util.AssertEquals(t, booking.Eingangsrechnung, b1.Type)
+
+	// the booking is not booked to the bankaccout
+	util.AssertEquals(t, 0, len(repository.BankAccount().Bookings))
+
+	// the booking is  booked on kommitment account
+	accountKommitment, _ := repository.Get(owner.StakeholderKM.Id)
+	assert.Equal(t, 1, len(accountKommitment.Bookings))
+	kommitment := accountKommitment.Bookings[0]
+	assert.Equal(t, 12852.0, kommitment.Amount)
+	assert.Equal(t, kommitment.Type, booking.RueckstellungAuflösen)
+	assert.Equal(t, "K", kommitment.CostCenter)
+}
+
 func TestPartnerEntnahme(t *testing.T) {
 	setUp()
 
@@ -290,4 +349,26 @@ func assertBooking(t *testing.T, b booking.Booking, amount float64, text string,
 	util.AssertFloatEquals(t, amount, b.Amount)
 	util.AssertEquals(t, text, b.Text)
 	util.AssertEquals(t, destType, b.Type)
+}
+
+// 100% werden als Anfangsbestand auf ein Konto gebucht, bspw. Rückstellung
+func TestProcessAnfangsbestand(t *testing.T) {
+	setUp()
+
+	// given a booking with Anfangsbestand
+	b := booking.NewBooking("Anfangsbestand", "Rückstellung", nil, 42.23, "Anfangsbestand aus Vorjahr", 9, 2017, time.Time{}, time.Time{})
+
+	// when: the position is processed
+	Process(repository, *b)
+
+	// the booking is booked to Rückstellung account
+	a1, _ := repository.Get(owner.StakeholderRueckstellung.Id)
+	util.AssertEquals(t, 1, len(a1.Bookings))
+	b1 := a1.Bookings[0]
+	util.AssertFloatEquals(t, 42.23, b1.Amount)
+	util.AssertEquals(t, booking.Anfangsbestand, b1.Type)
+
+	// Anfangsbestand is not booked on bank account
+	util.AssertEquals(t, 0, len(repository.BankAccount().Bookings))
+
 }

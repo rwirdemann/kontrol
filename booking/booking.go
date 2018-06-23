@@ -10,7 +10,7 @@ import (
 	"golang.org/x/text/message"
 )
 
-var ValidBookingTypes = [...]string{"ER", "AR", "GV", "IS", "SV-Beitrag", "GWSteuer", "Gehalt", "LNSteuer", "Rückstellung"}
+var ValidBookingTypes = [...]string{"ER", "AR", "GV", "IS", "SV-Beitrag", "GWSteuer", "Gehalt", "LNSteuer", "Rückstellung", "Anfangsbestand"}
 
 // Zusatzinformationen einer Buchung, deren Quelle die CSV-Datei ist, und die für die weitere
 // Bearbeitung erforderlich sind.
@@ -30,20 +30,22 @@ type CsvBookingExtras struct {
 	Net map[owner.Stakeholder]float64
 }
 
-// Aus einer Bankbuchung wird eine oder mehrere virtuelle Buchungen erstellt. Dis ist die Liste
-// mögliche Werte für den Type einer virtuellen Buchung
+// Aus einer Buchung in der Quelldatei wird eine oder mehrere virtuelle Buchungen erstellt. Dies ist die Liste
+// möglicher Werte für den Type einer virtuellen Buchung
 const (
-	Vertriebsprovision = "Vertriebsprovision"
-	Nettoanteil        = "Nettoanteil"
-	Kommitmentanteil   = "Kommitmentanteil"
-	Entnahme           = "Entnahme"
-	Eingangsrechnung   = "Eingangsrechnung"
-	InterneStunden     = "Interne Stunden"
-	SVBeitrag          = "SV-Beitrag"
-	GWSteuer           = "GWSteuer"
-	Gehalt             = "Gehalt"
-	LNSteuer           = "LNSteuer"
-	Rueckstellung      = "Rückstellung"
+	Vertriebsprovision    = "Vertriebsprovision"
+	Nettoanteil           = "Nettoanteil"
+	Kommitmentanteil      = "Kommitmentanteil"
+	Entnahme              = "Entnahme"
+	Eingangsrechnung      = "Eingangsrechnung"
+	InterneStunden        = "Interne Stunden"
+	SVBeitrag             = "SV-Beitrag"
+	GWSteuer              = "GWSteuer"
+	Gehalt                = "Gehalt"
+	LNSteuer              = "LNSteuer"
+	Rueckstellung         = "Rückstellung"
+	RueckstellungAuflösen = "RueckstellungAuflösen"
+	Anfangsbestand        = "Anfangsbestand"
 )
 
 type Booking struct {
