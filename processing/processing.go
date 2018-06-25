@@ -35,6 +35,7 @@ func Process(repository account.Repository, booking booking.Booking) {
 		b.Type != "Rückstellung" &&
 		b.Type != "Anfangsbestand" &&
 		b.Type != "RückstellungAuflösen" &&
+		b.Type != "GV-Vorjahr" &&
 		b.Type != "GV" {
 		repository.BankAccount().Book(b)
 	}
@@ -44,6 +45,8 @@ func Process(repository account.Repository, booking booking.Booking) {
 	switch booking.Typ {
 	case "GV":
 		command = BookPartnerEntnahmeCommand{Repository: repository, Booking: booking}
+	case "GV-Vorjahr":
+		command = BookPartnerEntnahmeVorjahrCommand{Repository: repository, Booking: booking}
 	case "AR":
 		command = BookAusgangsrechnungCommand{Repository: repository, Booking: booking}
 	case "ER":

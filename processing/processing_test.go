@@ -166,7 +166,7 @@ func TestRückstellungAuflösen(t *testing.T) {
 	// Rückstellungen können gegen das kommitment Konto aufgelöst werden
 
 	// given a Buchung Eingangsrechnung gegen Rücksttellung
-	p := booking.NewBooking("RückstellungAuflösen", "K", nil, 12852.0, "Auflösung Rückstellungsdifferenz", 1, 2017, time.Time{}, time.Time{})
+	p := booking.NewBooking("RückstellungAuflösen", "K", nil, -12852.0, "Auflösung Rückstellungsdifferenz", 1, 2017, time.Time{}, time.Time{})
 
 	// when: the position is processed
 	Process(repository, *p)
@@ -370,5 +370,48 @@ func TestProcessAnfangsbestand(t *testing.T) {
 
 	// Anfangsbestand is not booked on bank account
 	util.AssertEquals(t, 0, len(repository.BankAccount().Bookings))
+}
 
+// 100% werden als Anfangsbestand auf ein Konto gebucht, bspw. Rückstellung
+func TestProcessAnfangsbestand_JahresüberschusssVJ(t *testing.T) {
+	setUp()
+
+	// given a booking with Anfangsbestand
+	b := booking.NewBooking("Anfangsbestand", "JahresüberschussVJ", nil, 10042.23, "Anfangsbestand aus Vorjahr", 9, 2017, time.Time{}, time.Time{})
+
+	// when: the position is processed
+	Process(repository, *b)
+
+	// the booking is booked to Rückstellung account
+	a1, _ := repository.Get(owner.StakeholderJUSVJ.Id)
+	util.AssertEquals(t, 1, len(a1.Bookings))
+	b1 := a1.Bookings[0]
+	util.AssertFloatEquals(t, 10042.23, b1.Amount)
+	util.AssertEquals(t, booking.Anfangsbestand, b1.Type)
+
+	// Anfangsbestand is not booked on bank account
+	util.AssertEquals(t, 0, len(repository.BankAccount().Bookings))
+}
+
+// 100% werden auf das Bankkonto gebucht
+// 100% werden gegen das JahresüberschussVJ gebucht
+func TestProcessGV_Vorjahr(t *testing.T) {
+	setUp()
+	b := booking.NewBooking("GV-Vorjahr", "JM", nil, 77777, "Rest Anteil Johannes", 5, 2017, time.Time{}, time.Time{})
+
+	Process(repository, *b)
+
+	// Buchung wurde gegen JahresüberschussVJ gebucht
+	a, _ := repository.Get(owner.StakeholderJUSVJ.Id)
+	b1 := a.Bookings[0]
+	assert.Equal(t, -77777.0, b1.Amount)
+	assert.Equal(t, booking.GVVorjahr, b1.Type)
+	assert.Equal(t, "JM", b1.CostCenter)
+
+	// Buchung wurde aufs Bankkonto gebucht
+	assert.Equal(t, 1, len(repository.BankAccount().Bookings))
+	actual := repository.BankAccount().Bookings[0]
+	assert.Equal(t, -77777.0, actual.Amount)
+	assert.Equal(t, "Rest Anteil Johannes", actual.Text)
+	assert.Equal(t, "GV-Vorjahr", actual.Type)
 }
