@@ -324,7 +324,7 @@ func TestProcessLNSteuer(t *testing.T) {
 }
 
 // 100% werden auf das Bankkonto gebucht
-// 100% werden gegen das Kommitment-Konto gebucht. Diese Regel ist nich unscharf:
+// 100% werden gegen das Kommitment-Konto gebucht. Diese Regel ist nicht unscharf:
 // eigentlich müssen die 100% aufgeteilt werden auf: 70% auf Partner, 25% auf
 // Kommitment und 5% auf Dealbringer
 func TestProcessGWSteuer(t *testing.T) {
@@ -336,6 +336,26 @@ func TestProcessGWSteuer(t *testing.T) {
 
 	// Buchung wurde gegen Kommitment-Konto gebucht
 	a, _ := repository.Get(owner.StakeholderKM.Id)
+	b1 := a.Bookings[0]
+	assertBooking(t, b1, -2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", booking.GWSteuer)
+
+	// Buchung wurde aufs Bankkonto gebucht
+	util.AssertEquals(t, 1, len(repository.BankAccount().Bookings))
+	actual := repository.BankAccount().Bookings[0]
+	assertBooking(t, actual, -2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", "GWSteuer")
+}
+
+// 100% werden auf das Bankkonto gebucht
+// 100% werden gegen das Rückstellung gebucht.
+func TestProcessGWSteuer_gegenRückstellung(t *testing.T) {
+	setUp()
+
+	b := booking.NewBooking("GWSteuer", "Rückstellung", nil, 2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", 9, 2017, time.Time{}, time.Time{})
+
+	Process(repository, *b)
+
+	// Buchung wurde gegen Kommitment-Konto gebucht
+	a, _ := repository.Get(owner.StakeholderRueckstellung.Id)
 	b1 := a.Bookings[0]
 	assertBooking(t, b1, -2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", booking.GWSteuer)
 

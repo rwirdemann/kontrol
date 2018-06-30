@@ -81,9 +81,9 @@ func (c BookGWSteuerCommand) run() {
 	bankBooking.Amount = bankBooking.Amount * -1
 	c.Repository.BankAccount().Book(bankBooking)
 
-	// Buchung Kommitment-Konto
+	// Buchung Kommitment-Konto oder Rückstellung oder ...
 	kBooking := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.GWSteuer, c.Booking.Responsible)
-	kommitmentAccount, _ := c.Repository.Get(owner.StakeholderKM.Id)
+	kommitmentAccount, _ := c.Repository.Get(c.Booking.Responsible)
 	kommitmentAccount.Book(kBooking)
 }
 
