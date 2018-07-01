@@ -121,7 +121,7 @@ func (c BookPartnerEntnahmeVorjahrCommand) run() {
 
 	// Buchung gegen Kommanditstenkonto
 	b := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.GVVorjahr, c.Booking.Responsible)
-	a, _ := c.Repository.Get(owner.StakeholderJUSVJ.Id)
+	a, _ := c.Repository.Get(owner.KontoJUSVJ.Id)
 	a.Book(b)
 }
 

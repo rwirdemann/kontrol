@@ -22,13 +22,28 @@ var StakeholderKM = Stakeholder{Id: "K", Name: "Kommitment", Type: StakeholderTy
 var StakeholderEX = Stakeholder{Id: "EX", Name: "Extern", Type: StakeholderTypeExtern}
 var StakeholderRR = Stakeholder{Id: "RR", Name: "Rest", Type: StakeholderTypeOthers}
 var StakeholderRueckstellung = Stakeholder{Id: "Rückstellung", Name: "Rückstellung", Type: StakeholderTypeInternalAccount}
-var StakeholderJUSVJ = Stakeholder{Id: "JahresüberschussVJ", Name: "JahresüberschussVJ", Type: StakeholderTypeInternalAccount}
+var KontoJUSVJ = Stakeholder{Id: "JahresüberschussVJ", Name: "JahresüberschussVJ", Type: StakeholderTypeInternalAccount}
+var SKR03_1400 = Stakeholder{Id: "1400", Name: "1400 OPOS-Kunde", Type: StakeholderTypeInternalAccount}
+var SKR03_1600 = Stakeholder{Id: "1600", Name: "1600 OPOS-Lieferant", Type: StakeholderTypeInternalAccount}
 
 type StakeholderRepository struct {
 }
 
 func (this StakeholderRepository) All() []Stakeholder {
-	return []Stakeholder{StakeholderRW, StakeholderAN, StakeholderJM, StakeholderBW, StakeholderEX, StakeholderKM, StakeholderKR, StakeholderRR, StakeholderRueckstellung, StakeholderJUSVJ}
+	return []Stakeholder{
+		StakeholderRW,
+		StakeholderAN,
+		StakeholderJM,
+		StakeholderBW,
+		StakeholderEX,
+		StakeholderKM,
+		StakeholderKR,
+		StakeholderRR,
+		StakeholderRueckstellung,
+		KontoJUSVJ,
+		SKR03_1400,
+		SKR03_1600,
+	}
 }
 
 func (this StakeholderRepository) TypeOf(id string) string {

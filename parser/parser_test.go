@@ -46,4 +46,5 @@ func TestParseFileCreated(t *testing.T) {
 	assert.Equal(t, time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC), parseFileCreated("1.1.2017"))
 	assert.Equal(t, time.Date(2017, 12, 1, 0, 0, 0, 0, time.UTC), parseFileCreated("1.12.2017"))
 	assert.Equal(t, time.Date(2017, 7, 31, 0, 0, 0, 0, time.UTC), parseFileCreated("31.7.2017"))
+	assert.Equal(t, time.Time{}, parseFileCreated(""))
 }

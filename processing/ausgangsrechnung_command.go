@@ -1,6 +1,8 @@
 package processing
 
 import (
+	"time"
+
 	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/owner"
@@ -12,6 +14,15 @@ type BookAusgangsrechnungCommand struct {
 }
 
 func (this BookAusgangsrechnungCommand) run() {
+
+	// if booking with empty timestamp in position "BankCreated"
+	// the book it to open positions SKR03_1400
+	if this.isOpenPosition() == true {
+		skr1400, _ := this.Repository.Get(owner.SKR03_1400.Id)
+		skr1400.Book(this.Booking)
+		return
+	}
+
 	benefitees := this.stakeholderWithNetPositions()
 	for _, benefited := range benefitees {
 
@@ -131,4 +142,10 @@ func (this BookAusgangsrechnungCommand) stakeholderWithNetPositions() []owner.St
 		}
 	}
 	return result
+}
+
+// is this an Open Position?
+func (this BookAusgangsrechnungCommand) isOpenPosition() bool {
+	emptyTime := time.Time{}
+	return this.Booking.BankCreated == emptyTime
 }
