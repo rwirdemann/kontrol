@@ -25,6 +25,7 @@ var StakeholderRueckstellung = Stakeholder{Id: "Rückstellung", Name: "Rückstel
 var KontoJUSVJ = Stakeholder{Id: "JahresüberschussVJ", Name: "JahresüberschussVJ", Type: StakeholderTypeInternalAccount}
 var SKR03_1400 = Stakeholder{Id: "1400", Name: "1400 OPOS-Kunde", Type: StakeholderTypeInternalAccount}
 var SKR03_1600 = Stakeholder{Id: "1600", Name: "1600 OPOS-Lieferant", Type: StakeholderTypeInternalAccount}
+var SKR03_4100_4199 = Stakeholder{Id: "4100_4199", Name: "4100-4199 Löhne und Gehälter", Type: StakeholderTypeInternalAccount}
 
 type StakeholderRepository struct {
 }
@@ -43,6 +44,7 @@ func (this StakeholderRepository) All() []Stakeholder {
 		KontoJUSVJ,
 		SKR03_1400,
 		SKR03_1600,
+		SKR03_4100_4199,
 	}
 }
 

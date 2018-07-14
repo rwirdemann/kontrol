@@ -8,6 +8,10 @@ import (
 	"github.com/ahojsenn/kontrol/util"
 )
 
+type Command interface {
+	run()
+}
+
 // Implementiert den Kommitment-Verteilungsalgorithmus
 func Process(repository account.Repository, booking booking.Booking) {
 

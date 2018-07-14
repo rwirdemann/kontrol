@@ -61,24 +61,29 @@ func TestAusgangsrechnungAngestellter(t *testing.T) {
 // - 100% Brutto gegen Kommitmentkonto
 // - Kostenstelle: Kürzel des Angestellten
 func TestGehaltAngestellter(t *testing.T) {
-	setUp()
+	repository := account.NewDefaultRepository()
 
+	// given: a booking
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
 	p := booking.NewBooking("Gehalt", "BW", nil, 3869.65, "Gehalt Ben", 1, 2017, time.Time{}, its2018)
 
+	// when: the position is processed
 	Process(repository, *p)
 
 	// 100% Brutto gegen Bankkonto
+	accountBank := repository.BankAccount()
 	assert.Equal(t, -3869.65, accountBank.Bookings[0].Amount)
 	assert.Equal(t, "Gehalt Ben", accountBank.Bookings[0].Text)
 	assert.Equal(t, "Gehalt", accountBank.Bookings[0].Type)
 
-	// 100% Brutto gegen Kommitment
-	assert.Equal(t, -3869.65, accountKommitment.Bookings[0].Amount)
-	assert.Equal(t, booking.Gehalt, accountKommitment.Bookings[0].Type)
+	// 100% Brutto gegen SKR03_4100_4199
+	account2, _ := repository.Get(owner.SKR03_4100_4199.Id)
+	util.AssertEquals(t, 1, len(account2.Bookings))
+	assert.Equal(t, -3869.65, account2.Bookings[0].Amount)
+	assert.Equal(t, booking.Gehalt, account2.Bookings[0].Type)
 
 	// Kommitment-Buchung ist der Kostenstelle "BW" zugeordnet
-	assert.Equal(t, "BW", accountKommitment.Bookings[0].CostCenter)
+	assert.Equal(t, "BW", account2.Bookings[0].CostCenter)
 }
 
 func TestExternNettoAnteil(t *testing.T) {
@@ -303,7 +308,7 @@ func TestProcessSVBeitrag(t *testing.T) {
 	Process(repository, *b)
 
 	// Buchung wurde gegen Kommitment-Konto gebucht
-	a, _ := repository.Get(owner.StakeholderKM.Id)
+	a, _ := repository.Get(owner.SKR03_4100_4199.Id)
 	b1 := a.Bookings[0]
 	assert.Equal(t, -1385.10, b1.Amount)
 	assert.Equal(t, booking.SVBeitrag, b1.Type)
@@ -328,8 +333,9 @@ func TestProcessLNSteuer(t *testing.T) {
 	Process(repository, *b)
 
 	// Buchung wurde gegen Kommitment-Konto gebucht
-	assertBooking(t, accountKommitment.Bookings[0], -1511.45, "Lohnsteuer Ben", "LNSteuer")
-	assert.Equal(t, "BW", accountKommitment.Bookings[0].CostCenter)
+	account2, _ := repository.Get(owner.SKR03_4100_4199.Id)
+	assertBooking(t, account2.Bookings[0], -1511.45, "Lohnsteuer Ben", "LNSteuer")
+	assert.Equal(t, "BW", account2.Bookings[0].CostCenter)
 
 	// Buchung wurde aufs Bankkonto gebucht
 	assertBooking(t, accountBank.Bookings[0], -1511.45, "Lohnsteuer Ben", "LNSteuer")
@@ -448,4 +454,28 @@ func TestProcessGV_Vorjahr(t *testing.T) {
 	assert.Equal(t, -77777.0, actual.Amount)
 	assert.Equal(t, "Rest Anteil Johannes", actual.Text)
 	assert.Equal(t, "GV-Vorjahr", actual.Type)
+}
+
+// test whether there is a not yet payed invoice
+func TestProcessOPOS_SKR1600(t *testing.T) {
+	setUp()
+
+	// given: a internal hours booking
+	tomorrow := time.Now().AddDate(0, 0, +1)
+	p := booking.NewBooking("ER", "K", nil, 8250.0, "Interne Stunden 2017", 12, 2017, tomorrow, tomorrow)
+
+	// when: the position is processed
+	Process(repository, *p)
+
+	// the booking is booked to SRK1600 account
+	// then the booking is on SKR03_1400
+	account1600, _ := repository.Get(owner.SKR03_1600.Id)
+	bookings1600 := account1600.Bookings
+	assert.Equal(t, 1, len(bookings1600))
+
+	// the booking is not yet booked to partners
+	accountK, _ := repository.Get(owner.StakeholderKM.Id)
+	bookingsK := accountK.Bookings
+	assert.Equal(t, 0, len(bookingsK))
+
 }
