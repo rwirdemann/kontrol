@@ -51,6 +51,8 @@ const (
 
 type Booking struct {
 	Type        string // siehe const-Block hier drüber für gültige Werte
+	Soll        string
+	Haben       string
 	CostCenter  string
 	Amount      float64
 	Text        string
@@ -64,6 +66,8 @@ type Booking struct {
 
 func NewBooking(
 	csvType string,
+	soll string,
+	haben string,
 	dealBringer string,
 	net map[owner.Stakeholder]float64,
 	amount float64,
@@ -79,6 +83,8 @@ func NewBooking(
 			Responsible: dealBringer,
 			Net:         net,
 		},
+		Soll:        soll,
+		Haben:       haben,
 		Amount:      amount,
 		Text:        text,
 		Month:       month,
@@ -98,7 +104,7 @@ func Ausgangsrechnung(
 	fileCreated time.Time,
 	bankCreated time.Time) *Booking {
 
-	return NewBooking("AR", dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, fileCreated, bankCreated)
+	return NewBooking("AR", "800", "1337", dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, fileCreated, bankCreated)
 }
 
 func CloneBooking(b Booking, amount float64, typ string, costcenter string) Booking {

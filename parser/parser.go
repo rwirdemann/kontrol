@@ -46,6 +46,8 @@ func Import(file string, aYear int) []booking.Booking {
 
 			if isValidBookingType(record[0]) {
 				typ := record[0]
+				soll := record[1]
+				haben := record[2]
 				cs := record[3]
 				subject := strings.Replace(record[4], "\n", ",", -1)
 				amount := parseAmount(record[5])
@@ -57,7 +59,7 @@ func Import(file string, aYear int) []booking.Booking {
 					for _, p := range netBookings {
 						m[p.Owner] = parseAmount(record[p.Column])
 					}
-					position := booking.NewBooking(typ, cs, m, amount, subject, month, year, fileCreated, bankCreated)
+					position := booking.NewBooking(typ, soll, haben, cs, m, amount, subject, month, year, fileCreated, bankCreated)
 					positions = append(positions, *position)
 				}
 			} else {
