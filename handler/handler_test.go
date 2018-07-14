@@ -20,10 +20,10 @@ func init() {
 	repository.Add(account.NewAccount(owner.StakeholderAN))
 
 	k := account.NewAccount(owner.StakeholderKM)
-	ar := booking.NewBooking("AR", "800", "1337", "JM", nil, 2000, "Rechnung WLW", 1, 2018, time.Time{}, time.Time{})
+	ar := booking.NewBooking("AR", "800", "1337", "JM", nil, 2000, "Rechnung WLW", 1, 2018, time.Time{})
 	ar.CostCenter = "BW"
 	k.Book(*ar)
-	ar2 := booking.NewBooking("AR", "800", "1337", "JM", nil, 2400, "Rechnung JH", 1, 2018, time.Time{}, time.Time{})
+	ar2 := booking.NewBooking("AR", "800", "1337", "JM", nil, 2400, "Rechnung JH", 1, 2018, time.Time{})
 	ar2.CostCenter = "RW"
 	k.Book(*ar2)
 	repository.Add(k)

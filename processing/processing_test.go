@@ -37,7 +37,7 @@ func TestAusgangsrechnungAngestellter(t *testing.T) {
 		owner.StakeholderBW: 10800.0,
 	}
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.NewBooking("AR", "800", "1337", "JM", net, 12852.0, "Rechnung 1234", 1, 2017, time.Time{}, its2018)
+	p := booking.NewBooking("AR", "800", "1337", "JM", net, 12852.0, "Rechnung 1234", 1, 2017, its2018)
 
 	Process(repository, *p)
 
@@ -65,7 +65,7 @@ func TestGehaltAngestellter(t *testing.T) {
 
 	// given: a booking
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.NewBooking("Gehalt", "800", "1337", "BW", nil, 3869.65, "Gehalt Ben", 1, 2017, time.Time{}, its2018)
+	p := booking.NewBooking("Gehalt", "800", "1337", "BW", nil, 3869.65, "Gehalt Ben", 1, 2017, its2018)
 
 	// when: the position is processed
 	Process(repository, *p)
@@ -94,7 +94,7 @@ func TestExternNettoAnteil(t *testing.T) {
 		owner.StakeholderEX: 10800.0,
 	}
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.NewBooking("AR", "800", "1337", "JM", net, 12852.0, "Rechnung 1234", 1, 2017, time.Time{}, its2018)
+	p := booking.NewBooking("AR", "800", "1337", "JM", net, 12852.0, "Rechnung 1234", 1, 2017, its2018)
 
 	// when: the position is processed
 	Process(repository, *p)
@@ -120,7 +120,7 @@ func TestEingangsrechnung(t *testing.T) {
 	setUp()
 
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.NewBooking("ER", "800", "1337", "K", nil, 12852.0, "Eingangsrechnung 1234", 1, 2017, time.Time{}, its2018)
+	p := booking.NewBooking("ER", "800", "1337", "K", nil, 12852.0, "Eingangsrechnung 1234", 1, 2017, its2018)
 
 	Process(repository, *p)
 
@@ -146,7 +146,7 @@ func TestEingangsrechnungGegenRückstellung(t *testing.T) {
 
 	// given a Buchung Eingangsrechnung gegen Rücksttellung
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.NewBooking("ERgegenRückstellung", "800", "1337", "Rückstellung", nil, 12852.0, "ER 1234", 1, 2017, time.Time{}, its2018)
+	p := booking.NewBooking("ERgegenRückstellung", "800", "1337", "Rückstellung", nil, 12852.0, "ER 1234", 1, 2017, its2018)
 
 	// when: the position is processed
 	Process(repository, *p)
@@ -177,7 +177,7 @@ func TestRückstellungAuflösen(t *testing.T) {
 
 	// given a Buchung Eingangsrechnung gegen Rücksttellung
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.NewBooking("RückstellungAuflösen", "800", "1337", "K", nil, -12852.0, "Auflösung Rückstellungsdifferenz", 1, 2017, time.Time{}, its2018)
+	p := booking.NewBooking("RückstellungAuflösen", "800", "1337", "K", nil, -12852.0, "Auflösung Rückstellungsdifferenz", 1, 2017, its2018)
 
 	// when: the position is processed
 	Process(repository, *p)
@@ -207,7 +207,7 @@ func TestPartnerEntnahme(t *testing.T) {
 	extras := booking.CsvBookingExtras{Typ: "GV", Responsible: "RW"}
 	extras.Net = make(map[owner.Stakeholder]float64)
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	b := booking.NewBooking("GV", "800", "1337", "RW", nil, 6000, "", 1, 2017, time.Time{}, its2018)
+	b := booking.NewBooking("GV", "800", "1337", "RW", nil, 6000, "", 1, 2017, its2018)
 
 	Process(repository, *b)
 
@@ -231,7 +231,7 @@ func TestRückstellung(t *testing.T) {
 
 	// given: a Rückstellung booking
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.NewBooking("Rückstellung", "800", "1337", "BW", nil, 4711.0, "Bonus Rückstellung", 12, 2017, time.Time{}, its2018)
+	p := booking.NewBooking("Rückstellung", "800", "1337", "BW", nil, 4711.0, "Bonus Rückstellung", 12, 2017, its2018)
 
 	// when: the position is processed
 	Process(repository, *p)
@@ -262,7 +262,7 @@ func TestInterneStunden(t *testing.T) {
 
 	// given: a internal hours booking
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.NewBooking("IS", "800", "1337", "AN", nil, 8250.0, "Interne Stunden 2017", 12, 2017, time.Time{}, its2018)
+	p := booking.NewBooking("IS", "800", "1337", "AN", nil, 8250.0, "Interne Stunden 2017", 12, 2017, its2018)
 
 	// when: the position is processed
 	Process(repository, *p)
@@ -287,7 +287,7 @@ func TestInterneStunden(t *testing.T) {
 func TestBookAusgangsrechnungToBankAccount(t *testing.T) {
 	setUp()
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	b := booking.NewBooking("AR", "800", "1337", "K", nil, 6000, "Ausgangsrechnung", 1, 2017, time.Time{}, its2018)
+	b := booking.NewBooking("AR", "800", "1337", "K", nil, 6000, "Ausgangsrechnung", 1, 2017, its2018)
 
 	Process(repository, *b)
 
@@ -303,7 +303,7 @@ func TestBookAusgangsrechnungToBankAccount(t *testing.T) {
 func TestProcessSVBeitrag(t *testing.T) {
 	setUp()
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	b := booking.NewBooking("SV-Beitrag", "800", "1337", "BW", nil, 1385.10, "KKH, Ben", 5, 2017, time.Time{}, its2018)
+	b := booking.NewBooking("SV-Beitrag", "800", "1337", "BW", nil, 1385.10, "KKH, Ben", 5, 2017, its2018)
 
 	Process(repository, *b)
 
@@ -328,7 +328,7 @@ func TestProcessSVBeitrag(t *testing.T) {
 func TestProcessLNSteuer(t *testing.T) {
 	setUp()
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	b := booking.NewBooking("LNSteuer", "800", "1337", "BW", nil, 1511.45, "Lohnsteuer Ben", 5, 2017, time.Time{}, its2018)
+	b := booking.NewBooking("LNSteuer", "800", "1337", "BW", nil, 1511.45, "Lohnsteuer Ben", 5, 2017, its2018)
 
 	Process(repository, *b)
 
@@ -349,7 +349,7 @@ func TestProcessGWSteuer(t *testing.T) {
 	setUp()
 
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	b := booking.NewBooking("GWSteuer", "800", "1337", "K", nil, 2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", 9, 2017, time.Time{}, its2018)
+	b := booking.NewBooking("GWSteuer", "800", "1337", "K", nil, 2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", 9, 2017, its2018)
 
 	Process(repository, *b)
 
@@ -370,7 +370,7 @@ func TestProcessGWSteuer_gegenRückstellung(t *testing.T) {
 	setUp()
 
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	b := booking.NewBooking("GWSteuer", "800", "1337", "Rückstellung", nil, 2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", 9, 2017, time.Time{}, its2018)
+	b := booking.NewBooking("GWSteuer", "800", "1337", "Rückstellung", nil, 2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", 9, 2017, its2018)
 
 	Process(repository, *b)
 
@@ -396,7 +396,7 @@ func TestProcessAnfangsbestand(t *testing.T) {
 	setUp()
 
 	// given a booking with Anfangsbestand
-	b := booking.NewBooking("Anfangsbestand", "800", "1337", "Rückstellung", nil, 42.23, "Anfangsbestand aus Vorjahr", 9, 2017, time.Time{}, time.Time{})
+	b := booking.NewBooking("Anfangsbestand", "800", "1337", "Rückstellung", nil, 42.23, "Anfangsbestand aus Vorjahr", 9, 2017, time.Time{})
 
 	// when: the position is processed
 	Process(repository, *b)
@@ -417,7 +417,7 @@ func TestProcessAnfangsbestand_JahresüberschusssVJ(t *testing.T) {
 	setUp()
 
 	// given a booking with Anfangsbestand
-	b := booking.NewBooking("Anfangsbestand", "800", "1337", "JahresüberschussVJ", nil, 10042.23, "Anfangsbestand aus Vorjahr", 9, 2017, time.Time{}, time.Time{})
+	b := booking.NewBooking("Anfangsbestand", "800", "1337", "JahresüberschussVJ", nil, 10042.23, "Anfangsbestand aus Vorjahr", 9, 2017, time.Time{})
 
 	// when: the position is processed
 	Process(repository, *b)
@@ -437,7 +437,7 @@ func TestProcessAnfangsbestand_JahresüberschusssVJ(t *testing.T) {
 // 100% werden gegen das JahresüberschussVJ gebucht
 func TestProcessGV_Vorjahr(t *testing.T) {
 	setUp()
-	b := booking.NewBooking("GV-Vorjahr", "800", "1337", "JM", nil, 77777, "Rest Anteil Johannes", 5, 2017, time.Time{}, time.Time{})
+	b := booking.NewBooking("GV-Vorjahr", "800", "1337", "JM", nil, 77777, "Rest Anteil Johannes", 5, 2017, time.Time{})
 
 	Process(repository, *b)
 
@@ -462,7 +462,7 @@ func TestProcessOPOS_SKR1600(t *testing.T) {
 
 	// given: a internal hours booking
 	tomorrow := time.Now().AddDate(0, 0, +1)
-	p := booking.NewBooking("ER", "800", "1337", "K", nil, 8250.0, "Interne Stunden 2017", 12, 2017, tomorrow, tomorrow)
+	p := booking.NewBooking("ER", "800", "1337", "K", nil, 8250.0, "Interne Stunden 2017", 12, 2017, tomorrow)
 
 	// when: the position is processed
 	Process(repository, *p)

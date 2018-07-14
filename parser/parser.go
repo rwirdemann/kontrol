@@ -20,13 +20,13 @@ var netBookings = []struct {
 	Owner  owner.Stakeholder
 	Column int
 }{
-	{Owner: owner.StakeholderBW, Column: 23},
-	{Owner: owner.StakeholderAN, Column: 24},
-	{Owner: owner.StakeholderRW, Column: 25},
-	{Owner: owner.StakeholderJM, Column: 26},
-	{Owner: owner.StakeholderKR, Column: 27},
-	{Owner: owner.StakeholderEX, Column: 28},
-	{Owner: owner.StakeholderRR, Column: 29},
+	{Owner: owner.StakeholderBW, Column: 21},
+	{Owner: owner.StakeholderAN, Column: 22},
+	{Owner: owner.StakeholderRW, Column: 23},
+	{Owner: owner.StakeholderJM, Column: 24},
+	{Owner: owner.StakeholderKR, Column: 25},
+	{Owner: owner.StakeholderEX, Column: 26},
+	{Owner: owner.StakeholderRR, Column: 27},
 }
 
 func Import(file string, aYear int) []booking.Booking {
@@ -52,14 +52,13 @@ func Import(file string, aYear int) []booking.Booking {
 				subject := strings.Replace(record[4], "\n", ",", -1)
 				amount := parseAmount(record[5])
 				year, month := parseMonth(record[6])
-				fileCreated := parseFileCreated(record[7])
-				bankCreated := parseFileCreated(record[9])
+				bankCreated := parseFileCreated(record[7])
 				if year == aYear {
 					m := make(map[owner.Stakeholder]float64)
 					for _, p := range netBookings {
 						m[p.Owner] = parseAmount(record[p.Column])
 					}
-					position := booking.NewBooking(typ, soll, haben, cs, m, amount, subject, month, year, fileCreated, bankCreated)
+					position := booking.NewBooking(typ, soll, haben, cs, m, amount, subject, month, year, bankCreated)
 					positions = append(positions, *position)
 				}
 			} else {
