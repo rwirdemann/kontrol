@@ -101,7 +101,7 @@ func Ausgangsrechnung(
 	year int,
 	bankCreated time.Time) *Booking {
 
-	return NewBooking("AR", "800", "1337", dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, bankCreated)
+	return NewBooking("AR", "", "", dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, bankCreated)
 }
 
 func CloneBooking(b Booking, amount float64, typ string, costcenter string) Booking {
@@ -113,7 +113,8 @@ func CloneBooking(b Booking, amount float64, typ string, costcenter string) Book
 		Year:        b.Year,
 		FileCreated: b.FileCreated,
 		BankCreated: b.BankCreated,
-		CostCenter:  costcenter}
+		CostCenter:  costcenter,
+	}
 }
 
 func (b Booking) Print(owner owner.Stakeholder) {

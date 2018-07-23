@@ -9,6 +9,7 @@ const (
 	StakeholderTypeExtern          = "extern"
 	StakeholderTypeOthers          = "Rest"
 	StakeholderTypeInternalAccount = "internalAccount"
+	SKR03                          = "SKR03"
 )
 
 type Stakeholder struct {

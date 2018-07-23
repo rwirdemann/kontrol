@@ -21,11 +21,14 @@ var StakeholderKR = Stakeholder{Id: "KR", Name: "Katja Roth", Type: StakeholderT
 var StakeholderKM = Stakeholder{Id: "K", Name: "Kommitment", Type: StakeholderTypeCompany}
 var StakeholderEX = Stakeholder{Id: "EX", Name: "Extern", Type: StakeholderTypeExtern}
 var StakeholderRR = Stakeholder{Id: "RR", Name: "Rest", Type: StakeholderTypeOthers}
-var StakeholderRueckstellung = Stakeholder{Id: "Rückstellung", Name: "Rückstellung", Type: StakeholderTypeInternalAccount}
-var KontoJUSVJ = Stakeholder{Id: "JahresüberschussVJ", Name: "JahresüberschussVJ", Type: StakeholderTypeInternalAccount}
-var SKR03_1400 = Stakeholder{Id: "1400", Name: "1400 OPOS-Kunde", Type: StakeholderTypeInternalAccount}
-var SKR03_1600 = Stakeholder{Id: "1600", Name: "1600 OPOS-Lieferant", Type: StakeholderTypeInternalAccount}
-var SKR03_4100_4199 = Stakeholder{Id: "4100_4199", Name: "4100-4199 Löhne und Gehälter", Type: StakeholderTypeInternalAccount}
+var StakeholderRueckstellung = Stakeholder{Id: "Rückstellung", Name: "Rückstellung", Type: SKR03}
+var KontoJUSVJ = Stakeholder{Id: "JahresüberschussVJ", Name: "JahresüberschussVJ", Type: SKR03}
+var SKR03_1400 = Stakeholder{Id: "1400", Name: "1400 OPOS-Kunde", Type: SKR03}
+var SKR03_1600 = Stakeholder{Id: "1600", Name: "1600 OPOS-Lieferant", Type: SKR03}
+var SKR03_4100_4199 = Stakeholder{Id: "4100_4199", Name: "4100-4199 Löhne und Gehälter", Type: SKR03}
+var SKR03_sonstigeAufwendungen = Stakeholder{Id: "SKR03_sonstigeAufwendungen", Name: "sonstige Kosten", Type: SKR03}
+var SKR03_Anlagen = Stakeholder{Id: "SKR03_Anlagen", Name: "Zugang Anlagen", Type: SKR03}
+var SKR03_Abschreibungen = Stakeholder{Id: "SKR03_Abschreibungen", Name: "Abschreibungen auf Anlagen", Type: SKR03}
 
 type StakeholderRepository struct {
 }
@@ -45,6 +48,9 @@ func (this StakeholderRepository) All() []Stakeholder {
 		SKR03_1400,
 		SKR03_1600,
 		SKR03_4100_4199,
+		SKR03_sonstigeAufwendungen,
+		SKR03_Anlagen,
+		SKR03_Abschreibungen,
 	}
 }
 
