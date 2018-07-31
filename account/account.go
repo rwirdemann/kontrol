@@ -31,10 +31,8 @@ func (a *Account) Book(booking booking.Booking) {
 }
 
 func (a *Account) UpdateSaldo() {
-	costs := 0.0
 	provision := 0.0
 	revenue := 0.0
-	taxes := 0.0
 	saldo := 0.0
 	internals := 0.0
 	advances := 0.0
@@ -49,21 +47,13 @@ func (a *Account) UpdateSaldo() {
 		if b.Type == "Vertriebsprovision" || b.Type == "Nettoanteil" || b.Type == "Kommitmentanteil" {
 			revenue += b.Amount
 		}
-		if b.Type == "GWSteuer" {
-			taxes += b.Amount
-		}
-		if b.Type == "Eingangsrechnung" || b.Type == "Gehalt" || b.Type == "SV-Beitrag" {
-			costs += b.Amount
-		}
 		if b.Type == "Interne Stunden" {
 			internals += b.Amount
 		}
 	}
 	a.Saldo = saldo
 	a.Advances = advances
-	a.Costs = costs
 	a.Revenue = revenue
-	a.Taxes = taxes
 	a.Provision = provision
 	a.Internals = internals
 }

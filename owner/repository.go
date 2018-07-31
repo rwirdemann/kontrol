@@ -23,12 +23,17 @@ var StakeholderEX = Stakeholder{Id: "EX", Name: "Extern", Type: StakeholderTypeE
 var StakeholderRR = Stakeholder{Id: "RR", Name: "Rest", Type: StakeholderTypeOthers}
 var StakeholderRueckstellung = Stakeholder{Id: "Rückstellung", Name: "Rückstellung", Type: SKR03}
 var KontoJUSVJ = Stakeholder{Id: "JahresüberschussVJ", Name: "JahresüberschussVJ", Type: SKR03}
-var SKR03_1400 = Stakeholder{Id: "1400", Name: "1400 OPOS-Kunde", Type: SKR03}
-var SKR03_1600 = Stakeholder{Id: "1600", Name: "1600 OPOS-Lieferant", Type: SKR03}
-var SKR03_4100_4199 = Stakeholder{Id: "4100_4199", Name: "4100-4199 Löhne und Gehälter", Type: SKR03}
-var SKR03_sonstigeAufwendungen = Stakeholder{Id: "SKR03_sonstigeAufwendungen", Name: "sonstige Kosten", Type: SKR03}
+var SKR03_1400 = Stakeholder{Id: "1400", Name: "OPOS-Kunde 1400", Type: SKR03}
+var SKR03_1600 = Stakeholder{Id: "1600", Name: "OPOS-Lieferant 1600", Type: SKR03}
 var SKR03_Anlagen = Stakeholder{Id: "SKR03_Anlagen", Name: "Zugang Anlagen", Type: SKR03}
-var SKR03_Abschreibungen = Stakeholder{Id: "SKR03_Abschreibungen", Name: "Abschreibungen auf Anlagen", Type: SKR03}
+var SKR03_Anlagen25 = Stakeholder{Id: "SKR03_Anlagen25", Name: "Zugang Anlagen Ähnl.R&W", Type: SKR03}
+var SKR03_Kautionen = Stakeholder{Id: "SKR03_Kautionen", Name: "SKR03_Kautionen 1525", Type: SKR03}
+
+var SKR03_Umsatzerloese = Stakeholder{Id: "SKR03_Umsatzerloese", Name: "1 SKR03_Umsatzerloese 8100-8402", Type: SKR03}
+var SKR03_4100_4199 = Stakeholder{Id: "4100_4199", Name: "3 Löhne und Gehälter 4100-4199", Type: SKR03}
+var SKR03_Abschreibungen = Stakeholder{Id: "SKR03_Abschreibungen", Name: "4 Abschreibungen auf Anlagen 4822-4855", Type: SKR03}
+var SKR03_sonstigeAufwendungen = Stakeholder{Id: "SKR03_sonstigeAufwendungen", Name: "5 sonstige Aufwendungen", Type: SKR03}
+var SKR03_Steuern = Stakeholder{Id: "SKR03_Steuern", Name: "6 SKR03_Steuern 4320", Type: SKR03}
 
 type StakeholderRepository struct {
 }
@@ -50,7 +55,11 @@ func (this StakeholderRepository) All() []Stakeholder {
 		SKR03_4100_4199,
 		SKR03_sonstigeAufwendungen,
 		SKR03_Anlagen,
+		SKR03_Anlagen25,
 		SKR03_Abschreibungen,
+		SKR03_Kautionen,
+		SKR03_Umsatzerloese,
+		SKR03_Steuern,
 	}
 }
 

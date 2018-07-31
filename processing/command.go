@@ -236,14 +236,19 @@ func (c BookSKR03Command) run() {
 	// Buchung vom Rückstellungskonto
 	log.Println("in BookSKR03Command: buche ", c.Booking.Amount, "€ von ", c.Booking.Soll, " nach ", c.Booking.Haben)
 
+	amount := c.Booking.Amount
+	// Netto oder brutto?
+	if c.Booking.Haben == "25" || c.Booking.Haben == "410" { // Anlagebuchung netto bitte
+		amount = util.Net(amount)
+	}
+
 	// Sollbuchung
-	a := booking.CloneBooking(c.Booking, c.Booking.Amount, c.Booking.Typ, c.Booking.Responsible)
+	a := booking.CloneBooking(c.Booking, amount, c.Booking.Typ, c.Booking.Responsible)
 	sollAccount := c.Repository.GetSKR03(c.Booking.Soll)
 	sollAccount.Book(a)
-	log.Println("Sollbuchung done ")
 
 	// Habenbuchung
-	b := booking.CloneBooking(c.Booking, c.Booking.Amount, c.Booking.Typ, c.Booking.Responsible)
+	b := booking.CloneBooking(c.Booking, amount, c.Booking.Typ, c.Booking.Responsible)
 	habenAccount := c.Repository.GetSKR03(c.Booking.Haben)
 	habenAccount.Book(b)
 }

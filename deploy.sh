@@ -7,8 +7,8 @@ export SOURCE=./
 export TARGETPROGRAM=kontrol-main
 export TARGETUSER=kommitment
 export TARGETSERVER=94.130.79.196
-export TARGETSERVER=159.69.47.214 # kommitment hetzner server
-export TARGETSERVER=kommitment.dyn.amicdns.de
+export TARGETSERVER=kontrol.kommitment.biz # kommitment hetzner server
+# export TARGETSERVER=kommitment.dyn.amicdns.de
 export SSHPORT=22
 export SSHSERVER="ssh -p"${SSHPORT}" $TARGETUSER@$TARGETSERVER"
 export SPREADSHEET_KEY="1xkTQDGJkq9UKvZfFJTEK_W1EdM2AAy7xIFikxTCGhnk"
@@ -26,9 +26,9 @@ echo
 
 # clear
 echo "Deploy stuff to "${TARGETSERVER}
-echo " ... "${DEPLOYMENTTARGET}
-${SSHSERVER} mv ${TARGETPROGRAM} ${TARGETPROGRAM}.old
+${SSHSERVER} "[ -f ${TARGETPROGRAM} ] &&  mv ${TARGETPROGRAM} ${TARGETPROGRAM}.old"
 scp ${TARGETPROGRAM} ${TARGETUSER}@${TARGETSERVER}:${TARGETPROGRAM}
+scp httpsconfig.env ${TARGETUSER}@${TARGETSERVER}:.
 ${SSHSERVER} ls -al
 echo "done with file transfer..."
 echo

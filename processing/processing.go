@@ -51,6 +51,7 @@ func Process(repository account.Repository, booking booking.Booking) {
 	if booking.Soll != "" && booking.Haben != "" {
 		// log.Println("booking ", booking.Amount, "€ from ", booking.Soll, " to ", booking.Haben)
 		// find the right soll account
+		log.Println(">>> soll, haben", booking.Soll, booking.Haben)
 		command = BookSKR03Command{Repository: repository, Booking: booking}
 
 	} else {

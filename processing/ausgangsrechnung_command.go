@@ -6,6 +6,7 @@ import (
 	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/owner"
+	"github.com/ahojsenn/kontrol/util"
 )
 
 type BookAusgangsrechnungCommand struct {
@@ -21,6 +22,18 @@ func (this BookAusgangsrechnungCommand) run() {
 		skr1400, _ := this.Repository.Get(owner.SKR03_1400.Id)
 		skr1400.Book(this.Booking)
 		return
+	} else {
+		umsatzerloese, _ := this.Repository.Get(owner.SKR03_Umsatzerloese.Id)
+		b := booking.Booking{
+			Amount:      util.Net(this.Booking.Amount),
+			Type:        booking.SKR03,
+			Text:        this.Booking.Text,
+			Month:       this.Booking.Month,
+			Year:        this.Booking.Year,
+			FileCreated: this.Booking.FileCreated,
+			BankCreated: this.Booking.BankCreated,
+		}
+		umsatzerloese.Book(b)
 	}
 
 	benefitees := this.stakeholderWithNetPositions()
