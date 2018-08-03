@@ -233,7 +233,7 @@ type BookSKR03Command struct {
 
 func (c BookSKR03Command) run() {
 
-	// Buchung vom Rückstellungskonto
+	//
 	log.Println("in BookSKR03Command: buche ", c.Booking.Amount, "€ von ", c.Booking.Soll, " nach ", c.Booking.Haben)
 
 	amount := c.Booking.Amount

@@ -8,7 +8,6 @@ const (
 	StakeholderTypeCompany         = "company"
 	StakeholderTypeExtern          = "extern"
 	StakeholderTypeOthers          = "Rest"
-	StakeholderTypeInternalAccount = "internalAccount"
 	SKR03                          = "SKR03"
 )
 

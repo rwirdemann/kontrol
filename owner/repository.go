@@ -13,12 +13,12 @@ const (
 	PartnerProvision         = 0.05
 )
 
-var StakeholderRW = Stakeholder{Id: "RW", Name: "Ralf Wirdemann", Type: StakeholderTypePartner}
-var StakeholderAN = Stakeholder{Id: "AN", Name: "Anke Nehrenberg", Type: StakeholderTypePartner}
-var StakeholderJM = Stakeholder{Id: "JM", Name: "Johannes Mainusch", Type: StakeholderTypePartner}
-var StakeholderBW = Stakeholder{Id: "BW", Name: "Ben Wiedenmann", Type: StakeholderTypeEmployee}
-var StakeholderKR = Stakeholder{Id: "KR", Name: "Katja Roth", Type: StakeholderTypeEmployee}
-var StakeholderKM = Stakeholder{Id: "K", Name: "Kommitment", Type: StakeholderTypeCompany}
+var StakeholderRW = Stakeholder{Id: "RW", Name: "k: Ralf Wirdemann", Type: StakeholderTypePartner}
+var StakeholderAN = Stakeholder{Id: "AN", Name: "k: Anke Nehrenberg", Type: StakeholderTypePartner}
+var StakeholderJM = Stakeholder{Id: "JM", Name: "k: Johannes Mainusch", Type: StakeholderTypePartner}
+var StakeholderBW = Stakeholder{Id: "BW", Name: "k: Ben Wiedenmann", Type: StakeholderTypeEmployee}
+var StakeholderKR = Stakeholder{Id: "KR", Name: "k: Katja Roth", Type: StakeholderTypeEmployee}
+var StakeholderKM = Stakeholder{Id: "K", Name: "k: Kommitment", Type: StakeholderTypeCompany}
 var StakeholderEX = Stakeholder{Id: "EX", Name: "Extern", Type: StakeholderTypeExtern}
 var StakeholderRR = Stakeholder{Id: "RR", Name: "Rest", Type: StakeholderTypeOthers}
 var StakeholderRueckstellung = Stakeholder{Id: "Rückstellung", Name: "Rückstellung", Type: SKR03}
