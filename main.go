@@ -9,9 +9,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/ahojsenn/kontrol/account"
-
-	"github.com/ahojsenn/kontrol/processing"
+		"github.com/ahojsenn/kontrol/processing"
 
 	"log"
 
@@ -19,6 +17,7 @@ import (
 	"github.com/ahojsenn/kontrol/parser"
 	"github.com/howeyc/fsnotify"
 	"github.com/rs/cors"
+	"github.com/ahojsenn/kontrol/accountSystem"
 )
 
 const DefaultBookingFile = "2017-Buchungen-KG - Buchungen 2017.csv"
@@ -82,11 +81,11 @@ func main() {
 	}
 	fileName = *file
 
-	repository := account.NewDefaultRepository()
-	watchBookingFile(repository, *year)
-	importAndProcessBookings(repository, *year)
+	accountSystem := accountSystem.NewDefaultAccountSystem()
+	watchBookingFile(accountSystem, *year)
+	importAndProcessBookings(accountSystem, *year)
 
-	handler := cors.AllowAll().Handler(handler.NewRouter(githash, buildstamp, repository))
+	handler := cors.AllowAll().Handler(handler.NewRouter(githash, buildstamp, accountSystem))
 	go func() {
 		fmt.Printf("listing on http://localhost:%s...\n", *httpPort)
 		log.Fatal(http.ListenAndServe(":"+*httpPort, handler))
@@ -97,7 +96,7 @@ func main() {
 	log.Fatal(http.ListenAndServeTLS(":"+*httpsPort, *certFile, *keyFile, handler))
 }
 
-func importAndProcessBookings(repository account.Repository, year int) {
+func importAndProcessBookings(repository accountSystem.AccountSystem, year int) {
 	repository.ClearBookings()
 	log.Printf("importAndProcessBookings: %d\n", year)
 	bookings := parser.Import(fileName, year)
@@ -106,7 +105,7 @@ func importAndProcessBookings(repository account.Repository, year int) {
 	}
 }
 
-func watchBookingFile(repository account.Repository, year int) {
+func watchBookingFile(repository accountSystem.AccountSystem, year int) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)

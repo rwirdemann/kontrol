@@ -10,16 +10,17 @@ import (
 	"github.com/ahojsenn/kontrol/owner"
 	"github.com/ahojsenn/kontrol/util"
 	"github.com/stretchr/testify/assert"
+	"github.com/ahojsenn/kontrol/accountSystem"
 )
 
-var repository account.Repository
+var repository accountSystem.AccountSystem
 var accountBank *account.Account
 var accountHannes *account.Account
 var accountRalf *account.Account
 var accountKommitment *account.Account
 
 func setUp() {
-	repository = account.NewDefaultRepository()
+	repository = accountSystem.NewDefaultAccountSystem()
 	accountBank = repository.BankAccount()
 	accountHannes, _ = repository.Get(owner.StakeholderJM.Id)
 	accountRalf, _ = repository.Get(owner.StakeholderRW.Id)
@@ -61,7 +62,7 @@ func TestAusgangsrechnungAngestellter(t *testing.T) {
 // - 100% Brutto gegen Kommitmentkonto
 // - Kostenstelle: Kürzel des Angestellten
 func TestGehaltAngestellter(t *testing.T) {
-	repository := account.NewDefaultRepository()
+	repository := accountSystem.NewDefaultAccountSystem()
 
 	// given: a booking
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
@@ -77,7 +78,7 @@ func TestGehaltAngestellter(t *testing.T) {
 	assert.Equal(t, "Gehalt", accountBank.Bookings[0].Type)
 
 	// 100% Brutto gegen SKR03_4100_4199
-	account2, _ := repository.Get(owner.SKR03_4100_4199.Id)
+	account2, _ := repository.Get(accountSystem.SKR03_4100_4199.Id)
 	util.AssertEquals(t, 1, len(account2.Bookings))
 	assert.Equal(t, 3869.65, account2.Bookings[0].Amount)
 	assert.Equal(t, booking.Gehalt, account2.Bookings[0].Type)
@@ -125,7 +126,7 @@ func TestEingangsrechnung(t *testing.T) {
 	Process(repository, *p)
 
 	// Buchung wurde gegen das Kommitment-Konto gebucht
-	account, _ := repository.Get(owner.SKR03_sonstigeAufwendungen.Id)
+	account, _ := repository.Get(accountSystem.SKR03_sonstigeAufwendungen.Id)
 	assert.Equal(t, 1, len(account.Bookings))
 	bk := account.Bookings[0]
 	assert.Equal(t, util.Net(12852.0), bk.Amount)
@@ -152,7 +153,7 @@ func TestEingangsrechnungGegenRückstellung(t *testing.T) {
 	Process(repository, *p)
 
 	// the booking is booked from Rückstellung account
-	a1, _ := repository.Get(owner.StakeholderRueckstellung.Id)
+	a1, _ := repository.Get(accountSystem.SKR03_Rueckstellungen.Id)
 	util.AssertEquals(t, 1, len(a1.Bookings))
 	b1 := a1.Bookings[0]
 	util.AssertFloatEquals(t, util.Net(-12852.0), b1.Amount)
@@ -183,7 +184,7 @@ func TestRückstellungAuflösen(t *testing.T) {
 	Process(repository, *p)
 
 	// the booking is booked from Rückstellung account
-	a1, _ := repository.Get(owner.StakeholderRueckstellung.Id)
+	a1, _ := repository.Get(accountSystem.SKR03_Rueckstellungen.Id)
 	util.AssertEquals(t, 1, len(a1.Bookings))
 	b1 := a1.Bookings[0]
 	util.AssertFloatEquals(t, -12852.0, b1.Amount)
@@ -237,7 +238,7 @@ func TestRückstellung(t *testing.T) {
 	Process(repository, *p)
 
 	// the booking is booked to Rückstellung account
-	a1, _ := repository.Get(owner.StakeholderRueckstellung.Id)
+	a1, _ := repository.Get(accountSystem.SKR03_Rueckstellungen.Id)
 	util.AssertEquals(t, 1, len(a1.Bookings))
 	b1 := a1.Bookings[0]
 	util.AssertFloatEquals(t, 4711.00, b1.Amount)
@@ -308,7 +309,7 @@ func TestProcessSVBeitrag(t *testing.T) {
 	Process(repository, *b)
 
 	// Buchung wurde gegen Kommitment-Konto gebucht
-	a, _ := repository.Get(owner.SKR03_4100_4199.Id)
+	a, _ := repository.Get(accountSystem.SKR03_4100_4199.Id)
 	b1 := a.Bookings[0]
 	assert.Equal(t, 1385.10, b1.Amount)
 	assert.Equal(t, booking.SVBeitrag, b1.Type)
@@ -333,7 +334,7 @@ func TestProcessLNSteuer(t *testing.T) {
 	Process(repository, *b)
 
 	// Buchung wurde gegen Kommitment-Konto gebucht
-	account2, _ := repository.Get(owner.SKR03_4100_4199.Id)
+	account2, _ := repository.Get(accountSystem.SKR03_4100_4199.Id)
 	assertBooking(t, account2.Bookings[0], 1511.45, "Lohnsteuer Ben", "LNSteuer")
 	assert.Equal(t, "BW", account2.Bookings[0].CostCenter)
 
@@ -375,7 +376,7 @@ func TestProcessGWSteuer_gegenRückstellung(t *testing.T) {
 	Process(repository, *b)
 
 	// Buchung wurde gegen Kommitment-Konto gebucht
-	a, _ := repository.Get(owner.StakeholderRueckstellung.Id)
+	a, _ := repository.Get(accountSystem.SKR03_Rueckstellungen.Id)
 	b1 := a.Bookings[0]
 	assertBooking(t, b1, -2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", booking.GWSteuer)
 
@@ -402,7 +403,7 @@ func TestProcessAnfangsbestand(t *testing.T) {
 	Process(repository, *b)
 
 	// the booking is booked to Rückstellung account
-	a1, _ := repository.Get(owner.StakeholderRueckstellung.Id)
+	a1, _ := repository.Get(accountSystem.SKR03_Rueckstellungen.Id)
 	util.AssertEquals(t, 1, len(a1.Bookings))
 	b1 := a1.Bookings[0]
 	util.AssertFloatEquals(t, 42.23, b1.Amount)
@@ -423,7 +424,7 @@ func TestProcessAnfangsbestand_JahresüberschusssVJ(t *testing.T) {
 	Process(repository, *b)
 
 	// the booking is booked to Rückstellung account
-	a1, _ := repository.Get(owner.KontoJUSVJ.Id)
+	a1, _ := repository.Get(accountSystem.SKR03_KontoJUSVJ.Id)
 	util.AssertEquals(t, 1, len(a1.Bookings))
 	b1 := a1.Bookings[0]
 	util.AssertFloatEquals(t, 10042.23, b1.Amount)
@@ -442,7 +443,7 @@ func TestProcessGV_Vorjahr(t *testing.T) {
 	Process(repository, *b)
 
 	// Buchung wurde gegen JahresüberschussVJ gebucht
-	a, _ := repository.Get(owner.KontoJUSVJ.Id)
+	a, _ := repository.Get(accountSystem.SKR03_KontoJUSVJ.Id)
 	b1 := a.Bookings[0]
 	assert.Equal(t, -77777.0, b1.Amount)
 	assert.Equal(t, booking.GVVorjahr, b1.Type)
@@ -468,7 +469,7 @@ func TestProcessOPOS_SKR1600(t *testing.T) {
 	Process(repository, *p)
 
 	// the booking is booked to SRK1600 account
-	account1600, _ := repository.Get(owner.SKR03_1600.Id)
+	account1600, _ := repository.Get(accountSystem.SKR03_1600.Id)
 	bookings1600 := account1600.Bookings
 	assert.Equal(t, 1, len(bookings1600))
 
@@ -481,7 +482,7 @@ func TestProcessOPOS_SKR1600(t *testing.T) {
 
 // Teste Gehaltsbuchungen
 func TestBonusRückstellungAngestellterSKR03(t *testing.T) {
-	repository = account.NewDefaultRepository()
+	repository = accountSystem.NewDefaultAccountSystem()
 
 	// given: a internal hours booking
 	now := time.Now().AddDate(0, 0, 0)
@@ -491,14 +492,14 @@ func TestBonusRückstellungAngestellterSKR03(t *testing.T) {
 	Process(repository, *p)
 
 	//
-	account, _ := repository.Get(owner.SKR03_4100_4199.Id)
+	account, _ := repository.Get(accountSystem.SKR03_4100_4199.Id)
 	assert.Equal(t, 1, len(account.Bookings))
 	assert.Equal(t, 1337.42, account.Bookings[0].Amount)
 	assert.Equal(t, booking.Gehalt, account.Bookings[0].Type)
 	assert.Equal(t, "BW", account.Bookings[0].CostCenter)
 
 	// booking is on bankaccount
-	rueckstellungen, _ := repository.Get(owner.StakeholderRueckstellung.Id)
+	rueckstellungen, _ := repository.Get(accountSystem.SKR03_Rueckstellungen.Id)
 	assert.Equal(t, 1, len(rueckstellungen.Bookings))
 	assert.Equal(t, 1337.42, rueckstellungen.Bookings[0].Amount)
 	assert.Equal(t, booking.Gehalt, rueckstellungen.Bookings[0].Type)

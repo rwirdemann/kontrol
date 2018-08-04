@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"sort"
 
-	"github.com/ahojsenn/kontrol/account"
-	"github.com/ahojsenn/kontrol/booking"
+		"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/util"
+	"github.com/ahojsenn/kontrol/accountSystem"
 )
 
-func MakeGetBankAccountHandler(repository account.Repository) http.HandlerFunc {
+func MakeGetBankAccountHandler(repository accountSystem.AccountSystem) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		a := repository.BankAccount()

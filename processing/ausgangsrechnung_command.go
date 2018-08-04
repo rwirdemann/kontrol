@@ -7,11 +7,12 @@ import (
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/owner"
 	"github.com/ahojsenn/kontrol/util"
+	"github.com/ahojsenn/kontrol/accountSystem"
 )
 
 type BookAusgangsrechnungCommand struct {
 	Booking    booking.Booking
-	Repository account.Repository
+	Repository accountSystem.AccountSystem
 }
 
 func (this BookAusgangsrechnungCommand) run() {
@@ -19,11 +20,11 @@ func (this BookAusgangsrechnungCommand) run() {
 	// if booking with empty timestamp in position "BankCreated"
 	// the book it to open positions SKR03_1400
 	if this.isOpenPosition() == true {
-		skr1400, _ := this.Repository.Get(owner.SKR03_1400.Id)
+		skr1400, _ := this.Repository.Get(accountSystem.SKR03_1400.Id)
 		skr1400.Book(this.Booking)
 		return
 	} else {
-		umsatzerloese, _ := this.Repository.Get(owner.SKR03_Umsatzerloese.Id)
+		umsatzerloese, _ := this.Repository.Get(accountSystem.SKR03_Umsatzerloese.Id)
 		b := booking.Booking{
 			Amount:      util.Net(this.Booking.Amount),
 			Type:        booking.SKR03,

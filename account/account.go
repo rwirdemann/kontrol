@@ -6,11 +6,16 @@ import (
 	"strings"
 
 	"github.com/ahojsenn/kontrol/booking"
-	"github.com/ahojsenn/kontrol/owner"
 )
 
+type AccountDescription struct {
+	Id   string `json:",omitempty"`
+	Name string
+	Type string
+}
+
 type Account struct {
-	Owner     owner.Stakeholder
+	Description     AccountDescription
 	Bookings  []booking.Booking `json:",omitempty"`
 	Costs     float64
 	Advances  float64
@@ -22,8 +27,8 @@ type Account struct {
 	Saldo     float64
 }
 
-func NewAccount(o owner.Stakeholder) *Account {
-	return &Account{Owner: o}
+func NewAccount(a AccountDescription) *Account {
+	return &Account{Description: a}
 }
 
 func (a *Account) Book(booking booking.Booking) {
@@ -61,7 +66,7 @@ func (a *Account) UpdateSaldo() {
 func (a Account) Print() {
 	sort.Sort(booking.ByMonth(a.Bookings))
 	for _, b := range a.Bookings {
-		b.Print(a.Owner)
+		b.Print(a.Description.Id)
 	}
 	fmt.Println("-------------------------------------------------------------------------------------------")
 	fmt.Printf("[Saldo: \t\t\t\t\t\t\t\t\t%10.2f]\n", a.Saldo)
@@ -71,7 +76,7 @@ func (a Account) CSV() string {
 	result := "Konto;Monat;Jahr;Mitarbeiter;Typ;Buchungstext;Betrag\n"
 	sort.Sort(booking.ByMonth(a.Bookings))
 	for _, b := range a.Bookings {
-		result = result + b.CSV(a.Owner)
+		result = result + b.CSV(a.Description.Id)
 	}
 	return result
 }
@@ -91,4 +96,4 @@ type ByOwner []Account
 
 func (a ByOwner) Len() int           { return len(a) }
 func (a ByOwner) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a ByOwner) Less(i, j int) bool { return strings.Compare(a[i].Owner.Name, a[j].Owner.Name) < 0 }
+func (a ByOwner) Less(i, j int) bool { return strings.Compare(a[i].Description.Name, a[j].Description.Name) < 0 }

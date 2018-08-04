@@ -8,18 +8,19 @@ import (
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/owner"
 	"github.com/stretchr/testify/suite"
+	"github.com/ahojsenn/kontrol/accountSystem"
 )
 
 type AusgangsrechnungTestSuite struct {
 	suite.Suite
-	repository        account.Repository
+	repository        accountSystem.AccountSystem
 	accountBank       *account.Account
 	accountHannes     *account.Account
 	accountKommitment *account.Account
 }
 
 func (suite *AusgangsrechnungTestSuite) SetupTest() {
-	suite.repository = account.NewDefaultRepository()
+	suite.repository = accountSystem.NewDefaultAccountSystem()
 	suite.accountBank = suite.repository.BankAccount()
 	suite.accountHannes, _ = suite.repository.Get(owner.StakeholderJM.Id)
 	suite.accountKommitment, _ = suite.repository.Get(owner.StakeholderKM.Id)
@@ -101,7 +102,7 @@ func (suite *AusgangsrechnungTestSuite) TestOffeneRechnung() {
 	Process(suite.repository, *p)
 
 	// then the booking is on SKR03_1400
-	account1400, _ := suite.repository.Get(owner.SKR03_1400.Id)
+	account1400, _ := suite.repository.Get(accountSystem.SKR03_1400.Id)
 	bookings1400 := account1400.Bookings
 	suite.Equal(1, len(bookings1400))
 

@@ -3,12 +3,12 @@ package handler
 import (
 	"io/ioutil"
 
-	"github.com/ahojsenn/kontrol/account"
-	"github.com/ahojsenn/kontrol/middleware"
+		"github.com/ahojsenn/kontrol/middleware"
 	"github.com/gorilla/mux"
+	"github.com/ahojsenn/kontrol/accountSystem"
 )
 
-func NewRouter(githash string, buildstamp string, repository account.Repository) *mux.Router {
+func NewRouter(githash string, buildstamp string, repository accountSystem.AccountSystem) *mux.Router {
 	r := mux.NewRouter()
 	key := keycloakRSAPub()
 	r.HandleFunc("/kontrol/version", middleware.JWTMiddleware(key, MakeVersionHandler(githash, buildstamp)))

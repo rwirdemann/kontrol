@@ -118,23 +118,23 @@ func CloneBooking(b Booking, amount float64, typ string, costcenter string) Book
 	}
 }
 
-func (b Booking) Print(owner owner.Stakeholder) {
+func (b Booking) Print(id string) {
 	text := b.Text
 	if len(text) > 37 {
 		text = text[:37] + "..."
 	}
 
-	fmt.Printf("[%s: %2d-%d %2s %-22s %-40s \t %9.2f]\n", owner.Id, b.Month, b.Year, b.CostCenter, b.Type, text, b.Amount)
+	fmt.Printf("[%s: %2d-%d %2s %-22s %-40s \t %9.2f]\n", id, b.Month, b.Year, b.CostCenter, b.Type, text, b.Amount)
 }
 
-func (b Booking) CSV(owner owner.Stakeholder) string {
+func (b Booking) CSV(id string) string {
 	p := message.NewPrinter(language.German)
 	text := b.Text
 	if len(text) > 37 {
 		text = text[:37] + "..."
 	}
 	amount := p.Sprintf("%9.2f", b.Amount)
-	return fmt.Sprintf("%s;%2d;%d;%s;%s;%s;%s\n", owner.Id, b.Month, b.Year, b.CostCenter, b.Type, text, amount)
+	return fmt.Sprintf("%s;%2d;%d;%s;%s;%s;%s\n", id, b.Month, b.Year, b.CostCenter, b.Type, text, amount)
 }
 
 func (b *Booking) BookOnBankAccount() bool {

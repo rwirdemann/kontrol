@@ -3,9 +3,9 @@ package processing
 import (
 	"log"
 
-	"github.com/ahojsenn/kontrol/account"
-	"github.com/ahojsenn/kontrol/booking"
+		"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/util"
+	"github.com/ahojsenn/kontrol/accountSystem"
 )
 
 type Command interface {
@@ -13,7 +13,7 @@ type Command interface {
 }
 
 // Implementiert den Kommitment-Verteilungsalgorithmus
-func Process(repository account.Repository, booking booking.Booking) {
+func Process(repository accountSystem.AccountSystem, booking booking.Booking) {
 
 	// Book booking to bank account
 	b := booking

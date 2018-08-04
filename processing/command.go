@@ -4,15 +4,15 @@ import (
 	"log"
 	"time"
 
-	"github.com/ahojsenn/kontrol/account"
-	"github.com/ahojsenn/kontrol/booking"
+		"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/owner"
 	"github.com/ahojsenn/kontrol/util"
+	"github.com/ahojsenn/kontrol/accountSystem"
 )
 
 type BookGehaltCommand struct {
 	Booking    booking.Booking
-	Repository account.Repository
+	Repository accountSystem.AccountSystem
 }
 
 func (c BookGehaltCommand) run() {
@@ -26,13 +26,13 @@ func (c BookGehaltCommand) run() {
 
 	// Buchung Kommitment-Konto
 	kBooking := booking.CloneBooking(c.Booking, c.Booking.Amount, booking.Gehalt, c.Booking.Responsible)
-	account2, _ := c.Repository.Get(owner.SKR03_4100_4199.Id)
+	account2, _ := c.Repository.Get(accountSystem.SKR03_4100_4199.Id)
 	account2.Book(kBooking)
 }
 
 type BookSVBeitragCommand struct {
 	Booking    booking.Booking
-	Repository account.Repository
+	Repository accountSystem.AccountSystem
 }
 
 func (c BookSVBeitragCommand) run() {
@@ -45,13 +45,13 @@ func (c BookSVBeitragCommand) run() {
 
 	// Buchung Kommitment-Konto
 	kBooking := booking.CloneBooking(c.Booking, c.Booking.Amount, booking.SVBeitrag, c.Booking.Responsible)
-	account2, _ := c.Repository.Get(owner.SKR03_4100_4199.Id)
+	account2, _ := c.Repository.Get(accountSystem.SKR03_4100_4199.Id)
 	account2.Book(kBooking)
 }
 
 type BookLNSteuerCommand struct {
 	Booking    booking.Booking
-	Repository account.Repository
+	Repository accountSystem.AccountSystem
 }
 
 func (c BookLNSteuerCommand) run() {
@@ -64,13 +64,13 @@ func (c BookLNSteuerCommand) run() {
 
 	// Buchung Kommitment-Konto
 	kBooking := booking.CloneBooking(c.Booking, c.Booking.Amount, booking.LNSteuer, c.Booking.Responsible)
-	account2, _ := c.Repository.Get(owner.SKR03_4100_4199.Id)
+	account2, _ := c.Repository.Get(accountSystem.SKR03_4100_4199.Id)
 	account2.Book(kBooking)
 }
 
 type BookGWSteuerCommand struct {
 	Booking    booking.Booking
-	Repository account.Repository
+	Repository accountSystem.AccountSystem
 }
 
 func (c BookGWSteuerCommand) run() {
@@ -89,7 +89,7 @@ func (c BookGWSteuerCommand) run() {
 
 type BookPartnerEntnahmeCommand struct {
 	Booking    booking.Booking
-	Repository account.Repository
+	Repository accountSystem.AccountSystem
 }
 
 func (c BookPartnerEntnahmeCommand) run() {
@@ -108,7 +108,7 @@ func (c BookPartnerEntnahmeCommand) run() {
 
 type BookPartnerEntnahmeVorjahrCommand struct {
 	Booking    booking.Booking
-	Repository account.Repository
+	Repository accountSystem.AccountSystem
 }
 
 func (c BookPartnerEntnahmeVorjahrCommand) run() {
@@ -121,13 +121,13 @@ func (c BookPartnerEntnahmeVorjahrCommand) run() {
 
 	// Buchung gegen Kommanditstenkonto
 	b := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.GVVorjahr, c.Booking.Responsible)
-	a, _ := c.Repository.Get(owner.KontoJUSVJ.Id)
+	a, _ := c.Repository.Get(accountSystem.SKR03_KontoJUSVJ.Id)
 	a.Book(b)
 }
 
 type BookEingangsrechnungCommand struct {
 	Booking    booking.Booking
-	Repository account.Repository
+	Repository accountSystem.AccountSystem
 }
 
 func (c BookEingangsrechnungCommand) run() {
@@ -135,20 +135,20 @@ func (c BookEingangsrechnungCommand) run() {
 	// if booking with empty timestamp in position "BankCreated"
 	// then book it to open positions SKR03_1600
 	if c.Booking.BankCreated.After(time.Now()) {
-		skr1600, _ := c.Repository.Get(owner.SKR03_1600.Id)
+		skr1600, _ := c.Repository.Get(accountSystem.SKR03_1600.Id)
 		skr1600.Book(c.Booking)
 		return
 	}
 
 	// Buchung Kommitment-Konto
 	b := booking.CloneBooking(c.Booking, util.Net(c.Booking.Amount), booking.Eingangsrechnung, c.Booking.Responsible)
-	kommitmentAccount, _ := c.Repository.Get(owner.SKR03_sonstigeAufwendungen.Id)
+	kommitmentAccount, _ := c.Repository.Get(accountSystem.SKR03_sonstigeAufwendungen.Id)
 	kommitmentAccount.Book(b)
 }
 
 type BookInterneStundenCommand struct {
 	Booking    booking.Booking
-	Repository account.Repository
+	Repository accountSystem.AccountSystem
 }
 
 func (c BookInterneStundenCommand) run() {
@@ -166,14 +166,14 @@ func (c BookInterneStundenCommand) run() {
 
 type BookRueckstellungCommand struct {
 	Booking    booking.Booking
-	Repository account.Repository
+	Repository accountSystem.AccountSystem
 }
 
 func (c BookRueckstellungCommand) run() {
 
 	// Rückstellungsbuchung
 	a := booking.CloneBooking(c.Booking, c.Booking.Amount, booking.Rueckstellung, c.Booking.Responsible)
-	rueckstellungsAccount, _ := c.Repository.Get(owner.StakeholderRueckstellung.Id)
+	rueckstellungsAccount, _ := c.Repository.Get(accountSystem.SKR03_Rueckstellungen.Id)
 	rueckstellungsAccount.Book(a)
 
 	// Buchung gegen kommitment Konto
@@ -184,7 +184,7 @@ func (c BookRueckstellungCommand) run() {
 
 type BookAnfangsbestandCommand struct {
 	Booking    booking.Booking
-	Repository account.Repository
+	Repository accountSystem.AccountSystem
 }
 
 func (c BookAnfangsbestandCommand) run() {
@@ -197,27 +197,27 @@ func (c BookAnfangsbestandCommand) run() {
 
 type BookERgegenRückstellungCommand struct {
 	Booking    booking.Booking
-	Repository account.Repository
+	Repository accountSystem.AccountSystem
 }
 
 func (c BookERgegenRückstellungCommand) run() {
 
 	// Buchung gegen Rückstellungskonto
 	a := booking.CloneBooking(c.Booking, util.Net(c.Booking.Amount)*-1, booking.Eingangsrechnung, c.Booking.Responsible)
-	rückstellungskonto, _ := c.Repository.Get(owner.StakeholderRueckstellung.Id)
+	rückstellungskonto, _ := c.Repository.Get(accountSystem.SKR03_Rueckstellungen.Id)
 	rückstellungskonto.Book(a)
 }
 
 type BookRückstellungAuflösenCommand struct {
 	Booking    booking.Booking
-	Repository account.Repository
+	Repository accountSystem.AccountSystem
 }
 
 func (c BookRückstellungAuflösenCommand) run() {
 
 	// Buchung vom Rückstellungskonto
 	a := booking.CloneBooking(c.Booking, c.Booking.Amount, booking.Eingangsrechnung, c.Booking.Responsible)
-	rückstellungskonto, _ := c.Repository.Get(owner.StakeholderRueckstellung.Id)
+	rückstellungskonto, _ := c.Repository.Get(accountSystem.SKR03_Rueckstellungen.Id)
 	rückstellungskonto.Book(a)
 
 	// Buchung auf das kommitment Konto
@@ -228,7 +228,7 @@ func (c BookRückstellungAuflösenCommand) run() {
 
 type BookSKR03Command struct {
 	Booking    booking.Booking
-	Repository account.Repository
+	Repository accountSystem.AccountSystem
 }
 
 func (c BookSKR03Command) run() {

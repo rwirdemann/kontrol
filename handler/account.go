@@ -9,9 +9,10 @@ import (
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/util"
 	"github.com/gorilla/mux"
+	"github.com/ahojsenn/kontrol/accountSystem"
 )
 
-func MakeGetAccountsHandler(repository account.Repository) http.HandlerFunc {
+func MakeGetAccountsHandler(repository accountSystem.AccountSystem) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		accounts := repository.All()
 		sort.Sort(account.ByOwner(accounts))
@@ -28,7 +29,7 @@ func MakeGetAccountsHandler(repository account.Repository) http.HandlerFunc {
 	}
 }
 
-func MakeGetAccountHandler(repository account.Repository) http.HandlerFunc {
+func MakeGetAccountHandler(repository accountSystem.AccountSystem) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
