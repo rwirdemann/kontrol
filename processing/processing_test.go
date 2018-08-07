@@ -11,6 +11,7 @@ import (
 	"github.com/ahojsenn/kontrol/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/ahojsenn/kontrol/accountSystem"
+	"log"
 )
 
 var repository accountSystem.AccountSystem
@@ -71,17 +72,19 @@ func TestGehaltAngestellter(t *testing.T) {
 	// when: the position is processed
 	Process(repository, *p)
 
-	// 100% Brutto gegen Bankkonto
-	accountBank := repository.BankAccount()
-	assert.Equal(t, -3869.65, accountBank.Bookings[0].Amount)
-	assert.Equal(t, "Gehalt Ben", accountBank.Bookings[0].Text)
-	assert.Equal(t, "Gehalt", accountBank.Bookings[0].Type)
-
 	// 100% Brutto gegen SKR03_4100_4199
 	account2, _ := repository.Get(accountSystem.SKR03_4100_4199.Id)
 	util.AssertEquals(t, 1, len(account2.Bookings))
-	assert.Equal(t, 3869.65, account2.Bookings[0].Amount)
+	assert.Equal(t, -3869.65, account2.Bookings[0].Amount)
 	assert.Equal(t, booking.Gehalt, account2.Bookings[0].Type)
+
+
+	// 100% Brutto gegen Bankkonto
+	accountBank := repository.BankAccount()
+	assert.Equal(t, 3869.65, accountBank.Bookings[0].Amount)
+	assert.Equal(t, "Gehalt Ben", accountBank.Bookings[0].Text)
+	assert.Equal(t, "Gehalt", accountBank.Bookings[0].Type)
+
 
 	// Kommitment-Buchung ist der Kostenstelle "BW" zugeordnet
 	assert.Equal(t, "BW", account2.Bookings[0].CostCenter)
@@ -115,30 +118,34 @@ func TestExternNettoAnteil(t *testing.T) {
 }
 
 // Eingangsrechnungen
-// - 100% werden netto gegen das Bankkonto gebucht
-// - 100% des Nettobetrags werden gegen das Kommitment-Konto gebucht
+// - 100% werden netto vom Bankkonto gebucht
+// - 100% des Nettobetrags werden gegen das SKR03_sonstigeAufwendungen gebucht
 func TestEingangsrechnung(t *testing.T) {
 	setUp()
 
+	// given: BOOKING ER
+	// Eingangsrechnung 12852.0€ von Bank an SKR03_sonstigeAufwendungen
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
 	p := booking.NewBooking("ER", "", "", "K", nil, 12852.0, "Eingangsrechnung 1234", 1, 2017, its2018)
 
+	// when: the position is processed
 	Process(repository, *p)
 
-	// Buchung wurde gegen das Kommitment-Konto gebucht
+	// Soll Buchung wurde gegen das SKR03_sonstigeAufwendungen gebucht
 	account, _ := repository.Get(accountSystem.SKR03_sonstigeAufwendungen.Id)
 	assert.Equal(t, 1, len(account.Bookings))
 	bk := account.Bookings[0]
-	assert.Equal(t, util.Net(12852.0), bk.Amount)
+	assert.Equal(t, util.Net(-12852.0), bk.Amount)
 	assert.Equal(t, bk.Type, booking.Eingangsrechnung)
 	assert.Equal(t, "K", bk.CostCenter)
 
-	// Buchung wurde gegen das Bankkonto gebucht
+	// Soll Haben wurde gegen das Bankkonto gebucht
 	assert.Equal(t, 1, len(repository.BankAccount().Bookings))
 	actual := repository.BankAccount().Bookings[0]
-	assert.Equal(t, util.Net(-12852.0), actual.Amount)
+	assert.Equal(t,12852.0, actual.Amount)
 	assert.Equal(t, "Eingangsrechnung 1234", actual.Text)
-	assert.Equal(t, "ER", actual.Type)
+	assert.Equal(t, "Eingangsrechnung", actual.Type)
+
 }
 
 func TestEingangsrechnungGegenRückstellung(t *testing.T) {
@@ -311,14 +318,14 @@ func TestProcessSVBeitrag(t *testing.T) {
 	// Buchung wurde gegen Kommitment-Konto gebucht
 	a, _ := repository.Get(accountSystem.SKR03_4100_4199.Id)
 	b1 := a.Bookings[0]
-	assert.Equal(t, 1385.10, b1.Amount)
+	assert.Equal(t, -1385.10, b1.Amount)
 	assert.Equal(t, booking.SVBeitrag, b1.Type)
 	assert.Equal(t, "BW", b1.CostCenter)
 
 	// Buchung wurde aufs Bankkonto gebucht
 	assert.Equal(t, 1, len(repository.BankAccount().Bookings))
 	actual := repository.BankAccount().Bookings[0]
-	assert.Equal(t, -1385.10, actual.Amount)
+	assert.Equal(t, 1385.10, actual.Amount)
 	assert.Equal(t, "KKH, Ben", actual.Text)
 	assert.Equal(t, "SV-Beitrag", actual.Type)
 }
@@ -332,14 +339,16 @@ func TestProcessLNSteuer(t *testing.T) {
 	b := booking.NewBooking("LNSteuer", "", "", "BW", nil, 1511.45, "Lohnsteuer Ben", 5, 2017, its2018)
 
 	Process(repository, *b)
+	log.Println("yxcycxr")
 
 	// Buchung wurde gegen Kommitment-Konto gebucht
 	account2, _ := repository.Get(accountSystem.SKR03_4100_4199.Id)
-	assertBooking(t, account2.Bookings[0], 1511.45, "Lohnsteuer Ben", "LNSteuer")
+
+	assertBooking(t, account2.Bookings[0], -1511.45, "Lohnsteuer Ben", "LNSteuer")
 	assert.Equal(t, "BW", account2.Bookings[0].CostCenter)
 
 	// Buchung wurde aufs Bankkonto gebucht
-	assertBooking(t, accountBank.Bookings[0], -1511.45, "Lohnsteuer Ben", "LNSteuer")
+	assertBooking(t, accountBank.Bookings[0], 1511.45, "Lohnsteuer Ben", "LNSteuer")
 }
 
 // 100% werden auf das Bankkonto gebucht
@@ -494,7 +503,7 @@ func TestBonusRückstellungAngestellterSKR03(t *testing.T) {
 	//
 	account, _ := repository.Get(accountSystem.SKR03_4100_4199.Id)
 	assert.Equal(t, 1, len(account.Bookings))
-	assert.Equal(t, 1337.42, account.Bookings[0].Amount)
+	assert.Equal(t, -1337.42, account.Bookings[0].Amount)
 	assert.Equal(t, booking.Gehalt, account.Bookings[0].Type)
 	assert.Equal(t, "BW", account.Bookings[0].CostCenter)
 

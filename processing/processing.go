@@ -3,7 +3,7 @@ package processing
 import (
 	"log"
 
-		"github.com/ahojsenn/kontrol/booking"
+	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/util"
 	"github.com/ahojsenn/kontrol/accountSystem"
 )
@@ -31,8 +31,11 @@ func Process(repository accountSystem.AccountSystem, booking booking.Booking) {
 
 	// Interne Stunden werden nicht auf dem Bankkonto verbucht. Sie sind da nie eingegangen, sondern werden durch
 	// Einnahmen bestritten
+	// hier füge ich immer mehr buchungstypen hinzu. Die Bankbuchung sollte immer in command.go stattfinden (resp. ausgangsre*...
+	// und nicht hier...
 	if b.BookOnBankAccount() &&
 		b.Type != "Gehalt" &&
+		b.Type != "ER" &&
 		b.Type != "SV-Beitrag" &&
 		b.Type != "LNSteuer" &&
 		b.Type != "GWSteuer" &&
@@ -83,8 +86,6 @@ func Process(repository accountSystem.AccountSystem, booking booking.Booking) {
 			command = BookERgegenRückstellungCommand{Repository: repository, Booking: booking}
 		case "RückstellungAuflösen":
 			command = BookRückstellungAuflösenCommand{Repository: repository, Booking: booking}
-		default:
-			log.Printf("could not process booking type '%s'", booking.Typ, booking)
 		}
 	}
 	command.run()

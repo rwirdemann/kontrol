@@ -105,7 +105,7 @@ func Ausgangsrechnung(
 	return NewBooking("AR", "", "", dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, bankCreated)
 }
 
-func CloneBooking(b Booking, amount float64, typ string, costcenter string) Booking {
+func CloneBooking(b Booking, amount float64, typ string, costcenter string, soll string, haben string) Booking {
 	return Booking{
 		Amount:      amount,
 		Type:        typ,
@@ -115,6 +115,8 @@ func CloneBooking(b Booking, amount float64, typ string, costcenter string) Book
 		FileCreated: b.FileCreated,
 		BankCreated: b.BankCreated,
 		CostCenter:  costcenter,
+		Soll: soll,
+		Haben: haben,
 	}
 }
 
