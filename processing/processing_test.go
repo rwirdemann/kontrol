@@ -502,7 +502,7 @@ func TestAbschreibungenAufAnlagen(t *testing.T) {
 	// soll account
 	account, _ := repository.Get(accountSystem.SKR03_Abschreibungen.Id)
 	assert.Equal(t, 1, len(account.Bookings))
-	assert.Equal(t, util.Net(-1337.23) , account.Bookings[0].Amount )
+	assert.Equal(t, -1337.23 , account.Bookings[0].Amount )
 	assert.Equal(t, booking.SKR03, account.Bookings[0].Type)
 
 	// booking is not on bankaccount
