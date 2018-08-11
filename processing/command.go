@@ -16,18 +16,18 @@ type BookGehaltCommand struct {
 
 func (c BookGehaltCommand) run() {
 
+	amount := c.Booking.Amount
 	// GEhaltsbuchung ist 4120 and 1200, also Gehalt an Bank
 	// Buchung Kommitment-Konto
 	sollAccount, _ := c.Repository.Get(accountSystem.SKR03_4100_4199.Id)
-	amount := c.Repository.DetermineSollOrHaben(c.Booking.Amount, sollAccount, "soll")
-	kBooking := booking.CloneBooking(c.Booking, amount, booking.Gehalt, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	kBooking := booking.CloneBooking(c.Booking, -amount, booking.Gehalt, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	sollAccount.Book(kBooking)
 
 
 	// Bankbuchung, Haben
 	bankBooking := c.Booking
 	bankBooking.Type = c.Booking.Typ
-	bankBooking.Amount =  c.Repository.DetermineSollOrHaben(bankBooking.Amount, c.Repository.BankAccount(), "haben")
+	bankBooking.Amount =  amount
 	bankBooking.Responsible = c.Booking.Responsible
 	c.Repository.BankAccount().Book(bankBooking)
 
@@ -40,16 +40,17 @@ type BookSVBeitragCommand struct {
 
 func (c BookSVBeitragCommand) run() {
 
+	amount := c.Booking.Amount
+
 	// Buchung SKR03_4100_4199
 	sollAccount, _ := c.Repository.Get(accountSystem.SKR03_4100_4199.Id)
-	amount := c.Repository.DetermineSollOrHaben(c.Booking.Amount, sollAccount, "soll")
-	kBooking := booking.CloneBooking(c.Booking, amount, booking.SVBeitrag, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	kBooking := booking.CloneBooking(c.Booking, -amount, booking.SVBeitrag, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	sollAccount.Book(kBooking)
 
 	// Bankbuchung
 	bankBooking := c.Booking
 	bankBooking.Type = c.Booking.Typ
-	bankBooking.Amount = bankBooking.Amount
+	bankBooking.Amount = amount
 	c.Repository.BankAccount().Book(bankBooking)
 }
 
@@ -60,16 +61,17 @@ type BookLNSteuerCommand struct {
 
 func (c BookLNSteuerCommand) run() {
 
+	amount := c.Booking.Amount
+
 	// Buchung SKR03_4100_4199
 	account, _ := c.Repository.Get(accountSystem.SKR03_4100_4199.Id)
-	amount := c.Repository.DetermineSollOrHaben(c.Booking.Amount, account, "soll")
-	kBooking := booking.CloneBooking(c.Booking, amount, booking.LNSteuer, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	kBooking := booking.CloneBooking(c.Booking, - amount, booking.LNSteuer, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	account.Book(kBooking)
 
 	// Bankbuchung
 	bankBooking := c.Booking
 	bankBooking.Type = c.Booking.Typ
-	bankBooking.Amount = bankBooking.Amount
+	bankBooking.Amount = amount
 	c.Repository.BankAccount().Book(bankBooking)
 }
 
@@ -80,16 +82,20 @@ type BookGWSteuerCommand struct {
 
 func (c BookGWSteuerCommand) run() {
 
-	// Bankbuchung
-	bankBooking := c.Booking
-	bankBooking.Type = c.Booking.Typ
-	bankBooking.Amount = bankBooking.Amount * -1
-	c.Repository.BankAccount().Book(bankBooking)
+	// Gewerbesteuer an Bank
+	amount := c.Booking.Amount
 
 	// Buchung Kommitment-Konto oder Rückstellung oder ...
-	kBooking := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.GWSteuer, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
-	kommitmentAccount, _ := c.Repository.Get(c.Booking.Responsible)
-	kommitmentAccount.Book(kBooking)
+	gwAccount,_ := c.Repository.Get(accountSystem.SKR03_Steuern.Id)
+	kBooking := booking.CloneBooking(c.Booking, - amount, booking.GWSteuer, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	gwAccount.Book(kBooking)
+
+	// Bankbuchung Haben
+	bankBooking := c.Booking
+	bankBooking.Type = c.Booking.Typ
+	bankBooking.Amount = amount
+	c.Repository.BankAccount().Book(bankBooking)
+
 }
 
 type BookPartnerEntnahmeCommand struct {
@@ -118,16 +124,19 @@ type BookPartnerEntnahmeVorjahrCommand struct {
 
 func (c BookPartnerEntnahmeVorjahrCommand) run() {
 
-	// Bankbuchung
-	bankBooking := c.Booking
-	bankBooking.Type = c.Booking.Typ
-	bankBooking.Amount = bankBooking.Amount * -1
-	c.Repository.BankAccount().Book(bankBooking)
+	// auflösen eines Gesellschafterdarlehens, Buchung: Gesellschafterdarlehen 920 an Bank 1200
+	amount := c.Booking.Amount
 
-	// Buchung gegen Kommanditstenkonto
-	b := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.GVVorjahr, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
-	a, _ := c.Repository.Get(accountSystem.SKR03_KontoJUSVJ.Id)
-	a.Book(b)
+	// Soll Gesellschafterdarlehens
+	sollAccount,_ := c.Repository.Get(accountSystem.SKR03_KontoJUSVJ.Id)
+	b := booking.CloneBooking(c.Booking, -amount, booking.GVVorjahr, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	sollAccount.Book(b)
+
+	// Haben Bankbuchung
+	habenAccount := c.Repository.BankAccount()
+	b2 := booking.CloneBooking(c.Booking, amount, booking.GVVorjahr, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	habenAccount.Book(b2)
+
 }
 
 type BookEingangsrechnungCommand struct {
@@ -145,21 +154,23 @@ func (c BookEingangsrechnungCommand) run() {
 		return
 	}
 
-	var amount float64
+	amount := c.Booking.Amount
 
-	// Soll Buchung UST-Konto
+	// Soll Buchung UST-Konto, Erträge werden im Haben gebucht, Ausgaben im Soll
+	ustAccount,_ := c.Repository.Get(accountSystem.SKR03_UST.Id)
+	b2 := booking.CloneBooking(c.Booking, -1.0*(amount-util.Net(amount)), booking.Eingangsrechnung, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	ustAccount.Book (b2)
 
 	// Soll Buchung Kommitment-Konto
 	sollAccount,_ := c.Repository.Get(accountSystem.SKR03_sonstigeAufwendungen.Id)
-	amount = c.Repository.DetermineSollOrHaben(util.Net(c.Booking.Amount), sollAccount, "soll")
-	b := booking.CloneBooking(c.Booking, amount, booking.Eingangsrechnung, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	b := booking.CloneBooking(c.Booking, -util.Net(amount), booking.Eingangsrechnung, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	sollAccount.Book(b)
 
 	// Haben Buchung Bank
 	habenAccount := c.Repository.BankAccount()
-	amount = c.Repository.DetermineSollOrHaben(c.Booking.Amount, sollAccount, "haben")
 	a :=  booking.CloneBooking(c.Booking, amount, booking.Eingangsrechnung, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	habenAccount.Book(a)
+
 
 }
 
@@ -212,36 +223,6 @@ func (c BookAnfangsbestandCommand) run() {
 	zielkonto.Book(a)
 }
 
-type BookERgegenRückstellungCommand struct {
-	Booking    booking.Booking
-	Repository accountSystem.AccountSystem
-}
-
-func (c BookERgegenRückstellungCommand) run() {
-
-	// Buchung gegen Rückstellungskonto
-	a := booking.CloneBooking(c.Booking, util.Net(c.Booking.Amount)*-1, booking.Eingangsrechnung, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
-	rückstellungskonto, _ := c.Repository.Get(accountSystem.SKR03_Rueckstellungen.Id)
-	rückstellungskonto.Book(a)
-}
-
-type BookRückstellungAuflösenCommand struct {
-	Booking    booking.Booking
-	Repository accountSystem.AccountSystem
-}
-
-func (c BookRückstellungAuflösenCommand) run() {
-
-	// Buchung vom Rückstellungskonto
-	rückstellungskonto, _ := c.Repository.Get(accountSystem.SKR03_Rueckstellungen.Id)
-	a := booking.CloneBooking(c.Booking, c.Booking.Amount, booking.Eingangsrechnung, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
-	rückstellungskonto.Book(a)
-
-	// Buchung auf das kommitment Konto
-	account, _ := c.Repository.Get(owner.StakeholderKM.Id)
-	kBooking := booking.CloneBooking(c.Booking, c.Booking.Amount*-1.0, booking.RueckstellungAuflösen, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
-	account.Book(kBooking)
-}
 
 type BookSKR03Command struct {
 	Booking    booking.Booking
@@ -250,23 +231,18 @@ type BookSKR03Command struct {
 
 func (c BookSKR03Command) run() {
 
-	amount :=  c.Booking.Amount
-	// Netto oder brutto?
-	if c.Booking.Haben == "25" || c.Booking.Haben == "410" { // Anlagebuchung netto bitte
-		amount = util.Net(amount)
-	}
+	amount := c.Booking.Amount
 
 	// Sollbuchung
 	sollAccount := c.Repository.GetSKR03(c.Booking.Soll)
-	// deterine soll or haben, plus or minus
-	amount = c.Repository.DetermineSollOrHaben(amount, sollAccount, "soll")
-	a := booking.CloneBooking(c.Booking, amount, c.Booking.Typ, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	a := booking.CloneBooking(c.Booking, -amount, c.Booking.Typ, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	sollAccount.Book(a)
 
 	// Habenbuchung
 	habenAccount := c.Repository.GetSKR03(c.Booking.Haben)
-	// deterine soll or haben, plus or minus
-	amount = c.Repository.DetermineSollOrHaben(amount, habenAccount, "haben")
+
 	b := booking.CloneBooking(c.Booking, amount, c.Booking.Typ, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	habenAccount.Book(b)
 }
+
+

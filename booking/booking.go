@@ -44,7 +44,6 @@ const (
 	Gehalt                = "Gehalt"
 	LNSteuer              = "LNSteuer"
 	Rueckstellung         = "Rueckstellung"
-	RueckstellungAuflösen = "RueckstellungAufloesen"
 	Anfangsbestand        = "Anfangsbestand"
 	GVVorjahr             = "GVVorjahr"
 	SKR03                 = "SKR03"

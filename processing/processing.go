@@ -1,11 +1,11 @@
 package processing
 
 import (
-	"log"
-
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/util"
-	"github.com/ahojsenn/kontrol/accountSystem"
+	accountSystem "github.com/ahojsenn/kontrol/accountSystem"
+	"log"
+	"time"
 )
 
 type Command interface {
@@ -19,14 +19,8 @@ func Process(repository accountSystem.AccountSystem, booking booking.Booking) {
 	b := booking
 	b.Type = booking.Typ
 	switch b.Type {
-	case "ER":
-		b.Amount = util.Net(b.Amount) * -1
-	case "ERgegenRückstellung":
-		b.Amount = util.Net(b.Amount) * -1
 	case "AR":
 		b.Amount = util.Net(b.Amount)
-	case "GWSteuer":
-		b.Amount = b.Amount * -1
 	}
 
 	// Interne Stunden werden nicht auf dem Bankkonto verbucht. Sie sind da nie eingegangen, sondern werden durch
@@ -43,6 +37,7 @@ func Process(repository accountSystem.AccountSystem, booking booking.Booking) {
 		b.Type != "Anfangsbestand" &&
 		b.Type != "RückstellungAuflösen" &&
 		b.Type != "GV-Vorjahr" &&
+		b.Type != "SKR03" &&
 		b.Type != "GV" {
 		repository.BankAccount().Book(b)
 	}
@@ -54,7 +49,6 @@ func Process(repository accountSystem.AccountSystem, booking booking.Booking) {
 	if booking.Soll != "" && booking.Haben != "" {
 		// log.Println("booking ", booking.Amount, "€ from ", booking.Soll, " to ", booking.Haben)
 		// find the right soll account
-		log.Println(">>> soll, haben", booking.Soll, booking.Haben)
 		command = BookSKR03Command{Repository: repository, Booking: booking}
 
 	} else {
@@ -82,11 +76,23 @@ func Process(repository accountSystem.AccountSystem, booking booking.Booking) {
 			command = BookRueckstellungCommand{Repository: repository, Booking: booking}
 		case "Anfangsbestand":
 			command = BookAnfangsbestandCommand{Repository: repository, Booking: booking}
-		case "ERgegenRückstellung":
-			command = BookERgegenRückstellungCommand{Repository: repository, Booking: booking}
-		case "RückstellungAuflösen":
-			command = BookRückstellungAuflösenCommand{Repository: repository, Booking: booking}
-		}
+				}
 	}
 	command.run()
+}
+
+func GuV (as accountSystem.AccountSystem) {
+	log.Println("in GuV")
+
+	var jahresueberschuss float64
+
+	for _, account := range as.All() {
+		if account.Description.Type == accountSystem.KontenartAufwand ||  account.Description.Type == accountSystem.KontenartErtrag {
+			jahresueberschuss += account.Saldo
+		}
+	}
+	a,_ := as.Get(accountSystem.ErgebnisNachSteuern.Id)
+	now := time.Now().AddDate(0, 0, 0)
+	p := booking.NewBooking("Jahresüberschuss", "", "", "", nil, jahresueberschuss, "Buchung Jahresüberschuss", 12, 2017, now)
+	a.Book(*p)
 }

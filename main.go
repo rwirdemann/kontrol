@@ -103,6 +103,8 @@ func importAndProcessBookings(repository accountSystem.AccountSystem, year int) 
 	for _, p := range bookings {
 		processing.Process(repository, p)
 	}
+	// now calculate GuV
+	processing.GuV(repository)
 }
 
 func watchBookingFile(repository accountSystem.AccountSystem, year int) {

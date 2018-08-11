@@ -35,16 +35,3 @@ func TestAdd (t *testing.T) {
 	a,_ := accountSystem.Get("K")
 	util.AssertEquals(t, a.Description.Name,  "k: Kommitment")
 }
-
-func TestDetermineSollOrHaben (t *testing.T) {
-	accountSystem := NewDefaultAccountSystem()
-	var amount float64
-	a,_ := accountSystem.Get("1600")
-	amount = accountSystem.DetermineSollOrHaben(100.0, a, "haben")
-	util.AssertEquals(t, amount,  -100.0)
-
-	a,_ = accountSystem.Get("4100_4199")
-	amount = accountSystem.DetermineSollOrHaben(100.0, a, "soll")
-	util.AssertEquals(t, amount,  -100.0)
-}
-
