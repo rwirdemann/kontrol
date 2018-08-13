@@ -33,6 +33,7 @@ type CsvBookingExtras struct {
 // Aus einer Buchung in der Quelldatei wird eine oder mehrere virtuelle Buchungen erstellt. Dies ist die Liste
 // möglicher Werte für den Type einer virtuellen Buchung
 const (
+	Erloese      		  = "Erloese"
 	Vertriebsprovision    = "Vertriebsprovision"
 	Nettoanteil           = "Nettoanteil"
 	Kommitmentanteil      = "Kommitmentanteil"

@@ -17,6 +17,20 @@ type BookAusgangsrechnungCommand struct {
 
 func (this BookAusgangsrechnungCommand) run() {
 
+
+	// book from bankaccount...
+	bank := this.Repository.BankAccount()
+	a := booking.Booking{
+		Amount:      util.Net(this.Booking.Amount),
+		Type:        booking.Erloese,
+		Text:        this.Booking.Text,
+		Month:       this.Booking.Month,
+		Year:        this.Booking.Year,
+		FileCreated: this.Booking.FileCreated,
+		BankCreated: this.Booking.BankCreated,
+	}
+	bank.Book(a)
+
 	// if booking with empty timestamp in position "BankCreated"
 	// the book it to open positions SKR03_1400
 	if this.isOpenPosition() == true {
@@ -27,7 +41,7 @@ func (this BookAusgangsrechnungCommand) run() {
 		umsatzerloese, _ := this.Repository.Get(accountSystem.SKR03_Umsatzerloese.Id)
 		b := booking.Booking{
 			Amount:      util.Net(this.Booking.Amount),
-			Type:        booking.SKR03,
+			Type:        booking.Erloese,
 			Text:        this.Booking.Text,
 			Month:       this.Booking.Month,
 			Year:        this.Booking.Year,

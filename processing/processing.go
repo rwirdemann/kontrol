@@ -2,8 +2,7 @@ package processing
 
 import (
 	"github.com/ahojsenn/kontrol/booking"
-	"github.com/ahojsenn/kontrol/util"
-	accountSystem "github.com/ahojsenn/kontrol/accountSystem"
+		"github.com/ahojsenn/kontrol/accountSystem"
 	"log"
 	"time"
 )
@@ -14,34 +13,7 @@ type Command interface {
 
 // Implementiert den Kommitment-Verteilungsalgorithmus
 func Process(repository accountSystem.AccountSystem, booking booking.Booking) {
-
-	// Book booking to bank account
-	b := booking
-	b.Type = booking.Typ
-	switch b.Type {
-	case "AR":
-		b.Amount = util.Net(b.Amount)
-	}
-
-	// Interne Stunden werden nicht auf dem Bankkonto verbucht. Sie sind da nie eingegangen, sondern werden durch
-	// Einnahmen bestritten
-	// hier füge ich immer mehr buchungstypen hinzu. Die Bankbuchung sollte immer in command.go stattfinden (resp. ausgangsre*...
-	// und nicht hier...
-	if b.BookOnBankAccount() &&
-		b.Type != "Gehalt" &&
-		b.Type != "ER" &&
-		b.Type != "SV-Beitrag" &&
-		b.Type != "LNSteuer" &&
-		b.Type != "GWSteuer" &&
-		b.Type != "Rückstellung" &&
-		b.Type != "Anfangsbestand" &&
-		b.Type != "RückstellungAuflösen" &&
-		b.Type != "GV-Vorjahr" &&
-		b.Type != "SKR03" &&
-		b.Type != "GV" {
-		repository.BankAccount().Book(b)
-	}
-
+	
 	// Assign booking to one or more virtual stakeholder accounts
 	var command Command
 
@@ -93,6 +65,6 @@ func GuV (as accountSystem.AccountSystem) {
 	}
 	a,_ := as.Get(accountSystem.ErgebnisNachSteuern.Id)
 	now := time.Now().AddDate(0, 0, 0)
-	p := booking.NewBooking("Jahresüberschuss", "", "", "", nil, jahresueberschuss, "Buchung Jahresüberschuss", 12, 2017, now)
+	p := booking.NewBooking("Jahresüberschuss", "", "", "", nil, jahresueberschuss, "Buchung Jahresüberschuss", int(now.Month()), now.Year(), now)
 	a.Book(*p)
 }

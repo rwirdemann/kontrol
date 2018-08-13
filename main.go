@@ -115,27 +115,23 @@ func watchBookingFile(repository accountSystem.AccountSystem, year int) {
 
 	go func() {
 		for {
-			// there is no nicer war to create an 'empty NewTimer'
-			// https://github.com/golang/go/issues/12721
-			timer := time.NewTimer(0)
-			<-timer.C
+
 			select {
 			case event := <-watcher.Event:
 				// reset the timer if there are more events within the 3 seconds
 				// i.e. when the file ist still loading
 				log.Println("event:", event)
-				timer.Reset(3 * time.Second)
-			case err := <-watcher.Error:
-				log.Println("error:", err)
-			case c := <-timer.C:
-				// now wait until no further event has been written for one second...
-				// to prevent the process from reading the file while it is still
-				// being written...
-				log.Printf("booking reimport start: %s, %s\n", time.Now(), c)
+				select {
+				case <-time.After(3 * time.Second):
+					fmt.Println("timeout 3 sec")
+				}
+				log.Printf("booking reimport start: %s, %s\n", time.Now())
 				importAndProcessBookings(repository, year)
 				log.Printf("booking reimport end: %s\n", time.Now())
+			case err := <-watcher.Error:
+				log.Println("error:", err)
 			}
-			timer.Stop()
+
 		}
 	}()
 

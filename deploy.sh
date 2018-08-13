@@ -29,6 +29,7 @@ echo "Deploy stuff to "${TARGETSERVER}
 ${SSHSERVER} "[ -f ${TARGETPROGRAM} ] &&  mv ${TARGETPROGRAM} ${TARGETPROGRAM}.old"
 scp ${TARGETPROGRAM} ${TARGETUSER}@${TARGETSERVER}:${TARGETPROGRAM}
 scp httpsconfig.env ${TARGETUSER}@${TARGETSERVER}:.
+scp getSpreadsheet.sh ${TARGETUSER}@${TARGETSERVER}:.
 ${SSHSERVER} ls -al
 echo "done with file transfer..."
 echo
@@ -54,6 +55,10 @@ set -e
 echo
 echo
 
+#
+echo "getting the latest data"
+${SSHSERVER}  "chmod +x ./getSpreadsheet.sh"
+${SSHSERVER}  "./getSpreadsheet.sh"
 
 sleep 2
 curl -s http://${TARGETSERVER}:8991/kontrol/version
