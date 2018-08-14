@@ -38,6 +38,7 @@ func (this BookAusgangsrechnungCommand) run() {
 		skr1400.Book(this.Booking)
 		return
 	} else {
+		// haben umsatzerloese
 		umsatzerloese, _ := this.Repository.Get(accountSystem.SKR03_Umsatzerloese.Id)
 		b := booking.Booking{
 			Amount:      util.Net(this.Booking.Amount),
@@ -49,7 +50,24 @@ func (this BookAusgangsrechnungCommand) run() {
 			BankCreated: this.Booking.BankCreated,
 		}
 		umsatzerloese.Book(b)
+
+		// haben Steuern
+		umsatzsteuernKonto ,_ := this.Repository.Get(accountSystem.SKR03_Umsatzsteuer.Id)
+		c :=
+			booking.Booking{
+				Amount:      this.Booking.Amount - util.Net(this.Booking.Amount),
+				Type:        booking.Erloese,
+				Text:        this.Booking.Text,
+				Month:       this.Booking.Month,
+				Year:        this.Booking.Year,
+				FileCreated: this.Booking.FileCreated,
+				BankCreated: this.Booking.BankCreated,
+			}
+		umsatzsteuernKonto.Book(c)
 	}
+
+
+	// hier kommt nun die ganze Verteilung unter den kommitmenschen
 
 	benefitees := this.stakeholderWithNetPositions()
 	for _, benefited := range benefitees {

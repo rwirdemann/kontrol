@@ -41,7 +41,8 @@ var SKR03_1600 = account.AccountDescription{Id: "1600", Name: "OPOS-Lieferant 16
 var SKR03_Anlagen = account.AccountDescription{Id: "SKR03_Anlagen", Name: "Zugang Anlagen", Type: KontenartAktiv}
 var SKR03_Anlagen25 = account.AccountDescription{Id: "SKR03_Anlagen25", Name: "Zugang Anlagen Ähnl.R&W 25", Type: KontenartAktiv}
 var SKR03_Kautionen = account.AccountDescription{Id: "SKR03_Kautionen", Name: "SKR03_Kautionen 1525", Type: KontenartAktiv}
-var SKR03_UST = account.AccountDescription{Id: "SKR03_UST", Name: "Umsatzsteuer 1570-1579", Type: KontenartAktiv}
+var SKR03_Vorsteuer = account.AccountDescription{Id: "SKR03_Vorsteuer", Name: "Steuer: Vorsteuer 1570-1579", Type: KontenartAktiv}
+var SKR03_Umsatzsteuer = account.AccountDescription{Id: "SKR03_Umsatzsteuer", Name: "Steuer: Umsatzsteuer 1770", Type: KontenartAktiv}
 // Erfolgskonten
 var SKR03_Umsatzerloese = account.AccountDescription{Id: "SKR03_Umsatzerloese", Name: "1 SKR03_Umsatzerloese 8100-8402", Type: KontenartErtrag}
 var SKR03_4100_4199 = account.AccountDescription{Id: "4100_4199", Name: "3 Löhne und Gehälter 4100-4199", Type: KontenartAufwand}
@@ -69,7 +70,8 @@ func (this Accountlist) All() []account.AccountDescription {
 		SKR03_Kautionen,
 		SKR03_Umsatzerloese,
 		SKR03_Steuern,
-		SKR03_UST,
+		SKR03_Vorsteuer,
+		SKR03_Umsatzsteuer,
 		SKR03_Saldenvortrag,
 		ErgebnisNachSteuern,
 	}

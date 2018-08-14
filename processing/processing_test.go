@@ -506,12 +506,36 @@ func TestAbschreibungenAufAnlagen(t *testing.T) {
 	assert.Equal(t, booking.SKR03, a.Bookings[0].Type)
 
 	// booking is not on bankaccount
-	ba, _ := repository.Get(accountSystem.SKR03_Rueckstellungen.Id)
+	ba := repository.BankAccount()
 	assert.Equal(t, 0, len(ba.Bookings))
 
 	// booking is posiv von haben account
 	ha, _ := repository.Get(accountSystem.SKR03_Anlagen25.Id)
 	assert.Equal(t, 1, len(ha.Bookings))
+
+}
+
+// TestUstVZ
+func TestUstVZ(t *testing.T) {
+	repository = accountSystem.NewDefaultAccountSystem()
+
+	// given: Abschreibung
+	now := time.Now().AddDate(0, 0, 0)
+	p := booking.NewBooking("UstVZ", "", "", "",nil, 1337.23, "UST", 12, 2017, now)
+
+	// when: the position is processed
+	Process(repository, *p)
+
+	// soll account
+	a, _ := repository.Get(accountSystem.SKR03_Umsatzsteuer.Id)
+	assert.Equal(t, 1, len(a.Bookings))
+	assert.Equal(t, -1337.23 , a.Bookings[0].Amount )
+	assert.Equal(t, booking.UstVZ, a.Bookings[0].Type)
+
+	// booking is  on bankaccount
+	ba := repository.BankAccount()
+	assert.Equal(t, 1, len(ba.Bookings))
+	assert.Equal(t, 1337.23 , ba.Bookings[0].Amount )
 
 }
 

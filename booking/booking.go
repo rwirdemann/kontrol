@@ -10,7 +10,21 @@ import (
 	"golang.org/x/text/message"
 )
 
-var ValidBookingTypes = [...]string{"ER", "AR", "GV", "GV-Vorjahr", "IS", "SV-Beitrag", "GWSteuer", "Gehalt", "LNSteuer", "Rückstellung", "Anfangsbestand", "RückstellungAuflösen", "ERgegenRückstellung", "SKR03"}
+var ValidBookingTypes = [...]string{
+	"ER",
+	"AR",
+	"GV",
+	"GV-Vorjahr",
+	"IS",
+	"SV-Beitrag",
+	"GWSteuer",
+	"Gehalt",
+	"LNSteuer",
+	"Rückstellung",
+	"Anfangsbestand",
+	"SKR03",
+	"UstVZ",
+}
 
 // Zusatzinformationen einer Buchung, deren Quelle die CSV-Datei ist, und die für die weitere
 // Bearbeitung erforderlich sind.
@@ -48,6 +62,7 @@ const (
 	Anfangsbestand        = "Anfangsbestand"
 	GVVorjahr             = "GVVorjahr"
 	SKR03                 = "SKR03"
+	UstVZ				  = "UstVZ"
 )
 
 type Booking struct {

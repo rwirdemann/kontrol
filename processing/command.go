@@ -157,7 +157,7 @@ func (c BookEingangsrechnungCommand) run() {
 	amount := c.Booking.Amount
 
 	// Soll Buchung UST-Konto, Erträge werden im Haben gebucht, Ausgaben im Soll
-	ustAccount,_ := c.Repository.Get(accountSystem.SKR03_UST.Id)
+	ustAccount,_ := c.Repository.Get(accountSystem.SKR03_Vorsteuer.Id)
 	b2 := booking.CloneBooking(c.Booking, -1.0*(amount-util.Net(amount)), booking.Eingangsrechnung, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	ustAccount.Book (b2)
 
@@ -240,9 +240,27 @@ func (c BookSKR03Command) run() {
 
 	// Habenbuchung
 	habenAccount := c.Repository.GetSKR03(c.Booking.Haben)
-
 	b := booking.CloneBooking(c.Booking, amount, c.Booking.Typ, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	habenAccount.Book(b)
 }
 
+type BookUstCommand struct {
+	Booking    booking.Booking
+	Repository accountSystem.AccountSystem
+}
+
+func (c BookUstCommand) run() {
+
+	amount := c.Booking.Amount
+
+	// Sollbuchung
+	sollAccount,_ := c.Repository.Get(accountSystem.SKR03_Umsatzsteuer.Id)
+	a := booking.CloneBooking(c.Booking, -amount, c.Booking.Typ, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	sollAccount.Book(a)
+
+	// Habenbuchung
+	habenAccount := c.Repository.BankAccount()
+	b := booking.CloneBooking(c.Booking, amount, c.Booking.Typ, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	habenAccount.Book(b)
+}
 

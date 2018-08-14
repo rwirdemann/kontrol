@@ -13,7 +13,7 @@ type Command interface {
 
 // Implementiert den Kommitment-Verteilungsalgorithmus
 func Process(repository accountSystem.AccountSystem, booking booking.Booking) {
-	
+
 	// Assign booking to one or more virtual stakeholder accounts
 	var command Command
 
@@ -48,6 +48,8 @@ func Process(repository accountSystem.AccountSystem, booking booking.Booking) {
 			command = BookRueckstellungCommand{Repository: repository, Booking: booking}
 		case "Anfangsbestand":
 			command = BookAnfangsbestandCommand{Repository: repository, Booking: booking}
+		case "UstVZ":
+			command = BookUstCommand{Repository: repository, Booking: booking}
 				}
 	}
 	command.run()
