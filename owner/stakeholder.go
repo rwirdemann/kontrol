@@ -15,4 +15,5 @@ type Stakeholder struct {
 	Id   string `json:",omitempty"`
 	Name string
 	Type string
+	Arbeit string
 }

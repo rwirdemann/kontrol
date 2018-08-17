@@ -2,6 +2,10 @@ package owner
 
 import (
 	"fmt"
+		"io/ioutil"
+	"os"
+	"encoding/json"
+		"time"
 )
 
 const (
@@ -24,10 +28,65 @@ var StakeholderRR = Stakeholder{Id: "RR", Name: "Rest", Type: StakeholderTypeOth
 
 
 
+
+// environments and HTTPS certificate locations.
+type KommitmenschenRepository struct {
+	Abrechenzeitpunkt string `json:"Abrechenzeitpunkt"`
+	Menschen []Kommitmenschen `json:"Kommitmenschen"`
+}
+
+type Kommitmenschen struct {
+	Id string `json:"Id"`
+	Name string `json:"Name"`
+	Type string `json:"Type"`
+	Arbeit string `json:"Arbeit"`
+}
+
+func (this KommitmenschenRepository) All(year int) []Kommitmenschen {
+	rawFile, err := ioutil.ReadFile("./kommitmenschen.json")
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+
+	var kme []KommitmenschenRepository
+	json.Unmarshal(rawFile, &kme)
+
+	// find the right year
+	for i,yrep := range kme {
+		layout := "2006-01-02"
+		t, err := time.Parse(layout, yrep.Abrechenzeitpunkt)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+		if year == t.Year() {
+			return kme[i].Menschen
+		}
+
+	}
+
+	return kme[0].Menschen
+}
+
+
+
 type StakeholderRepository struct {
 }
 
 func (this StakeholderRepository) All() []Stakeholder {
+
+	kmrepo := KommitmenschenRepository{}
+	stakehr := []Stakeholder{}
+	for _, mensch := range kmrepo.All(2018) {
+		s := Stakeholder{}
+		s.Type = mensch.Type
+
+		stakehr = append(stakehr, Stakeholder {Id: mensch.Id, Name: mensch.Name, Type: mensch.Type, Arbeit: mensch.Arbeit} )
+	}
+
+	return stakehr
+
 	return []Stakeholder{
 		StakeholderRW,
 		StakeholderAN,

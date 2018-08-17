@@ -22,7 +22,7 @@ var ValidBookingTypes = [...]string{
 	"LNSteuer",
 	"Rückstellung",
 	"Anfangsbestand",
-	"SKR03",
+ 	"SKR03",
 	"UstVZ",
 }
 
@@ -84,7 +84,7 @@ func NewBooking(
 	csvType string,
 	soll string,
 	haben string,
-	dealBringer string,
+	CostCenter string,
 	net map[owner.Stakeholder]float64,
 	amount float64,
 	text string,
@@ -95,7 +95,7 @@ func NewBooking(
 	return &Booking{
 		CsvBookingExtras: CsvBookingExtras{
 			Typ:         csvType,
-			Responsible: dealBringer,
+			Responsible: CostCenter,
 			Net:         net,
 		},
 		Soll:        soll,
