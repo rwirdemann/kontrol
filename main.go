@@ -1,11 +1,9 @@
 package main
 
 import (
-	"encoding/json"
-	"flag"
+		"flag"
 	"fmt"
-	"io/ioutil"
-	"net/http"
+		"net/http"
 	"os"
 	"time"
 
@@ -17,6 +15,7 @@ import (
 	"github.com/ahojsenn/kontrol/parser"
 	"github.com/howeyc/fsnotify"
 	"github.com/rs/cors"
+	"github.com/ahojsenn/kontrol/util"
 	"github.com/ahojsenn/kontrol/accountSystem"
 )
 
@@ -28,44 +27,9 @@ var (
 	buildstamp string
 )
 
-// environments and HTTPS certificate locations.
-type Environment struct {
-	Hostname string `json:"hostname"`
-	CertFile string `json:"certfile"`
-	KeyFile  string `json:"keyfile"`
-}
-
-func getEnvironment() *Environment {
-	log.Println("getEnvironment: ")
-	raw, err := ioutil.ReadFile("./httpsconfig.env")
-	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
-	var environments []Environment
-	hostname := getHostname()
-	json.Unmarshal(raw, &environments)
-	for i := range environments {
-		if environments[i].Hostname == hostname {
-			// Found hostname
-			return &environments[i]
-			break
-		}
-	}
-	log.Fatal("there is no environment configured for '", hostname, "' in ./httpsconfig.env")
-	return nil
-}
-
-func getHostname() string {
-	hostname, err := os.Hostname()
-	if err != nil {
-		panic(err)
-	}
-	return hostname
-}
 
 func main() {
-	environment := getEnvironment()
+	environment := util.Environment.Get()
 	version := flag.Bool("version", false, "prints current kontrol version")
 	file := flag.String("file", DefaultBookingFile, "booking file")
 	year := flag.Int("year", 2018, "year to control")

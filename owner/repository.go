@@ -6,6 +6,7 @@ import (
 	"os"
 	"encoding/json"
 		"time"
+	"log"
 )
 
 const (
@@ -43,6 +44,12 @@ type Kommitmenschen struct {
 }
 
 func (this KommitmenschenRepository) All(year int) []Kommitmenschen {
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("in KommitmenschenRepository.All(), wd=", dir)
+
 	rawFile, err := ioutil.ReadFile("./kommitmenschen.json")
 	if err != nil {
 		fmt.Println(err.Error())
