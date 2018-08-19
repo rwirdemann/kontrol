@@ -7,7 +7,7 @@ import (
 			)
 
 func TestNewDefaultAccountSystem(t *testing.T) {
-	accountSystem := NewDefaultAccountSystem()
+	accountSystem := NewDefaultAccountSystem(2016)
 	util.AssertEquals(t, accountSystem.BankAccount().Description.Id, "GLS")
 
 	_ ,exists := accountSystem.Get("SKR03_Anlagen")
@@ -18,7 +18,7 @@ func TestNewDefaultAccountSystem(t *testing.T) {
 }
 
 func TestEmptyDefaultAccountSystem (t *testing.T) {
-	accountSystem := EmptyDefaultAccountSystem()
+	accountSystem := EmptyDefaultAccountSystem(2016)
 	util.AssertEquals(t, accountSystem.BankAccount().Description.Id, "GLS")
 
 	_ ,exists := accountSystem.Get("SKR03_Anlagen")
@@ -26,7 +26,7 @@ func TestEmptyDefaultAccountSystem (t *testing.T) {
 }
 
 func TestAdd (t *testing.T) {
-	accountSystem := EmptyDefaultAccountSystem()
+	accountSystem := EmptyDefaultAccountSystem(2016)
 	util.AssertEquals(t, accountSystem.BankAccount().Description.Id, "GLS")
 
 	newAccount := account.NewAccount(account.AccountDescription{Id: "K", Name: "k: Kommitment", Type: "company"})

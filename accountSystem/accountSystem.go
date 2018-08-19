@@ -77,12 +77,12 @@ func (this Accountlist) All() []account.AccountDescription {
 	}
 }
 
-func EmptyDefaultAccountSystem() AccountSystem {
+func EmptyDefaultAccountSystem(year int) AccountSystem {
 	o := account.AccountDescription{Id: "GLS", Name: "Kommitment GmbH & Co. KG", Type: KontenartAktiv}
 	return &DefaultAccountSystem{collectiveAccount: &account.Account{Description: o}, accounts: make(map[string]*account.Account)}
 }
 
-func NewDefaultAccountSystem() AccountSystem {
+func NewDefaultAccountSystem(year int) AccountSystem {
 	ad := account.AccountDescription{Id: "GLS", Name: "Kommitment GmbH & Co. KG", Type: KontenartAktiv}
 	accountSystem := DefaultAccountSystem{collectiveAccount: &account.Account{Description: ad}, accounts: make(map[string]*account.Account)}
 
@@ -94,7 +94,7 @@ func NewDefaultAccountSystem() AccountSystem {
 
 	// generate accounts for all stakeholders
 	stakeholderRepository := owner.StakeholderRepository{}
-	for _, sh := range stakeholderRepository.All() {
+	for _, sh := range stakeholderRepository.All(year) {
 		if sh.Type != owner.StakeholderTypeExtern &&
 			sh.Type != owner.StakeholderTypeOthers {
 			ad := account.AccountDescription{Id: sh.Id, Name: sh.Name, Type: sh.Type}
@@ -136,6 +136,7 @@ func (r *DefaultAccountSystem) ClearBookings() {
 		account.Bookings = []booking.Booking{}
 	}
 }
+
 
 func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 	var account *account.Account

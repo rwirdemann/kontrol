@@ -20,11 +20,11 @@ var accountRalf *account.Account
 var accountKommitment *account.Account
 
 func setUp() {
-	repository = accountSystem.NewDefaultAccountSystem()
+	repository = accountSystem.NewDefaultAccountSystem(2017)
 	accountBank = repository.BankAccount()
-	accountHannes, _ = repository.Get(owner.StakeholderJM.Id)
-	accountRalf, _ = repository.Get(owner.StakeholderRW.Id)
-	accountKommitment, _ = repository.Get(owner.StakeholderKM.Id)
+	accountHannes, _ = repository.Get(owner.StakeholderRepository{}.Get("JM").Id)
+	accountRalf, _ = repository.Get(owner.StakeholderRepository{}.Get("RW").Id)
+	accountKommitment, _ = repository.Get(owner.StakeholderRepository{}.Get("K").Id)
 }
 
 // Ausgangsrechnung Angestellter
@@ -35,7 +35,7 @@ func TestAusgangsrechnungAngestellter(t *testing.T) {
 
 	// Ben hat auf einer Buchung nett 10.800 EUR erwirtschaftet
 	net := map[owner.Stakeholder]float64{
-		owner.StakeholderBW: 10800.0,
+		owner.StakeholderRepository{}.Get("BW"): 10800.0,
 	}
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
 	p := booking.NewBooking("AR", "", "", "JM", net, 12852.0, "Rechnung 1234", 1, 2017, its2018)
@@ -44,13 +44,13 @@ func TestAusgangsrechnungAngestellter(t *testing.T) {
 
 	// Johannes kriegt 5% Provision
 	provision := accountHannes.Bookings[0]
-	util.AssertFloatEquals(t, 10800.0*owner.PartnerProvision, provision.Amount)
+	util.AssertFloatEquals(t, 10800.0*PartnerProvision, provision.Amount)
 	util.AssertEquals(t, booking.Vertriebsprovision, provision.Type)
 
 	// Kommitment kriegt 95% der Nettorechnung
 	util.AssertEquals(t, 1, len(accountHannes.Bookings))
 	kommitment := accountKommitment.Bookings[0]
-	util.AssertFloatEquals(t, 10800.0*owner.KommmitmentEmployeeShare, kommitment.Amount)
+	util.AssertFloatEquals(t, 10800.0*KommmitmentEmployeeShare, kommitment.Amount)
 	util.AssertEquals(t, booking.Kommitmentanteil, kommitment.Type)
 
 	// Kommitment-Buchung ist der Kostenstelle "BW" zugeordnet
@@ -62,7 +62,7 @@ func TestAusgangsrechnungAngestellter(t *testing.T) {
 // - 100% Brutto gegen Kommitmentkonto
 // - Kostenstelle: Kürzel des Angestellten
 func TestGehaltAngestellter(t *testing.T) {
-	repository := accountSystem.NewDefaultAccountSystem()
+	repository := accountSystem.NewDefaultAccountSystem(2017)
 
 	// given: a booking
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
@@ -103,16 +103,16 @@ func TestExternNettoAnteil(t *testing.T) {
 	Process(repository, *p)
 
 	// and hannes got his provision
-	accountHannes, _ := repository.Get(owner.StakeholderJM.Id)
+	accountHannes, _ := repository.Get(owner.StakeholderRepository{}.Get("JM").Id)
 	provision := accountHannes.Bookings[0]
-	util.AssertFloatEquals(t, 10800.0*owner.PartnerProvision, provision.Amount)
+	util.AssertFloatEquals(t, 10800.0*PartnerProvision, provision.Amount)
 	util.AssertEquals(t, booking.Vertriebsprovision, provision.Type)
 
 	// and kommitment got 95%
 	util.AssertEquals(t, 1, len(accountHannes.Bookings))
 	accountKommitment, _ := repository.Get(owner.StakeholderKM.Id)
 	kommitment := accountKommitment.Bookings[0]
-	util.AssertFloatEquals(t, 10800.0*owner.KommmitmentExternShare, kommitment.Amount)
+	util.AssertFloatEquals(t, 10800.0*KommmitmentExternShare, kommitment.Amount)
 	util.AssertEquals(t, booking.Kommitmentanteil, kommitment.Type)
 }
 
@@ -276,7 +276,7 @@ func TestInterneStunden(t *testing.T) {
 	Process(repository, *p)
 
 	// the booking is booked to anke's account
-	a1, _ := repository.Get(owner.StakeholderAN.Id)
+	a1, _ := repository.Get(owner.StakeholderRepository{}.Get("AN").Id)
 	util.AssertEquals(t, 1, len(a1.Bookings))
 	b1 := a1.Bookings[0]
 	util.AssertFloatEquals(t, 8250.00, b1.Amount)
@@ -465,7 +465,7 @@ func TestProcessOPOS_SKR1600(t *testing.T) {
 
 // Teste TestBonusRückstellungAngestellterSKR03
 func TestBonusRueckstellungAngestellterSKR03(t *testing.T) {
-	repository = accountSystem.NewDefaultAccountSystem()
+	repository = accountSystem.NewDefaultAccountSystem(2017)
 
 	// given: a internal hours booking
 	now := time.Now().AddDate(0, 0, 0)
@@ -490,7 +490,7 @@ func TestBonusRueckstellungAngestellterSKR03(t *testing.T) {
 
 // Test Abschreibungen auf Anlagen
 func TestAbschreibungenAufAnlagen(t *testing.T) {
-	repository = accountSystem.NewDefaultAccountSystem()
+	repository = accountSystem.NewDefaultAccountSystem(2017)
 
 	// given: Abschreibung
 	now := time.Now().AddDate(0, 0, 0)
@@ -517,7 +517,7 @@ func TestAbschreibungenAufAnlagen(t *testing.T) {
 
 // TestUstVZ
 func TestUstVZ(t *testing.T) {
-	repository = accountSystem.NewDefaultAccountSystem()
+	repository = accountSystem.NewDefaultAccountSystem(2017)
 
 	// given: Abschreibung
 	now := time.Now().AddDate(0, 0, 0)

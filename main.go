@@ -22,14 +22,15 @@ import (
 const DefaultBookingFile = "2017-Buchungen-KG - Buchungen 2017.csv"
 
 var (
-	fileName   string
-	githash    string
-	buildstamp string
+	fileName   	string
+	githash    	string
+	buildstamp 	string
+	global 		util.Global
 )
 
 
 func main() {
-	environment := util.Environment.Get()
+	environment := util.GetEnv()
 	version := flag.Bool("version", false, "prints current kontrol version")
 	file := flag.String("file", DefaultBookingFile, "booking file")
 	year := flag.Int("year", 2018, "year to control")
@@ -45,7 +46,11 @@ func main() {
 	}
 	fileName = *file
 
-	accountSystem := accountSystem.NewDefaultAccountSystem()
+	// set FinancialYear
+	global.FinancialYear =  *year
+
+	accountSystem := accountSystem.NewDefaultAccountSystem(*year)
+	log.Println("in main, created accountsystem for ", global.FinancialYear)
 	watchBookingFile(accountSystem, *year)
 	importAndProcessBookings(accountSystem, *year)
 

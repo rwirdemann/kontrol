@@ -8,6 +8,15 @@ import (
 	"github.com/ahojsenn/kontrol/owner"
 	"github.com/ahojsenn/kontrol/util"
 	"github.com/ahojsenn/kontrol/accountSystem"
+	)
+
+const (
+	PartnerShare             = 0.7
+	KommmitmentShare         = 0.25
+	KommmitmentExternShare   = 0.95
+	KommmitmentOthersShare   = 1.00
+	KommmitmentEmployeeShare = 0.95
+	PartnerProvision         = 0.05
 )
 
 type BookAusgangsrechnungCommand struct {
@@ -66,7 +75,6 @@ func (this BookAusgangsrechnungCommand) run() {
 		umsatzsteuernKonto.Book(c)
 	}
 
-
 	// hier kommt nun die ganze Verteilung unter den kommitmenschen
 
 	benefitees := this.stakeholderWithNetPositions()
@@ -76,7 +84,7 @@ func (this BookAusgangsrechnungCommand) run() {
 
 			// book partner share
 			b := booking.Booking{
-				Amount:      this.Booking.Net[benefited] * owner.PartnerShare,
+				Amount:      this.Booking.Net[benefited] * PartnerShare,
 				Type:        booking.Nettoanteil,
 				Text:        this.Booking.Text + "#NetShare#" + benefited.Id,
 				Month:       this.Booking.Month,
@@ -88,7 +96,7 @@ func (this BookAusgangsrechnungCommand) run() {
 
 			// book kommitment share
 			kommitmentShare := booking.Booking{
-				Amount:      this.Booking.Net[benefited] * owner.KommmitmentShare,
+				Amount:      this.Booking.Net[benefited] * KommmitmentShare,
 				Type:        booking.Kommitmentanteil,
 				Text:        this.Booking.Text + "#Kommitment#" + benefited.Id,
 				Month:       this.Booking.Month,
@@ -104,7 +112,7 @@ func (this BookAusgangsrechnungCommand) run() {
 
 			// book kommitment share
 			kommitmentShare := booking.Booking{
-				Amount:      this.Booking.Net[benefited] * owner.KommmitmentExternShare,
+				Amount:      this.Booking.Net[benefited] * KommmitmentExternShare,
 				Type:        booking.Kommitmentanteil,
 				Text:        this.Booking.Text + "#Kommitment#" + benefited.Id,
 				Month:       this.Booking.Month,
@@ -122,7 +130,7 @@ func (this BookAusgangsrechnungCommand) run() {
 
 			// book kommitment share
 			kommitmentShare := booking.Booking{
-				Amount:      this.Booking.Net[benefited] * owner.KommmitmentOthersShare,
+				Amount:      this.Booking.Net[benefited] * KommmitmentOthersShare,
 				Type:        booking.Kommitmentanteil,
 				Text:        this.Booking.Text + "#Kommitment#Rest#" + benefited.Id,
 				Month:       this.Booking.Month,
@@ -134,10 +142,9 @@ func (this BookAusgangsrechnungCommand) run() {
 		}
 
 		if benefited.Type == owner.StakeholderTypeEmployee {
-
 			// book kommitment share
 			kommitmentShare := booking.Booking{
-				Amount:      this.Booking.Net[benefited] * owner.KommmitmentEmployeeShare,
+				Amount:      this.Booking.Net[benefited] * KommmitmentEmployeeShare,
 				Type:        booking.Kommitmentanteil,
 				Text:        this.Booking.Text,
 				Month:       this.Booking.Month,
@@ -149,29 +156,20 @@ func (this BookAusgangsrechnungCommand) run() {
 			kommitmentAccount.Book(kommitmentShare)
 		}
 
-		// Die Vertriebsprovision bekommt entweder ein Partner, oder wird dem K-Account gut geschrieben.
-		// Letzters, wenn der Vertriebserfolg einem Angestellten zuzuordnen ist. In diesem Fall wird die
-		// Kostenstelle auf die Id des Angestellten gesetzt, so dass die Gutschrift diesem zugeordnet
-		// werden kann.
-		if benefited.Type != owner.StakeholderTypeOthers { // DON'T givr 5% for travel expenses and co...
+
+		// Die Vertriebsprovision bekommt der Dealbringer
+		if benefited.Type != owner.StakeholderTypeOthers { // Don't give 5% for travel expenses and co...
 			var provisionAccount *account.Account
-			var costcenter string
-			stakeholderRepository := owner.StakeholderRepository{}
-			if stakeholderRepository.TypeOf(this.Booking.Responsible) == owner.StakeholderTypeEmployee {
-				provisionAccount, _ = this.Repository.Get(owner.StakeholderKM.Id)
-				costcenter = this.Booking.Responsible
-			} else {
-				provisionAccount, _ = this.Repository.Get(this.Booking.Responsible)
-			}
+			provisionAccount, _ = this.Repository.Get(this.Booking.Responsible)
 			b := booking.Booking{
-				Amount:      this.Booking.Net[benefited] * owner.PartnerProvision,
+				Amount:      this.Booking.Net[benefited] * PartnerProvision,
 				Type:        booking.Vertriebsprovision,
 				Text:        this.Booking.Text + "#Provision#" + benefited.Id,
 				Month:       this.Booking.Month,
 				Year:        this.Booking.Year,
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated,
-				CostCenter:  costcenter}
+				CostCenter:  this.Booking.Responsible}
 			provisionAccount.Book(b)
 		}
 	}

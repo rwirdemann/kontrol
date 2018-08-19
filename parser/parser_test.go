@@ -1,8 +1,7 @@
 package parser
 
 import (
-	"log"
-	"testing"
+		"testing"
 	"time"
 
 	"github.com/ahojsenn/kontrol/booking"
@@ -12,7 +11,6 @@ import (
 
 func TestImport(t *testing.T) {
 	positions := Import("bookings.csv", 2017)
-	log.Println("imported bookings.csv", positions[10])
 	assert.Equal(t, 11, len(positions))
 	assertPosition(t, positions[0], "ER", "800", "1337", "K", "Ulrike Klode", 2142, 2017, 2, 0, 0, 0)
 	assertPosition(t, positions[1], "AR", "800", "1337", "AN", "moebel.de", 4730.25, 2017, 1, 0, 0, 3975)
@@ -40,9 +38,9 @@ func assertPosition(t *testing.T, p booking.Booking, typ string, soll string, ha
 	assert.Equal(t, year, p.Year)
 	assert.Equal(t, month, p.Month)
 
-	assert.Equal(t, nettoRW, p.Net[owner.StakeholderRW])
-	assert.Equal(t, nettoJM, p.Net[owner.StakeholderJM])
-	assert.Equal(t, nettoAN, p.Net[owner.StakeholderAN])
+	assert.Equal(t, nettoRW, p.Net[ owner.StakeholderRepository{}.Get("RW") ])
+	assert.Equal(t, nettoJM, p.Net[ owner.StakeholderRepository{}.Get("JM") ])
+	assert.Equal(t, nettoAN, p.Net[ owner.StakeholderRepository{}.Get("AN") ])
 }
 
 func TestParseFileCreated(t *testing.T) {

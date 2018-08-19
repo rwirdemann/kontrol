@@ -13,20 +13,20 @@ import (
 
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/owner"
-)
+		)
 
 // Beschreibt, dass die netto (Rechnungs-)Position in Spalte X der CSV-Datei dem Stakeholder Y gehört
 var netBookings = []struct {
-	Owner  owner.Stakeholder
+	Owner  string
 	Column int
 }{
-	{Owner: owner.StakeholderBW, Column: 21},
-	{Owner: owner.StakeholderAN, Column: 22},
-	{Owner: owner.StakeholderRW, Column: 23},
-	{Owner: owner.StakeholderJM, Column: 24},
-	{Owner: owner.StakeholderKR, Column: 25},
-	{Owner: owner.StakeholderEX, Column: 26},
-	{Owner: owner.StakeholderRR, Column: 27},
+	{Owner: "BW", Column: 21},
+	{Owner: "AN", Column: 22},
+	{Owner: "RW", Column: 23},
+	{Owner: "JM", Column: 24},
+	{Owner: "KR", Column: 25},
+	{Owner: "EX", Column: 26},
+	{Owner: "RR", Column: 27},
 }
 
 func Import(file string, aYear int) []booking.Booking {
@@ -56,7 +56,9 @@ func Import(file string, aYear int) []booking.Booking {
 				if year == aYear {
 					m := make(map[owner.Stakeholder]float64)
 					for _, p := range netBookings {
-						m[p.Owner] = parseAmount(record[p.Column])
+						// die Owner Zuordnung muss hier anders sein...
+						stakeholder := owner.StakeholderRepository{}.Get(p.Owner)
+						m[stakeholder] = parseAmount(record[p.Column])
 					}
 					position := booking.NewBooking(typ, soll, haben, cs, m, amount, subject, month, year, bankCreated)
 					positions = append(positions, *position)

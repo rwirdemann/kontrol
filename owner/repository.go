@@ -6,29 +6,12 @@ import (
 	"os"
 	"encoding/json"
 		"time"
-	"log"
-)
+	"github.com/ahojsenn/kontrol/util"
+		)
 
-const (
-	PartnerShare             = 0.7
-	KommmitmentShare         = 0.25
-	KommmitmentExternShare   = 0.95
-	KommmitmentOthersShare   = 1.00
-	KommmitmentEmployeeShare = 0.95
-	PartnerProvision         = 0.05
-)
-
-var StakeholderRW = Stakeholder{Id: "RW", Name: "k: Ralf Wirdemann", Type: StakeholderTypePartner}
-var StakeholderAN = Stakeholder{Id: "AN", Name: "k: Anke Nehrenberg", Type: StakeholderTypePartner}
-var StakeholderJM = Stakeholder{Id: "JM", Name: "k: Johannes Mainusch", Type: StakeholderTypePartner}
-var StakeholderBW = Stakeholder{Id: "BW", Name: "k: Ben Wiedenmann", Type: StakeholderTypeEmployee}
-var StakeholderKR = Stakeholder{Id: "KR", Name: "k: Katja Roth", Type: StakeholderTypeEmployee}
-var StakeholderKM = Stakeholder{Id: "K", Name: "k: Kommitment", Type: StakeholderTypeCompany}
-var StakeholderEX = Stakeholder{Id: "EX", Name: "Extern", Type: StakeholderTypeExtern}
-var StakeholderRR = Stakeholder{Id: "RR", Name: "Rest", Type: StakeholderTypeOthers}
-
-
-
+var StakeholderKM = Stakeholder{Id: "K", Name: "k: Kommitment", Type: StakeholderTypeCompany, Arbeit : "100%"}
+var StakeholderEX = Stakeholder{Id: "EX", Name: "Extern", Type: StakeholderTypeExtern, Arbeit : "100%"}
+var StakeholderRR = Stakeholder{Id: "RR", Name: "Buchungsreste AR like Reisekosten etc.", Type: StakeholderTypeOthers, Arbeit : "0%"}
 
 // environments and HTTPS certificate locations.
 type KommitmenschenRepository struct {
@@ -43,24 +26,31 @@ type Kommitmenschen struct {
 	Arbeit string `json:"Arbeit"`
 }
 
-func (this KommitmenschenRepository) All(year int) []Kommitmenschen {
-	dir, err := os.Getwd()
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("in KommitmenschenRepository.All(), wd=", dir)
+var kmry []KommitmenschenRepository
 
-	rawFile, err := ioutil.ReadFile("./kommitmenschen.json")
+func (this KommitmenschenRepository) Init(year int)  {
+
+	env := util.GetEnv()
+	rawFile, err := ioutil.ReadFile(env.KommitmenschenFile)
 	if err != nil {
+		fmt.Println("in KommitmenschenRepository.All(), file: ", env)
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
 
-	var kme []KommitmenschenRepository
-	json.Unmarshal(rawFile, &kme)
+	json.Unmarshal(rawFile, &kmry)
+
+}
+
+
+func (this KommitmenschenRepository) All(year int) []Kommitmenschen {
+
+	if len(kmry) == 0 {
+		this.Init(year)
+	}
 
 	// find the right year
-	for i,yrep := range kme {
+	for i,yrep := range kmry {
 		layout := "2006-01-02"
 		t, err := time.Parse(layout, yrep.Abrechenzeitpunkt)
 
@@ -68,12 +58,12 @@ func (this KommitmenschenRepository) All(year int) []Kommitmenschen {
 			fmt.Println(err)
 		}
 		if year == t.Year() {
-			return kme[i].Menschen
+			return kmry[i].Menschen
 		}
 
 	}
 
-	return kme[0].Menschen
+	return kmry[0].Menschen
 }
 
 
@@ -81,35 +71,44 @@ func (this KommitmenschenRepository) All(year int) []Kommitmenschen {
 type StakeholderRepository struct {
 }
 
-func (this StakeholderRepository) All() []Stakeholder {
+func (this StakeholderRepository) All(year int) []Stakeholder {
 
 	kmrepo := KommitmenschenRepository{}
 	stakehr := []Stakeholder{}
-	for _, mensch := range kmrepo.All(2018) {
+	for _, mensch := range kmrepo.All(year) {
 		s := Stakeholder{}
 		s.Type = mensch.Type
-
-		stakehr = append(stakehr, Stakeholder {Id: mensch.Id, Name: mensch.Name, Type: mensch.Type, Arbeit: mensch.Arbeit} )
+		stakehr = append(stakehr, Stakeholder{Id: mensch.Id, Name: mensch.Name, Type: mensch.Type, Arbeit: mensch.Arbeit})
 	}
+
+	// add kommitment company
+	stakehr = append(stakehr, StakeholderKM)
+
+	// add externals
+	stakehr = append(stakehr, StakeholderEX)
+
+	// add Stakeholder for booking ressts RR
+	stakehr = append(stakehr, StakeholderRR)
 
 	return stakehr
-
-	return []Stakeholder{
-		StakeholderRW,
-		StakeholderAN,
-		StakeholderJM,
-		StakeholderBW,
-		StakeholderEX,
-		StakeholderKM,
-		StakeholderKR,
-		StakeholderRR,
-	}
 }
 
 func (this StakeholderRepository) TypeOf(id string) string {
-	for _, s := range this.All() {
+
+
+	for _, s := range this.All(util.Global{}.FinancialYear) {
 		if s.Id == id {
 			return s.Type
+		}
+	}
+	panic(fmt.Sprintf("stakeholder '%s' not found", id))
+}
+
+func (this StakeholderRepository) Get(id string) Stakeholder {
+
+	for _,s := range this.All(util.Global{}.FinancialYear) {
+		if s.Id == id {
+			return s
 		}
 	}
 	panic(fmt.Sprintf("stakeholder '%s' not found", id))

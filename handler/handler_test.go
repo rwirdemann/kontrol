@@ -16,8 +16,7 @@ import (
 var router *mux.Router
 
 func init() {
-	repository := accountSystem.EmptyDefaultAccountSystem()
-
+	repository := accountSystem.EmptyDefaultAccountSystem(2016)
 	repository.Add(account.NewAccount(account.AccountDescription{Id: "AN", Name: "k: Anke Nehrenberg", Type: "partner"}))
 
 	k := account.NewAccount(account.AccountDescription{Id: "K", Name: "k: Kommitment", Type: "company"})

@@ -15,3 +15,9 @@ func TestGetKommitmenschenRepository(t *testing.T) {
 	assert.True(t, len(repo.All(2016)) > 1 )
 
 }
+
+func TestStakeholderRepository_All(t *testing.T) {
+
+	repo := StakeholderRepository{}
+	assert.Equal(t, "0%", repo.All(2018)[1].Arbeit)
+}

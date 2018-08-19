@@ -9,21 +9,23 @@ import (
 	"github.com/ahojsenn/kontrol/owner"
 	"github.com/stretchr/testify/suite"
 	"github.com/ahojsenn/kontrol/accountSystem"
-)
+		)
 
 type AusgangsrechnungTestSuite struct {
 	suite.Suite
 	repository        accountSystem.AccountSystem
 	accountBank       *account.Account
 	accountHannes     *account.Account
+	accountBen        *account.Account
 	accountKommitment *account.Account
 }
 
 func (suite *AusgangsrechnungTestSuite) SetupTest() {
-	suite.repository = accountSystem.NewDefaultAccountSystem()
+	suite.repository = accountSystem.NewDefaultAccountSystem(2017)
 	suite.accountBank = suite.repository.BankAccount()
-	suite.accountHannes, _ = suite.repository.Get(owner.StakeholderJM.Id)
-	suite.accountKommitment, _ = suite.repository.Get(owner.StakeholderKM.Id)
+	suite.accountHannes, _ = suite.repository.Get(  owner.StakeholderRepository{}.Get("JM").Id )
+	suite.accountBen, _ = suite.repository.Get(  owner.StakeholderRepository{}.Get("BW").Id )
+	suite.accountKommitment, _ = suite.repository.Get(owner.StakeholderRepository{}.Get("K").Id)
 }
 
 func TestAusgangsRechnungTestSuite(t *testing.T) {
@@ -34,8 +36,8 @@ func (suite *AusgangsrechnungTestSuite) TestPartnerNettoAnteil() {
 
 	// given: a booking
 	net := make(map[owner.Stakeholder]float64)
-	net[owner.StakeholderRW] = 10800.0
-	net[owner.StakeholderJM] = 3675.0
+	net[owner.StakeholderRepository{}.Get("RW")] = 10800.0
+	net[owner.StakeholderRepository{}.Get("JM")] = 3675.0
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
 	p := booking.NewBooking("AR", "", "", "JM", net, 17225.25, "Rechnung 1234", 1, 2017, its2018)
 
@@ -43,34 +45,34 @@ func (suite *AusgangsrechnungTestSuite) TestPartnerNettoAnteil() {
 	Process(suite.repository, *p)
 
 	// then ralf 1 booking: his own net share
-	accountRalf, _ := suite.repository.Get(owner.StakeholderRW.Id)
+	accountRalf, _ := suite.repository.Get(owner.StakeholderRepository{}.Get("RW").Id)
 	bookingsRalf := accountRalf.Bookings
 	suite.Equal(1, len(bookingsRalf))
 	bRalf, _ := findBookingByText(bookingsRalf, "Rechnung 1234#NetShare#RW")
-	suite.InDelta(10800.0*owner.PartnerShare, bRalf.Amount, 0.01)
+	suite.InDelta(10800.0*PartnerShare, bRalf.Amount, 0.01)
 	suite.Equal(1, bRalf.Month)
 	suite.Equal(2017, bRalf.Year)
 	suite.Equal(booking.Nettoanteil, bRalf.Type)
 
 	// and hannes got 3 bookings: his own net share and 2 provisions
-	accountHannes, _ := suite.repository.Get(owner.StakeholderJM.Id)
+	accountHannes, _ := suite.repository.Get(owner.StakeholderRepository{}.Get("JM").Id)
 	bookingsHannes := accountHannes.Bookings
 	suite.Equal(3, len(bookingsHannes))
 
 	// net share
 	b, _ := findBookingByText(bookingsHannes, "Rechnung 1234#NetShare#JM")
-	suite.Equal(3675.0*owner.PartnerShare, b.Amount)
+	suite.Equal(3675.0*PartnerShare, b.Amount)
 	suite.Equal(1, b.Month)
 	suite.Equal(2017, b.Year)
 
 	// provision from ralf
 	provisionRalf, _ := findBookingByText(bookingsHannes, "Rechnung 1234#Provision#RW")
-	suite.Equal(10800.0*owner.PartnerProvision, provisionRalf.Amount)
+	suite.Equal(10800.0*PartnerProvision, provisionRalf.Amount)
 	suite.Equal(booking.Vertriebsprovision, provisionRalf.Type)
 
 	// // provision from hannes
 	provisionHannes, _ := findBookingByText(bookingsHannes, "Rechnung 1234#Provision#JM")
-	suite.Equal(3675.0*owner.PartnerProvision, provisionHannes.Amount)
+	suite.Equal(3675.0*PartnerProvision, provisionHannes.Amount)
 	suite.Equal(booking.Vertriebsprovision, provisionHannes.Type)
 
 	// kommitment got 25% from ralfs net booking
@@ -78,12 +80,12 @@ func (suite *AusgangsrechnungTestSuite) TestPartnerNettoAnteil() {
 	bookingsKommitment := accountKommitment.Bookings
 	suite.Equal(2, len(bookingsKommitment))
 	kommitmentRalf, _ := findBookingByText(bookingsKommitment, "Rechnung 1234#Kommitment#RW")
-	suite.Equal(10800.0*owner.KommmitmentShare, kommitmentRalf.Amount)
+	suite.Equal(10800.0*KommmitmentShare, kommitmentRalf.Amount)
 	suite.Equal(booking.Kommitmentanteil, kommitmentRalf.Type)
 
 	// and kommitment got 25% from hannes net booking
 	kommitmentHannes, _ := findBookingByText(bookingsKommitment, "Rechnung 1234#Kommitment#JM")
-	suite.Equal(3675.0*owner.KommmitmentShare, kommitmentHannes.Amount)
+	suite.Equal(3675.0*KommmitmentShare, kommitmentHannes.Amount)
 	suite.Equal(booking.Kommitmentanteil, kommitmentHannes.Type)
 }
 
@@ -94,8 +96,8 @@ func (suite *AusgangsrechnungTestSuite) TestOffeneRechnung() {
 
 	// given: a booking with empty timestamp in position "BankCreated"
 	net := make(map[owner.Stakeholder]float64)
-	net[owner.StakeholderRW] = 10800.0
-	net[owner.StakeholderJM] = 3675.0
+	net[owner.StakeholderRepository{}.Get("RW")] = 10800.0
+	net[owner.StakeholderRepository{}.Get("JM")] = 3675.0
 	p := booking.NewBooking("AR", "", "", "JM", net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{})
 
 	// when: the position is processed
@@ -107,7 +109,7 @@ func (suite *AusgangsrechnungTestSuite) TestOffeneRechnung() {
 	suite.Equal(1, len(bookings1400))
 
 	// the booking is not yet booked to partners
-	accountHannes, _ := suite.repository.Get(owner.StakeholderJM.Id)
+	accountHannes, _ := suite.repository.Get(owner.StakeholderRepository{}.Get("JM").Id)
 	bookingsHannes := accountHannes.Bookings
 	suite.Equal(0, len(bookingsHannes))
 }
@@ -122,8 +124,8 @@ func (suite *AusgangsrechnungTestSuite) TestDealbringerIstPartner() {
 
 	// Eine Buchung mit 2 Nettopositionen
 	net := make(map[owner.Stakeholder]float64)
-	net[owner.StakeholderRW] = 10800.0
-	net[owner.StakeholderJM] = 3675.0
+	net[owner.StakeholderRepository{}.Get("RW")] = 10800.0
+	net[owner.StakeholderRepository{}.Get("JM")] = 3675.0
 	dealbringer := "JM"
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
 	p := booking.Ausgangsrechnung(dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, its2018)
@@ -132,30 +134,34 @@ func (suite *AusgangsrechnungTestSuite) TestDealbringerIstPartner() {
 
 	// Hannes bekommt Provision für Ralf's Nettoanteil
 	provisionRalf, _ := findBookingByText(suite.accountHannes.Bookings, "Rechnung 1234#Provision#RW")
-	suite.assertBooking(10800.0*owner.PartnerProvision, booking.Vertriebsprovision, provisionRalf)
+	suite.assertBooking(10800.0*PartnerProvision, booking.Vertriebsprovision, provisionRalf)
 
 	// Hannes bekommt Provision für Hanne's Nettoanteil
 	provisionHannes, _ := findBookingByText(suite.accountHannes.Bookings, "Rechnung 1234#Provision#JM")
-	suite.assertBooking(3675.0*owner.PartnerProvision, booking.Vertriebsprovision, provisionHannes)
+	suite.assertBooking(3675.0*PartnerProvision, booking.Vertriebsprovision, provisionHannes)
 }
 
 // - Kommitment bekommt den 95% der Nettoposition
-// - Dealbringer ist Angestellter => Kommitment bekommt 5% der Nettoposition,
+// - Dealbringer ist Angestellter => Angestellter bekommt 5% der Nettoposition,
 //   Kostenstelle Dealbringer
 func (suite *AusgangsrechnungTestSuite) TestDealbringerIstAngestellter() {
 
+	// Given a booking where dealbringes is an employee
 	net := make(map[owner.Stakeholder]float64)
-	net[owner.StakeholderRW] = 10800.0
+	net[owner.StakeholderRepository{}.Get("RW")] = 10800.0
 	dealbringer := "BW"
-	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	b := booking.Ausgangsrechnung(dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, its2018)
+	its2017 := time.Date(2017, 1, 23, 0, 0, 0, 0, time.UTC)
+
+	// when booked
+	b := booking.Ausgangsrechnung(dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, its2017)
 
 	Process(suite.repository, *b)
 
-	// Provision ist auf K-Account gebucht
-	provision, err := findBookingByText(suite.accountKommitment.Bookings, "Rechnung 1234#Provision#RW")
+	// Provision ist auf Ben-Account gebucht
+	provision, err := findBookingByText(suite.accountBen.Bookings, "Rechnung 1234#Provision#RW")
 	suite.Nil(err)
-	suite.assertBooking(10800.0*owner.PartnerProvision, booking.Vertriebsprovision, provision)
+	suite.NotEqual(provision, nil)
+	suite.assertBooking(10800.0*PartnerProvision, booking.Vertriebsprovision, provision)
 	suite.Equal("BW", provision.CostCenter)
 }
 
