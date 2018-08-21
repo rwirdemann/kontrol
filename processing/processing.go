@@ -12,7 +12,7 @@ type Command interface {
 }
 
 // Implementiert den Kommitment-Verteilungsalgorithmus
-func Process(repository accountSystem.AccountSystem, booking booking.Booking) {
+func Process(accsystem accountSystem.AccountSystem, booking booking.Booking) {
 
 	// Assign booking to one or more virtual stakeholder accounts
 	var command Command
@@ -21,35 +21,35 @@ func Process(repository accountSystem.AccountSystem, booking booking.Booking) {
 	if booking.Soll != "" && booking.Haben != "" {
 		// log.Println("booking ", booking.Amount, "€ from ", booking.Soll, " to ", booking.Haben)
 		// find the right soll account
-		command = BookSKR03Command{Repository: repository, Booking: booking}
+		command = BookSKR03Command{AccSystem: accsystem, Booking: booking}
 
 	} else {
 		// otherwise use booking.Typ
 		switch booking.Typ {
 		case "GV":
-			command = BookPartnerEntnahmeCommand{Repository: repository, Booking: booking}
+			command = BookPartnerEntnahmeCommand{AccSystem: accsystem, Booking: booking}
 		case "GV-Vorjahr":
-			command = BookPartnerEntnahmeVorjahrCommand{Repository: repository, Booking: booking}
+			command = BookPartnerEntnahmeVorjahrCommand{AccSystem: accsystem, Booking: booking}
 		case "AR":
-			command = BookAusgangsrechnungCommand{Repository: repository, Booking: booking}
+			command = BookAusgangsrechnungCommand{AccSystem: accsystem, Booking: booking}
 		case "ER":
-			command = BookEingangsrechnungCommand{Repository: repository, Booking: booking}
+			command = BookEingangsrechnungCommand{AccSystem: accsystem, Booking: booking}
 		case "IS":
-			command = BookInterneStundenCommand{Repository: repository, Booking: booking}
+			command = BookInterneStundenCommand{AccSystem: accsystem, Booking: booking}
 		case "SV-Beitrag":
-			command = BookSVBeitragCommand{Repository: repository, Booking: booking}
+			command = BookSVBeitragCommand{AccSystem: accsystem, Booking: booking}
 		case "GWSteuer":
-			command = BookGWSteuerCommand{Repository: repository, Booking: booking}
+			command = BookGWSteuerCommand{AccSystem: accsystem, Booking: booking}
 		case "Gehalt":
-			command = BookGehaltCommand{Repository: repository, Booking: booking}
+			command = BookGehaltCommand{AccSystem: accsystem, Booking: booking}
 		case "LNSteuer":
-			command = BookLNSteuerCommand{Repository: repository, Booking: booking}
+			command = BookLNSteuerCommand{AccSystem: accsystem, Booking: booking}
 		case "Rückstellung":
-			command = BookRueckstellungCommand{Repository: repository, Booking: booking}
+			command = BookRueckstellungCommand{AccSystem: accsystem, Booking: booking}
 		case "Anfangsbestand":
-			command = BookAnfangsbestandCommand{Repository: repository, Booking: booking}
+			command = BookAnfangsbestandCommand{AccSystem: accsystem, Booking: booking}
 		case "UstVZ":
-			command = BookUstCommand{Repository: repository, Booking: booking}
+			command = BookUstCommand{AccSystem: accsystem, Booking: booking}
 				}
 	}
 	command.run()

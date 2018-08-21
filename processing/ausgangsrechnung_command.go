@@ -8,10 +8,11 @@ import (
 	"github.com/ahojsenn/kontrol/owner"
 	"github.com/ahojsenn/kontrol/util"
 	"github.com/ahojsenn/kontrol/accountSystem"
-	)
+	"math"
+)
 
 const (
-	PartnerShare             = 0.7
+	PartnerShare             = 0.70
 	KommmitmentShare         = 0.25
 	KommmitmentExternShare   = 0.95
 	KommmitmentOthersShare   = 1.00
@@ -21,14 +22,14 @@ const (
 
 type BookAusgangsrechnungCommand struct {
 	Booking    booking.Booking
-	Repository accountSystem.AccountSystem
+	AccSystem  accountSystem.AccountSystem
 }
 
 func (this BookAusgangsrechnungCommand) run() {
 
 
 	// book from bankaccount...
-	bank := this.Repository.BankAccount()
+	bank := this.AccSystem.BankAccount()
 	a := booking.Booking{
 		Amount:      util.Net(this.Booking.Amount),
 		Type:        booking.Erloese,
@@ -43,12 +44,12 @@ func (this BookAusgangsrechnungCommand) run() {
 	// if booking with empty timestamp in position "BankCreated"
 	// the book it to open positions SKR03_1400
 	if this.isOpenPosition() == true {
-		skr1400, _ := this.Repository.Get(accountSystem.SKR03_1400.Id)
+		skr1400, _ := this.AccSystem.Get(accountSystem.SKR03_1400.Id)
 		skr1400.Book(this.Booking)
 		return
 	} else {
 		// haben umsatzerloese
-		umsatzerloese, _ := this.Repository.Get(accountSystem.SKR03_Umsatzerloese.Id)
+		umsatzerloese, _ := this.AccSystem.Get(accountSystem.SKR03_Umsatzerloese.Id)
 		b := booking.Booking{
 			Amount:      util.Net(this.Booking.Amount),
 			Type:        booking.Erloese,
@@ -61,7 +62,7 @@ func (this BookAusgangsrechnungCommand) run() {
 		umsatzerloese.Book(b)
 
 		// haben Steuern
-		umsatzsteuernKonto ,_ := this.Repository.Get(accountSystem.SKR03_Umsatzsteuer.Id)
+		umsatzsteuernKonto ,_ := this.AccSystem.Get(accountSystem.SKR03_Umsatzsteuer.Id)
 		c :=
 			booking.Booking{
 				Amount:      this.Booking.Amount - util.Net(this.Booking.Amount),
@@ -84,14 +85,14 @@ func (this BookAusgangsrechnungCommand) run() {
 
 			// book partner share
 			b := booking.Booking{
-				Amount:      this.Booking.Net[benefited] * PartnerShare,
+				Amount:      math.Round(this.Booking.Net[benefited] * PartnerShare*10000)/10000,
 				Type:        booking.Nettoanteil,
 				Text:        this.Booking.Text + "#NetShare#" + benefited.Id,
 				Month:       this.Booking.Month,
 				Year:        this.Booking.Year,
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated}
-			a, _ := this.Repository.Get(benefited.Id)
+			a, _ := this.AccSystem.Get(benefited.Id)
 			a.Book(b)
 
 			// book kommitment share
@@ -104,7 +105,7 @@ func (this BookAusgangsrechnungCommand) run() {
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated}
 
-			kommitmentAccount, _ := this.Repository.Get(owner.StakeholderKM.Id)
+			kommitmentAccount, _ := this.AccSystem.Get(owner.StakeholderKM.Id)
 			kommitmentAccount.Book(kommitmentShare)
 		}
 
@@ -119,7 +120,7 @@ func (this BookAusgangsrechnungCommand) run() {
 				Year:        this.Booking.Year,
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated}
-			kommitmentAccount, _ := this.Repository.Get(owner.StakeholderKM.Id)
+			kommitmentAccount, _ := this.AccSystem.Get(owner.StakeholderKM.Id)
 			kommitmentAccount.Book(kommitmentShare)
 		}
 
@@ -137,7 +138,7 @@ func (this BookAusgangsrechnungCommand) run() {
 				Year:        this.Booking.Year,
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated}
-			kommitmentAccount, _ := this.Repository.Get(owner.StakeholderKM.Id)
+			kommitmentAccount, _ := this.AccSystem.Get(owner.StakeholderKM.Id)
 			kommitmentAccount.Book(kommitmentShare)
 		}
 
@@ -152,15 +153,21 @@ func (this BookAusgangsrechnungCommand) run() {
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated,
 				CostCenter:  benefited.Id}
-			kommitmentAccount, _ := this.Repository.Get(owner.StakeholderKM.Id)
+			kommitmentAccount, _ := this.AccSystem.Get(owner.StakeholderKM.Id)
 			kommitmentAccount.Book(kommitmentShare)
 		}
-
 
 		// Die Vertriebsprovision bekommt der Dealbringer
 		if benefited.Type != owner.StakeholderTypeOthers { // Don't give 5% for travel expenses and co...
 			var provisionAccount *account.Account
-			provisionAccount, _ = this.Repository.Get(this.Booking.Responsible)
+
+			// Vertriebsprovisionen gehen nur an employees und partner, ansonsten fallen die an Kommitment
+			provisionAccount, _ = this.AccSystem.Get(this.Booking.Responsible)
+			if ( provisionAccount.Description.Type != owner.StakeholderTypeEmployee &&
+				 provisionAccount.Description.Type != owner.StakeholderTypePartner ) {
+				 	// then provision goes to kommitment
+				provisionAccount, _ = this.AccSystem.Get(owner.StakeholderKM.Id)
+			}
 			b := booking.Booking{
 				Amount:      this.Booking.Net[benefited] * PartnerProvision,
 				Type:        booking.Vertriebsprovision,
@@ -170,16 +177,20 @@ func (this BookAusgangsrechnungCommand) run() {
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated,
 				CostCenter:  this.Booking.Responsible}
+
+
+			// continue here with RW as benefitee in 2018
+
+
 			provisionAccount.Book(b)
 		}
 	}
 }
 
 // Eine Buchung kann mehrere Nettopositionen enthalten, den je einem Stakeholder zugeschrieben wird.
-// Diese Funktion liefert ein Array mit Stateholder, deren Nettoanteil in der Buchung != 0 ist.
+// Diese Funktion liefert ein Array mit Stateholdern, deren Nettoanteil in der Buchung != 0 ist.
 func (this BookAusgangsrechnungCommand) stakeholderWithNetPositions() []owner.Stakeholder {
 	var result []owner.Stakeholder
-
 	for k, v := range this.Booking.Net {
 		if v != 0 {
 			result = append(result, k)
@@ -193,3 +204,5 @@ func (this BookAusgangsrechnungCommand) isOpenPosition() bool {
 	emptyTime := time.Time{}
 	return this.Booking.BankCreated == emptyTime
 }
+
+

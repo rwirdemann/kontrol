@@ -67,7 +67,6 @@ func (this KommitmenschenRepository) All(year int) []Kommitmenschen {
 }
 
 
-
 type StakeholderRepository struct {
 }
 
@@ -96,7 +95,7 @@ func (this StakeholderRepository) All(year int) []Stakeholder {
 func (this StakeholderRepository) TypeOf(id string) string {
 
 
-	for _, s := range this.All(util.Global{}.FinancialYear) {
+	for _, s := range this.All(util.Global.FinancialYear) {
 		if s.Id == id {
 			return s.Type
 		}
@@ -106,7 +105,7 @@ func (this StakeholderRepository) TypeOf(id string) string {
 
 func (this StakeholderRepository) Get(id string) Stakeholder {
 
-	for _,s := range this.All(util.Global{}.FinancialYear) {
+	for _,s := range this.All(util.Global.FinancialYear) {
 		if s.Id == id {
 			return s
 		}

@@ -17,9 +17,11 @@ type Environment struct {
 }
 
 // global scope
-type Global struct {
+type GlobalStruct struct {
 	FinancialYear int
 }
+
+var Global GlobalStruct
 
 func GetEnv() *Environment{
 	hostname := getHostname()

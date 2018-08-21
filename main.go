@@ -25,7 +25,6 @@ var (
 	fileName   	string
 	githash    	string
 	buildstamp 	string
-	global 		util.Global
 )
 
 
@@ -47,10 +46,11 @@ func main() {
 	fileName = *file
 
 	// set FinancialYear
-	global.FinancialYear =  *year
+	util.Global.FinancialYear =  *year
+	log.Println("in main, util.Global.FinancialYear:", util.Global.FinancialYear)
 
 	accountSystem := accountSystem.NewDefaultAccountSystem(*year)
-	log.Println("in main, created accountsystem for ", global.FinancialYear)
+	log.Println("in main, created accountsystem for ", util.Global.FinancialYear)
 	watchBookingFile(accountSystem, *year)
 	importAndProcessBookings(accountSystem, *year)
 
@@ -94,7 +94,7 @@ func watchBookingFile(repository accountSystem.AccountSystem, year int) {
 				case <-time.After(3 * time.Second):
 					fmt.Println("timeout 3 sec")
 				}
-				log.Printf("booking reimport start: %s, %s\n", time.Now())
+				log.Printf("booking reimport start: %s\n", time.Now())
 				importAndProcessBookings(repository, year)
 				log.Printf("booking reimport end: %s\n", time.Now())
 			case err := <-watcher.Error:

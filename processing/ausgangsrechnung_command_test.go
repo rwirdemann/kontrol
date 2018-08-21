@@ -9,13 +9,15 @@ import (
 	"github.com/ahojsenn/kontrol/owner"
 	"github.com/stretchr/testify/suite"
 	"github.com/ahojsenn/kontrol/accountSystem"
-		)
+	"log"
+)
 
 type AusgangsrechnungTestSuite struct {
 	suite.Suite
 	repository        accountSystem.AccountSystem
 	accountBank       *account.Account
 	accountHannes     *account.Account
+	accountRalf       *account.Account
 	accountBen        *account.Account
 	accountKommitment *account.Account
 }
@@ -23,6 +25,7 @@ type AusgangsrechnungTestSuite struct {
 func (suite *AusgangsrechnungTestSuite) SetupTest() {
 	suite.repository = accountSystem.NewDefaultAccountSystem(2017)
 	suite.accountBank = suite.repository.BankAccount()
+	suite.accountRalf, _ = suite.repository.Get(  owner.StakeholderRepository{}.Get("RW").Id )
 	suite.accountHannes, _ = suite.repository.Get(  owner.StakeholderRepository{}.Get("JM").Id )
 	suite.accountBen, _ = suite.repository.Get(  owner.StakeholderRepository{}.Get("BW").Id )
 	suite.accountKommitment, _ = suite.repository.Get(owner.StakeholderRepository{}.Get("K").Id)
@@ -132,11 +135,12 @@ func (suite *AusgangsrechnungTestSuite) TestDealbringerIstPartner() {
 
 	Process(suite.repository, *p)
 
-	// Hannes bekommt Provision für Ralf's Nettoanteil
-	provisionRalf, _ := findBookingByText(suite.accountHannes.Bookings, "Rechnung 1234#Provision#RW")
-	suite.assertBooking(10800.0*PartnerProvision, booking.Vertriebsprovision, provisionRalf)
+	// Ralfs Nettoanteil
+	provisionRalf, _ := findBookingByText(suite.accountRalf.Bookings, "Rechnung 1234#NetShare#RW")
+	log.Println("dadasfas", provisionRalf)
+	suite.assertBooking(10800.00*PartnerShare, booking.Nettoanteil, provisionRalf)
 
-	// Hannes bekommt Provision für Hanne's Nettoanteil
+	// Hannes bekommt Provision für Hannes Nettoanteil
 	provisionHannes, _ := findBookingByText(suite.accountHannes.Bookings, "Rechnung 1234#Provision#JM")
 	suite.assertBooking(3675.0*PartnerProvision, booking.Vertriebsprovision, provisionHannes)
 }
@@ -168,4 +172,8 @@ func (suite *AusgangsrechnungTestSuite) TestDealbringerIstAngestellter() {
 func (suite *AusgangsrechnungTestSuite) assertBooking(amount float64, _type string, b *booking.Booking) {
 	suite.Equal(amount, b.Amount)
 	suite.Equal(_type, b.Type)
+}
+
+func Round(x, unit float64) float64 {
+	return float64(int64(x/unit+0.5)) * unit
 }

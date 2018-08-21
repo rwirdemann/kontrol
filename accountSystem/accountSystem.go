@@ -95,8 +95,7 @@ func NewDefaultAccountSystem(year int) AccountSystem {
 	// generate accounts for all stakeholders
 	stakeholderRepository := owner.StakeholderRepository{}
 	for _, sh := range stakeholderRepository.All(year) {
-		if sh.Type != owner.StakeholderTypeExtern &&
-			sh.Type != owner.StakeholderTypeOthers {
+		if sh.Type != owner.StakeholderTypeOthers {
 			ad := account.AccountDescription{Id: sh.Id, Name: sh.Name, Type: sh.Type}
 			accountSystem.Add(account.NewAccount(ad))
 		}
@@ -170,7 +169,7 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 		account = r.accounts[SKR03_Saldenvortrag.Id]
 	default:
 		log.Printf("GetSKR03: could not process booking type '%s'", SKR03konto)
-		panic(fmt.Sprintf("GetSKR03: SKR03Bucket/Stakeholder/Konto '%s' not found", account))
+		panic(fmt.Sprintf("GetSKR03: SKR03Bucket/Stakeholder/Konto '%s' not found", account.Description))
 	}
 	return account
 }
