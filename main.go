@@ -49,7 +49,7 @@ func main() {
 	util.Global.FinancialYear =  *year
 	log.Println("in main, util.Global.FinancialYear:", util.Global.FinancialYear)
 
-	accountSystem := accountSystem.NewDefaultAccountSystem(*year)
+	accountSystem := accountSystem.NewDefaultAccountSystem()
 	log.Println("in main, created accountsystem for ", util.Global.FinancialYear)
 	watchBookingFile(accountSystem, *year)
 	importAndProcessBookings(accountSystem, *year)

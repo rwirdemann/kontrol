@@ -9,9 +9,9 @@ import (
 	"github.com/ahojsenn/kontrol/util"
 		)
 
-var StakeholderKM = Stakeholder{Id: "K", Name: "k: Kommitment", Type: StakeholderTypeCompany, Arbeit : "100%"}
-var StakeholderEX = Stakeholder{Id: "EX", Name: "Extern", Type: StakeholderTypeExtern, Arbeit : "100%"}
-var StakeholderRR = Stakeholder{Id: "RR", Name: "Buchungsreste AR like Reisekosten etc.", Type: StakeholderTypeOthers, Arbeit : "0%"}
+var StakeholderKM = Stakeholder{Id: "K", Name: "k:  Kommitment", Type: StakeholderTypeCompany, Arbeit : "100%"}
+var StakeholderEX = Stakeholder{Id: "EX", Name: "k:  Extern", Type: StakeholderTypeExtern, Arbeit : "100%"}
+var StakeholderRR = Stakeholder{Id: "RR", Name: "k:  Buchungsreste AR like Reisekosten etc.", Type: StakeholderTypeOthers, Arbeit : "0%"}
 
 // environments and HTTPS certificate locations.
 type KommitmenschenRepository struct {

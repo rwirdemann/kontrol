@@ -23,7 +23,7 @@ type AusgangsrechnungTestSuite struct {
 }
 
 func (suite *AusgangsrechnungTestSuite) SetupTest() {
-	suite.repository = accountSystem.NewDefaultAccountSystem(2017)
+	suite.repository = accountSystem.NewDefaultAccountSystem()
 	suite.accountBank = suite.repository.BankAccount()
 	suite.accountRalf, _ = suite.repository.Get(  owner.StakeholderRepository{}.Get("RW").Id )
 	suite.accountHannes, _ = suite.repository.Get(  owner.StakeholderRepository{}.Get("JM").Id )

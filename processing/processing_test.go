@@ -20,7 +20,7 @@ var accountRalf *account.Account
 var accountKommitment *account.Account
 
 func setUp() {
-	repository = accountSystem.NewDefaultAccountSystem(2017)
+	repository = accountSystem.NewDefaultAccountSystem()
 	accountBank = repository.BankAccount()
 	accountHannes, _ = repository.Get(owner.StakeholderRepository{}.Get("JM").Id)
 	accountRalf, _ = repository.Get(owner.StakeholderRepository{}.Get("RW").Id)
@@ -62,7 +62,7 @@ func TestAusgangsrechnungAngestellter(t *testing.T) {
 // - 100% Brutto gegen Kommitmentkonto
 // - Kostenstelle: Kürzel des Angestellten
 func TestGehaltAngestellter(t *testing.T) {
-	repository := accountSystem.NewDefaultAccountSystem(2017)
+	repository := accountSystem.NewDefaultAccountSystem()
 
 	// given: a booking
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
@@ -465,7 +465,7 @@ func TestProcessOPOS_SKR1600(t *testing.T) {
 
 // Teste TestBonusRückstellungAngestellterSKR03
 func TestBonusRueckstellungAngestellterSKR03(t *testing.T) {
-	repository = accountSystem.NewDefaultAccountSystem(2017)
+	repository = accountSystem.NewDefaultAccountSystem()
 
 	// given: a internal hours booking
 	now := time.Now().AddDate(0, 0, 0)
@@ -490,7 +490,7 @@ func TestBonusRueckstellungAngestellterSKR03(t *testing.T) {
 
 // Test Abschreibungen auf Anlagen
 func TestAbschreibungenAufAnlagen(t *testing.T) {
-	repository = accountSystem.NewDefaultAccountSystem(2017)
+	repository = accountSystem.NewDefaultAccountSystem()
 
 	// given: Abschreibung
 	now := time.Now().AddDate(0, 0, 0)
@@ -517,7 +517,7 @@ func TestAbschreibungenAufAnlagen(t *testing.T) {
 
 // TestUstVZ
 func TestUstVZ(t *testing.T) {
-	repository = accountSystem.NewDefaultAccountSystem(2017)
+	repository = accountSystem.NewDefaultAccountSystem()
 
 	// given: Abschreibung
 	now := time.Now().AddDate(0, 0, 0)

@@ -7,6 +7,7 @@ import (
 	"github.com/ahojsenn/kontrol/owner"
 	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/booking"
+	"github.com/ahojsenn/kontrol/util"
 )
 
 
@@ -35,6 +36,7 @@ type DefaultAccountSystem struct {
 const SKR03 = "SKR03"
 
 var SKR03_Rueckstellungen = account.AccountDescription{Id: "Rückstellung", Name: "Rückstellung 956-977", Type: KontenartPassiv}
+var SKR03_Eigenkapital_880 = account.AccountDescription{Id: "Eigenkapital", Name: "Eigenkapital 880", Type: KontenartPassiv}
 var SKR03_KontoJUSVJ = account.AccountDescription{Id: "JahresüberschussVJ", Name: "JahresüberschussVJ Gesellschafterdarlehen 920", Type: KontenartPassiv}
 var SKR03_1400 = account.AccountDescription{Id: "1400", Name: "OPOS-Kunde 1400", Type: KontenartAktiv}
 var SKR03_1600 = account.AccountDescription{Id: "1600", Name: "OPOS-Lieferant 1600", Type: KontenartPassiv}
@@ -59,6 +61,7 @@ type Accountlist struct {
 func (this Accountlist) All() []account.AccountDescription {
 	return []account.AccountDescription{
 		SKR03_Rueckstellungen,
+		SKR03_Eigenkapital_880,
 		SKR03_KontoJUSVJ,
 		SKR03_1400,
 		SKR03_1600,
@@ -77,12 +80,14 @@ func (this Accountlist) All() []account.AccountDescription {
 	}
 }
 
-func EmptyDefaultAccountSystem(year int) AccountSystem {
+func EmptyDefaultAccountSystem() AccountSystem {
 	o := account.AccountDescription{Id: "GLS", Name: "Kommitment GmbH & Co. KG", Type: KontenartAktiv}
 	return &DefaultAccountSystem{collectiveAccount: &account.Account{Description: o}, accounts: make(map[string]*account.Account)}
 }
 
-func NewDefaultAccountSystem(year int) AccountSystem {
+func NewDefaultAccountSystem() AccountSystem {
+	year := util.Global.FinancialYear
+
 	ad := account.AccountDescription{Id: "GLS", Name: "Kommitment GmbH & Co. KG", Type: KontenartAktiv}
 	accountSystem := DefaultAccountSystem{collectiveAccount: &account.Account{Description: ad}, accounts: make(map[string]*account.Account)}
 
@@ -146,6 +151,8 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 		account = r.accounts[SKR03_Anlagen.Id]
 	case "480": // Anlage buchen
 		account = r.accounts[SKR03_Anlagen.Id]
+	case "880": // Eigenkapital bilden
+		account = r.accounts[SKR03_Eigenkapital_880.Id]
 	case "920": // Rückstellung bilden
 		account = r.accounts[SKR03_KontoJUSVJ.Id]
 	case "956","965","970","977": // Rückstellung bilden
