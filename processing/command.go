@@ -17,7 +17,7 @@ type BookGehaltCommand struct {
 func (c BookGehaltCommand) run() {
 
 	amount := c.Booking.Amount
-	// GEhaltsbuchung ist 4120 and 1200, also Gehalt an Bank
+	// Gehaltsbuchung ist 4120 and 1200, also Gehalt an Bank
 	// Buchung Kommitment-Konto
 	sollAccount, _ := c.AccSystem.Get(accountSystem.SKR03_4100_4199.Id)
 	kBooking := booking.CloneBooking(c.Booking, -amount, booking.Gehalt, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
@@ -29,7 +29,7 @@ func (c BookGehaltCommand) run() {
 	bankBooking.Type = c.Booking.Typ
 	bankBooking.Amount =  amount
 	bankBooking.Responsible = c.Booking.Responsible
-	c.AccSystem.BankAccount().Book(bankBooking)
+	c.AccSystem.GetCollectiveAccount().Book(bankBooking)
 
 }
 
@@ -51,7 +51,7 @@ func (c BookSVBeitragCommand) run() {
 	bankBooking := c.Booking
 	bankBooking.Type = c.Booking.Typ
 	bankBooking.Amount = amount
-	c.AccSystem .BankAccount().Book(bankBooking)
+	c.AccSystem .GetCollectiveAccount().Book(bankBooking)
 }
 
 type BookLNSteuerCommand struct {
@@ -72,7 +72,7 @@ func (c BookLNSteuerCommand) run() {
 	bankBooking := c.Booking
 	bankBooking.Type = c.Booking.Typ
 	bankBooking.Amount = amount
-	c.AccSystem.BankAccount().Book(bankBooking)
+	c.AccSystem.GetCollectiveAccount().Book(bankBooking)
 }
 
 type BookGWSteuerCommand struct {
@@ -94,7 +94,7 @@ func (c BookGWSteuerCommand) run() {
 	bankBooking := c.Booking
 	bankBooking.Type = c.Booking.Typ
 	bankBooking.Amount = amount
-	c.AccSystem.BankAccount().Book(bankBooking)
+	c.AccSystem.GetCollectiveAccount().Book(bankBooking)
 
 }
 
@@ -109,7 +109,7 @@ func (c BookPartnerEntnahmeCommand) run() {
 	bankBooking := c.Booking
 	bankBooking.Type = c.Booking.Typ
 	bankBooking.Amount = bankBooking.Amount * -1
-	c.AccSystem.BankAccount().Book(bankBooking)
+	c.AccSystem.GetCollectiveAccount().Book(bankBooking)
 
 	// Buchung gegen Kommanditstenkonto
 	b := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.Entnahme, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
@@ -133,7 +133,7 @@ func (c BookPartnerEntnahmeVorjahrCommand) run() {
 	sollAccount.Book(b)
 
 	// Haben Bankbuchung
-	habenAccount := c.AccSystem.BankAccount()
+	habenAccount := c.AccSystem.GetCollectiveAccount()
 	b2 := booking.CloneBooking(c.Booking, amount, booking.GVVorjahr, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	habenAccount.Book(b2)
 
@@ -167,7 +167,7 @@ func (c BookEingangsrechnungCommand) run() {
 	sollAccount.Book(b)
 
 	// Haben Buchung Bank
-	habenAccount := c.AccSystem.BankAccount()
+	habenAccount := c.AccSystem.GetCollectiveAccount()
 	a :=  booking.CloneBooking(c.Booking, amount, booking.Eingangsrechnung, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	habenAccount.Book(a)
 
@@ -259,7 +259,7 @@ func (c BookUstCommand) run() {
 	sollAccount.Book(a)
 
 	// Habenbuchung
-	habenAccount := c.AccSystem.BankAccount()
+	habenAccount := c.AccSystem.GetCollectiveAccount()
 	b := booking.CloneBooking(c.Booking, amount, c.Booking.Typ, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	habenAccount.Book(b)
 }

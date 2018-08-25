@@ -29,7 +29,7 @@ func (this BookAusgangsrechnungCommand) run() {
 
 
 	// book from bankaccount...
-	bank := this.AccSystem.BankAccount()
+	bank := this.AccSystem.GetCollectiveAccount()
 	a := booking.Booking{
 		Amount:      util.Net(this.Booking.Amount),
 		Type:        booking.Erloese,
@@ -177,10 +177,6 @@ func (this BookAusgangsrechnungCommand) run() {
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated,
 				CostCenter:  this.Booking.Responsible}
-
-
-			// continue here with RW as benefitee in 2018
-
 
 			provisionAccount.Book(b)
 		}

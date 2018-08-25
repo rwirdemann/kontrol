@@ -21,7 +21,7 @@ var accountKommitment *account.Account
 
 func setUp() {
 	repository = accountSystem.NewDefaultAccountSystem()
-	accountBank = repository.BankAccount()
+	accountBank = repository.GetCollectiveAccount()
 	accountHannes, _ = repository.Get(owner.StakeholderRepository{}.Get("JM").Id)
 	accountRalf, _ = repository.Get(owner.StakeholderRepository{}.Get("RW").Id)
 	accountKommitment, _ = repository.Get(owner.StakeholderRepository{}.Get("K").Id)
@@ -79,7 +79,7 @@ func TestGehaltAngestellter(t *testing.T) {
 
 
 	// 100% Brutto gegen Bankkonto
-	accountBank := repository.BankAccount()
+	accountBank := repository.GetCollectiveAccount()
 	assert.Equal(t, 3869.65, accountBank.Bookings[0].Amount)
 	assert.Equal(t, "Gehalt Ben", accountBank.Bookings[0].Text)
 	assert.Equal(t, "Gehalt", accountBank.Bookings[0].Type)
@@ -139,8 +139,8 @@ func TestEingangsrechnung(t *testing.T) {
 	assert.Equal(t, "K", bk.CostCenter)
 
 	//  Haben wurde auf das Bankkonto gebucht, Achtung Bank ist Aktivkonto, da werden Soll Eintrage im Haben gebucht
-	assert.Equal(t, 1, len(repository.BankAccount().Bookings))
-	actual := repository.BankAccount().Bookings[0]
+	assert.Equal(t, 1, len(repository.GetCollectiveAccount().Bookings))
+	actual := repository.GetCollectiveAccount().Bookings[0]
 	assert.Equal(t,12852.0, actual.Amount)
 	assert.Equal(t, "Eingangsrechnung 1234", actual.Text)
 	assert.Equal(t, "Eingangsrechnung", actual.Type)
@@ -167,7 +167,7 @@ func TestRueckstellungAufloesen(t *testing.T) {
 	util.AssertEquals(t, booking.SKR03, b1.Type)
 
 	// the booking is not booked to the bankaccout
-	util.AssertEquals(t, 0, len(repository.BankAccount().Bookings))
+	util.AssertEquals(t, 0, len(repository.GetCollectiveAccount().Bookings))
 
 	// the booking is  booked on SKR03_sonstigeAufwendungen account
 	a2, _ := repository.Get(accountSystem.SKR03_sonstigeAufwendungen.Id)
@@ -198,7 +198,7 @@ func TestAnfangsbestandRueckstellung(t *testing.T) {
 	util.AssertEquals(t, booking.SKR03, b1.Type)
 
 	// the booking is not booked to the bankaccout
-	util.AssertEquals(t, 0, len(repository.BankAccount().Bookings))
+	util.AssertEquals(t, 0, len(repository.GetCollectiveAccount().Bookings))
 
 	// the booking is  booked on Rückstellung account
 	a2, _ := repository.Get(accountSystem.SKR03_Rueckstellungen.Id)
@@ -224,8 +224,8 @@ func TestPartnerEntnahme(t *testing.T) {
 	util.AssertEquals(t, booking.Entnahme, bRalf.Type)
 
 	// Buchung wurde gegen das Bankkonto gebucht
-	util.AssertEquals(t, 1, len(repository.BankAccount().Bookings))
-	actual := repository.BankAccount().Bookings[0]
+	util.AssertEquals(t, 1, len(repository.GetCollectiveAccount().Bookings))
+	actual := repository.GetCollectiveAccount().Bookings[0]
 	util.AssertFloatEquals(t, -6000, actual.Amount)
 	util.AssertEquals(t, "GV", actual.Type)
 }
@@ -258,7 +258,7 @@ func TestRueckstellung(t *testing.T) {
 	util.AssertEquals(t, booking.SKR03, b1.Type)
 
 	// Rückstellungen are not booked on bank account
-	util.AssertEquals(t, 0, len(repository.BankAccount().Bookings))
+	util.AssertEquals(t, 0, len(repository.GetCollectiveAccount().Bookings))
 }
 
 // Interne Stunden
@@ -289,7 +289,7 @@ func TestInterneStunden(t *testing.T) {
 	util.AssertEquals(t, booking.InterneStunden, b1.Type)
 
 	// internal hours are not booked on bank account
-	util.AssertEquals(t, 0, len(repository.BankAccount().Bookings))
+	util.AssertEquals(t, 0, len(repository.GetCollectiveAccount().Bookings))
 }
 
 func TestBookAusgangsrechnungToBankAccount(t *testing.T) {
@@ -299,8 +299,8 @@ func TestBookAusgangsrechnungToBankAccount(t *testing.T) {
 
 	Process(repository, *b)
 
-	util.AssertEquals(t, 1, len(repository.BankAccount().Bookings))
-	actual := repository.BankAccount().Bookings[0]
+	util.AssertEquals(t, 1, len(repository.GetCollectiveAccount().Bookings))
+	actual := repository.GetCollectiveAccount().Bookings[0]
 	util.AssertFloatEquals(t, util.Net(6000), actual.Amount)
 	util.AssertEquals(t, "Ausgangsrechnung", actual.Text)
 	util.AssertEquals(t, "Erloese", actual.Type)
@@ -323,8 +323,8 @@ func TestProcessSVBeitrag(t *testing.T) {
 	assert.Equal(t, "BW", b1.CostCenter)
 
 	// Buchung wurde aufs Bankkonto gebucht
-	assert.Equal(t, 1, len(repository.BankAccount().Bookings))
-	actual := repository.BankAccount().Bookings[0]
+	assert.Equal(t, 1, len(repository.GetCollectiveAccount().Bookings))
+	actual := repository.GetCollectiveAccount().Bookings[0]
 	assert.Equal(t, 1385.10, actual.Amount)
 	assert.Equal(t, "KKH, Ben", actual.Text)
 	assert.Equal(t, "SV-Beitrag", actual.Type)
@@ -369,8 +369,8 @@ func TestProcessGWSteuer(t *testing.T) {
 	assertBooking(t, b1, -2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", booking.GWSteuer)
 
 	// Buchung wurde aufs Bankkonto gebucht
-	util.AssertEquals(t, 1, len(repository.BankAccount().Bookings))
-	actual := repository.BankAccount().Bookings[0]
+	util.AssertEquals(t, 1, len(repository.GetCollectiveAccount().Bookings))
+	actual := repository.GetCollectiveAccount().Bookings[0]
 	assertBooking(t, actual, 2385.10, "STEUERKASSE HAMBURG STEUERNR 048/638/01147 GEW.ST 4VJ.17", "GWSteuer")
 }
 
@@ -393,7 +393,7 @@ func TestProcessAnfangsbestand(t *testing.T) {
 	util.AssertEquals(t, booking.Anfangsbestand, b1.Type)
 
 	// Anfangsbestand is not booked on bank account
-	util.AssertEquals(t, 0, len(repository.BankAccount().Bookings))
+	util.AssertEquals(t, 0, len(repository.GetCollectiveAccount().Bookings))
 }
 
 // 100% werden als Anfangsbestand auf ein Konto gebucht, bspw. Rückstellung
@@ -414,7 +414,7 @@ func TestProcessAnfangsbestand_JahresueberschusssVJ(t *testing.T) {
 	util.AssertEquals(t, booking.Anfangsbestand, b1.Type)
 
 	// Anfangsbestand is not booked on bank account
-	util.AssertEquals(t, 0, len(repository.BankAccount().Bookings))
+	util.AssertEquals(t, 0, len(repository.GetCollectiveAccount().Bookings))
 }
 
 // 100% werden auf das Bankkonto gebucht
@@ -433,8 +433,8 @@ func TestProcessGV_Vorjahr(t *testing.T) {
 	assert.Equal(t, "JM", b1.CostCenter)
 
 	// Buchung wurde aufs Bankkonto gebucht
-	assert.Equal(t, 1, len(repository.BankAccount().Bookings))
-	actual := repository.BankAccount().Bookings[0]
+	assert.Equal(t, 1, len(repository.GetCollectiveAccount().Bookings))
+	actual := repository.GetCollectiveAccount().Bookings[0]
 	assert.Equal(t, 77777.0, actual.Amount)
 	assert.Equal(t, "Rest Anteil Johannes", actual.Text)
 	assert.Equal(t, "GVVorjahr", actual.Type)
@@ -506,7 +506,7 @@ func TestAbschreibungenAufAnlagen(t *testing.T) {
 	assert.Equal(t, booking.SKR03, a.Bookings[0].Type)
 
 	// booking is not on bankaccount
-	ba := repository.BankAccount()
+	ba := repository.GetCollectiveAccount()
 	assert.Equal(t, 0, len(ba.Bookings))
 
 	// booking is posiv von haben account
@@ -533,7 +533,7 @@ func TestUstVZ(t *testing.T) {
 	assert.Equal(t, booking.UstVZ, a.Bookings[0].Type)
 
 	// booking is  on bankaccount
-	ba := repository.BankAccount()
+	ba := repository.GetCollectiveAccount()
 	assert.Equal(t, 1, len(ba.Bookings))
 	assert.Equal(t, 1337.23 , ba.Bookings[0].Amount )
 

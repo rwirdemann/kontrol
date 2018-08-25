@@ -42,8 +42,8 @@ func TestGetAllAccounts(t *testing.T) {
 	assert.Equal(t, expected, rr.Body.String())
 }
 
-func TestGetBankAccount(t *testing.T) {
-	req, _ := http.NewRequest("GET", "/kontrol/bankaccount", nil)
+func TestGetCollectiveAccount(t *testing.T) {
+	req, _ := http.NewRequest("GET", "/kontrol/collectiveaccount", nil)
 	rr := httptest.NewRecorder()
 
 	router.ServeHTTP(rr, req)

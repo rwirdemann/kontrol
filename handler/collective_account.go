@@ -10,10 +10,10 @@ import (
 	"github.com/ahojsenn/kontrol/accountSystem"
 )
 
-func MakeGetBankAccountHandler(repository accountSystem.AccountSystem) http.HandlerFunc {
+func MakeGetCoolectiveAccountHandler(repository accountSystem.AccountSystem) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		a := repository.BankAccount()
+		a := repository.GetCollectiveAccount()
 		a.UpdateSaldo()
 		w.Header().Set("Content-Type", "application/json")
 		sort.Sort(booking.ByMonth(a.Bookings))

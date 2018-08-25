@@ -20,7 +20,7 @@ const (
 )
 
 type AccountSystem interface {
-	BankAccount() *account.Account
+	GetCollectiveAccount() *account.Account
 	Add(a *account.Account)
 	All() []account.Account
 	Get(id string) (*account.Account, bool)
@@ -38,6 +38,7 @@ const SKR03 = "SKR03"
 var SKR03_Rueckstellungen = account.AccountDescription{Id: "Rückstellung", Name: "Rückstellung 956-977", Type: KontenartPassiv}
 var SKR03_Eigenkapital_880 = account.AccountDescription{Id: "Eigenkapital", Name: "Eigenkapital 880", Type: KontenartPassiv}
 var SKR03_KontoJUSVJ = account.AccountDescription{Id: "JahresüberschussVJ", Name: "JahresüberschussVJ Gesellschafterdarlehen 920", Type: KontenartPassiv}
+var SKR03_1200 = account.AccountDescription{Id: "1200", Name: "Bank 1200", Type: KontenartAktiv}
 var SKR03_1400 = account.AccountDescription{Id: "1400", Name: "OPOS-Kunde 1400", Type: KontenartAktiv}
 var SKR03_1600 = account.AccountDescription{Id: "1600", Name: "OPOS-Lieferant 1600", Type: KontenartPassiv}
 var SKR03_Anlagen = account.AccountDescription{Id: "SKR03_Anlagen", Name: "Zugang Anlagen", Type: KontenartAktiv}
@@ -48,12 +49,17 @@ var SKR03_Umsatzsteuer = account.AccountDescription{Id: "SKR03_Umsatzsteuer", Na
 // Erfolgskonten
 var SKR03_Umsatzerloese = account.AccountDescription{Id: "SKR03_Umsatzerloese", Name: "1 SKR03_Umsatzerloese 8100-8402", Type: KontenartErtrag}
 var SKR03_4100_4199 = account.AccountDescription{Id: "4100_4199", Name: "3 Löhne und Gehälter 4100-4199", Type: KontenartAufwand}
+var SKR03_AnlagenabgaengeSachanlagen2310 = account.AccountDescription{Id: "SKR03_AnlagenabgängeSachanlagen", Name: "4 AnlagenabgängeSachanlagen 2310", Type: KontenartAufwand}
 var SKR03_Abschreibungen = account.AccountDescription{Id: "SKR03_Abschreibungen", Name: "4 Abschreibungen auf Anlagen 4822-4855", Type: KontenartAufwand}
 var SKR03_sonstigeAufwendungen = account.AccountDescription{Id: "SKR03_sonstigeAufwendungen", Name: "5 sonstige Aufwendungen", Type: KontenartAufwand}
 var SKR03_Steuern = account.AccountDescription{Id: "SKR03_Steuern", Name: "6 SKR03_Steuern 4320", Type: KontenartAufwand}
 var ErgebnisNachSteuern = account.AccountDescription{Id: "SKR03_ErgebnisNachSteuern", Name: "7 ErgebnisNachSteuern", Type: KontenartVerrechnung}
 // Verrechnungskonten
 var SKR03_Saldenvortrag = account.AccountDescription{Id: "SKR03_Saldenvortrag", Name: "Saldenvortrag 9000", Type: KontenartVerrechnung}
+
+
+
+
 
 type Accountlist struct {
 }
@@ -63,9 +69,11 @@ func (this Accountlist) All() []account.AccountDescription {
 		SKR03_Rueckstellungen,
 		SKR03_Eigenkapital_880,
 		SKR03_KontoJUSVJ,
+		SKR03_1200,
 		SKR03_1400,
 		SKR03_1600,
 		SKR03_4100_4199,
+		SKR03_AnlagenabgaengeSachanlagen2310,
 		SKR03_sonstigeAufwendungen,
 		SKR03_Anlagen,
 		SKR03_Anlagen25,
@@ -81,14 +89,14 @@ func (this Accountlist) All() []account.AccountDescription {
 }
 
 func EmptyDefaultAccountSystem() AccountSystem {
-	o := account.AccountDescription{Id: "GLS", Name: "Kommitment GmbH & Co. KG", Type: KontenartAktiv}
+	o := account.AccountDescription{Id: "all", Name: "Alle Buchungen", Type: KontenartAktiv}
 	return &DefaultAccountSystem{collectiveAccount: &account.Account{Description: o}, accounts: make(map[string]*account.Account)}
 }
 
 func NewDefaultAccountSystem() AccountSystem {
 	year := util.Global.FinancialYear
 
-	ad := account.AccountDescription{Id: "GLS", Name: "Kommitment GmbH & Co. KG", Type: KontenartAktiv}
+	ad := account.AccountDescription{Id: "all", Name: "Alle Buchungen", Type: KontenartAktiv}
 	accountSystem := DefaultAccountSystem{collectiveAccount: &account.Account{Description: ad}, accounts: make(map[string]*account.Account)}
 
 	// generate accounts according to the AccountList
@@ -108,7 +116,7 @@ func NewDefaultAccountSystem() AccountSystem {
 	return &accountSystem
 }
 
-func (r *DefaultAccountSystem) BankAccount() *account.Account {
+func (r *DefaultAccountSystem) GetCollectiveAccount() *account.Account {
 	return r.collectiveAccount
 }
 
@@ -157,14 +165,16 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 		account = r.accounts[SKR03_KontoJUSVJ.Id]
 	case "956","965","970","977": // Rückstellung bilden
 		account = r.accounts[SKR03_Rueckstellungen.Id]
+	case "1200": // Bank buchen
+		account = r.accounts[SKR03_1200.Id]
 	case "1525":
 		account = r.accounts[SKR03_Kautionen.Id]
+	case "2310":
+		account = r.accounts[SKR03_AnlagenabgaengeSachanlagen2310.Id]
 	case "4120":
 		account = r.accounts[SKR03_4100_4199.Id]
 	case "4130", "4138", "4140":
 		account = r.accounts[SKR03_4100_4199.Id]
-	case "1200":
-		account = r.BankAccount()
 	case "4320":
 		account = r.accounts[SKR03_Steuern.Id]
 	case "4822", "4830", "4855":

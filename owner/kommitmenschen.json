@@ -25,7 +25,7 @@
       { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "partner", "Arbeit": "100%" },
       { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "extern", "Arbeit": "100%" },
       { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "partner", "Arbeit": "100%" },
-      { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "partner", "Arbeit": "25%" },
+      { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "employee", "Arbeit": "100%" },
       { "Id": "KR", "Name": "k: Katja Roth",           "Type": "employee", "Arbeit": "100%" },
       { "Id": "IK", "Name": "k: Ingo Komorowski",      "Type": "employee", "Arbeit": "50%" }
     ]
