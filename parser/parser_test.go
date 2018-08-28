@@ -7,10 +7,11 @@ import (
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/owner"
 	"github.com/stretchr/testify/assert"
-)
+	)
 
 func TestImport(t *testing.T) {
-	positions := Import("bookings.csv", 2017)
+	var positions []booking.Booking
+	Import("bookings.csv", 2017, &positions)
 	assert.Equal(t, 11, len(positions))
 	assertPosition(t, positions[0], "ER", "800", "1337", "K", "Ulrike Klode", 2142, 2017, 2, 0, 0, 0)
 	assertPosition(t, positions[1], "AR", "800", "1337", "AN", "moebel.de", 4730.25, 2017, 1, 0, 0, 3975)

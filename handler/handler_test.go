@@ -11,6 +11,7 @@ import (
 		"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/ahojsenn/kontrol/accountSystem"
+	"log"
 )
 
 var router *mux.Router
@@ -47,6 +48,7 @@ func TestGetCollectiveAccount(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	router.ServeHTTP(rr, req)
+	log.Println(">>>", rr)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
 }
@@ -58,6 +60,6 @@ func TestGetAccountFilterByCostcenter(t *testing.T) {
 	router.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
-	expected := "{\"Description\":{\"Id\":\"K\",\"Name\":\"k: Kommitment\",\"Type\":\"company\"},\"Bookings\":[{\"Type\":\"\",\"Soll\":\"800\",\"Haben\":\"1337\",\"CostCenter\":\"BW\",\"Amount\":2000,\"Text\":\"Rechnung WLW\",\"Year\":2018,\"Month\":1,\"FileCreated\":\"0001-01-01T00:00:00Z\",\"BankCreated\":\"0001-01-01T00:00:00Z\"}],\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":2000}"
+	expected := "{\"Description\":{\"Id\":\"K\",\"Name\":\"k: Kommitment\",\"Type\":\"company\"},\"Bookings\":[{\"Type\":\"AR\",\"Soll\":\"800\",\"Haben\":\"1337\",\"CostCenter\":\"BW\",\"Amount\":2000,\"Text\":\"Rechnung WLW\",\"Year\":2018,\"Month\":1,\"FileCreated\":\"0001-01-01T00:00:00Z\",\"BankCreated\":\"0001-01-01T00:00:00Z\"}],\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":2000}"
 	assert.Equal(t, expected, rr.Body.String())
 }

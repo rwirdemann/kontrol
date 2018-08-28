@@ -84,7 +84,7 @@ func NewBooking(
 	csvType string,
 	soll string,
 	haben string,
-	CostCenter string,
+	costCenter string,
 	net map[owner.Stakeholder]float64,
 	amount float64,
 	text string,
@@ -92,14 +92,19 @@ func NewBooking(
 	year int,
 	bankCreated time.Time) *Booking {
 
-	return &Booking{
-		CsvBookingExtras: CsvBookingExtras{
+		extraCsv := CsvBookingExtras{
 			Typ:         csvType,
-			Responsible: CostCenter,
+			Responsible: costCenter,
 			Net:         net,
-		},
+		}
+
+
+	return &Booking{
+		CsvBookingExtras: extraCsv,
+		Type:        csvType,
 		Soll:        soll,
 		Haben:       haben,
+		CostCenter:  costCenter,
 		Amount:      amount,
 		Text:        text,
 		Month:       month,

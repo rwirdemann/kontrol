@@ -89,14 +89,14 @@ func (this Accountlist) All() []account.AccountDescription {
 }
 
 func EmptyDefaultAccountSystem() AccountSystem {
-	o := account.AccountDescription{Id: "all", Name: "Alle Buchungen", Type: KontenartAktiv}
+	o := account.AccountDescription{Id: "all", Name: "Hauptbuch", Type: KontenartAktiv}
 	return &DefaultAccountSystem{collectiveAccount: &account.Account{Description: o}, accounts: make(map[string]*account.Account)}
 }
 
 func NewDefaultAccountSystem() AccountSystem {
 	year := util.Global.FinancialYear
 
-	ad := account.AccountDescription{Id: "all", Name: "Alle Buchungen", Type: KontenartAktiv}
+	ad := account.AccountDescription{Id: "all", Name: "Hauptbuch", Type: KontenartAktiv}
 	accountSystem := DefaultAccountSystem{collectiveAccount: &account.Account{Description: ad}, accounts: make(map[string]*account.Account)}
 
 	// generate accounts according to the AccountList

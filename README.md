@@ -15,9 +15,7 @@ Use the following to generate your test cetificates (or similar)
 
 ## Todos
 
-* Deployment automatisieren
-* Excel Dartei regelmäßg abholen und parsen
-* Vertriebsprovision für Angestellte auf deren Accounts buchen
+* werden in moday gepflegt: [https://kommitment.monday.com/boards/101064786/pulses/121382210]{https://kommitment.monday.com/boards/101064786/pulses/121382210}
 
 ## API
 
@@ -25,15 +23,15 @@ Use the following to generate your test cetificates (or similar)
 
 Aktuelle Version.
 
-### GET http://localhost:8991/kontrol/bankaccount
+### GET http://localhost:8991/kontrol/collectiveaccount
 
-Das Bankkonto inkl. Buchungen.
+hier liegen alle Buchungen, das ist also das Hauptbuch...
 
 ```
 {
     "Owner": {
-        "Name": "Kommitment GmbH & Co. KG",
-        "Type": "bank"
+        "Name": "alle Buchungen",
+        "Type": "all"
     },
     "Bookings": [
         {

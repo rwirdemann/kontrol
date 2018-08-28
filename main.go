@@ -68,8 +68,10 @@ func main() {
 func importAndProcessBookings(repository accountSystem.AccountSystem, year int) {
 	repository.ClearBookings()
 	log.Printf("importAndProcessBookings: %d\n", year)
-	bookings := parser.Import(fileName, year)
-	for _, p := range bookings {
+	hauptbuch := repository.GetCollectiveAccount()
+	parser.Import(fileName, year, &(hauptbuch.Bookings))
+	log.Println("in main, import done")
+	for _, p := range hauptbuch.Bookings {
 		processing.Process(repository, p)
 	}
 	// now calculate GuV

@@ -29,9 +29,9 @@ func (this BookAusgangsrechnungCommand) run() {
 
 
 	// book from bankaccount...
-	bank := this.AccSystem.GetCollectiveAccount()
+	bank,_ := this.AccSystem.Get(accountSystem.SKR03_1200.Id)
 	a := booking.Booking{
-		Amount:      util.Net(this.Booking.Amount),
+		Amount:      -this.Booking.Amount,
 		Type:        booking.Erloese,
 		Text:        this.Booking.Text,
 		Month:       this.Booking.Month,
@@ -85,7 +85,7 @@ func (this BookAusgangsrechnungCommand) run() {
 
 			// book partner share
 			b := booking.Booking{
-				Amount:      math.Round(this.Booking.Net[benefited] * PartnerShare*10000)/10000,
+				Amount:      math.Round(this.Booking.Net[benefited] * PartnerShare*1000000)/1000000,
 				Type:        booking.Nettoanteil,
 				Text:        this.Booking.Text + "#NetShare#" + benefited.Id,
 				Month:       this.Booking.Month,

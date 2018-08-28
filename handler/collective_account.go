@@ -10,7 +10,7 @@ import (
 	"github.com/ahojsenn/kontrol/accountSystem"
 )
 
-func MakeGetCoolectiveAccountHandler(repository accountSystem.AccountSystem) http.HandlerFunc {
+func MakeGetCollectiveAccountHandler(repository accountSystem.AccountSystem) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		a := repository.GetCollectiveAccount()
