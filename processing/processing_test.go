@@ -228,7 +228,7 @@ func TestPartnerEntnahme(t *testing.T) {
 	acc,_ := accSystem.Get(accountSystem.SKR03_1200.Id)
 	util.AssertEquals(t, 1, len(acc.Bookings))
 	actual := acc.Bookings[0]
-	util.AssertFloatEquals(t, -6000, actual.Amount)
+	util.AssertFloatEquals(t, 6000, actual.Amount)
 	util.AssertEquals(t, "GV", actual.Type)
 }
 
@@ -379,47 +379,6 @@ func TestProcessGWSteuer(t *testing.T) {
 }
 
 
-// 100% werden als Anfangsbestand auf ein Konto gebucht, bspw. Rückstellung
-func TestProcessAnfangsbestand(t *testing.T) {
-	setUp()
-
-	// given a booking with Anfangsbestand
-	b := booking.NewBooking("Anfangsbestand", "", "", "Rückstellung", nil, 42.23, "Anfangsbestand aus Vorjahr", 9, 2017, time.Time{})
-
-	// when: the position is processed
-	Process(accSystem, *b)
-
-	// the booking is booked to Rückstellung account
-	a1, _ := accSystem.Get(accountSystem.SKR03_Rueckstellungen.Id)
-	util.AssertEquals(t, 1, len(a1.Bookings))
-	b1 := a1.Bookings[0]
-	util.AssertFloatEquals(t, 42.23, b1.Amount)
-	util.AssertEquals(t, booking.Anfangsbestand, b1.Type)
-
-	// Anfangsbestand is not booked on bank account
-	util.AssertEquals(t, 0, len(accSystem.GetCollectiveAccount().Bookings))
-}
-
-// 100% werden als Anfangsbestand auf ein Konto gebucht, bspw. Rückstellung
-func TestProcessAnfangsbestand_JahresueberschusssVJ(t *testing.T) {
-	setUp()
-
-	// given a booking with Anfangsbestand
-	b := booking.NewBooking("Anfangsbestand", "", "", "JahresüberschussVJ", nil, 10042.23, "Anfangsbestand aus Vorjahr", 9, 2017, time.Time{})
-
-	// when: the position is processed
-	Process(accSystem, *b)
-
-	// the booking is booked to Rückstellung account
-	a1, _ := accSystem.Get(accountSystem.SKR03_KontoJUSVJ.Id)
-	util.AssertEquals(t, 1, len(a1.Bookings))
-	b1 := a1.Bookings[0]
-	util.AssertFloatEquals(t, 10042.23, b1.Amount)
-	util.AssertEquals(t, booking.Anfangsbestand, b1.Type)
-
-	// Anfangsbestand is not booked on bank account
-	util.AssertEquals(t, 0, len(accSystem.GetCollectiveAccount().Bookings))
-}
 
 // 100% werden auf das Bankkonto gebucht
 // 100% werden gegen das JahresüberschussVJ gebucht

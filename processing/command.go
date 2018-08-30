@@ -109,17 +109,20 @@ type BookPartnerEntnahmeCommand struct {
 
 func (c BookPartnerEntnahmeCommand) run() {
 
-	// Bankbuchung
-	bankBooking := c.Booking
-	bankBooking.Type = c.Booking.Typ
-	bankBooking.Amount = bankBooking.Amount * -1
-	acc,_ := c.AccSystem.Get(accountSystem.SKR03_1200.Id)
-	acc.Book(bankBooking)
-
-	// Buchung gegen Kommanditstenkonto
+	// Buchung von Kommanditstenkonto
 	b := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.Entnahme, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	a, _ := c.AccSystem.Get(c.Booking.Responsible)
 	a.Book(b)
+
+	// an Bank
+	bankBooking := c.Booking
+	bankBooking.Type = c.Booking.Typ
+	bankBooking.Amount = bankBooking.Amount
+	acc,_ := c.AccSystem.Get(accountSystem.SKR03_1200.Id)
+	acc.Book(bankBooking)
+
+
+
 }
 
 type BookPartnerEntnahmeVorjahrCommand struct {
@@ -214,20 +217,6 @@ func (c BookRueckstellungCommand) run() {
 	account, _ := c.AccSystem.Get(owner.StakeholderKM.Id)
 	account.Book(kBooking)
 }
-
-type BookAnfangsbestandCommand struct {
-	Booking    booking.Booking
-	AccSystem  accountSystem.AccountSystem
-}
-
-func (c BookAnfangsbestandCommand) run() {
-
-	// Anfangsbestand buchen
-	a := booking.CloneBooking(c.Booking, c.Booking.Amount, booking.Anfangsbestand, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
-	zielkonto, _ := c.AccSystem.Get(c.Booking.Responsible)
-	zielkonto.Book(a)
-}
-
 
 type BookSKR03Command struct {
 	Booking    		booking.Booking

@@ -57,6 +57,18 @@ echo
 echo
 
 #
+echo "filling the crontab @reboot..."
+$SSHSERVER "rm -f crontab.del"
+$SSHSERVER "if crontab -l  | grep -v '{TARGETPROGRAM}' > crontab.del; then echo "crontab exists"; fi"
+$SSHSERVER "echo '@reboot cd /home/$TARGETUSER; ./${TARGETPROGRAM} > /tmp/${TARGETPROGRAM}.log 2>&1 &' >> crontab.del"
+$SSHSERVER "echo '@reboot cd /home/$TARGETUSER; ./${TARGETPROGRAM} -httpPort=20171 -httpsPort=20172 -year=2017 > /tmp/${TARGETPROGRAM}-2017.log 2>&1 &' >> crontab.del"
+$SSHSERVER "cat crontab.del | crontab -"
+$SSHSERVER "rm -f crontab.del"
+$SSHSERVER crontab -l
+echo " "
+
+
+#
 echo "getting the latest data"
 ${SSHSERVER}  "chmod +x ./getSpreadsheet.sh"
 ${SSHSERVER}  "./getSpreadsheet.sh"
