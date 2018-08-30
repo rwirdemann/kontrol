@@ -42,7 +42,7 @@ func (suite *AusgangsrechnungTestSuite) TestPartnerNettoAnteil() {
 	net[owner.StakeholderRepository{}.Get("RW")] = 10800.0
 	net[owner.StakeholderRepository{}.Get("JM")] = 3675.0
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.NewBooking("AR", "", "", "JM", net, 17225.25, "Rechnung 1234", 1, 2017, its2018)
+	p := booking.NewBooking(13,"AR", "", "", "JM", net, 17225.25, "Rechnung 1234", 1, 2017, its2018)
 
 	// when: the position is processed
 	Process(suite.repository, *p)
@@ -101,7 +101,7 @@ func (suite *AusgangsrechnungTestSuite) TestOffeneRechnung() {
 	net := make(map[owner.Stakeholder]float64)
 	net[owner.StakeholderRepository{}.Get("RW")] = 10800.0
 	net[owner.StakeholderRepository{}.Get("JM")] = 3675.0
-	p := booking.NewBooking("AR", "", "", "JM", net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{})
+	p := booking.NewBooking(13, "AR", "", "", "JM", net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{})
 
 	// when: the position is processed
 	Process(suite.repository, *p)
@@ -131,7 +131,7 @@ func (suite *AusgangsrechnungTestSuite) TestDealbringerIstPartner() {
 	net[owner.StakeholderRepository{}.Get("JM")] = 3675.0
 	dealbringer := "JM"
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.Ausgangsrechnung(dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, its2018)
+	p := booking.Ausgangsrechnung(13, dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, its2018)
 
 	Process(suite.repository, *p)
 
@@ -157,7 +157,7 @@ func (suite *AusgangsrechnungTestSuite) TestDealbringerIstAngestellter() {
 	its2017 := time.Date(2017, 1, 23, 0, 0, 0, 0, time.UTC)
 
 	// when booked
-	b := booking.Ausgangsrechnung(dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, its2017)
+	b := booking.Ausgangsrechnung(13, dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, its2017)
 
 	Process(suite.repository, *b)
 

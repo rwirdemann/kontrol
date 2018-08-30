@@ -33,7 +33,9 @@ func Import(file string, aYear int, positions *[]booking.Booking)  {
 
 	if f, err := openCsvFile(file); err == nil {
 		r := csv.NewReader(bufio.NewReader(f))
+		rownr := 0
 		for {
+			rownr++
 			record, err := r.Read()
 			if err == io.EOF {
 				break
@@ -59,11 +61,11 @@ func Import(file string, aYear int, positions *[]booking.Booking)  {
 						stakeholder := owner.StakeholderRepository{}.Get(p.Owner)
 						m[stakeholder] = parseAmount(record[p.Column])
 					}
-					bkng := booking.NewBooking(typ, soll, haben, cs, m, amount, subject, month, year, bankCreated)
+					bkng := booking.NewBooking(rownr, typ, soll, haben, cs, m, amount, subject, month, year, bankCreated)
 					*positions = append(*positions, *bkng)
 				}
 			} else {
-				fmt.Printf("unknown booking type '%s'\n", record[0])
+				fmt.Printf("unknown booking type '%s' in row '%d'\n", record[0], rownr)
 			}
 		}
 	} else {

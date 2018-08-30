@@ -65,6 +65,6 @@ func GuV (as accountSystem.AccountSystem) {
 	}
 	a,_ := as.Get(accountSystem.ErgebnisNachSteuern.Id)
 	now := time.Now().AddDate(0, 0, 0)
-	p := booking.NewBooking("Jahresüberschuss", "", "", "", nil,  jahresueberschuss, "Buchung Jahresüberschuss", int(now.Month()), now.Year(), now)
+	p := booking.NewBooking(0,"Jahresüberschuss", "", "", "", nil,  jahresueberschuss, "Buchung Jahresüberschuss", int(now.Month()), now.Year(), now)
 	a.Book(*p)
 }
