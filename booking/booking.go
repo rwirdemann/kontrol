@@ -133,6 +133,7 @@ func CloneBooking(b Booking, amount float64, typ string, costcenter string, soll
 	return Booking{
 		Amount:      amount,
 		Type:        typ,
+		RowNr:       b.RowNr,
 		Text:        b.Text,
 		Month:       b.Month,
 		Year:        b.Year,

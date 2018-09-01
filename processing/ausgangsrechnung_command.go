@@ -31,6 +31,7 @@ func (this BookAusgangsrechnungCommand) run() {
 	// book from bankaccount...
 	bank,_ := this.AccSystem.Get(accountSystem.SKR03_1200.Id)
 	a := booking.Booking{
+		RowNr: 		 this.Booking.RowNr,
 		Amount:      -this.Booking.Amount,
 		Type:        booking.Erloese,
 		Text:        this.Booking.Text,
@@ -51,6 +52,8 @@ func (this BookAusgangsrechnungCommand) run() {
 		// haben umsatzerloese
 		umsatzerloese, _ := this.AccSystem.Get(accountSystem.SKR03_Umsatzerloese.Id)
 		b := booking.Booking{
+			RowNr: 		 this.Booking.RowNr,
+			CostCenter:  this.Booking.CostCenter,
 			Amount:      util.Net(this.Booking.Amount),
 			Type:        booking.Erloese,
 			Text:        this.Booking.Text,
@@ -65,7 +68,9 @@ func (this BookAusgangsrechnungCommand) run() {
 		umsatzsteuernKonto ,_ := this.AccSystem.Get(accountSystem.SKR03_Umsatzsteuer.Id)
 		c :=
 			booking.Booking{
+				RowNr: 		 this.Booking.RowNr,
 				Amount:      this.Booking.Amount - util.Net(this.Booking.Amount),
+				CostCenter:  this.Booking.CostCenter,
 				Type:        booking.Erloese,
 				Text:        this.Booking.Text,
 				Month:       this.Booking.Month,
@@ -85,8 +90,10 @@ func (this BookAusgangsrechnungCommand) run() {
 
 			// book partner share
 			b := booking.Booking{
+				RowNr: 		 this.Booking.RowNr,
 				Amount:      math.Round(this.Booking.Net[benefited] * PartnerShare*1000000)/1000000,
 				Type:        booking.Nettoanteil,
+				CostCenter:  benefited.Id,
 				Text:        this.Booking.Text + "#NetShare#" + benefited.Id,
 				Month:       this.Booking.Month,
 				Year:        this.Booking.Year,
@@ -97,8 +104,10 @@ func (this BookAusgangsrechnungCommand) run() {
 
 			// book kommitment share
 			kommitmentShare := booking.Booking{
+				RowNr: 		 this.Booking.RowNr,
 				Amount:      this.Booking.Net[benefited] * KommmitmentShare,
 				Type:        booking.Kommitmentanteil,
+				CostCenter:  owner.StakeholderKM.Id,
 				Text:        this.Booking.Text + "#Kommitment#" + benefited.Id,
 				Month:       this.Booking.Month,
 				Year:        this.Booking.Year,
@@ -113,8 +122,10 @@ func (this BookAusgangsrechnungCommand) run() {
 
 			// book kommitment share
 			kommitmentShare := booking.Booking{
+				RowNr: 		 this.Booking.RowNr,
 				Amount:      this.Booking.Net[benefited] * KommmitmentExternShare,
 				Type:        booking.Kommitmentanteil,
+				CostCenter:  owner.StakeholderKM.Id,
 				Text:        this.Booking.Text + "#Kommitment#" + benefited.Id,
 				Month:       this.Booking.Month,
 				Year:        this.Booking.Year,
@@ -131,8 +142,10 @@ func (this BookAusgangsrechnungCommand) run() {
 
 			// book kommitment share
 			kommitmentShare := booking.Booking{
+				RowNr: 		 this.Booking.RowNr,
 				Amount:      this.Booking.Net[benefited] * KommmitmentOthersShare,
 				Type:        booking.Kommitmentanteil,
+				CostCenter:  benefited.Id,
 				Text:        this.Booking.Text + "#Kommitment#Rest#" + benefited.Id,
 				Month:       this.Booking.Month,
 				Year:        this.Booking.Year,
@@ -145,6 +158,7 @@ func (this BookAusgangsrechnungCommand) run() {
 		if benefited.Type == owner.StakeholderTypeEmployee {
 			// book kommitment share
 			kommitmentShare := booking.Booking{
+				RowNr: 		 this.Booking.RowNr,
 				Amount:      this.Booking.Net[benefited] * KommmitmentEmployeeShare,
 				Type:        booking.Kommitmentanteil,
 				Text:        this.Booking.Text,
@@ -169,6 +183,7 @@ func (this BookAusgangsrechnungCommand) run() {
 				provisionAccount, _ = this.AccSystem.Get(owner.StakeholderKM.Id)
 			}
 			b := booking.Booking{
+				RowNr: 		 this.Booking.RowNr,
 				Amount:      this.Booking.Net[benefited] * PartnerProvision,
 				Type:        booking.Vertriebsprovision,
 				Text:        this.Booking.Text + "#Provision#" + benefited.Id,

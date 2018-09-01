@@ -44,8 +44,6 @@ func Process(accsystem accountSystem.AccountSystem, booking booking.Booking) {
 			command = BookGehaltCommand{AccSystem: accsystem, Booking: booking}
 		case "LNSteuer":
 			command = BookLNSteuerCommand{AccSystem: accsystem, Booking: booking}
-		case "Rückstellung":
-			command = BookRueckstellungCommand{AccSystem: accsystem, Booking: booking}
 		case "UstVZ":
 			command = BookUstCommand{AccSystem: accsystem, Booking: booking}
 				}

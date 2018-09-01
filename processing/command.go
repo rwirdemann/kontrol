@@ -200,23 +200,6 @@ func (c BookInterneStundenCommand) run() {
 	kommitmentAccount.Book(b)
 }
 
-type BookRueckstellungCommand struct {
-	Booking    booking.Booking
-	AccSystem  accountSystem.AccountSystem
-}
-
-func (c BookRueckstellungCommand) run() {
-
-	// Rückstellungsbuchung
-	a := booking.CloneBooking(c.Booking, c.Booking.Amount, booking.Rueckstellung, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
-	rueckstellungsAccount, _ := c.AccSystem.Get(accountSystem.SKR03_Rueckstellungen.Id)
-	rueckstellungsAccount.Book(a)
-
-	// Buchung gegen kommitment Konto
-	kBooking := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.Rueckstellung, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
-	account, _ := c.AccSystem.Get(owner.StakeholderKM.Id)
-	account.Book(kBooking)
-}
 
 type BookSKR03Command struct {
 	Booking    		booking.Booking
