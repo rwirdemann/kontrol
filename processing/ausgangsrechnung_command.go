@@ -5,7 +5,7 @@ import (
 
 	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/booking"
-	"github.com/ahojsenn/kontrol/owner"
+	"github.com/ahojsenn/kontrol/profitCenter"
 	"github.com/ahojsenn/kontrol/util"
 	"github.com/ahojsenn/kontrol/accountSystem"
 	"math"
@@ -86,7 +86,7 @@ func (this BookAusgangsrechnungCommand) run() {
 	benefitees := this.stakeholderWithNetPositions()
 	for _, benefited := range benefitees {
 
-		if benefited.Type == owner.StakeholderTypePartner {
+		if benefited.Type == profitCenter.StakeholderTypePartner {
 
 			// book partner share
 			b := booking.Booking{
@@ -104,41 +104,41 @@ func (this BookAusgangsrechnungCommand) run() {
 
 			// book kommitment share
 			kommitmentShare := booking.Booking{
-				RowNr: 		 this.Booking.RowNr,
+				RowNr:       this.Booking.RowNr,
 				Amount:      this.Booking.Net[benefited] * KommmitmentShare,
 				Type:        booking.Kommitmentanteil,
-				CostCenter:  owner.StakeholderKM.Id,
+				CostCenter:  profitCenter.StakeholderKM.Id,
 				Text:        this.Booking.Text + "#Kommitment#" + benefited.Id,
 				Month:       this.Booking.Month,
 				Year:        this.Booking.Year,
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated}
 
-			kommitmentAccount, _ := this.AccSystem.Get(owner.StakeholderKM.Id)
+			kommitmentAccount, _ := this.AccSystem.Get(profitCenter.StakeholderKM.Id)
 			kommitmentAccount.Book(kommitmentShare)
 		}
 
-		if benefited.Type == owner.StakeholderTypeExtern {
+		if benefited.Type == profitCenter.StakeholderTypeExtern {
 
 			// book kommitment share
 			kommitmentShare := booking.Booking{
-				RowNr: 		 this.Booking.RowNr,
+				RowNr:       this.Booking.RowNr,
 				Amount:      this.Booking.Net[benefited] * KommmitmentExternShare,
 				Type:        booking.Kommitmentanteil,
-				CostCenter:  owner.StakeholderKM.Id,
+				CostCenter:  profitCenter.StakeholderKM.Id,
 				Text:        this.Booking.Text + "#Kommitment#" + benefited.Id,
 				Month:       this.Booking.Month,
 				Year:        this.Booking.Year,
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated}
-			kommitmentAccount, _ := this.AccSystem.Get(owner.StakeholderKM.Id)
+			kommitmentAccount, _ := this.AccSystem.Get(profitCenter.StakeholderKM.Id)
 			kommitmentAccount.Book(kommitmentShare)
 		}
 
 		// Book the rest. This can happen e.g. due to
 		// non person related things on the invoice like travel expenses or similar
 
-		if benefited.Type == owner.StakeholderTypeOthers {
+		if benefited.Type == profitCenter.StakeholderTypeOthers {
 
 			// book kommitment share
 			kommitmentShare := booking.Booking{
@@ -151,11 +151,11 @@ func (this BookAusgangsrechnungCommand) run() {
 				Year:        this.Booking.Year,
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated}
-			kommitmentAccount, _ := this.AccSystem.Get(owner.StakeholderKM.Id)
+			kommitmentAccount, _ := this.AccSystem.Get(profitCenter.StakeholderKM.Id)
 			kommitmentAccount.Book(kommitmentShare)
 		}
 
-		if benefited.Type == owner.StakeholderTypeEmployee {
+		if benefited.Type == profitCenter.StakeholderTypeEmployee {
 			// book kommitment share
 			kommitmentShare := booking.Booking{
 				RowNr: 		 this.Booking.RowNr,
@@ -167,20 +167,20 @@ func (this BookAusgangsrechnungCommand) run() {
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated,
 				CostCenter:  benefited.Id}
-			kommitmentAccount, _ := this.AccSystem.Get(owner.StakeholderKM.Id)
+			kommitmentAccount, _ := this.AccSystem.Get(profitCenter.StakeholderKM.Id)
 			kommitmentAccount.Book(kommitmentShare)
 		}
 
 		// Die Vertriebsprovision bekommt der Dealbringer
-		if benefited.Type != owner.StakeholderTypeOthers { // Don't give 5% for travel expenses and co...
+		if benefited.Type != profitCenter.StakeholderTypeOthers { // Don't give 5% for travel expenses and co...
 			var provisionAccount *account.Account
 
 			// Vertriebsprovisionen gehen nur an employees und partner, ansonsten fallen die an Kommitment
 			provisionAccount, _ = this.AccSystem.Get(this.Booking.Responsible)
-			if ( provisionAccount.Description.Type != owner.StakeholderTypeEmployee &&
-				 provisionAccount.Description.Type != owner.StakeholderTypePartner ) {
+			if ( provisionAccount.Description.Type != profitCenter.StakeholderTypeEmployee &&
+				 provisionAccount.Description.Type != profitCenter.StakeholderTypePartner ) {
 				 	// then provision goes to kommitment
-				provisionAccount, _ = this.AccSystem.Get(owner.StakeholderKM.Id)
+				provisionAccount, _ = this.AccSystem.Get(profitCenter.StakeholderKM.Id)
 			}
 			b := booking.Booking{
 				RowNr: 		 this.Booking.RowNr,
@@ -200,8 +200,8 @@ func (this BookAusgangsrechnungCommand) run() {
 
 // Eine Buchung kann mehrere Nettopositionen enthalten, den je einem Stakeholder zugeschrieben wird.
 // Diese Funktion liefert ein Array mit Stateholdern, deren Nettoanteil in der Buchung != 0 ist.
-func (this BookAusgangsrechnungCommand) stakeholderWithNetPositions() []owner.Stakeholder {
-	var result []owner.Stakeholder
+func (this BookAusgangsrechnungCommand) stakeholderWithNetPositions() []profitCenter.Stakeholder {
+	var result []profitCenter.Stakeholder
 	for k, v := range this.Booking.Net {
 		if v != 0 {
 			result = append(result, k)

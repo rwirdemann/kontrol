@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ahojsenn/kontrol/owner"
+	"github.com/ahojsenn/kontrol/profitCenter"
 	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/util"
@@ -106,9 +106,9 @@ func NewDefaultAccountSystem() AccountSystem {
 	}
 
 	// generate accounts for all stakeholders
-	stakeholderRepository := owner.StakeholderRepository{}
+	stakeholderRepository := profitCenter.StakeholderRepository{}
 	for _, sh := range stakeholderRepository.All(year) {
-		if sh.Type != owner.StakeholderTypeOthers {
+		if sh.Type != profitCenter.StakeholderTypeOthers {
 			ad := account.AccountDescription{Id: sh.Id, Name: sh.Name, Type: sh.Type}
 			accountSystem.Add(account.NewAccount(ad))
 		}
@@ -169,6 +169,10 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 		account = r.accounts[SKR03_1200.Id]
 	case "1525":
 		account = r.accounts[SKR03_Kautionen.Id]
+	case "1400":
+		account = r.accounts[SKR03_1400.Id]
+	case "1600":
+		account = r.accounts[SKR03_1600.Id]
 	case "2310":
 		account = r.accounts[SKR03_AnlagenabgaengeSachanlagen2310.Id]
 	case "4120":

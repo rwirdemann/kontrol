@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/ahojsenn/kontrol/booking"
-	"github.com/ahojsenn/kontrol/owner"
+	"github.com/ahojsenn/kontrol/profitCenter"
 )
 
 // Beschreibt, dass die netto (Rechnungs-)Position in Spalte X der CSV-Datei dem Stakeholder Y gehört
@@ -55,10 +55,10 @@ func Import(file string, aYear int, positions *[]booking.Booking)  {
 				year, month := parseMonth(record[6])
 				bankCreated := parseFileCreated(record[7])
 				if year == aYear {
-					m := make(map[owner.Stakeholder]float64)
+					m := make(map[profitCenter.Stakeholder]float64)
 					for _, p := range netBookings {
 						// die Owner Zuordnung muss hier anders sein...
-						stakeholder := owner.StakeholderRepository{}.Get(p.Owner)
+						stakeholder := profitCenter.StakeholderRepository{}.Get(p.Owner)
 						m[stakeholder] = parseAmount(record[p.Column])
 					}
 					bkng := booking.NewBooking(rownr, typ, soll, haben, cs, m, amount, subject, month, year, bankCreated)

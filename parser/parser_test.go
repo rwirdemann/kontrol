@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/ahojsenn/kontrol/booking"
-	"github.com/ahojsenn/kontrol/owner"
+	"github.com/ahojsenn/kontrol/profitCenter"
 	"github.com/stretchr/testify/assert"
 	)
 
@@ -39,9 +39,9 @@ func assertPosition(t *testing.T, p booking.Booking, typ string, soll string, ha
 	assert.Equal(t, year, p.Year)
 	assert.Equal(t, month, p.Month)
 
-	assert.Equal(t, nettoRW, p.Net[ owner.StakeholderRepository{}.Get("RW") ])
-	assert.Equal(t, nettoJM, p.Net[ owner.StakeholderRepository{}.Get("JM") ])
-	assert.Equal(t, nettoAN, p.Net[ owner.StakeholderRepository{}.Get("AN") ])
+	assert.Equal(t, nettoRW, p.Net[ profitCenter.StakeholderRepository{}.Get("RW") ])
+	assert.Equal(t, nettoJM, p.Net[ profitCenter.StakeholderRepository{}.Get("JM") ])
+	assert.Equal(t, nettoAN, p.Net[ profitCenter.StakeholderRepository{}.Get("AN") ])
 }
 
 func TestParseFileCreated(t *testing.T) {

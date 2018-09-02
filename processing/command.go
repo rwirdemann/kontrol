@@ -4,7 +4,7 @@ import (
 		"time"
 
 		"github.com/ahojsenn/kontrol/booking"
-	"github.com/ahojsenn/kontrol/owner"
+	"github.com/ahojsenn/kontrol/profitCenter"
 	"github.com/ahojsenn/kontrol/util"
 	"github.com/ahojsenn/kontrol/accountSystem"
 	)
@@ -196,7 +196,7 @@ func (c BookInterneStundenCommand) run() {
 
 	// Buchung interner Stunden von kommitment Konto auf Stakeholder
 	b := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.InterneStunden, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
-	kommitmentAccount, _ := c.AccSystem.Get(owner.StakeholderKM.Id)
+	kommitmentAccount, _ := c.AccSystem.Get(profitCenter.StakeholderKM.Id)
 	kommitmentAccount.Book(b)
 }
 

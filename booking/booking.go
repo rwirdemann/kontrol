@@ -6,7 +6,7 @@ import (
 
 	"golang.org/x/text/language"
 
-	"github.com/ahojsenn/kontrol/owner"
+	"github.com/ahojsenn/kontrol/profitCenter"
 	"golang.org/x/text/message"
 )
 
@@ -41,7 +41,7 @@ type CsvBookingExtras struct {
 	Responsible string
 
 	// Verteilung der netto Rechnungspositionen auf Stakeholder
-	Net map[owner.Stakeholder]float64
+	Net map[profitCenter.Stakeholder]float64
 }
 
 // Aus einer Buchung in der Quelldatei wird eine oder mehrere virtuelle Buchungen erstellt. Dies ist die Liste
@@ -87,7 +87,7 @@ func NewBooking(
 	soll string,
 	haben string,
 	costCenter string,
-	net map[owner.Stakeholder]float64,
+	net map[profitCenter.Stakeholder]float64,
 	amount float64,
 	text string,
 	month int,
@@ -119,7 +119,7 @@ func NewBooking(
 func Ausgangsrechnung(
 	rownr int,
 	dealbringer string,
-	net map[owner.Stakeholder]float64,
+	net map[profitCenter.Stakeholder]float64,
 	amount float64,
 	text string,
 	month int,
@@ -176,3 +176,8 @@ type ByMonth []Booking
 func (a ByMonth) Len() int           { return len(a) }
 func (a ByMonth) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByMonth) Less(i, j int) bool { return a[i].Month < a[j].Month }
+
+type ByRowNr []Booking
+func (a ByRowNr) Len() int           { return len(a) }
+func (a ByRowNr) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByRowNr) Less(i, j int) bool { return a[i].RowNr < a[j].RowNr }

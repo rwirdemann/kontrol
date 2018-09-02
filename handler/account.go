@@ -44,7 +44,7 @@ func MakeGetAccountHandler(repository accountSystem.AccountSystem) http.HandlerF
 
 			a.UpdateSaldo()
 			w.Header().Set("Content-Type", "application/json")
-			sort.Sort(booking.ByMonth(a.Bookings))
+			sort.Sort(booking.ByRowNr(a.Bookings))
 			json := util.Json(a)
 			fmt.Fprintf(w, json)
 		} else {

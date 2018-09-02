@@ -66,3 +66,20 @@ func GuV (as accountSystem.AccountSystem) {
 	p := booking.NewBooking(0,"Jahresüberschuss", "", "", "", nil,  jahresueberschuss, "Buchung Jahresüberschuss", int(now.Month()), now.Year(), now)
 	a.Book(*p)
 }
+
+func ErloesverteilungAnProfitcenter (as accountSystem.AccountSystem) {
+
+	// Kosten werden auf Profitcenter zugeordnet
+
+	// Angestellten Boni werden verteils
+
+	// zunächst werden 15% (oder 20%) davon werden an die Shareholder (gemäß  fairshare) verteilt
+
+	// etwa 5% (1/4 des jeweiligen Deckungsbeitrags) der  Sales comission wird beglichen,
+
+	// interne Stunden werden beglichen
+
+	// Rest wird ermittelt und nach Umsatzanteil verteilt
+
+
+}

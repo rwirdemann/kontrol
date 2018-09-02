@@ -1,4 +1,4 @@
-package owner
+package profitCenter
 
 // Stakeholder types
 const (
