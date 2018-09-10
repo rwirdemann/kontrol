@@ -1,4 +1,4 @@
-package profitCenter
+package valueCenter
 
 // Stakeholder types
 const (
