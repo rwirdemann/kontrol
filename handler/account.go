@@ -32,6 +32,11 @@ func MakeGetAccountsHandler(repository accountSystem.AccountSystem) http.Handler
 func MakeGetAccountHandler(repository accountSystem.AccountSystem) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		// accept only requests from localhost
+		//...
+
+
+
 		vars := mux.Vars(r)
 		accountId := vars["id"]
 		if a, ok := repository.Get(accountId); ok {

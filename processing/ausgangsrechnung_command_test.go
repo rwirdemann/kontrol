@@ -6,7 +6,7 @@ import (
 
 	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/booking"
-	"github.com/ahojsenn/kontrol/profitCenter"
+	"github.com/ahojsenn/kontrol/valueMagnets"
 	"github.com/stretchr/testify/suite"
 	"github.com/ahojsenn/kontrol/accountSystem"
 	"log"
@@ -25,10 +25,10 @@ type AusgangsrechnungTestSuite struct {
 func (suite *AusgangsrechnungTestSuite) SetupTest() {
 	suite.repository = accountSystem.NewDefaultAccountSystem()
 	suite.accountBank = suite.repository.GetCollectiveAccount()
-	suite.accountRalf, _ = suite.repository.Get(  profitCenter.StakeholderRepository{}.Get("RW").Id )
-	suite.accountHannes, _ = suite.repository.Get(  profitCenter.StakeholderRepository{}.Get("JM").Id )
-	suite.accountBen, _ = suite.repository.Get(  profitCenter.StakeholderRepository{}.Get("BW").Id )
-	suite.accountKommitment, _ = suite.repository.Get(profitCenter.StakeholderRepository{}.Get("K").Id)
+	suite.accountRalf, _ = suite.repository.Get(  valueMagnets.StakeholderRepository{}.Get("RW").Id )
+	suite.accountHannes, _ = suite.repository.Get(  valueMagnets.StakeholderRepository{}.Get("JM").Id )
+	suite.accountBen, _ = suite.repository.Get(  valueMagnets.StakeholderRepository{}.Get("BW").Id )
+	suite.accountKommitment, _ = suite.repository.Get(valueMagnets.StakeholderRepository{}.Get("K").Id)
 }
 
 func TestAusgangsRechnungTestSuite(t *testing.T) {
@@ -38,9 +38,9 @@ func TestAusgangsRechnungTestSuite(t *testing.T) {
 func (suite *AusgangsrechnungTestSuite) TestPartnerNettoAnteil() {
 
 	// given: a booking
-	net := make(map[profitCenter.Stakeholder]float64)
-	net[profitCenter.StakeholderRepository{}.Get("RW")] = 10800.0
-	net[profitCenter.StakeholderRepository{}.Get("JM")] = 3675.0
+	net := make(map[valueMagnets.Stakeholder]float64)
+	net[valueMagnets.StakeholderRepository{}.Get("RW")] = 10800.0
+	net[valueMagnets.StakeholderRepository{}.Get("JM")] = 3675.0
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
 	p := booking.NewBooking(13,"AR", "", "", "JM", net, 17225.25, "Rechnung 1234", 1, 2017, its2018)
 
@@ -48,7 +48,7 @@ func (suite *AusgangsrechnungTestSuite) TestPartnerNettoAnteil() {
 	Process(suite.repository, *p)
 
 	// then ralf 1 booking: his own net share
-	accountRalf, _ := suite.repository.Get(profitCenter.StakeholderRepository{}.Get("RW").Id)
+	accountRalf, _ := suite.repository.Get(valueMagnets.StakeholderRepository{}.Get("RW").Id)
 	bookingsRalf := accountRalf.Bookings
 	suite.Equal(1, len(bookingsRalf))
 	bRalf, _ := findBookingByText(bookingsRalf, "Rechnung 1234#NetShare#RW")
@@ -58,7 +58,7 @@ func (suite *AusgangsrechnungTestSuite) TestPartnerNettoAnteil() {
 	suite.Equal(booking.Nettoanteil, bRalf.Type)
 
 	// and hannes got 3 bookings: his own net share and 2 provisions
-	accountHannes, _ := suite.repository.Get(profitCenter.StakeholderRepository{}.Get("JM").Id)
+	accountHannes, _ := suite.repository.Get(valueMagnets.StakeholderRepository{}.Get("JM").Id)
 	bookingsHannes := accountHannes.Bookings
 	suite.Equal(3, len(bookingsHannes))
 
@@ -79,7 +79,7 @@ func (suite *AusgangsrechnungTestSuite) TestPartnerNettoAnteil() {
 	suite.Equal(booking.Vertriebsprovision, provisionHannes.Type)
 
 	// kommitment got 25% from ralfs net booking
-	accountKommitment, _ := suite.repository.Get(profitCenter.StakeholderKM.Id)
+	accountKommitment, _ := suite.repository.Get(valueMagnets.StakeholderKM.Id)
 	bookingsKommitment := accountKommitment.Bookings
 	suite.Equal(2, len(bookingsKommitment))
 	kommitmentRalf, _ := findBookingByText(bookingsKommitment, "Rechnung 1234#Kommitment#RW")
@@ -98,9 +98,9 @@ func (suite *AusgangsrechnungTestSuite) TestPartnerNettoAnteil() {
 func (suite *AusgangsrechnungTestSuite) TestOffeneRechnung() {
 
 	// given: a booking with empty timestamp in position "BankCreated"
-	net := make(map[profitCenter.Stakeholder]float64)
-	net[profitCenter.StakeholderRepository{}.Get("RW")] = 10800.0
-	net[profitCenter.StakeholderRepository{}.Get("JM")] = 3675.0
+	net := make(map[valueMagnets.Stakeholder]float64)
+	net[valueMagnets.StakeholderRepository{}.Get("RW")] = 10800.0
+	net[valueMagnets.StakeholderRepository{}.Get("JM")] = 3675.0
 	p := booking.NewBooking(13, "AR", "", "", "JM", net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{})
 
 	// when: the position is processed
@@ -112,7 +112,7 @@ func (suite *AusgangsrechnungTestSuite) TestOffeneRechnung() {
 	suite.Equal(1, len(bookings1400))
 
 	// the booking is not yet booked to partners
-	accountHannes, _ := suite.repository.Get(profitCenter.StakeholderRepository{}.Get("JM").Id)
+	accountHannes, _ := suite.repository.Get(valueMagnets.StakeholderRepository{}.Get("JM").Id)
 	bookingsHannes := accountHannes.Bookings
 	suite.Equal(0, len(bookingsHannes))
 }
@@ -126,9 +126,9 @@ func (suite *AusgangsrechnungTestSuite) TestOffeneRechnung() {
 func (suite *AusgangsrechnungTestSuite) TestDealbringerIstPartner() {
 
 	// Eine Buchung mit 2 Nettopositionen
-	net := make(map[profitCenter.Stakeholder]float64)
-	net[profitCenter.StakeholderRepository{}.Get("RW")] = 10800.0
-	net[profitCenter.StakeholderRepository{}.Get("JM")] = 3675.0
+	net := make(map[valueMagnets.Stakeholder]float64)
+	net[valueMagnets.StakeholderRepository{}.Get("RW")] = 10800.0
+	net[valueMagnets.StakeholderRepository{}.Get("JM")] = 3675.0
 	dealbringer := "JM"
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
 	p := booking.Ausgangsrechnung(13, dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, its2018)
@@ -151,8 +151,8 @@ func (suite *AusgangsrechnungTestSuite) TestDealbringerIstPartner() {
 func (suite *AusgangsrechnungTestSuite) TestDealbringerIstAngestellter() {
 
 	// Given a booking where dealbringes is an employee
-	net := make(map[profitCenter.Stakeholder]float64)
-	net[profitCenter.StakeholderRepository{}.Get("RW")] = 10800.0
+	net := make(map[valueMagnets.Stakeholder]float64)
+	net[valueMagnets.StakeholderRepository{}.Get("RW")] = 10800.0
 	dealbringer := "BW"
 	its2017 := time.Date(2017, 1, 23, 0, 0, 0, 0, time.UTC)
 

@@ -1,9 +1,13 @@
 package processing
 
 import (
+	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/booking"
 		"github.com/ahojsenn/kontrol/accountSystem"
+	"github.com/ahojsenn/kontrol/valueMagnets"
+	"github.com/ahojsenn/kontrol/util"
 	"log"
+	"strconv"
 	"time"
 )
 
@@ -61,11 +65,82 @@ func GuV (as accountSystem.AccountSystem) {
 			jahresueberschuss += account.Saldo
 		}
 	}
-	a,_ := as.Get(accountSystem.ErgebnisNachSteuern.Id)
+
+
 	now := time.Now().AddDate(0, 0, 0)
-	p := booking.NewBooking(0,"Jahresüberschuss", "", "", "", nil,  jahresueberschuss, "Buchung Jahresüberschuss", int(now.Month()), now.Year(), now)
-	a.Book(*p)
+	// Jarhesüberschuss ist nun ermittelt
+
+	// Buchung auf Verrechnungskonto Jahresüberschuss
+	jue,_ := as.Get(accountSystem.ErgebnisNachSteuern.Id)
+	soll := booking.NewBooking(0,"Jahresüberschuss "+strconv.Itoa(util.Global.FinancialYear), "", "", "", nil,  jahresueberschuss, "Buchung Jahresüberschuss", int(now.Month()), now.Year(), now)
+	jue.Book(*soll)
+
+	// und Buchung auf Verbindlichkeitenkonto
+	verb,_ := as.Get(accountSystem.SKR03_920_Gesellschafterdarlehen.Id)
+	haben := booking.NewBooking(0,"Jahresüberschuss "+strconv.Itoa(util.Global.FinancialYear), "", "", valueMagnets.StakeholderKM.Id, nil,  jahresueberschuss, "Buchung Jahresüberschuss", int(now.Month()), now.Year(), now)
+	verb.Book(*haben)
+
 }
+
+func Bilanz (as accountSystem.AccountSystem) {
+
+	var konto *account.Account
+	var bk *booking.Booking
+	now := time.Now().AddDate(0, 0, 0)
+
+
+	// Aktiva
+	for rownr, account := range as.All() {
+		if account.Description.Type == accountSystem.KontenartAktiv {
+			// Buchung auf SummeAktiva
+			konto,_ = as.Get(accountSystem.SummeAktiva.Id)
+			bk = booking.NewBooking(
+				rownr,
+				account.Description.Name+strconv.Itoa(util.Global.FinancialYear),
+				"",
+				"",
+				"",
+				nil,
+				account.Saldo,
+				"SummeAktiva "+strconv.Itoa(util.Global.FinancialYear),
+				int(now.Month()),
+				now.Year(),
+				now)
+			konto.Book(*bk)
+		}
+	}
+
+
+	// Passiva
+	for rownr, account := range as.All() {
+		if account.Description.Type == accountSystem.KontenartPassiv {
+			// Buchung auf SummePassiva
+			konto,_ = as.Get(accountSystem.SummePassiva.Id)
+			bk = booking.NewBooking(
+				rownr,
+				account.Description.Name+strconv.Itoa(util.Global.FinancialYear),
+				"",
+				"",
+				"",
+				nil,
+				account.Saldo,
+				"SummePassiva "+strconv.Itoa(util.Global.FinancialYear),
+				int(now.Month()),
+				now.Year(),
+				now)
+			konto.Book(*bk)
+		}
+	}
+
+
+
+
+}
+
+
+
+
+
 
 func ErloesverteilungAnProfitcenter (as accountSystem.AccountSystem) {
 

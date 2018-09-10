@@ -4,7 +4,7 @@ import (
 		"time"
 
 		"github.com/ahojsenn/kontrol/booking"
-	"github.com/ahojsenn/kontrol/profitCenter"
+	"github.com/ahojsenn/kontrol/valueMagnets"
 	"github.com/ahojsenn/kontrol/util"
 	"github.com/ahojsenn/kontrol/accountSystem"
 	)
@@ -109,10 +109,14 @@ type BookPartnerEntnahmeCommand struct {
 
 func (c BookPartnerEntnahmeCommand) run() {
 
-	// Buchung von Kommanditstenkonto
-	b := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.Entnahme, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
-	a, _ := c.AccSystem.Get(c.Booking.Responsible)
-	a.Book(b)
+
+	// auflösen eines Gesellschafterdarlehens, Buchung: Privatentnahme 1900 an Bank 1200
+	amount := c.Booking.Amount
+
+	// Soll Privatentnahme
+	sollAccount,_ := c.AccSystem.Get(accountSystem.SKR03_1900.Id)
+	b := booking.CloneBooking(c.Booking, -amount, booking.Entnahme, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	sollAccount.Book(b)
 
 	// an Bank
 	bankBooking := c.Booking
@@ -136,7 +140,7 @@ func (c BookPartnerEntnahmeVorjahrCommand) run() {
 	amount := c.Booking.Amount
 
 	// Soll Gesellschafterdarlehens
-	sollAccount,_ := c.AccSystem.Get(accountSystem.SKR03_KontoJUSVJ.Id)
+	sollAccount,_ := c.AccSystem.Get(accountSystem.SKR03_920_Gesellschafterdarlehen.Id)
 	b := booking.CloneBooking(c.Booking, -amount, booking.GVVorjahr, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	sollAccount.Book(b)
 
@@ -196,7 +200,7 @@ func (c BookInterneStundenCommand) run() {
 
 	// Buchung interner Stunden von kommitment Konto auf Stakeholder
 	b := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.InterneStunden, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
-	kommitmentAccount, _ := c.AccSystem.Get(profitCenter.StakeholderKM.Id)
+	kommitmentAccount, _ := c.AccSystem.Get(valueMagnets.StakeholderKM.Id)
 	kommitmentAccount.Book(b)
 }
 

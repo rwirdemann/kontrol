@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ahojsenn/kontrol/profitCenter"
+	"github.com/ahojsenn/kontrol/valueMagnets"
 	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/util"
@@ -35,17 +35,19 @@ type DefaultAccountSystem struct {
 
 const SKR03 = "SKR03"
 
-var SKR03_Rueckstellungen = account.AccountDescription{Id: "Rückstellung", Name: "Rückstellung 956-977", Type: KontenartPassiv}
-var SKR03_Eigenkapital_880 = account.AccountDescription{Id: "Eigenkapital", Name: "Eigenkapital 880", Type: KontenartPassiv}
-var SKR03_KontoJUSVJ = account.AccountDescription{Id: "JahresüberschussVJ", Name: "JahresüberschussVJ Gesellschafterdarlehen 920", Type: KontenartPassiv}
-var SKR03_1200 = account.AccountDescription{Id: "1200", Name: "Bank 1200", Type: KontenartAktiv}
-var SKR03_1400 = account.AccountDescription{Id: "1400", Name: "OPOS-Kunde 1400", Type: KontenartAktiv}
-var SKR03_1600 = account.AccountDescription{Id: "1600", Name: "OPOS-Lieferant 1600", Type: KontenartPassiv}
-var SKR03_Anlagen = account.AccountDescription{Id: "SKR03_Anlagen", Name: "Zugang Anlagen", Type: KontenartAktiv}
-var SKR03_Anlagen25 = account.AccountDescription{Id: "SKR03_Anlagen25", Name: "Zugang Anlagen Ähnl.R&W 25", Type: KontenartAktiv}
-var SKR03_Kautionen = account.AccountDescription{Id: "SKR03_Kautionen", Name: "SKR03_Kautionen 1525", Type: KontenartAktiv}
-var SKR03_Vorsteuer = account.AccountDescription{Id: "SKR03_Vorsteuer", Name: "Steuer: Vorsteuer 1570-1579", Type: KontenartAktiv}
-var SKR03_Umsatzsteuer = account.AccountDescription{Id: "SKR03_Umsatzsteuer", Name: "Steuer: Umsatzsteuer 1770", Type: KontenartAktiv}
+var SKR03_Rueckstellungen = account.AccountDescription{Id: "Rückstellung", Name: "SKR03_956-977_Rückstellung", Type: KontenartPassiv}
+var SKR03_Eigenkapital_880 = account.AccountDescription{Id: "Eigenkapital", Name: "SKR03_880_Eigenkapital", Type: KontenartPassiv}
+var SKR03_900_Haftkapital = account.AccountDescription{Id: "SKR03_900_Haftkapital", Name: "SKR03_900_Haftkapital", Type: KontenartPassiv}
+var SKR03_920_Gesellschafterdarlehen = account.AccountDescription{Id: "SKR03_920_Gesellschafterdarlehen", Name: "SKR03_920_Gesellschafterdarlehen", Type: KontenartPassiv}
+var SKR03_1200 = account.AccountDescription{Id: "1200", Name: "SKR03_1200_Bank", Type: KontenartAktiv}
+var SKR03_1400 = account.AccountDescription{Id: "1400", Name: "SKR03_1400_OPOS-Kunde", Type: KontenartAktiv}
+var SKR03_1600 = account.AccountDescription{Id: "1600", Name: "SKR03_1600_OPOS-Lieferant", Type: KontenartPassiv}
+var SKR03_1900 = account.AccountDescription{Id: "1900", Name: "SKR03_1900_Privatentnahmen", Type: KontenartPassiv}
+var SKR03_Anlagen = account.AccountDescription{Id: "SKR03_Anlagen", Name: "SKR03_410-480_Anlagen", Type: KontenartAktiv}
+var SKR03_Anlagen25 = account.AccountDescription{Id: "SKR03_Anlagen25", Name: "SKR03_25_Anlagen Ähnl.R&W", Type: KontenartAktiv}
+var SKR03_Kautionen = account.AccountDescription{Id: "SKR03_Kautionen", Name: "SKR03_1525_Kautionen", Type: KontenartAktiv}
+var SKR03_Vorsteuer = account.AccountDescription{Id: "SKR03_Vorsteuer", Name: "SKR03_1570-1579_Steuer: Vorsteuer", Type: KontenartAktiv}
+var SKR03_Umsatzsteuer = account.AccountDescription{Id: "SKR03_Umsatzsteuer", Name: "SKR03_1770_Steuer: Umsatzsteuer", Type: KontenartAktiv}
 // Erfolgskonten
 var SKR03_Umsatzerloese = account.AccountDescription{Id: "SKR03_Umsatzerloese", Name: "1 SKR03_Umsatzerloese 8100-8402", Type: KontenartErtrag}
 var SKR03_4100_4199 = account.AccountDescription{Id: "4100_4199", Name: "3 Löhne und Gehälter 4100-4199", Type: KontenartAufwand}
@@ -56,6 +58,8 @@ var SKR03_Steuern = account.AccountDescription{Id: "SKR03_Steuern", Name: "6 SKR
 var ErgebnisNachSteuern = account.AccountDescription{Id: "SKR03_ErgebnisNachSteuern", Name: "7 ErgebnisNachSteuern", Type: KontenartVerrechnung}
 // Verrechnungskonten
 var SKR03_Saldenvortrag = account.AccountDescription{Id: "SKR03_Saldenvortrag", Name: "Saldenvortrag 9000", Type: KontenartVerrechnung}
+var SummeAktiva 	= account.AccountDescription{Id: "SummeAktiva", Name: "V: SummeAktiva", Type: KontenartVerrechnung}
+var SummePassiva 	= account.AccountDescription{Id: "SummePassiva", Name: "V: SummePassiva", Type: KontenartVerrechnung}
 
 
 
@@ -68,10 +72,12 @@ func (this Accountlist) All() []account.AccountDescription {
 	return []account.AccountDescription{
 		SKR03_Rueckstellungen,
 		SKR03_Eigenkapital_880,
-		SKR03_KontoJUSVJ,
+		SKR03_900_Haftkapital,
+		SKR03_920_Gesellschafterdarlehen,
 		SKR03_1200,
 		SKR03_1400,
 		SKR03_1600,
+		SKR03_1900,
 		SKR03_4100_4199,
 		SKR03_AnlagenabgaengeSachanlagen2310,
 		SKR03_sonstigeAufwendungen,
@@ -85,6 +91,8 @@ func (this Accountlist) All() []account.AccountDescription {
 		SKR03_Umsatzsteuer,
 		SKR03_Saldenvortrag,
 		ErgebnisNachSteuern,
+		SummeAktiva,
+		SummePassiva,
 	}
 }
 
@@ -106,9 +114,9 @@ func NewDefaultAccountSystem() AccountSystem {
 	}
 
 	// generate accounts for all stakeholders
-	stakeholderRepository := profitCenter.StakeholderRepository{}
+	stakeholderRepository := valueMagnets.StakeholderRepository{}
 	for _, sh := range stakeholderRepository.All(year) {
-		if sh.Type != profitCenter.StakeholderTypeOthers {
+		if sh.Type != valueMagnets.StakeholderTypeOthers {
 			ad := account.AccountDescription{Id: sh.Id, Name: sh.Name, Type: sh.Type}
 			accountSystem.Add(account.NewAccount(ad))
 		}
@@ -161,18 +169,26 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 		account = r.accounts[SKR03_Anlagen.Id]
 	case "880": // Eigenkapital bilden
 		account = r.accounts[SKR03_Eigenkapital_880.Id]
+	case "900": // Eigenkapital bilden
+		account = r.accounts[SKR03_900_Haftkapital.Id]
 	case "920": // Rückstellung bilden
-		account = r.accounts[SKR03_KontoJUSVJ.Id]
+		account = r.accounts[SKR03_920_Gesellschafterdarlehen.Id]
 	case "956","965","970","977": // Rückstellung bilden
 		account = r.accounts[SKR03_Rueckstellungen.Id]
 	case "1200": // Bank buchen
 		account = r.accounts[SKR03_1200.Id]
 	case "1525":
 		account = r.accounts[SKR03_Kautionen.Id]
+	case "1548":
+		account = r.accounts[SKR03_Vorsteuer.Id]
 	case "1400":
 		account = r.accounts[SKR03_1400.Id]
-	case "1600":
+	case "731", "1600":
 		account = r.accounts[SKR03_1600.Id]
+	case "1770":
+		account = r.accounts[SKR03_Umsatzsteuer.Id]
+	case "1900":
+		account = r.accounts[SKR03_1900.Id]
 	case "2310":
 		account = r.accounts[SKR03_AnlagenabgaengeSachanlagen2310.Id]
 	case "4120":

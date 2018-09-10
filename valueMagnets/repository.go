@@ -1,4 +1,4 @@
-package valueCenter
+package valueMagnets
 
 import (
 	"fmt"

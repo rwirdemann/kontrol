@@ -76,6 +76,7 @@ func importAndProcessBookings(repository accountSystem.AccountSystem, year int) 
 	}
 	// now calculate GuV
 	processing.GuV(repository)
+	processing.Bilanz(repository)
 }
 
 func watchBookingFile(repository accountSystem.AccountSystem, year int) {

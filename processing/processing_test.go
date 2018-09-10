@@ -7,7 +7,7 @@ import (
 	"github.com/ahojsenn/kontrol/account"
 
 	"github.com/ahojsenn/kontrol/booking"
-	"github.com/ahojsenn/kontrol/profitCenter"
+	"github.com/ahojsenn/kontrol/valueMagnets"
 	"github.com/ahojsenn/kontrol/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/ahojsenn/kontrol/accountSystem"
@@ -22,9 +22,9 @@ var accountKommitment *account.Account
 func setUp() {
 	accSystem = accountSystem.NewDefaultAccountSystem()
 	accountBank = accSystem.GetCollectiveAccount()
-	accountHannes, _ = accSystem.Get(profitCenter.StakeholderRepository{}.Get("JM").Id)
-	accountRalf, _ = accSystem.Get(profitCenter.StakeholderRepository{}.Get("RW").Id)
-	accountKommitment, _ = accSystem.Get(profitCenter.StakeholderRepository{}.Get("K").Id)
+	accountHannes, _ = accSystem.Get(valueMagnets.StakeholderRepository{}.Get("JM").Id)
+	accountRalf, _ = accSystem.Get(valueMagnets.StakeholderRepository{}.Get("RW").Id)
+	accountKommitment, _ = accSystem.Get(valueMagnets.StakeholderRepository{}.Get("K").Id)
 }
 
 // Ausgangsrechnung Angestellter
@@ -34,8 +34,8 @@ func TestAusgangsrechnungAngestellter(t *testing.T) {
 	setUp()
 
 	// Ben hat auf einer Buchung nett 10.800 EUR erwirtschaftet
-	net := map[profitCenter.Stakeholder]float64{
-		profitCenter.StakeholderRepository{}.Get("BW"): 10800.0,
+	net := map[valueMagnets.Stakeholder]float64{
+		valueMagnets.StakeholderRepository{}.Get("BW"): 10800.0,
 	}
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
 	p := booking.NewBooking(13, "AR", "", "", "JM", net, 12852.0, "Rechnung 1234", 1, 2017, its2018)
@@ -93,8 +93,8 @@ func TestExternNettoAnteil(t *testing.T) {
 	setUp()
 
 	// given: a booking
-	net := map[profitCenter.Stakeholder]float64{
-		profitCenter.StakeholderEX: 10800.0,
+	net := map[valueMagnets.Stakeholder]float64{
+		valueMagnets.StakeholderEX: 10800.0,
 	}
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
 	p := booking.NewBooking(13, "AR", "", "", "JM", net, 12852.0, "Rechnung 1234", 1, 2017, its2018)
@@ -103,14 +103,14 @@ func TestExternNettoAnteil(t *testing.T) {
 	Process(accSystem, *p)
 
 	// and hannes got his provision
-	accountHannes, _ := accSystem.Get(profitCenter.StakeholderRepository{}.Get("JM").Id)
+	accountHannes, _ := accSystem.Get(valueMagnets.StakeholderRepository{}.Get("JM").Id)
 	provision := accountHannes.Bookings[0]
 	util.AssertFloatEquals(t, 10800.0*PartnerProvision, provision.Amount)
 	util.AssertEquals(t, booking.Vertriebsprovision, provision.Type)
 
 	// and kommitment got 95%
 	util.AssertEquals(t, 1, len(accountHannes.Bookings))
-	accountKommitment, _ := accSystem.Get(profitCenter.StakeholderKM.Id)
+	accountKommitment, _ := accSystem.Get(valueMagnets.StakeholderKM.Id)
 	kommitment := accountKommitment.Bookings[0]
 	util.AssertFloatEquals(t, 10800.0*KommmitmentExternShare, kommitment.Amount)
 	util.AssertEquals(t, booking.Kommitmentanteil, kommitment.Type)
@@ -214,13 +214,14 @@ func TestPartnerEntnahme(t *testing.T) {
 	setUp()
 
 	extras := booking.CsvBookingExtras{Typ: "GV", Responsible: "RW"}
-	extras.Net = make(map[profitCenter.Stakeholder]float64)
+	extras.Net = make(map[valueMagnets.Stakeholder]float64)
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
 	b := booking.NewBooking(13,"GV", "", "", "RW", nil, 6000, "", 1, 2017, its2018)
 
 	Process(accSystem, *b)
 
-	bRalf := accountRalf.Bookings[0]
+	acc1,_ := accSystem.Get(accountSystem.SKR03_1900.Id)
+	bRalf := acc1.Bookings[0]
 	util.AssertFloatEquals(t, -6000, bRalf.Amount)
 	util.AssertEquals(t, booking.Entnahme, bRalf.Type)
 
@@ -278,14 +279,14 @@ func TestInterneStunden(t *testing.T) {
 	Process(accSystem, *p)
 
 	// the booking is booked to anke's account
-	a1, _ := accSystem.Get(profitCenter.StakeholderRepository{}.Get("AN").Id)
+	a1, _ := accSystem.Get(valueMagnets.StakeholderRepository{}.Get("AN").Id)
 	util.AssertEquals(t, 1, len(a1.Bookings))
 	b1 := a1.Bookings[0]
 	util.AssertFloatEquals(t, 8250.00, b1.Amount)
 	util.AssertEquals(t, booking.InterneStunden, b1.Type)
 
 	// the booking is booked against kommitment account
-	a2, _ := accSystem.Get(profitCenter.StakeholderKM.Id)
+	a2, _ := accSystem.Get(valueMagnets.StakeholderKM.Id)
 	b2 := a2.Bookings[0]
 	util.AssertFloatEquals(t, -8250.00, b2.Amount)
 	util.AssertEquals(t, booking.InterneStunden, b1.Type)
@@ -389,7 +390,7 @@ func TestProcessGV_Vorjahr(t *testing.T) {
 	Process(accSystem, *b)
 
 	// Buchung wurde gegen JahresüberschussVJ gebucht
-	a, _ := accSystem.Get(accountSystem.SKR03_KontoJUSVJ.Id)
+	a, _ := accSystem.Get(accountSystem.SKR03_920_Gesellschafterdarlehen.Id)
 	b1 := a.Bookings[0]
 	assert.Equal(t, -77777.0, b1.Amount)
 	assert.Equal(t, booking.GVVorjahr, b1.Type)
@@ -421,7 +422,7 @@ func TestProcessOPOS_SKR1600(t *testing.T) {
 	assert.Equal(t, 1, len(bookings1600))
 
 	// the booking is not yet booked to partners
-	accountK, _ := accSystem.Get(profitCenter.StakeholderKM.Id)
+	accountK, _ := accSystem.Get(valueMagnets.StakeholderKM.Id)
 	bookingsK := accountK.Bookings
 	assert.Equal(t, 0, len(bookingsK))
 

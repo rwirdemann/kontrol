@@ -6,7 +6,7 @@ import (
 
 	"golang.org/x/text/language"
 
-	"github.com/ahojsenn/kontrol/profitCenter"
+	"github.com/ahojsenn/kontrol/valueMagnets"
 	"golang.org/x/text/message"
 )
 
@@ -41,7 +41,7 @@ type CsvBookingExtras struct {
 	Responsible string
 
 	// Verteilung der netto Rechnungspositionen auf Stakeholder
-	Net map[profitCenter.Stakeholder]float64
+	Net map[valueMagnets.Stakeholder]float64
 }
 
 // Aus einer Buchung in der Quelldatei wird eine oder mehrere virtuelle Buchungen erstellt. Dies ist die Liste
@@ -87,7 +87,7 @@ func NewBooking(
 	soll string,
 	haben string,
 	costCenter string,
-	net map[profitCenter.Stakeholder]float64,
+	net map[valueMagnets.Stakeholder]float64,
 	amount float64,
 	text string,
 	month int,
@@ -119,7 +119,7 @@ func NewBooking(
 func Ausgangsrechnung(
 	rownr int,
 	dealbringer string,
-	net map[profitCenter.Stakeholder]float64,
+	net map[valueMagnets.Stakeholder]float64,
 	amount float64,
 	text string,
 	month int,
