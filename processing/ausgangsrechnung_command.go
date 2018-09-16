@@ -123,7 +123,7 @@ func (this BookAusgangsrechnungCommand) run() {
 
 		if benefited.Type == valueMagnets.StakeholderTypeExtern {
 
-			// book kommitment share
+			// book Extern share
 			kommitmentShare := booking.Booking{
 				RowNr:       this.Booking.RowNr,
 				Amount:      this.Booking.Net[benefited] * KommmitmentExternShare,

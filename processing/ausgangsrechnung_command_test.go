@@ -5,11 +5,10 @@ import (
 	"time"
 
 	"github.com/ahojsenn/kontrol/account"
+	"github.com/ahojsenn/kontrol/accountSystem"
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/valueMagnets"
 	"github.com/stretchr/testify/suite"
-	"github.com/ahojsenn/kontrol/accountSystem"
-	"log"
 )
 
 type AusgangsrechnungTestSuite struct {
@@ -137,7 +136,6 @@ func (suite *AusgangsrechnungTestSuite) TestDealbringerIstPartner() {
 
 	// Ralfs Nettoanteil
 	provisionRalf, _ := findBookingByText(suite.accountRalf.Bookings, "Rechnung 1234#NetShare#RW")
-	log.Println("dadasfas", provisionRalf)
 	suite.assertBooking(10800.00*PartnerShare, booking.Nettoanteil, provisionRalf)
 
 	// Hannes bekommt Provision für Hannes Nettoanteil

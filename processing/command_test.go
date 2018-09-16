@@ -10,7 +10,7 @@ import (
 
 func TestSKR03Command(t *testing.T) {
 
-	// iven an accountingSystem and a booking
+	// given an accountingSystem and a booking
 	accsystem := accountSystem.NewDefaultAccountSystem()
 	bkng := booking.Booking{}
 	bkng.Type = "SKR03"

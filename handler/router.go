@@ -15,6 +15,7 @@ func NewRouter(githash string, buildstamp string, repository accountSystem.Accou
 	r.HandleFunc("/kontrol/collectiveaccount", middleware.JWTMiddleware(key, MakeGetCollectiveAccountHandler(repository)))
 	r.HandleFunc("/kontrol/bilanz", MakeGetBilanzAccountsHandler(repository))
 	r.HandleFunc("/kontrol/GuV", MakeGetGuVAccountsHandler(repository))
+	r.HandleFunc("/kontrol/kommitmenschen", MakeGetKommitmenschenAccountsHandler(repository))
 	r.HandleFunc("/kontrol/accounts", MakeGetAccountsHandler(repository))
 	r.HandleFunc("/kontrol/accounts/{id}", MakeGetAccountHandler(repository))
 	return r

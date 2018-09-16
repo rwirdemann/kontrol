@@ -434,7 +434,7 @@ func TestBonusRueckstellungAngestellterSKR03(t *testing.T) {
 
 	// given: a internal hours booking
 	now := time.Now().AddDate(0, 0, 0)
-	p := booking.NewBooking(13,"Gehalt", "4120", "965", "BW", nil, 1337.42, "Gehalt Januar 2017", 12, 2017, now)
+	p := booking.NewBooking(13,"SKR03", "4120", "965", "BW", nil, 1337.42, "Gehalt Januar 2017", 12, 2017, now)
 
 	// when: the position is processed
 	Process(accSystem, *p)
@@ -443,14 +443,14 @@ func TestBonusRueckstellungAngestellterSKR03(t *testing.T) {
 	a, _ := accSystem.Get(accountSystem.SKR03_4100_4199.Id)
 	assert.Equal(t, 1, len(a.Bookings))
 	assert.Equal(t, -1337.42, a.Bookings[0].Amount)
-	assert.Equal(t, booking.Gehalt, a.Bookings[0].Type)
+	assert.Equal(t, booking.SKR03, a.Bookings[0].Type)
 	assert.Equal(t, "BW", a.Bookings[0].CostCenter)
 
 	// booking is on Rückstellungsaccount
 	rueckstellungen, _ := accSystem.Get(accountSystem.SKR03_Rueckstellungen.Id)
 	assert.Equal(t, 1, len(rueckstellungen.Bookings))
 	assert.Equal(t, 1337.42, rueckstellungen.Bookings[0].Amount)
-	assert.Equal(t, booking.Gehalt, rueckstellungen.Bookings[0].Type)
+	assert.Equal(t, booking.SKR03, rueckstellungen.Bookings[0].Type)
 }
 
 // Test Abschreibungen auf Anlagen
