@@ -24,6 +24,7 @@ type AccountSystem interface {
 	Add(a *account.Account)
 	All() []account.Account
 	Get(id string) (*account.Account, bool)
+	GetBilanzAccounts (typ string) []account.Account
 	GetSKR03(id string) *account.Account
 	ClearBookings()
 }
@@ -148,6 +149,19 @@ func (r *DefaultAccountSystem) Get(id string) (*account.Account, bool) {
 		return a, true
 	}
 	return nil, false
+}
+
+func (as *DefaultAccountSystem) GetBilanzAccounts (typ string) []account.Account {
+	var filtered  []account.Account
+	for _, account := range as.accounts {
+		if account.Description.Type == typ {
+			account.UpdateSaldo()
+			clone := *account
+			clone.Bookings = nil
+			filtered = append(filtered, clone)
+		}
+	}
+	return filtered
 }
 
 func (r *DefaultAccountSystem) ClearBookings() {

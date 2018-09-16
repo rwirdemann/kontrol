@@ -13,6 +13,8 @@ func NewRouter(githash string, buildstamp string, repository accountSystem.Accou
 	key := keycloakRSAPub()
 	r.HandleFunc("/kontrol/version", middleware.JWTMiddleware(key, MakeVersionHandler(githash, buildstamp)))
 	r.HandleFunc("/kontrol/collectiveaccount", middleware.JWTMiddleware(key, MakeGetCollectiveAccountHandler(repository)))
+	r.HandleFunc("/kontrol/bilanz", MakeGetBilanzAccountsHandler(repository))
+	r.HandleFunc("/kontrol/GuV", MakeGetGuVAccountsHandler(repository))
 	r.HandleFunc("/kontrol/accounts", MakeGetAccountsHandler(repository))
 	r.HandleFunc("/kontrol/accounts/{id}", MakeGetAccountHandler(repository))
 	return r
