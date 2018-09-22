@@ -17,6 +17,7 @@ const (
 	KontenartAufwand          = "Aufwandskonto"
 	KontenartErtrag           = "Ertragskonto"
 	KontenartVerrechnung      = "Verrechnungskonto"
+	KontenartKLR      		  = "VerrechnungskontoKLR"
 )
 
 type AccountSystem interface {
@@ -61,6 +62,7 @@ var ErgebnisNachSteuern = account.AccountDescription{Id: "SKR03_ErgebnisNachSteu
 var SKR03_Saldenvortrag = account.AccountDescription{Id: "SKR03_Saldenvortrag", Name: "Saldenvortrag 9000", Type: KontenartVerrechnung}
 var SummeAktiva 	= account.AccountDescription{Id: "SummeAktiva", Name: "V: SummeAktiva", Type: KontenartVerrechnung}
 var SummePassiva 	= account.AccountDescription{Id: "SummePassiva", Name: "V: SummePassiva", Type: KontenartVerrechnung}
+var AlleKLRBuchungen = account.AccountDescription{Id: "AlleKLRBuchungen", Name: "V: AlleKLRBuchungen", Type: KontenartKLR}
 
 
 
@@ -94,18 +96,19 @@ func (this Accountlist) All() []account.AccountDescription {
 		ErgebnisNachSteuern,
 		SummeAktiva,
 		SummePassiva,
+		AlleKLRBuchungen,
 	}
 }
 
 func EmptyDefaultAccountSystem() AccountSystem {
-	o := account.AccountDescription{Id: "all", Name: "Hauptbuch", Type: KontenartAktiv}
+	o := account.AccountDescription{Id: "all", Name: "Hauptbuch", Type: KontenartVerrechnung}
 	return &DefaultAccountSystem{collectiveAccount: &account.Account{Description: o}, accounts: make(map[string]*account.Account)}
 }
 
 func NewDefaultAccountSystem() AccountSystem {
 	year := util.Global.FinancialYear
 
-	ad := account.AccountDescription{Id: "all", Name: "Hauptbuch", Type: KontenartAktiv}
+	ad := account.AccountDescription{Id: "all", Name: "Hauptbuch", Type: KontenartVerrechnung}
 	accountSystem := DefaultAccountSystem{collectiveAccount: &account.Account{Description: ad}, accounts: make(map[string]*account.Account)}
 
 	// generate accounts according to the AccountList

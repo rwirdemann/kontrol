@@ -6,12 +6,12 @@ import (
 
 	"github.com/ahojsenn/kontrol/account"
 
-	"github.com/ahojsenn/kontrol/booking"
-	"github.com/ahojsenn/kontrol/valueMagnets"
-	"github.com/ahojsenn/kontrol/util"
-	"github.com/stretchr/testify/assert"
 	"github.com/ahojsenn/kontrol/accountSystem"
-	)
+	"github.com/ahojsenn/kontrol/booking"
+	"github.com/ahojsenn/kontrol/util"
+	"github.com/ahojsenn/kontrol/valueMagnets"
+	"github.com/stretchr/testify/assert"
+)
 
 var accSystem accountSystem.AccountSystem
 var accountBank *account.Account
@@ -50,7 +50,7 @@ func TestAusgangsrechnungAngestellter(t *testing.T) {
 	// Kommitment kriegt 95% der Nettorechnung
 	util.AssertEquals(t, 1, len(accountHannes.Bookings))
 	kommitment := accountKommitment.Bookings[0]
-	util.AssertFloatEquals(t, 10800.0*KommmitmentEmployeeShare, kommitment.Amount)
+	util.AssertFloatEquals(t, 10800.0*(KommmitmentEmployeeShare-EmployeeShare), kommitment.Amount)
 	util.AssertEquals(t, booking.Kommitmentanteil, kommitment.Type)
 
 	// Kommitment-Buchung ist der Kostenstelle "BW" zugeordnet
@@ -230,7 +230,7 @@ func TestPartnerEntnahme(t *testing.T) {
 	util.AssertEquals(t, 1, len(acc.Bookings))
 	actual := acc.Bookings[0]
 	util.AssertFloatEquals(t, 6000, actual.Amount)
-	util.AssertEquals(t, "GV", actual.Type)
+	util.AssertEquals(t, booking.Entnahme, actual.Type)
 }
 
 // Rückstellungen
@@ -393,7 +393,7 @@ func TestProcessGV_Vorjahr(t *testing.T) {
 	a, _ := accSystem.Get(accountSystem.SKR03_920_Gesellschafterdarlehen.Id)
 	b1 := a.Bookings[0]
 	assert.Equal(t, -77777.0, b1.Amount)
-	assert.Equal(t, booking.GVVorjahr, b1.Type)
+	assert.Equal(t, "GV-Vorjahr", b1.Type)
 	assert.Equal(t, "JM", b1.CostCenter)
 
 	// Buchung wurde aufs Bankkonto gebucht
@@ -402,7 +402,7 @@ func TestProcessGV_Vorjahr(t *testing.T) {
 	actual := habenAccount.Bookings[0]
 	assert.Equal(t, 77777.0, actual.Amount)
 	assert.Equal(t, "Rest Anteil Johannes", actual.Text)
-	assert.Equal(t, "GVVorjahr", actual.Type)
+	assert.Equal(t, "GV-Vorjahr", actual.Type)
 }
 
 // test whether there is a not yet payed invoice
@@ -415,13 +415,14 @@ func TestProcessOPOS_SKR1600(t *testing.T) {
 
 	// when: the position is processed
 	Process(accSystem, *p)
+	ErloesverteilungAnValueMagnets(accSystem)
 
 	// the booking is booked to SRK1600 account
 	account1600, _ := accSystem.Get(accountSystem.SKR03_1600.Id)
 	bookings1600 := account1600.Bookings
 	assert.Equal(t, 1, len(bookings1600))
 
-	// the booking is not yet booked to partners
+	// the booking is booked to partners via costCenter booking
 	accountK, _ := accSystem.Get(valueMagnets.StakeholderKM.Id)
 	bookingsK := accountK.Bookings
 	assert.Equal(t, 0, len(bookingsK))
@@ -503,6 +504,44 @@ func TestUstVZ(t *testing.T) {
 	assert.Equal(t, 1337.23 , habenAccount.Bookings[0].Amount )
 
 }
+
+func TestErloesverteilungAnValueMagnets(t *testing.T) {
+	as := accountSystem.NewDefaultAccountSystem()
+
+	// ad := account.AccountDescription{Id: "BW", Name: "Ben", Type: "Employee"}
+	// as.Add(account.NewAccount(ad))
+
+
+	// given: BOOKING ER
+	// Eingangsrechnung 12852.0€ von Bank an SKR03_sonstigeAufwendungen
+	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
+	p1 := booking.NewBooking(13, "ER", "", "", "K", nil, 12852.0, "hugo 1234", 1, 2017, its2018)
+	p2 := booking.NewBooking(13, "ER", "", "", "BW", nil, 11900, "gugo. blupp", 1, 2017, its2018)
+	p3 := booking.NewBooking(13, "AR", "", "", "BW", nil, 1190, "ARGSSLL", 1, 2017, its2018)
+	p4 := booking.NewBooking(13, "GV", "", "", "JM", nil, 5000, "ARGSSLL", 1, 2017, its2018)
+
+	// when: the position is processed
+	Process(as, *p1)
+	Process(as, *p2)
+	Process(as, *p3)
+	Process(as, *p4)
+	ErloesverteilungAnValueMagnets(as)
+
+	// booking ist on SKR03_sonstigeAufwendungen.Id
+	b,_ := as.Get(accountSystem.SKR03_sonstigeAufwendungen.Id)
+	assert.Equal(t, 2, len(b.Bookings))
+
+	// Booking is on CostCenter K
+	a, _ := as.Get("BW")
+	assert.Equal(t, 1, len(a.Bookings))
+	assert.Equal(t, booking.Eingangsrechnung, a.Bookings[0].Type)
+
+	c, _ := as.Get("JM")
+	assert.Equal(t, 1, len(c.Bookings))
+	assert.Equal(t, booking.Eingangsrechnung, a.Bookings[0].Type)
+
+}
+
 
 func assertBooking(t *testing.T, b booking.Booking, amount float64, text string, destType string) {
 	util.AssertFloatEquals(t, amount, b.Amount)

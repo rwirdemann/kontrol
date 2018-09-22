@@ -50,6 +50,7 @@ const (
 	Erloese      		  = "Erloese"
 	Vertriebsprovision    = "Vertriebsprovision"
 	Nettoanteil           = "Nettoanteil"
+	Employeeaanteil		  = "Employeeanteil"
 	Kommitmentanteil      = "Kommitmentanteil"
 	Entnahme              = "Entnahme"
 	Eingangsrechnung      = "Eingangsrechnung"

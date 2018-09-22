@@ -94,13 +94,12 @@ func (a Account) FilterBookingsByCostcenter(costcenter string) *Account {
 
 
 type ByOwner []Account
-
 func (a ByOwner) Len() int           { return len(a) }
 func (a ByOwner) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByOwner) Less(i, j int) bool { return strings.Compare(a[i].Description.Name, a[j].Description.Name) < 0 }
 
 type ByType []Account
-
 func (a ByType) Len() int           { return len(a) }
 func (a ByType) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByType) Less(i, j int) bool { return strings.Compare(a[i].Description.Type, a[j].Description.Type) < 0 }
+

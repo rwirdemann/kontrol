@@ -11,6 +11,10 @@ import (
 	"time"
 )
 
+const (
+	ShareHoldersShare        = 0.15
+)
+
 type Command interface {
 	run()
 }
@@ -18,7 +22,7 @@ type Command interface {
 // Implementiert den Kommitment-Verteilungsalgorithmus
 func Process(accsystem accountSystem.AccountSystem, booking booking.Booking) {
 
-	// Assign booking to one or more virtual stakeholder accounts
+	// Assign booking GuV and Bilanz accounts
 	var command Command
 
 	switch booking.Typ {
@@ -46,6 +50,7 @@ func Process(accsystem accountSystem.AccountSystem, booking booking.Booking) {
 		command = BookSKR03Command{AccSystem: accsystem, Booking: booking}
 	}
 	command.run()
+
 }
 
 func GuV (as accountSystem.AccountSystem) {
@@ -124,22 +129,43 @@ func Bilanz (as accountSystem.AccountSystem) {
 			konto.Book(*bk)
 		}
 	}
-
-
-
-
 }
 
 
 
-
-
-
-func ErloesverteilungAnProfitcenter (as accountSystem.AccountSystem) {
+func ErloesverteilungAnValueMagnets (as accountSystem.AccountSystem) {
 
 	// Kosten werden auf Profitcenter zugeordnet
+	// now book to costcenters
+	// if not AR or IS booking type
+	// as the correspinding command already books to costCenter
+	// only take Erlöskonten und Velustkonten into account
+	//...
 
-	// Angestellten Boni werden verteils
+	for _, account := range as.All() {
+		// lool through all accounts in accountSystem,
+		// beware: All() returns no bookings, so account here has no bookings[]
+		if  account.Description.Type == accountSystem.KontenartAufwand ||
+			account.Description.Type == accountSystem.KontenartErtrag ||
+			account.Description.Id == accountSystem.SKR03_1900.Id {
+
+			a, _ := as.Get(account.Description.Id)
+			for _, bk := range a.Bookings {
+				repo := valueMagnets.StakeholderRepository{}
+
+				if bk.Type != booking.Erloese && bk.Type != booking.InterneStunden {
+					if repo.IsValidStakeholder(bk.CostCenter) {
+						BookToCostCenter{AccSystem: as, Booking: bk}.run()
+					} else {
+						log.Println("in ErloesverteilungAnValueMagnets, unknown CostCenter >>",bk.CostCenter,"<< in row", bk.RowNr)
+					}
+				}
+			}
+		}
+	}
+
+
+	// Angestellten Boni werden verteilt
 
 	// zunächst werden 15% (oder 20%) davon werden an die Shareholder (gemäß  fairshare) verteilt
 

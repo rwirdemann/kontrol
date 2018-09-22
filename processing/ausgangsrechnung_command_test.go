@@ -56,7 +56,7 @@ func (suite *AusgangsrechnungTestSuite) TestPartnerNettoAnteil() {
 	suite.Equal(2017, bRalf.Year)
 	suite.Equal(booking.Nettoanteil, bRalf.Type)
 
-	// and hannes got 3 bookings: his own net share and 2 provisions
+	// and hannes got 3 bookings: his own net share and 2 provisions ostCenter booking
 	accountHannes, _ := suite.repository.Get(valueMagnets.StakeholderRepository{}.Get("JM").Id)
 	bookingsHannes := accountHannes.Bookings
 	suite.Equal(3, len(bookingsHannes))
@@ -110,10 +110,10 @@ func (suite *AusgangsrechnungTestSuite) TestOffeneRechnung() {
 	bookings1400 := account1400.Bookings
 	suite.Equal(1, len(bookings1400))
 
-	// the booking is not yet booked to partners
+	// the booking is booked to partners
 	accountHannes, _ := suite.repository.Get(valueMagnets.StakeholderRepository{}.Get("JM").Id)
 	bookingsHannes := accountHannes.Bookings
-	suite.Equal(0, len(bookingsHannes))
+	suite.Equal(3, len(bookingsHannes))
 }
 
 //

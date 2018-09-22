@@ -21,6 +21,7 @@ var as accountSystem.AccountSystem
 func init() {
 	repository := accountSystem.EmptyDefaultAccountSystem()
 	repository.Add(account.NewAccount(account.AccountDescription{Id: "AN", Name: "k: Anke Nehrenberg", Type: "partner"}))
+	repository.Add(account.NewAccount(account.AccountDescription{Id: "SKR03_ErgebnisNachSteuern", Name: "SKR03_ErgebnisNachSteuern", Type: "Verrechnungskonto"}))
 
 	k := account.NewAccount(account.AccountDescription{Id: "K", Name: "k: Kommitment", Type: "company"})
 	ar := booking.NewBooking(13,"AR", "800", "1337", "JM", nil, 2000, "Rechnung WLW", 1, 2018, time.Time{})
@@ -48,7 +49,7 @@ func TestGetAllAccounts(t *testing.T) {
 	router.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
-	expected := "{\"Accounts\":[{\"Description\":{\"Id\":\"AN\",\"Name\":\"k: Anke Nehrenberg\",\"Type\":\"partner\"},\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0},{\"Description\":{\"Id\":\"K\",\"Name\":\"k: Kommitment\",\"Type\":\"company\"},\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":6800}]}"
+	expected := "{\"Accounts\":[{\"Description\":{\"Id\":\"SKR03_ErgebnisNachSteuern\",\"Name\":\"SKR03_ErgebnisNachSteuern\",\"Type\":\"Verrechnungskonto\"},\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0},{\"Description\":{\"Id\":\"AN\",\"Name\":\"k: Anke Nehrenberg\",\"Type\":\"partner\"},\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0},{\"Description\":{\"Id\":\"K\",\"Name\":\"k: Kommitment\",\"Type\":\"company\"},\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":6800}]}"
 	assert.Equal(t, expected, rr.Body.String())
 }
 

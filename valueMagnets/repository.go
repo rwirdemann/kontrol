@@ -3,6 +3,7 @@ package valueMagnets
 import (
 	"fmt"
 		"io/ioutil"
+	"log"
 	"os"
 	"encoding/json"
 		"time"
@@ -90,6 +91,20 @@ func (this StakeholderRepository) All(year int) []Stakeholder {
 	stakehr = append(stakehr, StakeholderRR)
 
 	return stakehr
+}
+
+func (this StakeholderRepository) IsValidStakeholder (stakeholderId string) bool {
+
+	retval := false
+	for _, sh := range this.All(util.Global.FinancialYear) {
+		if sh.Id == stakeholderId {
+			retval = true
+		}
+	}
+	if retval == false {
+		log.Println("Warning: unknown Stakeholder", stakeholderId)
+	}
+	return retval
 }
 
 func (this StakeholderRepository) TypeOf(id string) string {

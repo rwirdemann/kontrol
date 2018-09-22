@@ -10,12 +10,15 @@ import (
 	"github.com/ahojsenn/kontrol/util"
 )
 
-func MakeGetGuVAccountsHandler(repository accountSystem.AccountSystem) http.HandlerFunc {
+func MakeGetGuVAccountsHandler(as accountSystem.AccountSystem) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var accounts []account.Account
-		accounts = repository.GetBilanzAccounts(accountSystem.KontenartErtrag)
-		accounts = append(accounts, repository.GetBilanzAccounts(accountSystem.KontenartAufwand)... )
-		sort.Sort(account.ByType(accounts))
+		accounts = as.GetBilanzAccounts(accountSystem.KontenartErtrag)
+		accounts = append(accounts, as.GetBilanzAccounts(accountSystem.KontenartAufwand)... )
+		// acc ,_ := as.Get("SKR03_ErgebnisNachSteuern")
+		// accounts = append(accounts, *acc )
+
+		sort.Sort(account.ByOwner(accounts))
 
 		// wrap response with "Accounts" element
 		response := struct {

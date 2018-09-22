@@ -1,6 +1,7 @@
 package processing
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/ahojsenn/kontrol/account"
@@ -13,6 +14,7 @@ import (
 
 const (
 	PartnerShare             = 0.70
+	EmployeeShare			 = 0.70
 	KommmitmentShare         = 0.25
 	KommmitmentExternShare   = 0.95
 	KommmitmentOthersShare   = 1.00
@@ -33,23 +35,24 @@ func (this BookAusgangsrechnungCommand) run() {
 	if this.isOpenPosition() == true {
 		skr1400, _ := this.AccSystem.Get(accountSystem.SKR03_1400.Id)
 		skr1400.Book(this.Booking)
-		return
-	}
-	// keine Gegenbuchung laut https://de.wikipedia.org/wiki/Offene-Posten-Buchhaltung
 
-	// book from bankaccount...
-	bank,_ := this.AccSystem.Get(accountSystem.SKR03_1200.Id)
-	a := booking.Booking{
-		RowNr: 		 this.Booking.RowNr,
-		Amount:      -this.Booking.Amount,
-		Type:        booking.Erloese,
-		Text:        this.Booking.Text,
-		Month:       this.Booking.Month,
-		Year:        this.Booking.Year,
-		FileCreated: this.Booking.FileCreated,
-		BankCreated: this.Booking.BankCreated,
+		this.Booking.Text = "Achtung OPOS "+this.Booking.Text
+	} else {
+		// book from bankaccount...
+		bank,_ := this.AccSystem.Get(accountSystem.SKR03_1200.Id)
+		a := booking.Booking{
+			RowNr: 		 this.Booking.RowNr,
+			Amount:      -this.Booking.Amount,
+			Type:        booking.Erloese,
+			Text:        this.Booking.Text,
+			Month:       this.Booking.Month,
+			Year:        this.Booking.Year,
+			FileCreated: this.Booking.FileCreated,
+			BankCreated: this.Booking.BankCreated,
+		}
+		bank.Book(a)
 	}
-	bank.Book(a)
+
 
 
 	// haben umsatzerloese
@@ -85,12 +88,17 @@ func (this BookAusgangsrechnungCommand) run() {
 
 
 	// hier kommt nun die ganze Verteilung unter den kommitmenschen
+	// 1. get rid of external share
+	// 2. 5% Vertriebsprovision (Achtung die ist zu hoch, wenn der db bei externen nicht 20% erreicht)
+	// 3. 70% Employeeshare, falls Leistungserbringer employee ist
+	// 4. 15% mal Rendite auf shareholder, bämm geht nicht bei rein externen...
+	// DAS ISTUNFERTIG DENK DENK DENK...
 
 	benefitees := this.stakeholderWithNetPositions()
 	for _, benefited := range benefitees {
 
-		if benefited.Type == valueMagnets.StakeholderTypePartner {
 
+		if benefited.Type == valueMagnets.StakeholderTypePartner {
 			// book partner share
 			b := booking.Booking{
 				RowNr: 		 this.Booking.RowNr,
@@ -162,7 +170,7 @@ func (this BookAusgangsrechnungCommand) run() {
 			// book kommitment share
 			kommitmentShare := booking.Booking{
 				RowNr: 		 this.Booking.RowNr,
-				Amount:      this.Booking.Net[benefited] * KommmitmentEmployeeShare,
+				Amount:      this.Booking.Net[benefited] * (KommmitmentEmployeeShare-EmployeeShare),
 				Type:        booking.Kommitmentanteil,
 				Text:        this.Booking.Text,
 				Month:       this.Booking.Month,
@@ -172,6 +180,21 @@ func (this BookAusgangsrechnungCommand) run() {
 				CostCenter:  benefited.Id}
 			kommitmentAccount, _ := this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
 			kommitmentAccount.Book(kommitmentShare)
+
+			// book employee share
+			employeeshare := booking.Booking{
+				RowNr: 		 this.Booking.RowNr,
+				Amount:      this.Booking.Net[benefited] * EmployeeShare,
+				Type:        booking.Employeeaanteil,
+				Text:        fmt.Sprintf("%f", EmployeeShare)+"*Netto: " + this.Booking.Text,
+				Month:       this.Booking.Month,
+				Year:        this.Booking.Year,
+				FileCreated: this.Booking.FileCreated,
+				BankCreated: this.Booking.BankCreated,
+				CostCenter:  benefited.Id}
+			employeeaccount, _ := this.AccSystem.Get(benefited.Id)
+			employeeaccount.Book(employeeshare)
+
 		}
 
 		// Die Vertriebsprovision bekommt der Dealbringer
