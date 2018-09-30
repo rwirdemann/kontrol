@@ -27,6 +27,8 @@ func TestIsValidStakeholder (t *testing.T) {
 	repo := StakeholderRepository{}
 	assert.True(t, repo.IsValidStakeholder("K"))
 	assert.True(t, repo.IsValidStakeholder("JM"))
+	assert.True(t, repo.IsValidStakeholder("RR"))
+	assert.True(t, repo.IsValidStakeholder("EX"))
 	assert.False(t, repo.IsValidStakeholder("krümelhügliplis"))
 
 }

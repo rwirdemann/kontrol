@@ -11,13 +11,14 @@ import (
 	"github.com/ahojsenn/kontrol/util"
 )
 
-func MakeGetKommitmenschenAccountsHandler(repository accountSystem.AccountSystem) http.HandlerFunc {
+func MakeGetKommitmenschenAccountsHandler(as accountSystem.AccountSystem) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var accounts []account.Account
-		accounts = repository.GetBilanzAccounts(valueMagnets.StakeholderTypeCompany)
-		accounts = append(accounts, repository.GetBilanzAccounts(valueMagnets.StakeholderTypeExtern)... )
-		accounts = append(accounts, repository.GetBilanzAccounts(valueMagnets.StakeholderTypeEmployee)... )
-		accounts = append(accounts, repository.GetBilanzAccounts(valueMagnets.StakeholderTypePartner)... )
+		accounts = append(accounts, as.GetBilanzAccounts(valueMagnets.StakeholderTypeCompany)... )
+		accounts = append(accounts, as.GetBilanzAccounts(valueMagnets.StakeholderTypeOthers)... )
+		accounts = append(accounts, as.GetBilanzAccounts(valueMagnets.StakeholderTypeExtern)... )
+		accounts = append(accounts, as.GetBilanzAccounts(valueMagnets.StakeholderTypeEmployee)... )
+		accounts = append(accounts, as.GetBilanzAccounts(valueMagnets.StakeholderTypePartner)... )
 		sort.Sort(account.ByType(accounts))
 
 		// wrap response with "Accounts" element

@@ -58,9 +58,9 @@ func GuV (as accountSystem.AccountSystem) {
 
 	var jahresueberschuss float64
 
-	for _, account := range as.All() {
-		if account.Description.Type == accountSystem.KontenartAufwand ||  account.Description.Type == accountSystem.KontenartErtrag {
-			jahresueberschuss += account.Saldo
+	for _, acc := range as.All() {
+		if acc.Description.Type == account.KontenartAufwand ||  acc.Description.Type == account.KontenartErtrag {
+			jahresueberschuss += acc.Saldo
 		}
 	}
 
@@ -88,18 +88,18 @@ func Bilanz (as accountSystem.AccountSystem) {
 
 
 	// Aktiva
-	for rownr, account := range as.All() {
-		if account.Description.Type == accountSystem.KontenartAktiv {
+	for rownr, acc := range as.All() {
+		if acc.Description.Type == account.KontenartAktiv {
 			// Buchung auf SummeAktiva
 			konto,_ = as.Get(accountSystem.SummeAktiva.Id)
 			bk = booking.NewBooking(
 				rownr,
-				account.Description.Name+strconv.Itoa(util.Global.FinancialYear),
+				acc.Description.Name+strconv.Itoa(util.Global.FinancialYear),
 				"",
 				"",
 				"",
 				nil,
-				account.Saldo,
+				acc.Saldo,
 				"SummeAktiva "+strconv.Itoa(util.Global.FinancialYear),
 				int(now.Month()),
 				now.Year(),
@@ -110,18 +110,18 @@ func Bilanz (as accountSystem.AccountSystem) {
 
 
 	// Passiva
-	for rownr, account := range as.All() {
-		if account.Description.Type == accountSystem.KontenartPassiv {
+	for rownr, acc := range as.All() {
+		if acc.Description.Type == account.KontenartPassiv {
 			// Buchung auf SummePassiva
 			konto,_ = as.Get(accountSystem.SummePassiva.Id)
 			bk = booking.NewBooking(
 				rownr,
-				account.Description.Name+strconv.Itoa(util.Global.FinancialYear),
+				acc.Description.Name+strconv.Itoa(util.Global.FinancialYear),
 				"",
 				"",
 				"",
 				nil,
-				account.Saldo,
+				acc.Saldo,
 				"SummePassiva "+strconv.Itoa(util.Global.FinancialYear),
 				int(now.Month()),
 				now.Year(),
@@ -142,26 +142,19 @@ func ErloesverteilungAnValueMagnets (as accountSystem.AccountSystem) {
 	// only take Erlöskonten und Velustkonten into account
 	//...
 
-	for _, account := range as.All() {
+	for _, acc := range as.All() {
 		// lool through all accounts in accountSystem,
 		// beware: All() returns no bookings, so account here has no bookings[]
-		if  account.Description.Type == accountSystem.KontenartAufwand ||
-			account.Description.Type == accountSystem.KontenartErtrag ||
-			account.Description.Id == accountSystem.SKR03_1900.Id {
+		if  acc.Description.Type == account.KontenartAufwand ||
+			//acc.Description.Type == account.KontenartErtrag || // wurde schon in der Ausgangsrechnung verbucht...
+			acc.Description.Id == accountSystem.SKR03_1900.Id { // Privatentnahmen
 
-			a, _ := as.Get(account.Description.Id)
+			a, _ := as.Get(acc.Description.Id)
 			for _, bk := range a.Bookings {
-				repo := valueMagnets.StakeholderRepository{}
 
-				if bk.Type != booking.Erloese && bk.Type != booking.InterneStunden {
-					if repo.IsValidStakeholder(bk.CostCenter) {
-						BookToCostCenter{AccSystem: as, Booking: bk}.run()
-					} else {
-						log.Println("in ErloesverteilungAnValueMagnets, unknown CostCenter >>",bk.CostCenter,"<< in row", bk.RowNr)
-					}
+				BookToCostCenter{AccSystem: as, Booking: bk}.run()
 				}
 			}
-		}
 	}
 
 

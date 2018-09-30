@@ -1,6 +1,7 @@
 package processing
 
 import (
+	"log"
 	"testing"
 	"time"
 
@@ -506,6 +507,7 @@ func TestUstVZ(t *testing.T) {
 }
 
 func TestErloesverteilungAnValueMagnets(t *testing.T) {
+	log.Println("TestErloesverteilungAnValueMagnets")
 	as := accountSystem.NewDefaultAccountSystem()
 
 	// ad := account.AccountDescription{Id: "BW", Name: "Ben", Type: "Employee"}
@@ -515,30 +517,51 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 	// given: BOOKING ER
 	// Eingangsrechnung 12852.0€ von Bank an SKR03_sonstigeAufwendungen
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p1 := booking.NewBooking(13, "ER", "", "", "K", nil, 12852.0, "hugo 1234", 1, 2017, its2018)
+	p1 := booking.NewBooking(13, "ER", "", "", "K", nil, 119, "hugo 1234", 1, 2017, its2018)
 	p2 := booking.NewBooking(13, "ER", "", "", "BW", nil, 11900, "gugo. blupp", 1, 2017, its2018)
-	p3 := booking.NewBooking(13, "AR", "", "", "BW", nil, 1190, "ARGSSLL", 1, 2017, its2018)
+	net := make(map[valueMagnets.Stakeholder]float64)
+	net[valueMagnets.StakeholderRepository{}.Get("BW")] = 1000.0
+	p3 := booking.NewBooking(13, "AR", "", "", "BW", net,  1190, "ARGSSLL", 1, 2017, its2018)
 	p4 := booking.NewBooking(13, "GV", "", "", "JM", nil, 5000, "ARGSSLL", 1, 2017, its2018)
+	p5 := booking.NewBooking(13, "SKR03", "965", "4957", "K", nil, 42, "SKR03test", 1, 2017, its2018)
 
 	// when: the position is processed
 	Process(as, *p1)
 	Process(as, *p2)
 	Process(as, *p3)
 	Process(as, *p4)
+	Process(as, *p5)
 	ErloesverteilungAnValueMagnets(as)
 
-	// booking ist on SKR03_sonstigeAufwendungen.Id
-	b,_ := as.Get(accountSystem.SKR03_sonstigeAufwendungen.Id)
-	assert.Equal(t, 2, len(b.Bookings))
 
-	// Booking is on CostCenter K
+	// booking ist on CostCenter K
+	b,_ := as.Get("K")
+	b.UpdateSaldo()
+	assert.Equal(t, 3, len(b.Bookings))
+	assert.Equal(t, 0.0, b.Advances)
+	assert.Equal(t, 192.0, b.Saldo)
+
+	// Booking is on CostCenter BW
 	a, _ := as.Get("BW")
-	assert.Equal(t, 1, len(a.Bookings))
-	assert.Equal(t, booking.Eingangsrechnung, a.Bookings[0].Type)
+	a.UpdateSaldo()
+	assert.Equal(t, 3, len(a.Bookings))
+	assert.Equal(t, booking.Employeeaanteil, a.Bookings[0].Type)
+	assert.Equal(t, 50.0, a.Provision)
+	assert.Equal(t, 0.0, a.Internals)
+	assert.Equal(t, 0.0, a.Advances)
+	assert.Equal(t, -9250.0, a.Saldo)
+	log.Println("TestErloesverteilungAnValueMagnets", a.Bookings)
 
+	// Booking is on CostCenter JM
 	c, _ := as.Get("JM")
+	c.UpdateSaldo()
 	assert.Equal(t, 1, len(c.Bookings))
-	assert.Equal(t, booking.Eingangsrechnung, a.Bookings[0].Type)
+	assert.Equal(t, booking.Entnahme, c.Bookings[0].Type)
+	assert.Equal(t, 0.0, c.Revenue)
+	assert.Equal(t, 0.0, c.Internals)
+	assert.Equal(t, -5000.0, c.Advances)
+	assert.Equal(t, -5000.0, c.Saldo)
+
 
 }
 

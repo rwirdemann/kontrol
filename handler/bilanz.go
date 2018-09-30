@@ -13,8 +13,8 @@ import (
 func MakeGetBilanzAccountsHandler(repository accountSystem.AccountSystem) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var accounts []account.Account
-		accounts = repository.GetBilanzAccounts(accountSystem.KontenartPassiv)
-		accounts = append(accounts, repository.GetBilanzAccounts(accountSystem.KontenartAktiv)... )
+		accounts = repository.GetBilanzAccounts(account.KontenartPassiv)
+		accounts = append(accounts, repository.GetBilanzAccounts(account.KontenartAktiv)... )
 		sort.Sort(account.ByType(accounts))
 
 		// wrap response with "Accounts" element

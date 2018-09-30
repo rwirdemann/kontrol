@@ -254,9 +254,16 @@ type BookToCostCenter struct {
 func (c BookToCostCenter) run() {
 
 	amount := c.Booking.Amount
-	if c.Booking.Type == "ER" {
-		amount = util.Net(amount)
+
+	// set booking Type
+	var bkt string = "hier steht der Buchungstyp"
+	switch c.Booking.Type {
+	case booking.Eingangsrechnung:
+		bkt = booking.Kosten
+	default:
+		bkt = c.Booking.Type
 	}
+	log.Println("BookToCostCenter",c.Booking)
 
 	// Sollbuchung
 	bkresp := c.Booking.CostCenter
@@ -266,13 +273,13 @@ func (c BookToCostCenter) run() {
 		bkresp = valueMagnets.StakeholderKM.Id
 	}
 	sollAccount,_ := c.AccSystem.Get(bkresp)
-	a := booking.CloneBooking(c.Booking, amount, c.Booking.Type, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben)
-	sollAccount.Book(a)
+	b1 := booking.CloneBooking(c.Booking, amount, bkt, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben)
+	sollAccount.Book(b1)
 
 	// Habenbuchung
 	habenAccount,_ := c.AccSystem.Get(accountSystem.AlleKLRBuchungen.Id)
-	b := booking.CloneBooking(c.Booking, -amount, c.Booking.Type, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben)
-	habenAccount.Book(b)
+	b2 := booking.CloneBooking(c.Booking, -amount, bkt, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben)
+	habenAccount.Book(b2)
 }
 
 

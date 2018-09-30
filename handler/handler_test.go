@@ -7,11 +7,10 @@ import (
 	"time"
 
 	"github.com/ahojsenn/kontrol/account"
-	"github.com/ahojsenn/kontrol/booking"
-		"github.com/gorilla/mux"
-	"github.com/stretchr/testify/assert"
 	"github.com/ahojsenn/kontrol/accountSystem"
-	"log"
+	"github.com/ahojsenn/kontrol/booking"
+	"github.com/gorilla/mux"
+	"github.com/stretchr/testify/assert"
 )
 
 var router *mux.Router
@@ -49,7 +48,7 @@ func TestGetAllAccounts(t *testing.T) {
 	router.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
-	expected := "{\"Accounts\":[{\"Description\":{\"Id\":\"SKR03_ErgebnisNachSteuern\",\"Name\":\"SKR03_ErgebnisNachSteuern\",\"Type\":\"Verrechnungskonto\"},\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0},{\"Description\":{\"Id\":\"AN\",\"Name\":\"k: Anke Nehrenberg\",\"Type\":\"partner\"},\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0},{\"Description\":{\"Id\":\"K\",\"Name\":\"k: Kommitment\",\"Type\":\"company\"},\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":6800}]}"
+	expected := "{\"Accounts\":[{\"Description\":{\"Id\":\"SKR03_ErgebnisNachSteuern\",\"Name\":\"SKR03_ErgebnisNachSteuern\",\"Type\":\"Verrechnungskonto\"},\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Rest\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0},{\"Description\":{\"Id\":\"AN\",\"Name\":\"k: Anke Nehrenberg\",\"Type\":\"partner\"},\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Rest\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0},{\"Description\":{\"Id\":\"K\",\"Name\":\"k: Kommitment\",\"Type\":\"company\"},\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Rest\":4400,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":6800}]}"
 	assert.Equal(t, expected, rr.Body.String())
 }
 
@@ -58,7 +57,6 @@ func TestGetCollectiveAccount(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	router.ServeHTTP(rr, req)
-	log.Println(">>>", rr)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
 }
@@ -70,7 +68,7 @@ func TestGetAccountFilterByCostcenter(t *testing.T) {
 	router.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
-	expected := "{\"Description\":{\"Id\":\"K\",\"Name\":\"k: Kommitment\",\"Type\":\"company\"},\"Bookings\":[{\"RowNr\":13,\"Type\":\"AR\",\"Soll\":\"800\",\"Haben\":\"1337\",\"CostCenter\":\"BW\",\"Amount\":2000,\"Text\":\"Rechnung WLW\",\"Year\":2018,\"Month\":1,\"FileCreated\":\"0001-01-01T00:00:00Z\",\"BankCreated\":\"0001-01-01T00:00:00Z\"}],\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":2000}"
+	expected := "{\"Description\":{\"Id\":\"K\",\"Name\":\"k: Kommitment\",\"Type\":\"company\"},\"Bookings\":[{\"RowNr\":13,\"Type\":\"AR\",\"Soll\":\"800\",\"Haben\":\"1337\",\"CostCenter\":\"BW\",\"Amount\":2000,\"Text\":\"Rechnung WLW\",\"Year\":2018,\"Month\":1,\"FileCreated\":\"0001-01-01T00:00:00Z\",\"BankCreated\":\"0001-01-01T00:00:00Z\"}],\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Rest\":2000,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":2000}"
 	assert.Equal(t, expected, rr.Body.String())
 }
 
@@ -84,7 +82,7 @@ func TestGetAccountsBilanzkonten (t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, rr.Code)
 	// only Bilanzkonten are wanted here [Type Passivkonto or Aktivkonto]
-	expected := "{\"Accounts\":[{\"Description\":{\"Id\":\"1400\",\"Name\":\"SKR03_1400_OPOS-Kunde\",\"Type\":\"Aktivkonto\"},\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0}]}"
+	expected := "{\"Accounts\":[{\"Description\":{\"Id\":\"1400\",\"Name\":\"SKR03_1400_OPOS-Kunde\",\"Type\":\"Aktivkonto\"},\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Rest\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0}]}"
 	assert.Equal(t, expected, rr.Body.String())
 }
 
@@ -98,6 +96,6 @@ func TestGetAccountsGuV(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, rr.Code)
 	// only Bilanzkonten are wanted here [Type Passivkonto or Aktivkonto]
-	expected := "{\"Accounts\":[{\"Description\":{\"Id\":\"8100\",\"Name\":\"Ertrag\",\"Type\":\"Ertragskonto\"},\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0}]}"
+	expected :="{\"Accounts\":[{\"Description\":{\"Id\":\"8100\",\"Name\":\"Ertrag\",\"Type\":\"Ertragskonto\"},\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Provision\":0,\"Rest\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0}]}"
 	assert.Equal(t, expected, rr.Body.String())
 }

@@ -11,14 +11,7 @@ import (
 )
 
 
-const (
-	KontenartAktiv            = "Aktivkonto"
-	KontenartPassiv           = "Passivkonto"
-	KontenartAufwand          = "Aufwandskonto"
-	KontenartErtrag           = "Ertragskonto"
-	KontenartVerrechnung      = "Verrechnungskonto"
-	KontenartKLR      		  = "VerrechnungskontoKLR"
-)
+
 
 type AccountSystem interface {
 	GetCollectiveAccount() *account.Account
@@ -37,32 +30,32 @@ type DefaultAccountSystem struct {
 
 const SKR03 = "SKR03"
 
-var SKR03_Rueckstellungen = account.AccountDescription{Id: "Rückstellung", Name: "SKR03_956-977_Rückstellung", Type: KontenartPassiv}
-var SKR03_Eigenkapital_880 = account.AccountDescription{Id: "Eigenkapital", Name: "SKR03_880_Eigenkapital", Type: KontenartPassiv}
-var SKR03_900_Haftkapital = account.AccountDescription{Id: "SKR03_900_Haftkapital", Name: "SKR03_900_Haftkapital", Type: KontenartPassiv}
-var SKR03_920_Gesellschafterdarlehen = account.AccountDescription{Id: "SKR03_920_Gesellschafterdarlehen", Name: "SKR03_920_Gesellschafterdarlehen", Type: KontenartPassiv}
-var SKR03_1200 = account.AccountDescription{Id: "1200", Name: "SKR03_1200_Bank", Type: KontenartAktiv}
-var SKR03_1400 = account.AccountDescription{Id: "1400", Name: "SKR03_1400_OPOS-Kunde", Type: KontenartAktiv}
-var SKR03_1600 = account.AccountDescription{Id: "1600", Name: "SKR03_1600_OPOS-Lieferant", Type: KontenartPassiv}
-var SKR03_1900 = account.AccountDescription{Id: "1900", Name: "SKR03_1900_Privatentnahmen", Type: KontenartPassiv}
-var SKR03_Anlagen = account.AccountDescription{Id: "SKR03_Anlagen", Name: "SKR03_410-480_Anlagen", Type: KontenartAktiv}
-var SKR03_Anlagen25 = account.AccountDescription{Id: "SKR03_Anlagen25", Name: "SKR03_25_Anlagen Ähnl.R&W", Type: KontenartAktiv}
-var SKR03_Kautionen = account.AccountDescription{Id: "SKR03_Kautionen", Name: "SKR03_1525_Kautionen", Type: KontenartAktiv}
-var SKR03_Vorsteuer = account.AccountDescription{Id: "SKR03_Vorsteuer", Name: "SKR03_1570-1579_Steuer: Vorsteuer", Type: KontenartAktiv}
-var SKR03_Umsatzsteuer = account.AccountDescription{Id: "SKR03_Umsatzsteuer", Name: "SKR03_1770_Steuer: Umsatzsteuer", Type: KontenartAktiv}
+var SKR03_Rueckstellungen = account.AccountDescription{Id: "Rückstellung", Name: "SKR03_956-977_Rückstellung", Type: account.KontenartPassiv}
+var SKR03_Eigenkapital_880 = account.AccountDescription{Id: "Eigenkapital", Name: "SKR03_880_Eigenkapital", Type: account.KontenartPassiv}
+var SKR03_900_Haftkapital = account.AccountDescription{Id: "SKR03_900_Haftkapital", Name: "SKR03_900_Haftkapital", Type: account.KontenartPassiv}
+var SKR03_920_Gesellschafterdarlehen = account.AccountDescription{Id: "SKR03_920_Gesellschafterdarlehen", Name: "SKR03_920_Gesellschafterdarlehen", Type: account.KontenartPassiv}
+var SKR03_1200 = account.AccountDescription{Id: "1200", Name: "SKR03_1200_Bank", Type: account.KontenartAktiv}
+var SKR03_1400 = account.AccountDescription{Id: "1400", Name: "SKR03_1400_OPOS-Kunde", Type: account.KontenartAktiv}
+var SKR03_1600 = account.AccountDescription{Id: "1600", Name: "SKR03_1600_OPOS-Lieferant", Type: account.KontenartPassiv}
+var SKR03_1900 = account.AccountDescription{Id: "1900", Name: "SKR03_1900_Privatentnahmen", Type: account.KontenartPassiv}
+var SKR03_Anlagen = account.AccountDescription{Id: "SKR03_Anlagen", Name: "SKR03_410-480_Anlagen", Type: account.KontenartAktiv}
+var SKR03_Anlagen25 = account.AccountDescription{Id: "SKR03_Anlagen25", Name: "SKR03_25_Anlagen Ähnl.R&W", Type: account.KontenartAktiv}
+var SKR03_Kautionen = account.AccountDescription{Id: "SKR03_Kautionen", Name: "SKR03_1525_Kautionen", Type: account.KontenartAktiv}
+var SKR03_Vorsteuer = account.AccountDescription{Id: "SKR03_Vorsteuer", Name: "SKR03_1570-1579_Steuer: Vorsteuer", Type: account.KontenartAktiv}
+var SKR03_Umsatzsteuer = account.AccountDescription{Id: "SKR03_Umsatzsteuer", Name: "SKR03_1770_Steuer: Umsatzsteuer", Type: account.KontenartAktiv}
 // Erfolgskonten
-var SKR03_Umsatzerloese = account.AccountDescription{Id: "SKR03_Umsatzerloese", Name: "1 SKR03_Umsatzerloese 8100-8402", Type: KontenartErtrag}
-var SKR03_4100_4199 = account.AccountDescription{Id: "4100_4199", Name: "3 Löhne und Gehälter 4100-4199", Type: KontenartAufwand}
-var SKR03_AnlagenabgaengeSachanlagen2310 = account.AccountDescription{Id: "SKR03_AnlagenabgängeSachanlagen", Name: "4 AnlagenabgängeSachanlagen 2310", Type: KontenartAufwand}
-var SKR03_Abschreibungen = account.AccountDescription{Id: "SKR03_Abschreibungen", Name: "4 Abschreibungen auf Anlagen 4822-4855", Type: KontenartAufwand}
-var SKR03_sonstigeAufwendungen = account.AccountDescription{Id: "SKR03_sonstigeAufwendungen", Name: "5 sonstige Aufwendungen", Type: KontenartAufwand}
-var SKR03_Steuern = account.AccountDescription{Id: "SKR03_Steuern", Name: "6 SKR03_Steuern 4320", Type: KontenartAufwand}
-var ErgebnisNachSteuern = account.AccountDescription{Id: "SKR03_ErgebnisNachSteuern", Name: "7 ErgebnisNachSteuern", Type: KontenartVerrechnung}
+var SKR03_Umsatzerloese = account.AccountDescription{Id: "SKR03_Umsatzerloese", Name: "1 SKR03_Umsatzerloese 8100-8402", Type: account.KontenartErtrag}
+var SKR03_4100_4199 = account.AccountDescription{Id: "4100_4199", Name: "3 Löhne und Gehälter 4100-4199", Type: account.KontenartAufwand}
+var SKR03_AnlagenabgaengeSachanlagen2310 = account.AccountDescription{Id: "SKR03_AnlagenabgängeSachanlagen", Name: "4 AnlagenabgängeSachanlagen 2310", Type: account.KontenartAufwand}
+var SKR03_Abschreibungen = account.AccountDescription{Id: "SKR03_Abschreibungen", Name: "4 Abschreibungen auf Anlagen 4822-4855", Type: account.KontenartAufwand}
+var SKR03_sonstigeAufwendungen = account.AccountDescription{Id: "SKR03_sonstigeAufwendungen", Name: "5 sonstige Aufwendungen", Type: account.KontenartAufwand}
+var SKR03_Steuern = account.AccountDescription{Id: "SKR03_Steuern", Name: "6 SKR03_Steuern 4320", Type: account.KontenartAufwand}
+var ErgebnisNachSteuern = account.AccountDescription{Id: "SKR03_ErgebnisNachSteuern", Name: "7 ErgebnisNachSteuern", Type: account.KontenartVerrechnung}
 // Verrechnungskonten
-var SKR03_Saldenvortrag = account.AccountDescription{Id: "SKR03_Saldenvortrag", Name: "Saldenvortrag 9000", Type: KontenartVerrechnung}
-var SummeAktiva 	= account.AccountDescription{Id: "SummeAktiva", Name: "V: SummeAktiva", Type: KontenartVerrechnung}
-var SummePassiva 	= account.AccountDescription{Id: "SummePassiva", Name: "V: SummePassiva", Type: KontenartVerrechnung}
-var AlleKLRBuchungen = account.AccountDescription{Id: "AlleKLRBuchungen", Name: "V: AlleKLRBuchungen", Type: KontenartKLR}
+var SKR03_Saldenvortrag = account.AccountDescription{Id: "SKR03_Saldenvortrag", Name: "Saldenvortrag 9000", Type: account.KontenartVerrechnung}
+var SummeAktiva 	= account.AccountDescription{Id: "SummeAktiva", Name: "V: SummeAktiva", Type: account.KontenartVerrechnung}
+var SummePassiva 	= account.AccountDescription{Id: "SummePassiva", Name: "V: SummePassiva", Type: account.KontenartVerrechnung}
+var AlleKLRBuchungen = account.AccountDescription{Id: "AlleKLRBuchungen", Name: "V: AlleKLRBuchungen", Type: account.KontenartKLR}
 
 
 
@@ -101,14 +94,14 @@ func (this Accountlist) All() []account.AccountDescription {
 }
 
 func EmptyDefaultAccountSystem() AccountSystem {
-	o := account.AccountDescription{Id: "all", Name: "Hauptbuch", Type: KontenartVerrechnung}
+	o := account.AccountDescription{Id: "all", Name: "Hauptbuch", Type: account.KontenartVerrechnung}
 	return &DefaultAccountSystem{collectiveAccount: &account.Account{Description: o}, accounts: make(map[string]*account.Account)}
 }
 
 func NewDefaultAccountSystem() AccountSystem {
 	year := util.Global.FinancialYear
 
-	ad := account.AccountDescription{Id: "all", Name: "Hauptbuch", Type: KontenartVerrechnung}
+	ad := account.AccountDescription{Id: "all", Name: "Hauptbuch", Type: account.KontenartVerrechnung}
 	accountSystem := DefaultAccountSystem{collectiveAccount: &account.Account{Description: ad}, accounts: make(map[string]*account.Account)}
 
 	// generate accounts according to the AccountList
@@ -120,10 +113,8 @@ func NewDefaultAccountSystem() AccountSystem {
 	// generate accounts for all stakeholders
 	stakeholderRepository := valueMagnets.StakeholderRepository{}
 	for _, sh := range stakeholderRepository.All(year) {
-		if sh.Type != valueMagnets.StakeholderTypeOthers {
 			ad := account.AccountDescription{Id: sh.Id, Name: sh.Name, Type: sh.Type}
 			accountSystem.Add(account.NewAccount(ad))
-		}
 	}
 	return &accountSystem
 }

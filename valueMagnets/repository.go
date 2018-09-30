@@ -87,7 +87,7 @@ func (this StakeholderRepository) All(year int) []Stakeholder {
 	// add externals
 	stakehr = append(stakehr, StakeholderEX)
 
-	// add Stakeholder for booking ressts RR
+	// add Stakeholder for booking rests like Fakturierte Reisekosten etc. RR
 	stakehr = append(stakehr, StakeholderRR)
 
 	return stakehr
@@ -95,23 +95,23 @@ func (this StakeholderRepository) All(year int) []Stakeholder {
 
 func (this StakeholderRepository) IsValidStakeholder (stakeholderId string) bool {
 
-	retval := false
 	for _, sh := range this.All(util.Global.FinancialYear) {
-		if sh.Id == stakeholderId {
-			retval = true
+		if sh.Id == stakeholderId  {
+			return true
 		}
 	}
-	if retval == false {
-		log.Println("Warning: unknown Stakeholder", stakeholderId)
-	}
-	return retval
+	log.Println("in IsValidStakeholder: Warning! Unknown Stakeholder", stakeholderId)
+	return false
 }
 
 func (this StakeholderRepository) TypeOf(id string) string {
 
 
 	for _, s := range this.All(util.Global.FinancialYear) {
-		if s.Id == id {
+		if s.Id == id ||
+			id == StakeholderEX.Id  ||
+			id == StakeholderRR.Id ||
+			id == StakeholderKM.Id {
 			return s.Type
 		}
 	}

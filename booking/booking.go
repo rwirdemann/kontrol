@@ -64,6 +64,7 @@ const (
 	GVVorjahr             = "GVVorjahr"
 	SKR03                 = "SKR03"
 	UstVZ				  = "UstVZ"
+	Kosten				  = "Kosten"
 )
 
 type Booking struct {

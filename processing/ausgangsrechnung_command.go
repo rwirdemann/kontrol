@@ -2,6 +2,7 @@ package processing
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/ahojsenn/kontrol/account"
@@ -28,6 +29,8 @@ type BookAusgangsrechnungCommand struct {
 }
 
 func (this BookAusgangsrechnungCommand) run() {
+
+	log.Println("BookAusgangsrechnungCommand")
 
 
 	// if booking with empty timestamp in position "BankCreated"

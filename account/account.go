@@ -8,6 +8,15 @@ import (
 	"github.com/ahojsenn/kontrol/booking"
 )
 
+const (
+	KontenartAktiv            = "Aktivkonto"
+	KontenartPassiv           = "Passivkonto"
+	KontenartAufwand          = "Aufwandskonto"
+	KontenartErtrag           = "Ertragskonto"
+	KontenartVerrechnung      = "Verrechnungskonto"
+	KontenartKLR      		  = "VerrechnungskontoKLR"
+)
+
 type AccountDescription struct {
 	Id   string `json:",omitempty"`
 	Name string
@@ -21,6 +30,7 @@ type Account struct {
 	Advances  float64
 	Reserves  float64
 	Provision float64
+	Rest      float64
 	Revenue   float64
 	Taxes     float64
 	Internals float64
@@ -31,8 +41,8 @@ func NewAccount(a AccountDescription) *Account {
 	return &Account{Description: a}
 }
 
-func (a *Account) Book(booking booking.Booking) {
-	a.Bookings = append(a.Bookings, booking)
+func (a *Account) Book(b booking.Booking) {
+	a.Bookings = append(a.Bookings, b)
 }
 
 func (a *Account) UpdateSaldo() {
@@ -41,19 +51,28 @@ func (a *Account) UpdateSaldo() {
 	saldo := 0.0
 	internals := 0.0
 	advances := 0.0
+	rest := 0.0
+	costs := 0.0
 	for _, b := range a.Bookings {
 		saldo += b.Amount
-		if b.Type == "Entnahme" {
-			advances += b.Amount
-		}
-		if b.Type == "Vertriebsprovision" {
-			provision += b.Amount
-		}
-		if b.Type == "Vertriebsprovision" || b.Type == "Nettoanteil" || b.Type == "Kommitmentanteil" {
+
+		switch b.Type {
+		case booking.Nettoanteil, booking.Kommitmentanteil:
 			revenue += b.Amount
-		}
-		if b.Type == "Interne Stunden" {
+		case booking.Entnahme:
+			advances += b.Amount
+		case booking.Vertriebsprovision:
+			provision += b.Amount
+		case booking.InterneStunden:
 			internals += b.Amount
+		case booking.Erloese, booking.Employeeaanteil:
+			revenue += b.Amount
+		case booking.Kosten, booking.LNSteuer, booking.GWSteuer, booking.SVBeitrag, booking.Gehalt, booking.Eingangsrechnung:
+			costs += b.Amount
+		case booking.SKR03:
+			// hier genauer gucken...
+		default:
+			rest += b.Amount
 		}
 	}
 	a.Saldo = saldo
@@ -61,6 +80,8 @@ func (a *Account) UpdateSaldo() {
 	a.Revenue = revenue
 	a.Provision = provision
 	a.Internals = internals
+	a.Rest = rest
+	a.Costs = costs
 }
 
 func (a Account) Print() {

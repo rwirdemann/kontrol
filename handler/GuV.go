@@ -13,8 +13,8 @@ import (
 func MakeGetGuVAccountsHandler(as accountSystem.AccountSystem) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var accounts []account.Account
-		accounts = as.GetBilanzAccounts(accountSystem.KontenartErtrag)
-		accounts = append(accounts, as.GetBilanzAccounts(accountSystem.KontenartAufwand)... )
+		accounts = as.GetBilanzAccounts(account.KontenartErtrag)
+		accounts = append(accounts, as.GetBilanzAccounts(account.KontenartAufwand)... )
 		// acc ,_ := as.Get("SKR03_ErgebnisNachSteuern")
 		// accounts = append(accounts, *acc )
 
