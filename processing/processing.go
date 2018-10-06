@@ -135,26 +135,29 @@ func Bilanz (as accountSystem.AccountSystem) {
 
 func ErloesverteilungAnValueMagnets (as accountSystem.AccountSystem) {
 
-	// Kosten werden auf Profitcenter zugeordnet
-	// now book to costcenters
-	// if not AR or IS booking type
-	// as the correspinding command already books to costCenter
-	// only take Erlöskonten und Velustkonten into account
-	//...
-
 	for _, acc := range as.All() {
 		// lool through all accounts in accountSystem,
 		// beware: All() returns no bookings, so account here has no bookings[]
-		if  acc.Description.Type == account.KontenartAufwand ||
-			//acc.Description.Type == account.KontenartErtrag || // wurde schon in der Ausgangsrechnung verbucht...
-			acc.Description.Id == accountSystem.SKR03_1900.Id { // Privatentnahmen
+		a, _ := as.Get(acc.Description.Id)
+		for _, bk := range a.Bookings {
 
-			a, _ := as.Get(acc.Description.Id)
-			for _, bk := range a.Bookings {
-
-				BookToCostCenter{AccSystem: as, Booking: bk}.run()
-				}
+			// process bookings on GuV accounts
+			switch  acc.Description.Type {
+			case account.KontenartAufwand:
+				BookCostToCostCenter{AccSystem: as, Booking: bk}.run()
+			case account.KontenartErtrag:
+				BookRevenueToEmployeeCostCenter{AccSystem: as, Booking: bk}.run()
 			}
+
+			// now process other accounts like accountSystem.SKR03_1900.Id
+			switch acc.Description.Id {
+			case  accountSystem.SKR03_1900.Id:
+				BookCostToCostCenter{AccSystem: as, Booking: bk}.run()
+			}
+
+
+		}
+
 	}
 
 

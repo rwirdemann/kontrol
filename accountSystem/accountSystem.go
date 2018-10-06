@@ -210,6 +210,8 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 	case "4200", "4210", "4250", "4260",
 		"4360", "4380", "4390", "4806", "4595", "4600", "4640", "4650", "4654", "4655", "4663", "4664", "4666", "4670", "4672", "4673", "4674", "4676", "4780", "2300", "4900", "4909", "4910", "4920", "4921", "4925", "4930", "4940", "4945", "4949", "4950", "4955", "4957", "4960", "4964", "4970", "4980":
 		account = r.accounts[SKR03_sonstigeAufwendungen.Id]
+	case "8100":
+		account = r.accounts[SKR03_Umsatzerloese.Id]
 	case "9000":
 		account = r.accounts[SKR03_Saldenvortrag.Id]
 	default:

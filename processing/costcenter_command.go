@@ -1,92 +1,60 @@
 package processing
 
 import (
-	"time"
-
+	"fmt"
+	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/accountSystem"
 	"github.com/ahojsenn/kontrol/booking"
-	"github.com/ahojsenn/kontrol/util"
 	"github.com/ahojsenn/kontrol/valueMagnets"
+	"log"
+	"math"
+	"time"
 )
 
-const (
-	PartnerShare             = 0.70
-	EmployeeShare			 = 0.70
-	KommmitmentShare         = 0.25
-	KommmitmentExternShare   = 0.95
-	KommmitmentOthersShare   = 1.00
-	KommmitmentEmployeeShare = 0.95
-	PartnerProvision         = 0.05
-)
 
-type BookAusgangsrechnungCommand struct {
+type BookCostToCostCenter struct {
 	Booking    booking.Booking
 	AccSystem  accountSystem.AccountSystem
 }
 
-func (this BookAusgangsrechnungCommand) run() {
+func (c BookCostToCostCenter) run() {
 
+	amount := c.Booking.Amount
 
-	// if booking with empty timestamp in position "BankCreated"
-	// the book it to open positions SKR03_1400
-	if this.isOpenPosition() == true {
-		skr1400, _ := this.AccSystem.Get(accountSystem.SKR03_1400.Id)
-		skr1400.Book(this.Booking)
-
-		this.Booking.Text = "Achtung OPOS "+this.Booking.Text
-	} else {
-		// book from bankaccount...
-		bank,_ := this.AccSystem.Get(accountSystem.SKR03_1200.Id)
-		a := booking.Booking{
-			RowNr: 		 this.Booking.RowNr,
-			Amount:      -this.Booking.Amount,
-			Type:        booking.Erloese,
-			Text:        this.Booking.Text,
-			Month:       this.Booking.Month,
-			Year:        this.Booking.Year,
-			FileCreated: this.Booking.FileCreated,
-			BankCreated: this.Booking.BankCreated,
-			CsvBookingExtras: 		 this.Booking.CsvBookingExtras,
-		}
-
-		bank.Book(a)
+	// set booking Type
+	var bkt string = "hier steht der Buchungstyp"
+	switch c.Booking.Type {
+	case booking.Eingangsrechnung:
+		bkt = booking.Kosten
+	default:
+		bkt = c.Booking.Type
 	}
 
-
-
-	// haben umsatzerloese
-	umsatzerloese, _ := this.AccSystem.Get(accountSystem.SKR03_Umsatzerloese.Id)
-	b := booking.Booking{
-		RowNr: 		 this.Booking.RowNr,
-		CostCenter:  this.Booking.CostCenter,
-		Amount:      util.Net(this.Booking.Amount),
-		Type:        booking.Erloese,
-		Text:        this.Booking.Text,
-		Month:       this.Booking.Month,
-		Year:        this.Booking.Year,
-		FileCreated: this.Booking.FileCreated,
-		BankCreated: this.Booking.BankCreated,
-		CsvBookingExtras: 		 this.Booking.CsvBookingExtras,
+	// Sollbuchung
+	bkresp := c.Booking.CostCenter
+	if bkresp == "" {
+		log.Println("in BookToCostCenter, cc empty in row ", c.Booking.RowNr)
+		log.Println("    , setting it to 'K' ")
+		bkresp = valueMagnets.StakeholderKM.Id
 	}
-	umsatzerloese.Book(b)
+	sollAccount,_ := c.AccSystem.Get(bkresp)
+	b1 := booking.CloneBooking(c.Booking, amount, bkt, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben)
+	sollAccount.Book(b1)
 
-	// haben Steuern
-	umsatzsteuernKonto ,_ := this.AccSystem.Get(accountSystem.SKR03_Umsatzsteuer.Id)
-	c :=
-		booking.Booking{
-			RowNr: 		 this.Booking.RowNr,
-			Amount:      this.Booking.Amount - util.Net(this.Booking.Amount),
-			CostCenter:  this.Booking.CostCenter,
-			Type:        booking.Erloese,
-			Text:        this.Booking.Text,
-			Month:       this.Booking.Month,
-			Year:        this.Booking.Year,
-			FileCreated: this.Booking.FileCreated,
-			BankCreated: this.Booking.BankCreated,
-			CsvBookingExtras: 		 this.Booking.CsvBookingExtras,
-		}
-	umsatzsteuernKonto.Book(c)
+	// Habenbuchung
+	habenAccount,_ := c.AccSystem.Get(accountSystem.AlleKLRBuchungen.Id)
+	b2 := booking.CloneBooking(c.Booking, -amount, bkt, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben)
+	habenAccount.Book(b2)
+}
 
+
+type BookRevenueToEmployeeCostCenter struct {
+	Booking    booking.Booking
+	AccSystem  accountSystem.AccountSystem
+
+}
+
+func (this BookRevenueToEmployeeCostCenter) run() {
 
 	// hier kommt nun die ganze Verteilung unter den kommitmenschen
 	// 1. get rid of external share
@@ -94,10 +62,11 @@ func (this BookAusgangsrechnungCommand) run() {
 	// 3. 70% Employeeshare, falls Leistungserbringer employee ist
 	// 4. 15% mal Rendite auf shareholder, bämm geht nicht bei rein externen...
 	// DAS ISTUNFERTIG DENK DENK DENK...
-/*
-	benefitees := this.stakeholderWithNetPositions()
-	for _, benefited := range benefitees {
 
+
+	benefitees := this.stakeholderWithNetPositions()
+
+	for _, benefited := range benefitees {
 
 		if benefited.Type == valueMagnets.StakeholderTypePartner {
 			// book partner share
@@ -198,6 +167,7 @@ func (this BookAusgangsrechnungCommand) run() {
 
 		}
 
+
 		// Die Vertriebsprovision bekommt der Dealbringer
 		if benefited.Type != valueMagnets.StakeholderTypeOthers { // Don't give 5% for travel expenses and co...
 			var provisionAccount *account.Account
@@ -205,8 +175,8 @@ func (this BookAusgangsrechnungCommand) run() {
 			// Vertriebsprovisionen gehen nur an employees und partner, ansonsten fallen die an Kommitment
 			provisionAccount, _ = this.AccSystem.Get(this.Booking.Responsible)
 			if ( provisionAccount.Description.Type != valueMagnets.StakeholderTypeEmployee &&
-				 provisionAccount.Description.Type != valueMagnets.StakeholderTypePartner ) {
-				 	// then provision goes to kommitment
+				provisionAccount.Description.Type != valueMagnets.StakeholderTypePartner ) {
+				// then provision goes to kommitment
 				provisionAccount, _ = this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
 			}
 			b := booking.Booking{
@@ -222,12 +192,17 @@ func (this BookAusgangsrechnungCommand) run() {
 
 			provisionAccount.Book(b)
 		}
-	}*/
+	}
+
+
+
 }
+
+
 
 // Eine Buchung kann mehrere Nettopositionen enthalten, den je einem Stakeholder zugeschrieben wird.
 // Diese Funktion liefert ein Array mit Stateholdern, deren Nettoanteil in der Buchung != 0 ist.
-func (this BookAusgangsrechnungCommand) stakeholderWithNetPositions() []valueMagnets.Stakeholder {
+func (this BookRevenueToEmployeeCostCenter) stakeholderWithNetPositions() []valueMagnets.Stakeholder {
 	var result []valueMagnets.Stakeholder
 	for k, v := range this.Booking.Net {
 		if v != 0 {
@@ -238,9 +213,7 @@ func (this BookAusgangsrechnungCommand) stakeholderWithNetPositions() []valueMag
 }
 
 // is this an Open Position?
-func (this BookAusgangsrechnungCommand) isOpenPosition() bool {
+func (this BookRevenueToEmployeeCostCenter) isOpenPosition() bool {
 	emptyTime := time.Time{}
 	return this.Booking.BankCreated == emptyTime
 }
-
-

@@ -1,7 +1,6 @@
 package processing
 
 import (
-	"log"
 	"testing"
 	"time"
 
@@ -28,35 +27,6 @@ func setUp() {
 	accountKommitment, _ = accSystem.Get(valueMagnets.StakeholderRepository{}.Get("K").Id)
 }
 
-// Ausgangsrechnung Angestellter
-// - 5% Provision für Dealbringer
-// - 95% für Kommitmentment, Kostenstelle Angestellter
-func TestAusgangsrechnungAngestellter(t *testing.T) {
-	setUp()
-
-	// Ben hat auf einer Buchung nett 10.800 EUR erwirtschaftet
-	net := map[valueMagnets.Stakeholder]float64{
-		valueMagnets.StakeholderRepository{}.Get("BW"): 10800.0,
-	}
-	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.NewBooking(13, "AR", "", "", "JM", net, 12852.0, "Rechnung 1234", 1, 2017, its2018)
-
-	Process(accSystem, *p)
-
-	// Johannes kriegt 5% Provision
-	provision := accountHannes.Bookings[0]
-	util.AssertFloatEquals(t, 10800.0*PartnerProvision, provision.Amount)
-	util.AssertEquals(t, booking.Vertriebsprovision, provision.Type)
-
-	// Kommitment kriegt 95% der Nettorechnung
-	util.AssertEquals(t, 1, len(accountHannes.Bookings))
-	kommitment := accountKommitment.Bookings[0]
-	util.AssertFloatEquals(t, 10800.0*(KommmitmentEmployeeShare-EmployeeShare), kommitment.Amount)
-	util.AssertEquals(t, booking.Kommitmentanteil, kommitment.Type)
-
-	// Kommitment-Buchung ist der Kostenstelle "BW" zugeordnet
-	assert.Equal(t, "BW", kommitment.CostCenter)
-}
 
 // Gehalt Angestellter
 // - 100% Brutto gegen Bankkonto
@@ -88,33 +58,6 @@ func TestGehaltAngestellter(t *testing.T) {
 
 	// Kommitment-Buchung ist der Kostenstelle "BW" zugeordnet
 	assert.Equal(t, "BW", account2.Bookings[0].CostCenter)
-}
-
-func TestExternNettoAnteil(t *testing.T) {
-	setUp()
-
-	// given: a booking
-	net := map[valueMagnets.Stakeholder]float64{
-		valueMagnets.StakeholderEX: 10800.0,
-	}
-	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.NewBooking(13, "AR", "", "", "JM", net, 12852.0, "Rechnung 1234", 1, 2017, its2018)
-
-	// when: the position is processed
-	Process(accSystem, *p)
-
-	// and hannes got his provision
-	accountHannes, _ := accSystem.Get(valueMagnets.StakeholderRepository{}.Get("JM").Id)
-	provision := accountHannes.Bookings[0]
-	util.AssertFloatEquals(t, 10800.0*PartnerProvision, provision.Amount)
-	util.AssertEquals(t, booking.Vertriebsprovision, provision.Type)
-
-	// and kommitment got 95%
-	util.AssertEquals(t, 1, len(accountHannes.Bookings))
-	accountKommitment, _ := accSystem.Get(valueMagnets.StakeholderKM.Id)
-	kommitment := accountKommitment.Bookings[0]
-	util.AssertFloatEquals(t, 10800.0*KommmitmentExternShare, kommitment.Amount)
-	util.AssertEquals(t, booking.Kommitmentanteil, kommitment.Type)
 }
 
 // Eingangsrechnungen
@@ -506,13 +449,32 @@ func TestUstVZ(t *testing.T) {
 
 }
 
-func TestErloesverteilungAnValueMagnets(t *testing.T) {
-	log.Println("TestErloesverteilungAnValueMagnets")
+func TestErloesverteilungAnValueMagnetsSimple(t *testing.T) {
 	as := accountSystem.NewDefaultAccountSystem()
 
-	// ad := account.AccountDescription{Id: "BW", Name: "Ben", Type: "Employee"}
-	// as.Add(account.NewAccount(ad))
+	// given: BOOKING ER
+	// Eingangsrechnung 12852.0€ von Bank an SKR03_sonstigeAufwendungen
+	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
+	net := make(map[valueMagnets.Stakeholder]float64)
+	net[valueMagnets.StakeholderRepository{}.Get("BW")] = 1000.0
+	p3 := booking.NewBooking(13, "AR", "", "", "BW", net,  1190, "ARGSSLL", 1, 2017, its2018)
 
+	// when: the position is processed
+	Process(as, *p3)
+	ErloesverteilungAnValueMagnets(as)
+
+	// booking of 25% K-share is on CostCenter K
+	b,_ := as.Get("K")
+	b.UpdateSaldo()
+	assert.Equal(t, 1, len(b.Bookings))
+	assert.Equal(t, 0.0, b.Advances)
+	assert.Equal(t, 250.0, b.Saldo)
+
+}
+
+
+func TestErloesverteilungAnValueMagnets(t *testing.T) {
+	as := accountSystem.NewDefaultAccountSystem()
 
 	// given: BOOKING ER
 	// Eingangsrechnung 12852.0€ von Bank an SKR03_sonstigeAufwendungen
@@ -545,12 +507,11 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 	a, _ := as.Get("BW")
 	a.UpdateSaldo()
 	assert.Equal(t, 3, len(a.Bookings))
-	assert.Equal(t, booking.Employeeaanteil, a.Bookings[0].Type)
+	assert.Equal(t, booking.Employeeaanteil, a.Bookings[1].Type)
 	assert.Equal(t, 50.0, a.Provision)
 	assert.Equal(t, 0.0, a.Internals)
 	assert.Equal(t, 0.0, a.Advances)
 	assert.Equal(t, -9250.0, a.Saldo)
-	log.Println("TestErloesverteilungAnValueMagnets", a.Bookings)
 
 	// Booking is on CostCenter JM
 	c, _ := as.Get("JM")
