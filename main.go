@@ -1,22 +1,23 @@
 package main
 
 import (
-		"flag"
+	"flag"
 	"fmt"
-		"net/http"
+	"net/http"
 	"os"
+	"strconv"
 	"time"
 
-		"github.com/ahojsenn/kontrol/processing"
+	"github.com/ahojsenn/kontrol/processing"
 
 	"log"
 
+	"github.com/ahojsenn/kontrol/accountSystem"
 	"github.com/ahojsenn/kontrol/handler"
 	"github.com/ahojsenn/kontrol/parser"
+	"github.com/ahojsenn/kontrol/util"
 	"github.com/howeyc/fsnotify"
 	"github.com/rs/cors"
-	"github.com/ahojsenn/kontrol/util"
-	"github.com/ahojsenn/kontrol/accountSystem"
 )
 
 const DefaultBookingFile = "2017-Buchungen-KG - Buchungen 2017.csv"
@@ -47,7 +48,14 @@ func main() {
 
 	// set FinancialYear
 	util.Global.FinancialYear =  *year
-	log.Println("in main, util.Global.FinancialYear:", util.Global.FinancialYear)
+	bd, e := time.Parse("2006 01 02 15 04 05", strconv.Itoa(*year) + " 12 31 23 59 59"  )
+	if e != nil {
+		fmt.Println(e)
+	}
+
+	util.Global.BalanceDate = bd
+	log.Println("in main, util.Global.FinancialYear:", util.Global.FinancialYear,
+		"\n    BalanceDate=",util.Global.BalanceDate)
 
 	accountSystem := accountSystem.NewDefaultAccountSystem()
 	log.Println("in main, created accountsystem for ", util.Global.FinancialYear)
@@ -79,6 +87,7 @@ func importAndProcessBookings(repository accountSystem.AccountSystem, year int) 
 	processing.Bilanz(repository)
 	// now distribution of costs & profits
 	processing.ErloesverteilungAnValueMagnets(repository)
+	processing.DistributeKTopf(repository)
 }
 
 func watchBookingFile(repository accountSystem.AccountSystem, year int) {

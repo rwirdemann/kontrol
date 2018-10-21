@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"encoding/json"
 	"os"
+	"time"
 )
 
 // environments and HTTPS certificate locations.
@@ -19,6 +20,7 @@ type Environment struct {
 // global scope
 type GlobalStruct struct {
 	FinancialYear int
+	BalanceDate time.Time
 }
 
 var Global GlobalStruct

@@ -54,7 +54,7 @@ func (suite *AusgangsrechnungTestSuite) TestPartnerNettoAnteil() {
 	suite.InDelta(10800.0*PartnerShare, bRalf.Amount, 0.01)
 	suite.Equal(1, bRalf.Month)
 	suite.Equal(2017, bRalf.Year)
-	suite.Equal(booking.Nettoanteil, bRalf.Type)
+	suite.Equal(booking.CC_Nettoanteil, bRalf.Type)
 
 	// and hannes got 3 bookings: his own net share and 2 provisions ostCenter booking
 	accountHannes, _ := suite.repository.Get(valueMagnets.StakeholderRepository{}.Get("JM").Id)
@@ -70,12 +70,12 @@ func (suite *AusgangsrechnungTestSuite) TestPartnerNettoAnteil() {
 	// provision from ralf
 	provisionRalf, _ := findBookingByText(bookingsHannes, "Rechnung 1234#Provision#RW")
 	suite.Equal(10800.0*PartnerProvision, provisionRalf.Amount)
-	suite.Equal(booking.Vertriebsprovision, provisionRalf.Type)
+	suite.Equal(booking.CC_Vertriebsprovision, provisionRalf.Type)
 
 	// // provision from hannes
 	provisionHannes, _ := findBookingByText(bookingsHannes, "Rechnung 1234#Provision#JM")
 	suite.Equal(3675.0*PartnerProvision, provisionHannes.Amount)
-	suite.Equal(booking.Vertriebsprovision, provisionHannes.Type)
+	suite.Equal(booking.CC_Vertriebsprovision, provisionHannes.Type)
 
 	// kommitment got 25% from ralfs net booking
 	accountKommitment, _ := suite.repository.Get(valueMagnets.StakeholderKM.Id)
@@ -83,12 +83,12 @@ func (suite *AusgangsrechnungTestSuite) TestPartnerNettoAnteil() {
 	suite.Equal(2, len(bookingsKommitment))
 	kommitmentRalf, _ := findBookingByText(bookingsKommitment, "Rechnung 1234#Kommitment#RW")
 	suite.Equal(10800.0*KommmitmentShare, kommitmentRalf.Amount)
-	suite.Equal(booking.Kommitmentanteil, kommitmentRalf.Type)
+	suite.Equal(booking.CC_Kommitmentanteil, kommitmentRalf.Type)
 
 	// and kommitment got 25% from hannes net booking
 	kommitmentHannes, _ := findBookingByText(bookingsKommitment, "Rechnung 1234#Kommitment#JM")
 	suite.Equal(3675.0*KommmitmentShare, kommitmentHannes.Amount)
-	suite.Equal(booking.Kommitmentanteil, kommitmentHannes.Type)
+	suite.Equal(booking.CC_Kommitmentanteil, kommitmentHannes.Type)
 }
 */
 
@@ -123,7 +123,7 @@ func (suite *AusgangsrechnungTestSuite) TestOffeneRechnung() {
 
 
 //
-// Tests für Vertriebsprovision
+// Tests für CC_Vertriebsprovision
 //
 
 // - Kommitment bekommt den 95% der Nettoposition
@@ -141,13 +141,13 @@ func (suite *AusgangsrechnungTestSuite) TestDealbringerIstPartner() {
 
 	Process(suite.repository, *p)
 
-	// Ralfs Nettoanteil
+	// Ralfs CC_Nettoanteil
 	provisionRalf, _ := findBookingByText(suite.accountRalf.Bookings, "Rechnung 1234#NetShare#RW")
-	suite.assertBooking(10800.00*PartnerShare, booking.Nettoanteil, provisionRalf)
+	suite.assertBooking(10800.00*PartnerShare, booking.CC_Nettoanteil, provisionRalf)
 
-	// Hannes bekommt Provision für Hannes Nettoanteil
+	// Hannes bekommt Provision für Hannes CC_Nettoanteil
 	provisionHannes, _ := findBookingByText(suite.accountHannes.Bookings, "Rechnung 1234#Provision#JM")
-	suite.assertBooking(3675.0*PartnerProvision, booking.Vertriebsprovision, provisionHannes)
+	suite.assertBooking(3675.0*PartnerProvision, booking.CC_Vertriebsprovision, provisionHannes)
 }
 
 // - Kommitment bekommt den 95% der Nettoposition
@@ -170,7 +170,7 @@ func (suite *AusgangsrechnungTestSuite) TestDealbringerIstAngestellter() {
 	provision, err := findBookingByText(suite.accountBen.Bookings, "Rechnung 1234#Provision#RW")
 	suite.Nil(err)
 	suite.NotEqual(provision, nil)
-	suite.assertBooking(10800.0*PartnerProvision, booking.Vertriebsprovision, provision)
+	suite.assertBooking(10800.0*PartnerProvision, booking.CC_Vertriebsprovision, provision)
 	suite.Equal("BW", provision.CostCenter)
 }
 */

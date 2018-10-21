@@ -25,6 +25,7 @@ type Kommitmenschen struct {
 	Name string `json:"Name"`
 	Type string `json:"Type"`
 	Arbeit string `json:"Arbeit"`
+	FairShares string `json:"Fairshares"`
 }
 
 var kmry []KommitmenschenRepository
@@ -78,7 +79,7 @@ func (this StakeholderRepository) All(year int) []Stakeholder {
 	for _, mensch := range kmrepo.All(year) {
 		s := Stakeholder{}
 		s.Type = mensch.Type
-		stakehr = append(stakehr, Stakeholder{Id: mensch.Id, Name: mensch.Name, Type: mensch.Type, Arbeit: mensch.Arbeit})
+		stakehr = append(stakehr, Stakeholder{Id: mensch.Id, Name: mensch.Name, Type: mensch.Type, Arbeit: mensch.Arbeit, Fairshares: mensch.FairShares})
 	}
 
 	// add kommitment company

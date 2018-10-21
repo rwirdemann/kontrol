@@ -7,7 +7,6 @@ import (
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/valueMagnets"
 	"log"
-	"math"
 	"time"
 )
 
@@ -24,7 +23,7 @@ func (c BookCostToCostCenter) run() {
 	// set booking Type
 	var bkt string = "hier steht der Buchungstyp"
 	switch c.Booking.Type {
-	case booking.Eingangsrechnung:
+	case booking.Eingangsrechnung, booking.SKR03:
 		bkt = booking.Kosten
 	default:
 		bkt = c.Booking.Type
@@ -57,11 +56,8 @@ type BookRevenueToEmployeeCostCenter struct {
 func (this BookRevenueToEmployeeCostCenter) run() {
 
 	// hier kommt nun die ganze Verteilung unter den kommitmenschen
-	// 1. get rid of external share
-	// 2. 5% Vertriebsprovision (Achtung die ist zu hoch, wenn der db bei externen nicht 20% erreicht)
-	// 3. 70% Employeeshare, falls Leistungserbringer employee ist
-	// 4. 15% mal Rendite auf shareholder, bämm geht nicht bei rein externen...
-	// DAS ISTUNFERTIG DENK DENK DENK...
+	// 1. erst employees auszahlen und vertriebsprovisionen, den Rest auf kommitment
+	// 2. später den kommitmenttopf unter den kommanditisten aufteilen
 
 
 	benefitees := this.stakeholderWithNetPositions()
@@ -70,10 +66,11 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 
 		if benefited.Type == valueMagnets.StakeholderTypePartner {
 			// book partner share
+			/*
 			b := booking.Booking{
 				RowNr: 		 this.Booking.RowNr,
 				Amount:      math.Round(this.Booking.Net[benefited] * PartnerShare*1000000)/1000000,
-				Type:        booking.Nettoanteil,
+				Type:        booking.CC_Nettoanteil,
 				CostCenter:  benefited.Id,
 				Text:        this.Booking.Text + "#NetShare#" + benefited.Id,
 				Month:       this.Booking.Month,
@@ -83,12 +80,13 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 			a, _ := this.AccSystem.Get(benefited.Id)
 			a.Book(b)
 
+			*/
 			// book kommitment share
 			kommitmentShare := booking.Booking{
 				RowNr:       this.Booking.RowNr,
-				Amount:      this.Booking.Net[benefited] * KommmitmentShare,
-				Type:        booking.Kommitmentanteil,
-				CostCenter:  valueMagnets.StakeholderKM.Id,
+				Amount:      this.Booking.Net[benefited] * (account.KommmitmentShare + account.PartnerShare),
+				Type:        booking.CC_PartnerNettoFaktura,
+				CostCenter:  benefited.Id,
 				Text:        this.Booking.Text + "#Kommitment#" + benefited.Id,
 				Month:       this.Booking.Month,
 				Year:        this.Booking.Year,
@@ -104,9 +102,9 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 			// book Extern share
 			kommitmentShare := booking.Booking{
 				RowNr:       this.Booking.RowNr,
-				Amount:      this.Booking.Net[benefited] * KommmitmentExternShare,
-				Type:        booking.Kommitmentanteil,
-				CostCenter:  valueMagnets.StakeholderKM.Id,
+				Amount:      this.Booking.Net[benefited] * account.KommmitmentExternShare,
+				Type:        booking.CC_KommitmentanteilEX,
+				CostCenter:  this.Booking.CostCenter,
 				Text:        this.Booking.Text + "#Kommitment#" + benefited.Id,
 				Month:       this.Booking.Month,
 				Year:        this.Booking.Year,
@@ -124,9 +122,9 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 			// book kommitment share
 			kommitmentShare := booking.Booking{
 				RowNr: 		 this.Booking.RowNr,
-				Amount:      this.Booking.Net[benefited] * KommmitmentOthersShare,
-				Type:        booking.Kommitmentanteil,
-				CostCenter:  benefited.Id,
+				Amount:      this.Booking.Net[benefited] * account.KommmitmentOthersShare,
+				Type:        booking.CC_Kommitmentanteil,
+				CostCenter:  this.Booking.CostCenter,
 				Text:        this.Booking.Text + "#Kommitment#Rest#" + benefited.Id,
 				Month:       this.Booking.Month,
 				Year:        this.Booking.Year,
@@ -140,35 +138,35 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 			// book kommitment share
 			kommitmentShare := booking.Booking{
 				RowNr: 		 this.Booking.RowNr,
-				Amount:      this.Booking.Net[benefited] * (KommmitmentEmployeeShare-EmployeeShare),
-				Type:        booking.Kommitmentanteil,
+				Amount:      this.Booking.Net[benefited] * (account.KommmitmentEmployeeShare-account.EmployeeShare),
+				Type:        booking.CC_Kommitmentanteil,
 				Text:        this.Booking.Text,
 				Month:       this.Booking.Month,
 				Year:        this.Booking.Year,
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated,
-				CostCenter:  benefited.Id}
+				CostCenter:  this.Booking.CostCenter}
 			kommitmentAccount, _ := this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
 			kommitmentAccount.Book(kommitmentShare)
 
 			// book employee share
 			employeeshare := booking.Booking{
 				RowNr: 		 this.Booking.RowNr,
-				Amount:      this.Booking.Net[benefited] * EmployeeShare,
-				Type:        booking.Employeeaanteil,
-				Text:        fmt.Sprintf("%f", EmployeeShare)+"*Netto: " + this.Booking.Text,
+				Amount:      this.Booking.Net[benefited] * account.EmployeeShare,
+				Type:        booking.CC_Employeeaanteil,
+				Text:        fmt.Sprintf("%f", account.EmployeeShare)+"*Netto: " + this.Booking.Text,
 				Month:       this.Booking.Month,
 				Year:        this.Booking.Year,
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated,
-				CostCenter:  benefited.Id}
+				CostCenter:  this.Booking.CostCenter}
 			employeeaccount, _ := this.AccSystem.Get(benefited.Id)
 			employeeaccount.Book(employeeshare)
 
 		}
 
 
-		// Die Vertriebsprovision bekommt der Dealbringer
+		// Die CC_Vertriebsprovision bekommt der Dealbringer
 		if benefited.Type != valueMagnets.StakeholderTypeOthers { // Don't give 5% for travel expenses and co...
 			var provisionAccount *account.Account
 
@@ -181,14 +179,14 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 			}
 			b := booking.Booking{
 				RowNr: 		 this.Booking.RowNr,
-				Amount:      this.Booking.Net[benefited] * PartnerProvision,
-				Type:        booking.Vertriebsprovision,
+				Amount:      this.Booking.Net[benefited] * account.PartnerProvision,
+				Type:        booking.CC_Vertriebsprovision,
 				Text:        this.Booking.Text + "#Provision#" + benefited.Id,
 				Month:       this.Booking.Month,
 				Year:        this.Booking.Year,
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated,
-				CostCenter:  this.Booking.Responsible}
+				CostCenter:  this.Booking.CostCenter}
 
 			provisionAccount.Book(b)
 		}
@@ -201,7 +199,7 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 
 
 // Eine Buchung kann mehrere Nettopositionen enthalten, den je einem Stakeholder zugeschrieben wird.
-// Diese Funktion liefert ein Array mit Stateholdern, deren Nettoanteil in der Buchung != 0 ist.
+// Diese Funktion liefert ein Array mit Stateholdern, deren CC_Nettoanteil in der Buchung != 0 ist.
 func (this BookRevenueToEmployeeCostCenter) stakeholderWithNetPositions() []valueMagnets.Stakeholder {
 	var result []valueMagnets.Stakeholder
 	for k, v := range this.Booking.Net {

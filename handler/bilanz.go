@@ -15,7 +15,7 @@ func MakeGetBilanzAccountsHandler(repository accountSystem.AccountSystem) http.H
 		var accounts []account.Account
 		accounts = repository.GetBilanzAccounts(account.KontenartPassiv)
 		accounts = append(accounts, repository.GetBilanzAccounts(account.KontenartAktiv)... )
-		sort.Sort(account.ByType(accounts))
+		sort.Sort(account.ByName(accounts))
 
 		// wrap response with "Accounts" element
 		response := struct {

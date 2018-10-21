@@ -16,4 +16,5 @@ type Stakeholder struct {
 	Name string
 	Type string
 	Arbeit string
+	Fairshares string
 }

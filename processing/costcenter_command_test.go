@@ -1,6 +1,7 @@
 package processing
 
 import (
+	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/accountSystem"
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/util"
@@ -64,9 +65,9 @@ func TestBookRevenueToEmployeeCostCenter(t *testing.T) {
 	BookRevenueToEmployeeCostCenter{AccSystem: accsystem, Booking: bkng}.run()
 
 	// there is money on the costcenter JM
-	account, _ := accsystem.Get("BW")
-	util.AssertEquals(t, 1, len(account.Bookings))
-	assert.Equal(t, 1000*EmployeeShare, account.Bookings[0].Amount)
+	acc, _ := accsystem.Get("BW")
+	util.AssertEquals(t, 1, len(acc.Bookings))
+	assert.Equal(t, 1000*  account.EmployeeShare, acc.Bookings[0].Amount)
 
 
 }
@@ -90,13 +91,13 @@ func TestExternNettoAnteil(t *testing.T) {
 	// and hannes got his provision
 	accountHannes, _ := accSystem.Get(valueMagnets.StakeholderRepository{}.Get("JM").Id)
 	provision := accountHannes.Bookings[0]
-	util.AssertFloatEquals(t, 10800.0*PartnerProvision, provision.Amount)
-	util.AssertEquals(t, booking.Vertriebsprovision, provision.Type)
+	util.AssertFloatEquals(t, 10800.0*account.PartnerProvision, provision.Amount)
+	util.AssertEquals(t, booking.CC_Vertriebsprovision, provision.Type)
 
 	// and kommitment got 95%
 	util.AssertEquals(t, 1, len(accountHannes.Bookings))
-	accountKommitment, _ := accSystem.Get(valueMagnets.StakeholderKM.Id)
-	kommitment := accountKommitment.Bookings[0]
-	util.AssertFloatEquals(t, 10800.0*KommmitmentExternShare, kommitment.Amount)
-	util.AssertEquals(t, booking.Kommitmentanteil, kommitment.Type)
+	acc, _ := accSystem.Get(valueMagnets.StakeholderKM.Id)
+	bk := acc.Bookings[0]
+	util.AssertFloatEquals(t, 10800.0*account.KommmitmentExternShare, bk.Amount)
+	util.AssertEquals(t, booking.CC_KommitmentanteilEX, bk.Type)
 }

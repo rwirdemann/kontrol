@@ -1,9 +1,6 @@
 package processing
 
 import (
-	"log"
-	"time"
-
 	"github.com/ahojsenn/kontrol/accountSystem"
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/util"
@@ -18,15 +15,15 @@ type BookGehaltCommand struct {
 func (c BookGehaltCommand) run() {
 
 	amount := c.Booking.Amount
-	// Gehaltsbuchung ist 4120 and 1200, also Gehalt an Bank
+	// Gehaltsbuchung ist 4120 and 1200, also CC_Gehalt an Bank
 	// Buchung Kommitment-Konto
 	sollAccount, _ := c.AccSystem.Get(accountSystem.SKR03_4100_4199.Id)
-	kBooking := booking.CloneBooking(c.Booking, -amount, booking.Gehalt, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	kBooking := booking.CloneBooking(c.Booking, -amount, booking.CC_Gehalt, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	sollAccount.Book(kBooking)
 
 	// Bankbuchung, Haben
 	bankBooking := c.Booking
-	bankBooking.Type = c.Booking.Typ
+	bankBooking.Type = booking.CC_Gehalt
 	bankBooking.Amount =  amount
 	bankBooking.Responsible = c.Booking.Responsible
 	acc,_ := c.AccSystem.Get(accountSystem.SKR03_1200.Id)
@@ -45,15 +42,21 @@ func (c BookSVBeitragCommand) run() {
 
 	// Buchung SKR03_4100_4199
 	sollAccount, _ := c.AccSystem.Get(accountSystem.SKR03_4100_4199.Id)
-	kBooking := booking.CloneBooking(c.Booking, -amount, booking.SVBeitrag, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	kBooking := booking.CloneBooking(c.Booking, -amount, booking.CC_SVBeitrag, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	sollAccount.Book(kBooking)
 
-	// Bankbuchung
-	bankBooking := c.Booking
-	bankBooking.Type = c.Booking.Typ
-	bankBooking.Amount = amount
-	acc,_ := c.AccSystem.Get(accountSystem.SKR03_1200.Id)
-	acc.Book(bankBooking)
+	// Habenbuchung
+	habenAccountId := ""
+	if c.Booking.IsBeyondBudgetDate() {
+		habenAccountId = accountSystem.SKR03_Rueckstellungen.Id
+	} else {
+		habenAccountId = accountSystem.SKR03_1200.Id
+	}
+	habenAccount,_ := c.AccSystem.Get(habenAccountId)
+	bk := c.Booking
+	bk.Type = booking.CC_SVBeitrag
+	bk.Amount = amount
+	habenAccount.Book(bk)
 
 }
 
@@ -68,15 +71,21 @@ func (c BookLNSteuerCommand) run() {
 
 	// Buchung SKR03_4100_4199
 	account, _ := c.AccSystem.Get(accountSystem.SKR03_4100_4199.Id)
-	kBooking := booking.CloneBooking(c.Booking, - amount, c.Booking.Typ, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	kBooking := booking.CloneBooking(c.Booking, - amount, booking.CC_LNSteuer, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	account.Book(kBooking)
 
-	// Bankbuchung
-	bankBooking := c.Booking
-	bankBooking.Type = c.Booking.Typ
-	bankBooking.Amount = amount
-	acc,_ := c.AccSystem.Get(accountSystem.SKR03_1200.Id)
-	acc.Book(bankBooking)
+	// Habenbuchung
+	habenAccountId := ""
+	if c.Booking.IsBeyondBudgetDate() {
+		habenAccountId = accountSystem.SKR03_Rueckstellungen.Id
+	} else {
+		habenAccountId = accountSystem.SKR03_1200.Id
+	}
+	habenAccount,_ := c.AccSystem.Get(habenAccountId)
+	bk := c.Booking
+	bk.Type = booking.CC_LNSteuer
+	bk.Amount = amount
+	habenAccount.Book(bk)
 
 }
 
@@ -92,15 +101,21 @@ func (c BookGWSteuerCommand) run() {
 
 	// Buchung Kommitment-Konto oder Rückstellung oder ...
 	gwAccount,_ := c.AccSystem.Get(accountSystem.SKR03_Steuern.Id)
-	kBooking := booking.CloneBooking(c.Booking, - amount, c.Booking.Typ, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	kBooking := booking.CloneBooking(c.Booking, - amount, booking.CC_GWSteuer, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	gwAccount.Book(kBooking)
 
-	// Bankbuchung Haben
-	bankBooking := c.Booking
-	bankBooking.Type = c.Booking.Typ
-	bankBooking.Amount = amount
-	acc,_ := c.AccSystem.Get(accountSystem.SKR03_1200.Id)
-	acc.Book(bankBooking)
+	// Habenbuchung
+	habenAccountId := ""
+	if c.Booking.IsBeyondBudgetDate() {
+		habenAccountId = accountSystem.SKR03_Rueckstellungen.Id
+	} else {
+		habenAccountId = accountSystem.SKR03_1200.Id
+	}
+	habenAccount,_ := c.AccSystem.Get(habenAccountId)
+	habenbk := c.Booking
+	habenbk.Type = booking.CC_GWSteuer
+	habenbk.Amount = amount
+	habenAccount.Book(habenbk)
 
 }
 
@@ -111,18 +126,17 @@ type BookPartnerEntnahmeCommand struct {
 
 func (c BookPartnerEntnahmeCommand) run() {
 
-	log.Println("in BookPartnerEntnahmeCommand, c.booking", c.Booking	)
 	// auflösen eines Gesellschafterdarlehens, Buchung: Privatentnahme 1900 an Bank 1200
 	amount := c.Booking.Amount
 
 	// Soll Privatentnahme
 	sollAccount,_ := c.AccSystem.Get(accountSystem.SKR03_1900.Id)
-	b := booking.CloneBooking(c.Booking, -amount, booking.Entnahme, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	b := booking.CloneBooking(c.Booking, -amount, booking.CC_Entnahme, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	sollAccount.Book(b)
 
 	// an Bank
 	bankBooking := c.Booking
-	bankBooking.Type = booking.Entnahme
+	bankBooking.Type = booking.CC_Entnahme
 	bankBooking.Amount = bankBooking.Amount
 	acc,_ := c.AccSystem.Get(accountSystem.SKR03_1200.Id)
 	acc.Book(bankBooking)
@@ -160,7 +174,9 @@ func (c BookEingangsrechnungCommand) run() {
 
 	// if booking with empty timestamp in position "BankCreated"
 	// then book it to open positions SKR03_1600
-	if c.Booking.BankCreated.After(time.Now()) {
+
+
+	if c.Booking.IsOpenPosition() {
 		skr1600, _ := c.AccSystem.Get(accountSystem.SKR03_1600.Id)
 		skr1600.Book(c.Booking)
 		return
@@ -170,17 +186,24 @@ func (c BookEingangsrechnungCommand) run() {
 
 	// Soll Buchung UST-Konto, Erträge werden im Haben gebucht, Ausgaben im Soll
 	ustAccount,_ := c.AccSystem.Get(accountSystem.SKR03_Vorsteuer.Id)
-	b2 := booking.CloneBooking(c.Booking, -1.0*(amount-util.Net(amount)), booking.Eingangsrechnung, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	b2 := booking.CloneBooking(c.Booking, -1.0*(amount-util.Net(amount)), booking.Ust, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	ustAccount.Book (b2)
 
 	// Soll Buchung Kommitment-Konto
 	sollAccount,_ := c.AccSystem.Get(accountSystem.SKR03_sonstigeAufwendungen.Id)
-	b := booking.CloneBooking(c.Booking, -util.Net(amount), booking.Eingangsrechnung, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	b := booking.CloneBooking(c.Booking, -util.Net(amount), booking.Kosten, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	sollAccount.Book(b)
 
-	// Haben Buchung Bank
-	habenAccount,_ := c.AccSystem.Get(accountSystem.SKR03_1200.Id)
-	a :=  booking.CloneBooking(c.Booking, amount, booking.Eingangsrechnung, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	// Haben Buchung Bank if not booking.IsBeyondBudgetDate()
+	// otherwise in accountSystem.SKR03_1600.Id
+	habenAccountId := ""
+	if c.Booking.IsBeyondBudgetDate() {
+		habenAccountId = accountSystem.SKR03_1600.Id
+	} else {
+		habenAccountId = accountSystem.SKR03_1200.Id
+	}
+	a :=  booking.CloneBooking(c.Booking, amount, booking.Kosten, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	habenAccount,_ := c.AccSystem.Get(habenAccountId)
 	habenAccount.Book(a)
 
 }
@@ -193,12 +216,12 @@ type BookInterneStundenCommand struct {
 func (c BookInterneStundenCommand) run() {
 
 	// Buchung interner Stunden auf Kommanditstenkonto
-	a := booking.CloneBooking(c.Booking, c.Booking.Amount, booking.InterneStunden, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	a := booking.CloneBooking(c.Booking, c.Booking.Amount, booking.CC_InterneStunden, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	partnerAccount, _ := c.AccSystem.Get(c.Booking.Responsible)
 	partnerAccount.Book(a)
 
 	// Buchung interner Stunden von kommitment Konto auf Stakeholder
-	b := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.InterneStunden, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
+	b := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.CC_InterneStunden, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	kommitmentAccount, _ := c.AccSystem.Get(valueMagnets.StakeholderKM.Id)
 	kommitmentAccount.Book(b)
 
@@ -241,7 +264,13 @@ func (c BookUstCommand) run() {
 	sollAccount.Book(a)
 
 	// Habenbuchung
-	habenAccount,_ := c.AccSystem.Get(accountSystem.SKR03_1200.Id)
+	habenAccountId := ""
+	if c.Booking.IsBeyondBudgetDate() {
+		habenAccountId = accountSystem.SKR03_Rueckstellungen.Id
+	} else {
+		habenAccountId = accountSystem.SKR03_1200.Id
+	}
+	habenAccount,_ := c.AccSystem.Get(habenAccountId)
 	b := booking.CloneBooking(c.Booking, amount, c.Booking.Typ, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben)
 	habenAccount.Book(b)
 

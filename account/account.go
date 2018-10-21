@@ -17,6 +17,16 @@ const (
 	KontenartKLR      		  = "VerrechnungskontoKLR"
 )
 
+const (
+	PartnerShare             = 0.70
+	EmployeeShare			 = 0.70
+	KommmitmentShare         = 0.25
+	KommmitmentExternShare   = 0.95
+	KommmitmentOthersShare   = 1.00
+	KommmitmentEmployeeShare = 0.95
+	PartnerProvision         = 0.05
+)
+
 type AccountDescription struct {
 	Id   string `json:",omitempty"`
 	Name string
@@ -26,10 +36,13 @@ type AccountDescription struct {
 type Account struct {
 	Description     AccountDescription
 	Bookings  []booking.Booking `json:",omitempty"`
+	KommitmenschNettoFaktura   float64
+	AnteilAusFaktura float64
+	AnteilAusFairshares float64
+	KommitmenschDarlehen float64
 	Costs     float64
 	Advances  float64
 	Reserves  float64
-	Provision float64
 	Rest      float64
 	Revenue   float64
 	Taxes     float64
@@ -46,29 +59,44 @@ func (a *Account) Book(b booking.Booking) {
 }
 
 func (a *Account) UpdateSaldo() {
-	provision := 0.0
 	revenue := 0.0
 	saldo := 0.0
+	kommitmenschNettoFaktura := 0.0
 	internals := 0.0
 	advances := 0.0
 	rest := 0.0
 	costs := 0.0
+	anteilAusFairshares := 0.0
+	anteilAusFaktura := 0.0
+	darlehen := 0.0
 	for _, b := range a.Bookings {
 		saldo += b.Amount
 
 		switch b.Type {
-		case booking.Nettoanteil, booking.Kommitmentanteil:
+		case booking.CC_Nettoanteil, booking.CC_Kommitmentanteil:
 			revenue += b.Amount
-		case booking.Entnahme:
+		case booking.CC_Entnahme:
 			advances += b.Amount
-		case booking.Vertriebsprovision:
-			provision += b.Amount
-		case booking.InterneStunden:
+		case booking.CC_InterneStunden:
 			internals += b.Amount
-		case booking.Erloese, booking.Employeeaanteil:
+		case booking.CC_Vertriebsprovision:
 			revenue += b.Amount
-		case booking.Kosten, booking.LNSteuer, booking.GWSteuer, booking.SVBeitrag, booking.Gehalt, booking.Eingangsrechnung:
+		case booking.Erloese, booking.CC_KommitmentanteilEX:
+			revenue += b.Amount
+		case booking.CC_Employeeaanteil:
+			revenue += b.Amount
+			kommitmenschNettoFaktura += b.Amount/ EmployeeShare
+		case booking.CC_PartnerNettoFaktura:
+			revenue += b.Amount
+			kommitmenschNettoFaktura += b.Amount
+		case booking.Kosten, booking.CC_LNSteuer, booking.CC_GWSteuer, booking.CC_SVBeitrag, booking.CC_Gehalt:
 			costs += b.Amount
+		case booking.CC_AnteilAusFairshares:
+			anteilAusFairshares += b.Amount
+		case booking.CC_AnteilAusFaktura:
+			anteilAusFaktura += b.Amount
+		case booking.CC_KommitmenschDarlehen:
+			darlehen += b.Amount
 		case booking.SKR03:
 			// hier genauer gucken...
 		default:
@@ -78,10 +106,14 @@ func (a *Account) UpdateSaldo() {
 	a.Saldo = saldo
 	a.Advances = advances
 	a.Revenue = revenue
-	a.Provision = provision
 	a.Internals = internals
 	a.Rest = rest
 	a.Costs = costs
+	a.KommitmenschNettoFaktura = kommitmenschNettoFaktura
+	a.AnteilAusFaktura = anteilAusFaktura
+	a.AnteilAusFairshares = anteilAusFairshares
+	a.KommitmenschDarlehen = darlehen
+	a.KommitmenschNettoFaktura = kommitmenschNettoFaktura
 }
 
 func (a Account) Print() {
@@ -124,3 +156,7 @@ func (a ByType) Len() int           { return len(a) }
 func (a ByType) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByType) Less(i, j int) bool { return strings.Compare(a[i].Description.Type, a[j].Description.Type) < 0 }
 
+type ByName []Account
+func (a ByName) Len() int           { return len(a) }
+func (a ByName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByName) Less(i, j int) bool { return strings.Compare(a[i].Description.Name, a[j].Description.Name) < 0 }

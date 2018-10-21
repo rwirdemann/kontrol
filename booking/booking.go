@@ -2,6 +2,7 @@ package booking
 
 import (
 	"fmt"
+	"github.com/ahojsenn/kontrol/util"
 	"time"
 
 	"golang.org/x/text/language"
@@ -29,13 +30,13 @@ var ValidBookingTypes = [...]string{
 // Zusatzinformationen einer Buchung, deren Quelle die CSV-Datei ist, und die für die weitere
 // Bearbeitung erforderlich sind.
 type CsvBookingExtras struct {
-	// "ER", "AR", "GV", "IS", "SV-Beitrag", "GWSteuer"
+	// "ER", "AR", "GV", "IS", "SV-Beitrag", "CC_GWSteuer"
 	Typ string
 
 	// Wer für die Buchung verantwortlich ist. Unterschiedliche Bedeutung für unterschiedliche Buchungsarten:
 	// - "ER": Wer die Kosten verursacht hat
 	// - "AR": Wer den Auftrag gebracht hat.
-	// - "GV": Wer die Entnahme getätigt hat
+	// - "GV": Wer die CC_Entnahme getätigt hat
 	// - "IS": Wer die internen Stunden geleistet hat
 	// - "SV-Beitrag": Für wen der SV-Beitrag gezhalt wurde
 	Responsible string
@@ -47,24 +48,27 @@ type CsvBookingExtras struct {
 // Aus einer Buchung in der Quelldatei wird eine oder mehrere virtuelle Buchungen erstellt. Dies ist die Liste
 // möglicher Werte für den Type einer virtuellen Buchung
 const (
-	Erloese      		  = "Erloese"
-	Vertriebsprovision    = "Vertriebsprovision"
-	Nettoanteil           = "Nettoanteil"
-	Employeeaanteil		  = "Employeeanteil"
-	Kommitmentanteil      = "Kommitmentanteil"
-	Entnahme              = "Entnahme"
-	Eingangsrechnung      = "Eingangsrechnung"
-	InterneStunden        = "Interne Stunden"
-	SVBeitrag             = "SV-Beitrag"
-	GWSteuer              = "GWSteuer"
-	Gehalt                = "Gehalt"
-	LNSteuer              = "LNSteuer"
-	Rueckstellung         = "Rueckstellung"
-	Anfangsbestand        = "Anfangsbestand"
-	GVVorjahr             = "GVVorjahr"
-	SKR03                 = "SKR03"
-	UstVZ				  = "UstVZ"
-	Kosten				  = "Kosten"
+	Erloese                = "Erloese"
+	CC_Vertriebsprovision  = "CC_Vertriebsprovision"
+	CC_Nettoanteil         = "CC_Nettoanteil"
+	CC_Employeeaanteil     = "CC_Employeeanteil"
+	CC_Kommitmentanteil    = "CC_Kommitmentanteil"
+	CC_KommitmentanteilEX  = "CC_KmmtmntntlVExtern"
+	CC_Entnahme            = "CC_Entnahme"
+	CC_AnteilAusFairshares = "CC_AnteilAusFairshares"
+	CC_AnteilAusFaktura    = "CC_AnteilAusFaktura"
+	CC_KommitmenschDarlehen = "CC_KommitmenschDarlehen"
+	Eingangsrechnung       = "Eingangsrechnung"
+	CC_InterneStunden      = "CC_Interne Stunden"
+	CC_SVBeitrag           = "CC_SV-Beitrag"
+	CC_GWSteuer            = "CC_GWSteuer"
+	CC_Gehalt              = "CC_Gehalt"
+	CC_LNSteuer            = "CC_LNSteuer"
+	CC_PartnerNettoFaktura = "CC_PartnerNettofaktura"
+	SKR03                  = "SKR03"
+	UstVZ                  = "UstVZ"
+	Ust                    = "Ust"
+	Kosten                 = "Kosten"
 )
 
 type Booking struct {
@@ -172,6 +176,18 @@ func (b *Booking) BookOnBankAccount() bool {
 	}
 	return true
 }
+
+// is this an Open Position?
+func (b *Booking) IsOpenPosition() bool {
+	emptyTime := time.Time{}
+	return b.BankCreated == emptyTime
+}
+
+// ist this booking beyond the budget date?
+func (b *Booking) IsBeyondBudgetDate () bool {
+	return b.BankCreated.After(util.Global.BalanceDate)
+}
+
 
 type ByMonth []Booking
 

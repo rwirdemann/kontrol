@@ -30,19 +30,22 @@ type DefaultAccountSystem struct {
 
 const SKR03 = "SKR03"
 
-var SKR03_Rueckstellungen = account.AccountDescription{Id: "Rückstellung", Name: "SKR03_956-977_Rückstellung", Type: account.KontenartPassiv}
-var SKR03_Eigenkapital_880 = account.AccountDescription{Id: "Eigenkapital", Name: "SKR03_880_Eigenkapital", Type: account.KontenartPassiv}
-var SKR03_900_Haftkapital = account.AccountDescription{Id: "SKR03_900_Haftkapital", Name: "SKR03_900_Haftkapital", Type: account.KontenartPassiv}
-var SKR03_920_Gesellschafterdarlehen = account.AccountDescription{Id: "SKR03_920_Gesellschafterdarlehen", Name: "SKR03_920_Gesellschafterdarlehen", Type: account.KontenartPassiv}
-var SKR03_1200 = account.AccountDescription{Id: "1200", Name: "SKR03_1200_Bank", Type: account.KontenartAktiv}
-var SKR03_1400 = account.AccountDescription{Id: "1400", Name: "SKR03_1400_OPOS-Kunde", Type: account.KontenartAktiv}
-var SKR03_1600 = account.AccountDescription{Id: "1600", Name: "SKR03_1600_OPOS-Lieferant", Type: account.KontenartPassiv}
-var SKR03_1900 = account.AccountDescription{Id: "1900", Name: "SKR03_1900_Privatentnahmen", Type: account.KontenartPassiv}
-var SKR03_Anlagen = account.AccountDescription{Id: "SKR03_Anlagen", Name: "SKR03_410-480_Anlagen", Type: account.KontenartAktiv}
-var SKR03_Anlagen25 = account.AccountDescription{Id: "SKR03_Anlagen25", Name: "SKR03_25_Anlagen Ähnl.R&W", Type: account.KontenartAktiv}
-var SKR03_Kautionen = account.AccountDescription{Id: "SKR03_Kautionen", Name: "SKR03_1525_Kautionen", Type: account.KontenartAktiv}
-var SKR03_Vorsteuer = account.AccountDescription{Id: "SKR03_Vorsteuer", Name: "SKR03_1570-1579_Steuer: Vorsteuer", Type: account.KontenartAktiv}
-var SKR03_Umsatzsteuer = account.AccountDescription{Id: "SKR03_Umsatzsteuer", Name: "SKR03_1770_Steuer: Umsatzsteuer", Type: account.KontenartAktiv}
+// Bilanzkonten
+var SKR03_Anlagen25 = account.AccountDescription{Id: "SKR03_Anlagen25", Name: "01_SKR03_25_Anlagen Ähnl.R&W", Type: account.KontenartAktiv}
+var SKR03_Anlagen = account.AccountDescription{Id: "SKR03_Anlagen", Name: "02_SKR03_410-480_Anlagen", Type: account.KontenartAktiv}
+var SKR03_1400 = account.AccountDescription{Id: "1400", Name: "03_SKR03_1400_OPOS-Kunde", Type: account.KontenartAktiv}
+var SKR03_Kautionen = account.AccountDescription{Id: "SKR03_Kautionen", Name: "04_SKR03_1525_Kautionen", Type: account.KontenartAktiv}
+var SKR03_Vorsteuer = account.AccountDescription{Id: "SKR03_Vorsteuer", Name: "06_05_SKR03_05_1570-1579_Steuer: Vorsteuer", Type: account.KontenartAktiv}
+var SKR03_Umsatzsteuer = account.AccountDescription{Id: "SKR03_Umsatzsteuer", Name: "07_SKR03_6_1770_Steuer: Umsatzsteuer", Type: account.KontenartAktiv}
+var SKR03_1200 = account.AccountDescription{Id: "1200", Name: "08_SKR03_1200_Bank", Type: account.KontenartAktiv}
+
+var SKR03_900_Haftkapital = account.AccountDescription{Id: "SKR03_900_Haftkapital", Name: "08_SKR03_900_Haftkapital", Type: account.KontenartPassiv}
+var SKR03_Eigenkapital_880 = account.AccountDescription{Id: "Eigenkapital", Name: "09_SKR03_880_Eigenkapital", Type: account.KontenartPassiv}
+var SKR03_Rueckstellungen = account.AccountDescription{Id: "Rückstellung", Name: "10_SKR03_10_956-977_Rückstellung", Type: account.KontenartPassiv}
+var SKR03_920_Gesellschafterdarlehen = account.AccountDescription{Id: "SKR03_920_Gesellschafterdarlehen", Name: "11_SKR03_920_Gesellschafterdarlehen", Type: account.KontenartPassiv}
+var SKR03_1600 = account.AccountDescription{Id: "1600", Name: "12_SKR03_1600_OPOS-Lieferant", Type: account.KontenartPassiv}
+var SKR03_1900 = account.AccountDescription{Id: "1900", Name: "13_SKR03_1900_Privatentnahmen", Type: account.KontenartPassiv}
+
 // Erfolgskonten
 var SKR03_Umsatzerloese = account.AccountDescription{Id: "SKR03_Umsatzerloese", Name: "1 SKR03_Umsatzerloese 8100-8402", Type: account.KontenartErtrag}
 var SKR03_4100_4199 = account.AccountDescription{Id: "4100_4199", Name: "3 Löhne und Gehälter 4100-4199", Type: account.KontenartAufwand}
