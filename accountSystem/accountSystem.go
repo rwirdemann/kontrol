@@ -35,13 +35,13 @@ var SKR03_Anlagen25 = account.AccountDescription{Id: "SKR03_Anlagen25", Name: "0
 var SKR03_Anlagen = account.AccountDescription{Id: "SKR03_Anlagen", Name: "02_SKR03_410-480_Anlagen", Type: account.KontenartAktiv}
 var SKR03_1400 = account.AccountDescription{Id: "1400", Name: "03_SKR03_1400_OPOS-Kunde", Type: account.KontenartAktiv}
 var SKR03_Kautionen = account.AccountDescription{Id: "SKR03_Kautionen", Name: "04_SKR03_1525_Kautionen", Type: account.KontenartAktiv}
-var SKR03_Vorsteuer = account.AccountDescription{Id: "SKR03_Vorsteuer", Name: "06_05_SKR03_05_1570-1579_Steuer: Vorsteuer", Type: account.KontenartAktiv}
-var SKR03_Umsatzsteuer = account.AccountDescription{Id: "SKR03_Umsatzsteuer", Name: "07_SKR03_6_1770_Steuer: Umsatzsteuer", Type: account.KontenartAktiv}
-var SKR03_1200 = account.AccountDescription{Id: "1200", Name: "08_SKR03_1200_Bank", Type: account.KontenartAktiv}
+var SKR03_Vorsteuer = account.AccountDescription{Id: "SKR03_Vorsteuer", Name: "05_SKR03__1570-1579_Steuer: Vorsteuer", Type: account.KontenartAktiv}
+var SKR03_Umsatzsteuer = account.AccountDescription{Id: "SKR03_Umsatzsteuer", Name: "06_SKR03_1770_Steuer: Umsatzsteuer", Type: account.KontenartAktiv}
+var SKR03_1200 = account.AccountDescription{Id: "1200", Name: "07_SKR03_1200_Bank", Type: account.KontenartAktiv}
 
 var SKR03_900_Haftkapital = account.AccountDescription{Id: "SKR03_900_Haftkapital", Name: "08_SKR03_900_Haftkapital", Type: account.KontenartPassiv}
 var SKR03_Eigenkapital_880 = account.AccountDescription{Id: "Eigenkapital", Name: "09_SKR03_880_Eigenkapital", Type: account.KontenartPassiv}
-var SKR03_Rueckstellungen = account.AccountDescription{Id: "Rückstellung", Name: "10_SKR03_10_956-977_Rückstellung", Type: account.KontenartPassiv}
+var SKR03_Rueckstellungen = account.AccountDescription{Id: "Rückstellung", Name: "10_SKR03_956-977_Rückstellung", Type: account.KontenartPassiv}
 var SKR03_920_Gesellschafterdarlehen = account.AccountDescription{Id: "SKR03_920_Gesellschafterdarlehen", Name: "11_SKR03_920_Gesellschafterdarlehen", Type: account.KontenartPassiv}
 var SKR03_1600 = account.AccountDescription{Id: "1600", Name: "12_SKR03_1600_OPOS-Lieferant", Type: account.KontenartPassiv}
 var SKR03_1900 = account.AccountDescription{Id: "1900", Name: "13_SKR03_1900_Privatentnahmen", Type: account.KontenartPassiv}
@@ -192,7 +192,7 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 		account = r.accounts[SKR03_Kautionen.Id]
 	case "1548":
 		account = r.accounts[SKR03_Vorsteuer.Id]
-	case "1400":
+	case "1400", "1595":
 		account = r.accounts[SKR03_1400.Id]
 	case "731", "1600":
 		account = r.accounts[SKR03_1600.Id]

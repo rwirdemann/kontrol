@@ -6,7 +6,8 @@
       { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "partner", "Arbeit": "1" , "Fairshares": "0.33333"},
       { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "partner", "Arbeit": "1" , "Fairshares": "0.33333"},
       { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "employee", "Arbeit": "0" },
-      { "Id": "KR", "Name": "k: Katja Roth",           "Type": "employee", "Arbeit": "0" }
+      { "Id": "KR", "Name": "k: Katja Roth",           "Type": "employee", "Arbeit": "0" },
+      { "Id": "IK", "Name": "k: Ingo Komorowski",      "Type": "employee", "Arbeit": "0" }
     ]
   },
   {
@@ -16,7 +17,8 @@
       { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "partner", "Arbeit": "1" , "Fairshares": "0.33333"},
       { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "partner", "Arbeit": "1" , "Fairshares": "0.33333"},
       { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "employee", "Arbeit": "0" },
-      { "Id": "KR", "Name": "k: Katja Roth",           "Type": "employee", "Arbeit": "0" }
+      { "Id": "KR", "Name": "k: Katja Roth",           "Type": "employee", "Arbeit": "0" },
+      { "Id": "IK", "Name": "k: Ingo Komorowski",      "Type": "employee", "Arbeit": "0" }
     ]
   },
   {

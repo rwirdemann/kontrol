@@ -29,7 +29,7 @@ echo "Deploy stuff to "${TARGETSERVER}
 ${SSHSERVER} "[ -f ${TARGETPROGRAM} ] &&  mv ${TARGETPROGRAM} ${TARGETPROGRAM}.old"
 scp ${TARGETPROGRAM} ${TARGETUSER}@${TARGETSERVER}:${TARGETPROGRAM}
 scp httpsconfig.env ${TARGETUSER}@${TARGETSERVER}:.
-scp ./owner/kommitmenschen.json ${TARGETUSER}@${TARGETSERVER}:.
+scp ./valueMagnets/kommitmenschen.json ${TARGETUSER}@${TARGETSERVER}:./kommitmenschen.json
 scp getSpreadsheet.sh ${TARGETUSER}@${TARGETSERVER}:.
 ${SSHSERVER} ls -al
 echo "done with file transfer..."

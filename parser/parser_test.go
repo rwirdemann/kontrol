@@ -1,7 +1,8 @@
 package parser
 
 import (
-		"testing"
+	"fmt"
+	"testing"
 	"time"
 
 	"github.com/ahojsenn/kontrol/booking"
@@ -38,7 +39,7 @@ func assertPosition(t *testing.T, p booking.Booking, typ string, soll string, ha
 	assert.Equal(t, amount, p.Amount)
 	assert.Equal(t, year, p.Year)
 	assert.Equal(t, month, p.Month)
-
+	fmt.Println("in assertPosition", p.Net	)
 	assert.Equal(t, nettoRW, p.Net[ valueMagnets.StakeholderRepository{}.Get("RW") ])
 	assert.Equal(t, nettoJM, p.Net[ valueMagnets.StakeholderRepository{}.Get("JM") ])
 	assert.Equal(t, nettoAN, p.Net[ valueMagnets.StakeholderRepository{}.Get("AN") ])
