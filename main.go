@@ -33,9 +33,9 @@ func main() {
 	environment := util.GetEnv()
 	version := flag.Bool("version", false, "prints current kontrol version")
 	file := flag.String("file", DefaultBookingFile, "booking file")
-	year := flag.Int("year", 2018, "year to control")
-	httpPort := flag.String("httpPort", "8991", "http server port")
-	httpsPort := flag.String("httpsPort", "8992", "https server port")
+	year := flag.Int("year", 2017, "year to control")
+	httpPort := flag.String("httpPort", "20171", "http server port")
+	httpsPort := flag.String("httpsPort", "20172", "https server port")
 	certFile := flag.String("certFile", environment.CertFile, "https certificate")
 	keyFile := flag.String("keyFile", environment.KeyFile, "https key")
 	flag.Parse()
@@ -88,6 +88,7 @@ func importAndProcessBookings(repository accountSystem.AccountSystem, year int) 
 	// now distribution of costs & profits
 	processing.ErloesverteilungAnValueMagnets(repository)
 	processing.DistributeKTopf(repository)
+
 }
 
 func watchBookingFile(repository accountSystem.AccountSystem, year int) {

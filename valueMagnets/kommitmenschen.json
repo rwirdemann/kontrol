@@ -29,7 +29,9 @@
       { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "partner", "Arbeit": "1.00" },
       { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "employee", "Arbeit": "1.00" },
       { "Id": "KR", "Name": "k: Katja Roth",           "Type": "employee", "Arbeit": "0.75" },
+      { "Id": "AB", "Name": "k: Anna Blume",           "Type": "employee", "Arbeit": "0.25" },
       { "Id": "IK", "Name": "k: Ingo Komorowski",      "Type": "employee", "Arbeit": "0.41666" }
     ]
   }
 ]
+

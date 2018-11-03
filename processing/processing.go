@@ -68,13 +68,12 @@ func GuV (as accountSystem.AccountSystem) {
 		}
 	}
 
-
 	now := time.Now().AddDate(0, 0, 0)
-	// Jarhesüberschuss ist nun ermittelt
+	// Jahresüberschuss ist nun ermittelt
 
 	// Buchung auf Verrechnungskonto Jahresüberschuss
 	jue,_ := as.Get(accountSystem.ErgebnisNachSteuern.Id)
-	soll := booking.NewBooking(0,"Jahresüberschuss "+strconv.Itoa(util.Global.FinancialYear), "", "", "", nil,  jahresueberschuss, "Buchung Jahresüberschuss", int(now.Month()), now.Year(), now)
+	soll := booking.NewBooking(0,"Jahresüberschuss "+strconv.Itoa(util.Global.FinancialYear), "", "", "", nil,  -jahresueberschuss, "Buchung Jahresüberschuss", int(now.Month()), now.Year(), now)
 	jue.Book(*soll)
 
 	// und Buchung auf Verbindlichkeitenkonto
@@ -155,10 +154,16 @@ func ErloesverteilungAnValueMagnets (as accountSystem.AccountSystem) {
 
 			// now process other accounts like accountSystem.SKR03_1900.Id
 			switch acc.Description.Id {
-			case accountSystem.SKR03_1900.Id:
+			case accountSystem.SKR03_1900.Id: // Privatentnahmen
 				BookCostToCostCenter{AccSystem: as, Booking: bk}.run()
+			case accountSystem.SKR03_920_Gesellschafterdarlehen.Id,
+			     accountSystem.ErgebnisNachSteuern.Id:
+				bk.Type = booking.CC_KommitmenschDarlehen
+				BookCostToCostCenter{AccSystem: as, Booking: bk}.run()
+			default:
 			}
 		}
+		acc.UpdateSaldo()
 	}
 }
 
@@ -196,8 +201,8 @@ func DistributeKTopf (as accountSystem.AccountSystem) {
 			fairshares,_ := strconv.ParseFloat(sh.Fairshares, 64)
 			log.Print("      Fairshares: ", fairshares)
 			fairshareAnteil :=  math.Round(100*arbeit * fairshares*kaccount.Saldo*ShareHoldersShare)/100
-			log.Print("      revenue: ", math.Round(rev),"€")
-			log.Print("      ", math.Round(100*rev/sum),"%")
+			log.Print("      this partners revenue: ", math.Round(rev),"€")
+			log.Print("      this partners revenue: ", math.Round(10000*rev/sum)/100,"%")
 			erloesAnteil := math.Round(100*rev/sum*kaccount.Saldo*(1-ShareHoldersShare) )/100
 			log.Print("      Anteil aus Fairshares: ", fairshareAnteil,"€")
 			log.Print("      Anteil aus Erlösen: ", erloesAnteil,"€")
@@ -209,7 +214,7 @@ func DistributeKTopf (as accountSystem.AccountSystem) {
 				Amount:      -fairshareAnteil,
 				Type:        booking.CC_AnteilAusFairshares,
 				CostCenter:  sh.Id,
-				Text:        "Anteil aus fairshares",
+				Text:        "Anteil aus fairshares("+strconv.FormatFloat(fairshares, 'f', 2, 64)+")",
 				FileCreated: now,
 				BankCreated: now,
 			}
@@ -220,7 +225,7 @@ func DistributeKTopf (as accountSystem.AccountSystem) {
 				Amount:      fairshareAnteil,
 				Type:        booking.CC_AnteilAusFairshares,
 				CostCenter:  sh.Id,
-				Text:        "Anteil aus fairshares",
+				Text:         "Anteil aus fairshares("+strconv.FormatFloat(fairshares, 'f', 2, 64)+")",
 				FileCreated: now,
 				BankCreated: now,
 			}
@@ -232,7 +237,7 @@ func DistributeKTopf (as accountSystem.AccountSystem) {
 				Amount:      -erloesAnteil,
 				Type:        booking.CC_AnteilAusFaktura,
 				CostCenter:  sh.Id,
-				Text:        "Anteil aus fairshares",
+				Text:        "Anteil aus Erloesen: "+strconv.FormatFloat(rev/sum, 'f', 2, 64)+"",
 				FileCreated: now,
 				BankCreated: now,
 			}
@@ -243,7 +248,7 @@ func DistributeKTopf (as accountSystem.AccountSystem) {
 				Amount:      erloesAnteil,
 				Type:        booking.CC_AnteilAusFaktura,
 				CostCenter:  sh.Id,
-				Text:        "Anteil aus fairshares",
+				Text:        "Anteil aus Erloesen: "+strconv.FormatFloat(rev/sum, 'f', 2, 64)+"",
 				FileCreated: now,
 				BankCreated: now,
 			}

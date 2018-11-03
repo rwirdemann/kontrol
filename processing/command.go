@@ -152,6 +152,8 @@ func (c BookPartnerEntnahmeVorjahrCommand) run() {
 
 	// auflösen eines Gesellschafterdarlehens, Buchung: Gesellschafterdarlehen 920 an Bank 1200
 	amount := c.Booking.Amount
+	//c.Booking.Soll = "920"
+	//c.Booking.Haben = "1200"
 
 	// Soll Gesellschafterdarlehens
 	sollAccount,_ := c.AccSystem.Get(accountSystem.SKR03_920_Gesellschafterdarlehen.Id)

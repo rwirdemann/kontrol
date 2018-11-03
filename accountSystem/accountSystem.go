@@ -53,9 +53,10 @@ var SKR03_AnlagenabgaengeSachanlagen2310 = account.AccountDescription{Id: "SKR03
 var SKR03_Abschreibungen = account.AccountDescription{Id: "SKR03_Abschreibungen", Name: "4 Abschreibungen auf Anlagen 4822-4855", Type: account.KontenartAufwand}
 var SKR03_sonstigeAufwendungen = account.AccountDescription{Id: "SKR03_sonstigeAufwendungen", Name: "5 sonstige Aufwendungen", Type: account.KontenartAufwand}
 var SKR03_Steuern = account.AccountDescription{Id: "SKR03_Steuern", Name: "6 SKR03_Steuern 4320", Type: account.KontenartAufwand}
-var ErgebnisNachSteuern = account.AccountDescription{Id: "SKR03_ErgebnisNachSteuern", Name: "7 ErgebnisNachSteuern", Type: account.KontenartVerrechnung}
+var ErgebnisNachSteuern = account.AccountDescription{Id: "SKR03_ErgebnisNachSteuern 10000", Name: "7 ErgebnisNachSteuern", Type: account.KontenartVerrechnung}
 // Verrechnungskonten
 var SKR03_Saldenvortrag = account.AccountDescription{Id: "SKR03_Saldenvortrag", Name: "Saldenvortrag 9000", Type: account.KontenartVerrechnung}
+var SKR03_9790_Restanteil = account.AccountDescription{Id: "SKR03_9790_Restanteil", Name: "SKR03_9790_Restanteil", Type: account.KontenartVerrechnung}
 var SummeAktiva 	= account.AccountDescription{Id: "SummeAktiva", Name: "V: SummeAktiva", Type: account.KontenartVerrechnung}
 var SummePassiva 	= account.AccountDescription{Id: "SummePassiva", Name: "V: SummePassiva", Type: account.KontenartVerrechnung}
 var AlleKLRBuchungen = account.AccountDescription{Id: "AlleKLRBuchungen", Name: "V: AlleKLRBuchungen", Type: account.KontenartKLR}
@@ -92,6 +93,7 @@ func (this Accountlist) All() []account.AccountDescription {
 		ErgebnisNachSteuern,
 		SummeAktiva,
 		SummePassiva,
+		SKR03_9790_Restanteil,
 		AlleKLRBuchungen,
 	}
 }
@@ -217,6 +219,10 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 		account = r.accounts[SKR03_Umsatzerloese.Id]
 	case "9000":
 		account = r.accounts[SKR03_Saldenvortrag.Id]
+	case "9790":
+		account = r.accounts[SKR03_9790_Restanteil.Id]
+	case "10000":
+		account = r.accounts[ErgebnisNachSteuern.Id]
 	default:
 		log.Printf("GetSKR03: could not process booking type '%s'", SKR03konto)
 		panic(fmt.Sprintf("GetSKR03: SKR03Bucket/Stakeholder/Konto '%s' not found", account.Description))

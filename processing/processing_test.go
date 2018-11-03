@@ -510,7 +510,11 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 	a, _ := as.Get("BW")
 	a.UpdateSaldo()
 	assert.Equal(t, 3, len(a.Bookings))
-	assert.Equal(t, booking.CC_Employeeaanteil, a.Bookings[1].Type)
+	typestring := ""
+	for _,bk := range a.Bookings {
+		typestring += bk.Type
+	}
+	assert.Contains(t, typestring, booking.CC_Employeeaanteil)
 	assert.Equal(t, 0.0, a.Internals)
 	assert.Equal(t, 0.0, a.Advances)
 	assert.Equal(t, -9250.0, a.Saldo)
