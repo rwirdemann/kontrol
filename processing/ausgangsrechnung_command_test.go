@@ -102,7 +102,7 @@ func (suite *AusgangsrechnungTestSuite) TestOffeneRechnung() {
 	net := make(map[valueMagnets.Stakeholder]float64)
 	net[valueMagnets.StakeholderRepository{}.Get("RW")] = 10800.0
 	net[valueMagnets.StakeholderRepository{}.Get("JM")] = 3675.0
-	p := booking.NewBooking(13, "AR", "", "", "JM", net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{})
+	p := booking.NewBooking(13, "AR", "", "", "JM", "Project-X", net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{})
 
 	// when: the position is processed
 	Process(suite.repository, *p)

@@ -73,12 +73,12 @@ func GuV (as accountSystem.AccountSystem) {
 
 	// Buchung auf Verrechnungskonto Jahresüberschuss
 	jue,_ := as.Get(accountSystem.ErgebnisNachSteuern.Id)
-	soll := booking.NewBooking(0,"Jahresüberschuss "+strconv.Itoa(util.Global.FinancialYear), "", "", "", nil,  -jahresueberschuss, "Buchung Jahresüberschuss", int(now.Month()), now.Year(), now)
+	soll := booking.NewBooking(0,"Jahresüberschuss "+strconv.Itoa(util.Global.FinancialYear), "", "", "", "",nil,  -jahresueberschuss, "Buchung Jahresüberschuss", int(now.Month()), now.Year(), now)
 	jue.Book(*soll)
 
 	// und Buchung auf Verbindlichkeitenkonto
 	verb,_ := as.Get(accountSystem.SKR03_920_Gesellschafterdarlehen.Id)
-	haben := booking.NewBooking(0,"Jahresüberschuss "+strconv.Itoa(util.Global.FinancialYear), "", "", valueMagnets.StakeholderKM.Id, nil,  jahresueberschuss, "Buchung Jahresüberschuss", int(now.Month()), now.Year(), now)
+	haben := booking.NewBooking(0,"Jahresüberschuss "+strconv.Itoa(util.Global.FinancialYear), "", "", valueMagnets.StakeholderKM.Id, "", nil,  jahresueberschuss, "Buchung Jahresüberschuss", int(now.Month()), now.Year(), now)
 	verb.Book(*haben)
 
 }
@@ -101,6 +101,7 @@ func Bilanz (as accountSystem.AccountSystem) {
 				"",
 				"",
 				"",
+				"",
 				nil,
 				acc.Saldo,
 				"SummeAktiva "+strconv.Itoa(util.Global.FinancialYear),
@@ -120,6 +121,7 @@ func Bilanz (as accountSystem.AccountSystem) {
 			bk = booking.NewBooking(
 				rownr,
 				acc.Description.Name+strconv.Itoa(util.Global.FinancialYear),
+				"",
 				"",
 				"",
 				"",

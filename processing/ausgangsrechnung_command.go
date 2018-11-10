@@ -39,6 +39,7 @@ func (this BookAusgangsrechnungCommand) run() {
 	a := booking.Booking{
 		RowNr: 		 this.Booking.RowNr,
 		Amount:      -this.Booking.Amount,
+		Project:     this.Booking.Project,
 		Type:        booking.Erloese,
 		Text:        this.Booking.Text,
 		Month:       this.Booking.Month,
@@ -56,6 +57,7 @@ func (this BookAusgangsrechnungCommand) run() {
 	b := booking.Booking{
 		RowNr: 		 this.Booking.RowNr,
 		CostCenter:  this.Booking.CostCenter,
+		Project:     this.Booking.Project,
 		Amount:      util.Net(this.Booking.Amount),
 		Type:        booking.Erloese,
 		Text:        this.Booking.Text,
@@ -74,6 +76,7 @@ func (this BookAusgangsrechnungCommand) run() {
 			RowNr: 		 this.Booking.RowNr,
 			Amount:      this.Booking.Amount - util.Net(this.Booking.Amount),
 			CostCenter:  this.Booking.CostCenter,
+			Project:     this.Booking.Project,
 			Type:        booking.Erloese,
 			Text:        this.Booking.Text,
 			Month:       this.Booking.Month,

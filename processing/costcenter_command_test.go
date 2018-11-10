@@ -57,7 +57,7 @@ func TestBookRevenueToEmployeeCostCenter(t *testing.T) {
 	net := make(map[valueMagnets.Stakeholder]float64)
 	net[valueMagnets.StakeholderRepository{}.Get("BW")] = 1000
 	net[valueMagnets.StakeholderRepository{}.Get("JM")] = 3675.0
-	bkng := *booking.NewBooking(13, "AR", "", "", "JM", net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{})
+	bkng := *booking.NewBooking(13, "AR", "", "", "JM", "Project-X",net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{})
 
 
 	// when you book it
@@ -82,7 +82,7 @@ func TestExternNettoAnteil(t *testing.T) {
 		valueMagnets.StakeholderEX: 10800.0,
 	}
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.NewBooking(13, "AR", "", "", "JM", net, 12852.0, "Rechnung 1234", 1, 2017, its2018)
+	p := booking.NewBooking(13, "AR", "", "", "JM", "Project-X",net, 12852.0, "Rechnung 1234", 1, 2017, its2018)
 
 	// when: the position is processed
 	Process(accSystem, *p)

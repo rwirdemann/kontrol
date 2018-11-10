@@ -12,10 +12,10 @@ import (
 func TestBookOnBankAccount(t *testing.T) {
 	bankCreated, _ := time.Parse(time.RFC822, "01 Jan 17 10:17 UTC")
 
-	is := NewBooking(13,"IS", "800", "1337", "K", nil, 0, "Booking", 1, 2017, bankCreated)
+	is := NewBooking(13,"IS", "800", "1337", "K", "Project-X", nil, 0, "Booking", 1, 2017, bankCreated)
 	util.AssertFalse(t, is.BookOnBankAccount())
 
-	gv := NewBooking(13,"GV", "800", "1337", "RW", nil, 0, "Booking", 1, 2017, bankCreated)
+	gv := NewBooking(13,"GV", "800", "1337", "RW", "Project-X", nil, 0, "Booking", 1, 2017, bankCreated)
 	util.AssertTrue(t, gv.BookOnBankAccount())
 
 	start, _ := time.Parse(time.RFC822, "01 Jan 17 10:12 UTC")

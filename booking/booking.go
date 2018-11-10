@@ -77,6 +77,7 @@ type Booking struct {
 	Soll        string
 	Haben       string
 	CostCenter  string
+	Project 	string
 	Amount      float64
 	Text        string
 	Year        int
@@ -93,6 +94,7 @@ func NewBooking(
 	soll string,
 	haben string,
 	costCenter string,
+	project string,
 	net map[valueMagnets.Stakeholder]float64,
 	amount float64,
 	text string,
@@ -114,6 +116,7 @@ func NewBooking(
 		Soll:        soll,
 		Haben:       haben,
 		CostCenter:  costCenter,
+		Project: 	 project,
 		Amount:      amount,
 		Text:        text,
 		Month:       month,
@@ -122,18 +125,6 @@ func NewBooking(
 	}
 }
 
-func Ausgangsrechnung(
-	rownr int,
-	dealbringer string,
-	net map[valueMagnets.Stakeholder]float64,
-	amount float64,
-	text string,
-	month int,
-	year int,
-	bankCreated time.Time) *Booking {
-
-	return NewBooking(rownr,"AR", "", "", dealbringer, net, 17225.25, "Rechnung 1234", 1, 2017, bankCreated)
-}
 
 func CloneBooking(b Booking, amount float64, typ string, costcenter string, soll string, haben string) Booking {
 	return Booking{
