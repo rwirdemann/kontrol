@@ -126,7 +126,7 @@ func NewBooking(
 }
 
 
-func CloneBooking(b Booking, amount float64, typ string, costcenter string, soll string, haben string) Booking {
+func CloneBooking(b Booking, amount float64, typ string, costcenter string, soll string, haben string, project string) Booking {
 	return Booking{
 		Amount:      amount,
 		Type:        typ,
@@ -139,6 +139,7 @@ func CloneBooking(b Booking, amount float64, typ string, costcenter string, soll
 		CostCenter:  costcenter,
 		Soll: soll,
 		Haben: haben,
+		Project: project,
 	}
 }
 

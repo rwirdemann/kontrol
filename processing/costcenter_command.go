@@ -37,12 +37,12 @@ func (c BookCostToCostCenter) run() {
 		bkresp = valueMagnets.StakeholderKM.Id
 	}
 	sollAccount,_ := c.AccSystem.Get(bkresp)
-	b1 := booking.CloneBooking(c.Booking, amount, bkt, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben)
+	b1 := booking.CloneBooking(c.Booking, amount, bkt, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
 	sollAccount.Book(b1)
 
 	// Habenbuchung
 	habenAccount,_ := c.AccSystem.Get(accountSystem.AlleKLRBuchungen.Id)
-	b2 := booking.CloneBooking(c.Booking, -amount, bkt, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben)
+	b2 := booking.CloneBooking(c.Booking, -amount, bkt, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
 	habenAccount.Book(b2)
 }
 
