@@ -18,6 +18,7 @@ func NewRouter(githash string, buildstamp string, repository accountSystem.Accou
 	r.HandleFunc("/kontrol/kommitmenschen", MakeGetKommitmenschenAccountsHandler(repository))
 	r.HandleFunc("/kontrol/accounts", MakeGetAccountsHandler(repository))
 	r.HandleFunc("/kontrol/accounts/{id}", MakeGetAccountHandler(repository))
+	r.HandleFunc("/kontrol/projects", MakeGetProjectsHandler(repository))
 	return r
 }
 

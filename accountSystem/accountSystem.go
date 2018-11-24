@@ -18,8 +18,9 @@ type AccountSystem interface {
 	Add(a *account.Account)
 	All() []account.Account
 	Get(id string) (*account.Account, bool)
-	GetBilanzAccounts (typ string) []account.Account
+	CloneAccountsOfType (typ string) []account.Account
 	GetSKR03(id string) *account.Account
+	GetByType (typ string) map[string]*account.Account
 	ClearBookings()
 }
 
@@ -143,6 +144,8 @@ func (r *DefaultAccountSystem) All() []account.Account {
 	return result
 }
 
+
+
 func (r *DefaultAccountSystem) Get(id string) (*account.Account, bool) {
 	if a, ok := r.accounts[id]; ok {
 		return a, true
@@ -150,7 +153,22 @@ func (r *DefaultAccountSystem) Get(id string) (*account.Account, bool) {
 	return nil, false
 }
 
-func (as *DefaultAccountSystem) GetBilanzAccounts (typ string) []account.Account {
+
+func (as *DefaultAccountSystem) GetByType(typ string) map[string]*account.Account {
+	filtered  := make (map[string]*account.Account)
+
+	for _, account := range as.accounts {
+		if account.Description.Type == typ {
+			account.UpdateSaldo()
+			clone := account
+			filtered[account.Description.Name] = clone
+		}
+	}
+	return filtered
+}
+
+
+func (as *DefaultAccountSystem) CloneAccountsOfType (typ string) []account.Account {
 	var filtered  []account.Account
 	for _, account := range as.accounts {
 		if account.Description.Type == typ {

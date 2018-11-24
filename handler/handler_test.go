@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/ahojsenn/kontrol/processing"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -19,6 +20,9 @@ var as accountSystem.AccountSystem
 
 func init() {
 	repository := accountSystem.EmptyDefaultAccountSystem()
+	repository.Add(account.NewAccount(account.AccountDescription{Id: "JM", Name: "k: Ralf", Type: "partner"}))
+	repository.Add(account.NewAccount(account.AccountDescription{Id: "RW", Name: "k: Ralf", Type: "partner"}))
+	repository.Add(account.NewAccount(account.AccountDescription{Id: "BW", Name: "k: Ben", Type: "partner"}))
 	repository.Add(account.NewAccount(account.AccountDescription{Id: "AN", Name: "k: Anke Nehrenberg", Type: "partner"}))
 	repository.Add(account.NewAccount(account.AccountDescription{Id: "SKR03_ErgebnisNachSteuern", Name: "SKR03_ErgebnisNachSteuern", Type: "Verrechnungskonto"}))
 
@@ -48,7 +52,7 @@ func TestGetAllAccounts(t *testing.T) {
 	router.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusOK, rr.Code)
-	expected := "{\"Accounts\":[{\"Description\":{\"Id\":\"SKR03_ErgebnisNachSteuern\",\"Name\":\"SKR03_ErgebnisNachSteuern\",\"Type\":\"Verrechnungskonto\"},\"KommitmenschNettoFaktura\":0,\"AnteilAusFaktura\":0,\"AnteilAusFairshares\":0,\"KommitmenschDarlehen\":0,\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Rest\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0},{\"Description\":{\"Id\":\"AN\",\"Name\":\"k: Anke Nehrenberg\",\"Type\":\"partner\"},\"KommitmenschNettoFaktura\":0,\"AnteilAusFaktura\":0,\"AnteilAusFairshares\":0,\"KommitmenschDarlehen\":0,\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Rest\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0},{\"Description\":{\"Id\":\"K\",\"Name\":\"k: Kommitment\",\"Type\":\"company\"},\"KommitmenschNettoFaktura\":0,\"AnteilAusFaktura\":0,\"AnteilAusFairshares\":0,\"KommitmenschDarlehen\":0,\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Rest\":4400,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":6800}]}"
+	expected := "{\"Accounts\":[{\"Description\":{\"Id\":\"SKR03_ErgebnisNachSteuern\",\"Name\":\"SKR03_ErgebnisNachSteuern\",\"Type\":\"Verrechnungskonto\"},\"KommitmenschNettoFaktura\":0,\"AnteilAusFaktura\":0,\"AnteilAusFairshares\":0,\"KommitmenschDarlehen\":0,\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Rest\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0},{\"Description\":{\"Id\":\"AN\",\"Name\":\"k: Anke Nehrenberg\",\"Type\":\"partner\"},\"KommitmenschNettoFaktura\":0,\"AnteilAusFaktura\":0,\"AnteilAusFairshares\":0,\"KommitmenschDarlehen\":0,\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Rest\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0},{\"Description\":{\"Id\":\"BW\",\"Name\":\"k: Ben\",\"Type\":\"partner\"},\"KommitmenschNettoFaktura\":0,\"AnteilAusFaktura\":0,\"AnteilAusFairshares\":0,\"KommitmenschDarlehen\":0,\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Rest\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0},{\"Description\":{\"Id\":\"K\",\"Name\":\"k: Kommitment\",\"Type\":\"company\"},\"KommitmenschNettoFaktura\":0,\"AnteilAusFaktura\":0,\"AnteilAusFairshares\":0,\"KommitmenschDarlehen\":0,\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Rest\":4400,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":6800},{\"Description\":{\"Id\":\"JM\",\"Name\":\"k: Ralf\",\"Type\":\"partner\"},\"KommitmenschNettoFaktura\":0,\"AnteilAusFaktura\":0,\"AnteilAusFairshares\":0,\"KommitmenschDarlehen\":0,\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Rest\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0},{\"Description\":{\"Id\":\"RW\",\"Name\":\"k: Ralf\",\"Type\":\"partner\"},\"KommitmenschNettoFaktura\":0,\"AnteilAusFaktura\":0,\"AnteilAusFairshares\":0,\"KommitmenschDarlehen\":0,\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Rest\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0}]}"
 	assert.Equal(t, expected, rr.Body.String())
 }
 
@@ -97,5 +101,30 @@ func TestGetAccountsGuV(t *testing.T) {
 	assert.Equal(t, http.StatusOK, rr.Code)
 	// only Bilanzkonten are wanted here [Type Passivkonto or Aktivkonto]
 	expected := "{\"Accounts\":[{\"Description\":{\"Id\":\"8100\",\"Name\":\"Ertrag\",\"Type\":\"Ertragskonto\"},\"KommitmenschNettoFaktura\":0,\"AnteilAusFaktura\":0,\"AnteilAusFairshares\":0,\"KommitmenschDarlehen\":0,\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Rest\":0,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":0}]}"
+	assert.Equal(t, expected, rr.Body.String())
+}
+
+func TestGetAccountsProjects(t *testing.T) {
+	ac := account.NewAccount(account.AccountDescription{Id: "TestProjekt", Name: "k: KLR Kommitment", Type: account.KontenartProject})
+	bk := booking.NewBooking(13,"AR", "", "", "JM", "Project-X",nil, 2000, "Rechnung WLW", 1, 2018, time.Time{})
+	ac.Book(*bk)
+	//( and a booking which is not supposed to be picked up...
+	ac2 := account.NewAccount(account.AccountDescription{Id: "somethingelse", Name: "k: KLR Kommitment", Type: account.KontenartErtrag})
+	bk2 := booking.NewBooking(13,"SKR03", "4900", "977", "JM", "Project-X",	nil, 2400, "Rückstellung Schornsteinfegerrechnung", 1, 2018, time.Time{})
+	ac2.Book(*bk2)
+
+	as.Add(ac)
+
+
+	req, _ := http.NewRequest("GET", "/kontrol/projects", nil)
+	rr := httptest.NewRecorder()
+	router.ServeHTTP(rr, req)
+
+	processing.GenerateProjectControlling(as)
+
+
+	assert.Equal(t, http.StatusOK, rr.Code)
+	// only Bilanzkonten are wanted here [Type Passivkonto or Aktivkonto]
+	expected := "{\"Accounts\":[{\"Description\":{\"Id\":\"TestProjekt\",\"Name\":\"k: KLR Kommitment\",\"Type\":\"VerrechnungskontoProjekt\"},\"Bookings\":[{\"RowNr\":13,\"Type\":\"AR\",\"Soll\":\"\",\"Haben\":\"\",\"CostCenter\":\"JM\",\"Project\":\"Project-X\",\"Amount\":2000,\"Text\":\"Rechnung WLW\",\"Year\":2018,\"Month\":1,\"FileCreated\":\"0001-01-01T00:00:00Z\",\"BankCreated\":\"0001-01-01T00:00:00Z\"}],\"KommitmenschNettoFaktura\":0,\"AnteilAusFaktura\":0,\"AnteilAusFairshares\":0,\"KommitmenschDarlehen\":0,\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Rest\":2000,\"Revenue\":0,\"Taxes\":0,\"Internals\":0,\"Saldo\":2000}]}"
 	assert.Equal(t, expected, rr.Body.String())
 }

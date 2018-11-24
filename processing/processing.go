@@ -72,12 +72,18 @@ func GuV (as accountSystem.AccountSystem) {
 	// Jahresüberschuss ist nun ermittelt
 
 	// Buchung auf Verrechnungskonto Jahresüberschuss
-	jue,_ := as.Get(accountSystem.ErgebnisNachSteuern.Id)
+	jue,okay := as.Get(accountSystem.ErgebnisNachSteuern.Id)
+	if !okay {
+		log.Panic("in GuV, there is no accountSystem.ErgebnisNachSteuern.Id")
+	}
 	soll := booking.NewBooking(0,"Jahresüberschuss "+strconv.Itoa(util.Global.FinancialYear), "", "", "", "",nil,  -jahresueberschuss, "Buchung Jahresüberschuss", int(now.Month()), now.Year(), now)
 	jue.Book(*soll)
 
 	// und Buchung auf Verbindlichkeitenkonto
-	verb,_ := as.Get(accountSystem.SKR03_920_Gesellschafterdarlehen.Id)
+	verb,okay := as.Get(accountSystem.SKR03_920_Gesellschafterdarlehen.Id)
+	if !okay {
+		log.Panic("in GuV, there is no accountSystem.SKR03_920_Gesellschafterdarlehen.Id")
+	}
 	haben := booking.NewBooking(0,"Jahresüberschuss "+strconv.Itoa(util.Global.FinancialYear), "", "", valueMagnets.StakeholderKM.Id, "", nil,  jahresueberschuss, "Buchung Jahresüberschuss", int(now.Month()), now.Year(), now)
 	verb.Book(*haben)
 
@@ -86,6 +92,7 @@ func GuV (as accountSystem.AccountSystem) {
 func Bilanz (as accountSystem.AccountSystem) {
 
 	var konto *account.Account
+	var okay bool
 	var bk *booking.Booking
 	now := time.Now().AddDate(0, 0, 0)
 
@@ -94,7 +101,11 @@ func Bilanz (as accountSystem.AccountSystem) {
 	for rownr, acc := range as.All() {
 		if acc.Description.Type == account.KontenartAktiv {
 			// Buchung auf SummeAktiva
-			konto,_ = as.Get(accountSystem.SummeAktiva.Id)
+			konto, okay = as.Get(accountSystem.SummeAktiva.Id)
+			if !okay {
+				log.Panic("in Bilanz, could not get account SummeAktiva")
+			}
+
 			bk = booking.NewBooking(
 				rownr,
 				acc.Description.Name+strconv.Itoa(util.Global.FinancialYear),
@@ -117,7 +128,10 @@ func Bilanz (as accountSystem.AccountSystem) {
 	for rownr, acc := range as.All() {
 		if acc.Description.Type == account.KontenartPassiv {
 			// Buchung auf SummePassiva
-			konto,_ = as.Get(accountSystem.SummePassiva.Id)
+			konto,okay = as.Get(accountSystem.SummePassiva.Id)
+			if !okay {
+				log.Panic("in Bilanz, could not get account SummePassiva")
+			}
 			bk = booking.NewBooking(
 				rownr,
 				acc.Description.Name+strconv.Itoa(util.Global.FinancialYear),
@@ -132,6 +146,54 @@ func Bilanz (as accountSystem.AccountSystem) {
 				now.Year(),
 				now)
 			konto.Book(*bk)
+		}
+	}
+}
+
+func GenerateProjectControlling  (as accountSystem.AccountSystem) {
+
+	// concat KontenartErtrag and KontenartAufwand into accList
+	accList := as.GetByType(account.KontenartErtrag)
+	for k, v := range as.GetByType(account.KontenartAufwand) {
+		accList[k] = v
+	}
+
+
+	for _, acc := range accList {
+		for _, bk := range acc.Bookings {
+
+			// handle empty projects
+			if bk.Project == "" {
+				bk.Project = "emptyProject"
+			}
+			// check if there is an project account bk.Projects
+			acc, exists := as.Get(bk.Project)
+			if !exists {
+				// create a new projects account
+				acc = account.NewAccount(account.AccountDescription{Id: bk.Project, Name: bk.Project, Type: account.KontenartProject})
+				as.Add(acc)
+			}
+
+			// subtract "ER" from "AR"
+			sign := +1.0
+			if (bk.Type == "ER") {
+				sign = -1.0
+			}
+
+			// now create a booking in the appropriate projectAccount
+			clonedBooking := booking.Booking{
+				Amount:      sign*bk.Amount,
+				Project:     bk.Project,
+				Type:        bk.Type,
+				CostCenter:  bk.CostCenter,
+				Month:		 bk.Month,
+				Year:        bk.Year,
+				Text:        bk.Text,
+				FileCreated: bk.FileCreated,
+				BankCreated: bk.BankCreated,
+			}
+			// and book it to tha account
+			acc.Book(clonedBooking)
 		}
 	}
 }
@@ -231,8 +293,10 @@ func DistributeKTopf (as accountSystem.AccountSystem) {
 				FileCreated: now,
 				BankCreated: now,
 			}
-			habenacc,_  := as.Get(sh.Id)
-			habenacc.Book(haben)
+			habenacc,okay  := as.Get(sh.Id)
+			if okay {
+				habenacc.Book(haben)
+			}
 
 			// Erlösanteil buchen
 			soll = booking.Booking{
@@ -243,8 +307,10 @@ func DistributeKTopf (as accountSystem.AccountSystem) {
 				FileCreated: now,
 				BankCreated: now,
 			}
-			sollacc,_  = as.Get("K")
-			sollacc.Book(soll)
+			sollacc,okay  = as.Get("K")
+			if okay {
+				sollacc.Book(soll)
+			}
 
 			haben = booking.Booking{
 				Amount:      erloesAnteil,
@@ -254,14 +320,13 @@ func DistributeKTopf (as accountSystem.AccountSystem) {
 				FileCreated: now,
 				BankCreated: now,
 			}
-			habenacc,_  = as.Get(sh.Id)
-			habenacc.Book(haben)
+			habenacc,okay  = as.Get(sh.Id)
+			if okay {
+				habenacc.Book(haben)
+			}
 
 		}
 	}
-
-
-
 
 }
 

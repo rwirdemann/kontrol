@@ -73,22 +73,23 @@ func main() {
 	log.Fatal(http.ListenAndServeTLS(":"+*httpsPort, *certFile, *keyFile, handler))
 }
 
-func importAndProcessBookings(repository accountSystem.AccountSystem, year int) {
-	repository.ClearBookings()
+func importAndProcessBookings(as accountSystem.AccountSystem, year int) {
+	as.ClearBookings()
 	log.Printf("importAndProcessBookings: %d\n", year)
-	hauptbuch := repository.GetCollectiveAccount()
+	hauptbuch := as.GetCollectiveAccount()
 	parser.Import(fileName, year, &(hauptbuch.Bookings))
 	log.Println("in main, import done")
 	for _, p := range hauptbuch.Bookings {
-		processing.Process(repository, p)
+		processing.Process(as, p)
 	}
 	// now calculate GuV
-	processing.GuV(repository)
-	processing.Bilanz(repository)
+	processing.GuV(as)
+	processing.Bilanz(as)
 	// now distribution of costs & profits
-	processing.ErloesverteilungAnValueMagnets(repository)
-	processing.DistributeKTopf(repository)
-
+	processing.ErloesverteilungAnValueMagnets(as)
+	processing.DistributeKTopf(as)
+	// procject Controlling
+	processing.GenerateProjectControlling(as)
 }
 
 func watchBookingFile(repository accountSystem.AccountSystem, year int) {

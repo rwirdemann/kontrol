@@ -15,12 +15,11 @@ const (
 	KontenartErtrag           = "Ertragskonto"
 	KontenartVerrechnung      = "Verrechnungskonto"
 	KontenartKLR      		  = "VerrechnungskontoKLR"
+	KontenartProject      	  = "VerrechnungskontoProjekt"
 )
 
 const (
-	PartnerShare             = 0.70
 	EmployeeShare			 = 0.70
-	KommmitmentShare         = 0.25
 	KommmitmentExternShare   = 0.95
 	KommmitmentOthersShare   = 1.00
 	KommmitmentEmployeeShare = 0.95

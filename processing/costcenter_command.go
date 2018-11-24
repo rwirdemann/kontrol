@@ -65,26 +65,11 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 	for _, benefited := range benefitees {
 
 		if benefited.Type == valueMagnets.StakeholderTypePartner {
-			// book partner share
-			/*
-			b := booking.Booking{
-				RowNr: 		 this.Booking.RowNr,
-				Amount:      math.Round(this.Booking.Net[benefited] * PartnerShare*1000000)/1000000,
-				Type:        booking.CC_Nettoanteil,
-				CostCenter:  benefited.Id,
-				Text:        this.Booking.Text + "#NetShare#" + benefited.Id,
-				Month:       this.Booking.Month,
-				Year:        this.Booking.Year,
-				FileCreated: this.Booking.FileCreated,
-				BankCreated: this.Booking.BankCreated}
-			a, _ := this.AccSystem.Get(benefited.Id)
-			a.Book(b)
 
-			*/
 			// book kommitment share
 			kommitmentShare := booking.Booking{
 				RowNr:       this.Booking.RowNr,
-				Amount:      this.Booking.Net[benefited] * (account.KommmitmentShare + account.PartnerShare),
+				Amount:      this.Booking.Net[benefited] * (1.00 - account.PartnerProvision),
 				Type:        booking.CC_PartnerNettoFaktura,
 				CostCenter:  benefited.Id,
 				Text:        this.Booking.Text + "#Kommitment#" + benefited.Id,
