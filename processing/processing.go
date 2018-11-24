@@ -182,6 +182,7 @@ func GenerateProjectControlling  (as accountSystem.AccountSystem) {
 
 			// now create a booking in the appropriate projectAccount
 			clonedBooking := booking.Booking{
+				RowNr:       bk.RowNr,
 				Amount:      sign*bk.Amount,
 				Project:     bk.Project,
 				Type:        bk.Type,
