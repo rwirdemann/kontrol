@@ -53,7 +53,7 @@ const (
 	CC_Nettoanteil         = "CC_Nettoanteil"
 	CC_Employeeaanteil     = "CC_Employeeanteil"
 	CC_Kommitmentanteil    = "CC_Kommitmentanteil"
-	CC_KommitmentanteilEX  = "CC_KmmtmntntlVExtern"
+	CC_KommitmentanteilEX  = "CC_KommitmentanteilEX"
 	CC_Entnahme            = "CC_Entnahme"
 	CC_AnteilAusFairshares = "CC_AnteilAusFairshares"
 	CC_AnteilAusFaktura    = "CC_AnteilAusFaktura"

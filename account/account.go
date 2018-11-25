@@ -44,6 +44,7 @@ type Account struct {
 	Reserves  float64
 	Rest      float64
 	Revenue   float64
+	Salesprv  float64
 	Taxes     float64
 	Internals float64
 	Saldo     float64
@@ -64,6 +65,7 @@ func (a *Account) UpdateSaldo() {
 	internals := 0.0
 	advances := 0.0
 	rest := 0.0
+	salesprv := 0.0
 	costs := 0.0
 	anteilAusFairshares := 0.0
 	anteilAusFaktura := 0.0
@@ -79,7 +81,7 @@ func (a *Account) UpdateSaldo() {
 		case booking.CC_InterneStunden:
 			internals += b.Amount
 		case booking.CC_Vertriebsprovision:
-			revenue += b.Amount
+			salesprv += b.Amount
 		case booking.Erloese, booking.CC_KommitmentanteilEX:
 			revenue += b.Amount
 		case booking.CC_Employeeaanteil:
@@ -105,6 +107,7 @@ func (a *Account) UpdateSaldo() {
 	a.Saldo = saldo
 	a.Advances = advances
 	a.Revenue = revenue
+	a.Salesprv = salesprv
 	a.Internals = internals
 	a.Rest = rest
 	a.Costs = costs
