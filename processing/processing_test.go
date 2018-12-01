@@ -502,9 +502,9 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 	// booking ist on CostCenter K
 	b,_ := as.Get("K")
 	b.UpdateSaldo()
-	assert.Equal(t, 3, len(b.Bookings))
-	assert.Equal(t, 0.0, b.Advances)
-	assert.Equal(t, 192.0, b.Saldo)
+	assert.Equal(t, 4, len(b.Bookings))
+	assert.Equal(t, 5000.0, b.Advances)
+	assert.Equal(t, 5192.0, b.Saldo)
 
 	// Booking is on CostCenter BW
 	a, _ := as.Get("BW")

@@ -68,8 +68,6 @@ func TestBookRevenueToEmployeeCostCenter(t *testing.T) {
 	acc, _ := accsystem.Get("BW")
 	util.AssertEquals(t, 1, len(acc.Bookings))
 	assert.Equal(t, 1000*  account.EmployeeShare, acc.Bookings[0].Amount)
-
-
 }
 
 
@@ -88,14 +86,14 @@ func TestExternNettoAnteil(t *testing.T) {
 	Process(accSystem, *p)
 	BookRevenueToEmployeeCostCenter{AccSystem: accSystem, Booking: *p}.run()
 
-	// and hannes got his provision
-	accountHannes, _ := accSystem.Get(valueMagnets.StakeholderRepository{}.Get("JM").Id)
-	provision := accountHannes.Bookings[0]
-	util.AssertFloatEquals(t, 10800.0*account.PartnerProvision, provision.Amount)
-	util.AssertEquals(t, booking.CC_Vertriebsprovision, provision.Type)
+	// and hannes got his provision <-- this is noch anymore booked here
+//	accountHannes, _ := accSystem.Get(valueMagnets.StakeholderRepository{}.Get("JM").Id)
+//	provision := accountHannes.Bookings[0]
+//	util.AssertFloatEquals(t, 10800.0*account.PartnerProvision, provision.Amount)
+//	util.AssertEquals(t, booking.CC_Vertriebsprovision, provision.Type)
 
 	// and kommitment got 95%
-	util.AssertEquals(t, 1, len(accountHannes.Bookings))
+	util.AssertEquals(t, 0, len(accountHannes.Bookings))
 	acc, _ := accSystem.Get(valueMagnets.StakeholderKM.Id)
 	bk := acc.Bookings[0]
 	util.AssertFloatEquals(t, 10800.0*account.KommmitmentExternShare, bk.Amount)
