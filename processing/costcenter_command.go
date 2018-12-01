@@ -11,6 +11,43 @@ import (
 )
 
 
+type BookFromKtoKommitmensch struct{
+	Booking    booking.Booking
+	AccSystem  accountSystem.AccountSystem
+}
+
+func (c BookFromKtoKommitmensch) run() {
+	amount := c.Booking.Amount
+
+	// set booking Type
+	var bkt string = "hier steht der Buchungstyp"
+	switch c.Booking.Type {
+	case booking.Eingangsrechnung, booking.SKR03:
+		bkt = booking.Kosten
+	default:
+		bkt = c.Booking.Type
+	}
+
+	// Sollbuchung
+	bkresp := c.Booking.CostCenter
+	if bkresp == "" {
+		log.Println("in BookToCostCenter, cc empty in row ", c.Booking.RowNr)
+		log.Println("    , setting it to 'K' ")
+		bkresp = valueMagnets.StakeholderKM.Id
+	}
+	sollAccount,_ := c.AccSystem.Get(bkresp)
+	b1 := booking.CloneBooking(c.Booking, amount, bkt, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
+	sollAccount.Book(b1)
+
+	// Habenbuchung
+	habenAccount,_ := c.AccSystem.Get(valueMagnets.StakeholderKM.Id)
+	b2 := booking.CloneBooking(c.Booking, -amount, bkt, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
+	habenAccount.Book(b2)
+
+}
+
+
+
 type BookCostToCostCenter struct {
 	Booking    booking.Booking
 	AccSystem  accountSystem.AccountSystem
@@ -155,10 +192,10 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 		if benefited.Type != valueMagnets.StakeholderTypeOthers { // Don't give 5% for travel expenses and co...
 			var provisionAccount *account.Account
 
-			// Vertriebsprovisionen gehen nur an employees und partner, ansonsten fallen die an Kommitment
+			// hier werden zunächst nur die Provisionen für Employees verrechnet...
 			provisionAccount, _ = this.AccSystem.Get(this.Booking.Responsible)
-			if ( provisionAccount.Description.Type != valueMagnets.StakeholderTypeEmployee &&
-				provisionAccount.Description.Type != valueMagnets.StakeholderTypePartner ) {
+			if provisionAccount.Description.Type != valueMagnets.StakeholderTypeEmployee {
+				//&& provisionAccount.Description.Type != valueMagnets.StakeholderTypePartner
 				// then provision goes to kommitment
 				provisionAccount, _ = this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
 			}

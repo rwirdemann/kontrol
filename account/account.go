@@ -47,6 +47,7 @@ type Account struct {
 	Salesprv  float64
 	Taxes     float64
 	Internals float64
+	YearS 	  float64
 	Saldo     float64
 }
 
@@ -96,7 +97,7 @@ func (a *Account) UpdateSaldo() {
 			anteilAusFairshares += b.Amount
 		case booking.CC_AnteilAusFaktura:
 			anteilAusFaktura += b.Amount
-		case booking.CC_KommitmenschDarlehen:
+			case booking.CC_KommitmenschDarlehen:
 			darlehen += b.Amount
 		case booking.SKR03:
 			// hier genauer gucken...

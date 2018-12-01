@@ -61,6 +61,7 @@ var SKR03_9790_Restanteil = account.AccountDescription{Id: "SKR03_9790_Restantei
 var SummeAktiva 	= account.AccountDescription{Id: "SummeAktiva", Name: "V: SummeAktiva", Type: account.KontenartVerrechnung}
 var SummePassiva 	= account.AccountDescription{Id: "SummePassiva", Name: "V: SummePassiva", Type: account.KontenartVerrechnung}
 var AlleKLRBuchungen = account.AccountDescription{Id: "AlleKLRBuchungen", Name: "V: AlleKLRBuchungen", Type: account.KontenartKLR}
+var k_ErloeseVerteilung = account.AccountDescription{Id: "k_ErloeseVerteilung", Name: "V: k_ErloeseVerteilung", Type: account.KontenartVerrechnung}
 
 
 
@@ -96,6 +97,7 @@ func (this Accountlist) All() []account.AccountDescription {
 		SummePassiva,
 		SKR03_9790_Restanteil,
 		AlleKLRBuchungen,
+		k_ErloeseVerteilung,
 	}
 }
 
