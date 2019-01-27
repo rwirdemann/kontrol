@@ -220,11 +220,10 @@ func ErloesverteilungAnValueMagnets (as accountSystem.AccountSystem) {
 			// now process other accounts like accountSystem.SKR03_1900.Id
 			switch acc.Description.Id {
 			case accountSystem.SKR03_1900.Id: // Privatentnahmen
-				BookFromKtoKommitmensch{AccSystem: as, Booking: bk}.run()
-			case accountSystem.SKR03_920_Gesellschafterdarlehen.Id,
-			     accountSystem.ErgebnisNachSteuern.Id:
+				BookFromKtoKommitmensch{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_Entnahmen}.run()
+			case accountSystem.SKR03_920_Gesellschafterdarlehen.Id:
 				bk.Type = booking.CC_KommitmenschDarlehen
-				BookFromKtoKommitmensch{AccSystem: as, Booking: bk}.run()
+				BookFromKtoKommitmensch{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_Darlehen}.run()
 			default:
 			}
 		}
@@ -245,138 +244,168 @@ func DistributeKTopf (as accountSystem.AccountSystem) {
 
 	shrepo := valueMagnets.StakeholderRepository{}
 
+	rest := ergebnisNS
+	log.Println("    Amount to distribute: ", rest)
+
 	// distribute Shareholders-Share
-	for _,sh := range shrepo.All(util.Global.FinancialYear) {
-		if sh.Type == valueMagnets.StakeholderTypePartner {
-			log.Print("    stakeholder: ", sh.Id)
-			arbeit,_ := strconv.ParseFloat(sh.Arbeit, 64)
-			log.Print("      Arbeit: ", arbeit)
-			fairshares,_ := strconv.ParseFloat(sh.Fairshares, 64)
-			log.Print("      Fairshares: ", fairshares)
-			fairshareAnteil :=  math.Round(100*arbeit * fairshares*ergebnisNS*ShareHoldersShare)/100
+	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
+		log.Print("    stakeholder: ", sh.Id)
+		arbeit,_ := strconv.ParseFloat(sh.Arbeit, 64)
+		log.Print("      Arbeit: ", arbeit)
+		fairshares,_ := strconv.ParseFloat(sh.Fairshares, 64)
+		log.Print("      Fairshares: ", fairshares)
+		fairshareAnteil :=  math.Round(100*arbeit * fairshares*ergebnisNS*ShareHoldersShare)/100
 
+		// Fairshare Anteil buchen
+		log.Print(sh.Id,"      Anteil aus Fairshares: ", fairshareAnteil,"€")
+		now := time.Now().AddDate(0, 0, 0)
+		sollacc,_  := as.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteileausFairshare)
+		habenacc,_  := as.GetSubacc(sh.Id, accountSystem.UK_AnteileausFairshare)
 
-			// Fairshare Anteil buchen
-			log.Print(sh.Id,"      Anteil aus Fairshares: ", fairshareAnteil,"€")
-			now := time.Now().AddDate(0, 0, 0)
-			sollacc,_  := as.Get(valueMagnets.StakeholderKM.Id)
-			habenacc,_  := as.Get(sh.Id)
-
-			anteil_fairshares := booking.Booking{
-				Amount:      -fairshareAnteil,
-				Type:        booking.CC_AnteilAusFairshares,
-				CostCenter:  sh.Id,
-				Text:         "Anteil aus fairshares("+strconv.FormatFloat(fairshares, 'f', 2, 64)+")",
-				FileCreated: now,
-				BankCreated: now,
-			}
-			sollacc.Book(anteil_fairshares)
-			anteil_fairshares.Amount *= -1.0
-			habenacc.Book(anteil_fairshares)
+		anteil_fairshares := booking.Booking{
+			Amount:      -fairshareAnteil,
+			Type:        booking.CC_AnteilAusFairshares,
+			CostCenter:  sh.Id,
+			Text:         "Anteil aus fairshares("+strconv.FormatFloat(fairshares, 'f', 2, 64)+")",
+			FileCreated: now,
+			BankCreated: now,
 		}
+		sollacc.Book(anteil_fairshares)
+		anteil_fairshares.Amount *= -1.0
+		habenacc.Book(anteil_fairshares)
+		habenacc.YearS += fairshareAnteil
+
 	}
-	rest := ergebnisNS*(1-ShareHoldersShare)
+	rest = ergebnisNS*(1-ShareHoldersShare)
 	log.Println("    rest to distribute: ", rest)
 
 	// now distribute internal hours
-	for _,sh := range shrepo.All(util.Global.FinancialYear) {
-		if sh.Type == valueMagnets.StakeholderTypePartner {
-			//now := time.Now().AddDate(0, 0, 0)
-			//sollacc,_  := as.Get(valueMagnets.StakeholderKM.Id)
-			habenacc,_  := as.Get(sh.Id)
+	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
+		//now := time.Now().AddDate(0, 0, 0)
+		//sollacc,_  := as.Get(valueMagnets.StakeholderKM.Id)
+		habenacc,_  := as.GetSubacc(sh.Id, accountSystem.UK_InterneStunden)
 
 
-			// Interne Stunden buchen
-			habenacc.UpdateSaldo()
-			log.Print(sh.Id,"      Anteil aus internen Stunden: ", habenacc.Internals,"€")
-			/* die sind schon gebucht
-			anteil_interneStunden := booking.Booking{
-				Amount:      -habenacc.Internals,
-				Type:        booking.CC_InterneStunden,
-				CostCenter:  sh.Id,
-				Text:         "Anteil aus Internen Stunden",
-				FileCreated: now,
-				BankCreated: now,
-			}
-			sollacc.Book(anteil_interneStunden)
-			anteil_interneStunden.Amount *= -1.0
-			habenacc.Book(anteil_interneStunden)
-			*/
-			rest -= habenacc.Internals
+
+		// Interne Stunden buchen
+		habenacc.UpdateSaldo()
+		log.Print(sh.Id,"      Anteil aus int. Stunden: ", habenacc.Internals,"€")
+		/* die sind schon gebucht
+		anteil_interneStunden := booking.Booking{
+			Amount:      -habenacc.Internals,
+			Type:        booking.CC_InterneStunden,
+			CostCenter:  sh.Id,
+			Text:         "Anteil aus Internen Stunden",
+			FileCreated: now,
+			BankCreated: now,
 		}
+		sollacc.Book(anteil_interneStunden)
+		anteil_interneStunden.Amount *= -1.0
+		habenacc.Book(anteil_interneStunden)
+		*/
+		rest -= habenacc.Internals
+		habenacc.YearS += habenacc.Internals
 	}
-	log.Println("    rest after internal hours: ", rest)
+	log.Println("    rest after internal hours: ", math.Round(100*rest)/100)
 
-	// now distribute Vertriebsprovision
-	for _,sh := range shrepo.All(util.Global.FinancialYear) {
-		if sh.Type == valueMagnets.StakeholderTypePartner {
+	// now care for Vertriebsprovisionen, die sind schon verteilt...
+	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
+		// now := time.Now().AddDate(0, 0, 0)
+		// sollacc, _ := as.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_Vertriebsprovision)
+		habenacc, _ := as.GetSubacc(sh.Id, accountSystem.UK_Vertriebsprovision)
 
-			now := time.Now().AddDate(0, 0, 0)
-			sollacc, _ := as.Get(valueMagnets.StakeholderKM.Id)
-			habenacc, _ := as.Get(sh.Id)
+		// Vertriebsprovision buchen
+		subacc,_ := as.GetSubacc(sh.Id, accountSystem.UK_Vertriebsprovision)
+		provisions := sumOfProvisonsForStakeholder(*subacc, sh) // sum the partners revenue
 
-			// Vertriebsprovision buchen
-			provisions := sumOfProvisonsForStakeholder(*kaccount, sh) // sum the partners revenue
-			habenacc.UpdateSaldo()
-			log.Print(sh.Id,"      Anteil Vertriebsprovision: ", math.Round(provisions*100)/100,"€")
-			anteil_Vertriebsprovision := booking.Booking{
-				Amount:      -provisions,
-				Type:        booking.CC_Vertriebsprovision,
-				CostCenter:  sh.Id,
-				Text:         "Anteil aus Vertiebsprovision",
-				FileCreated: now,
-				BankCreated: now,
-			}
-			sollacc.Book(anteil_Vertriebsprovision)
-			anteil_Vertriebsprovision.Amount *= -1.0
-			habenacc.Book(anteil_Vertriebsprovision)
-			rest -= provisions
+//		habenacc.UpdateSaldo()
+		log.Print(sh.Id,"      Anteil Vertriebsprovision: ", math.Round(provisions*100)/100,"€")
+		/*
+		anteil_Vertriebsprovision := booking.Booking{
+			Amount:      -provisions,
+			Type:        booking.CC_Vertriebsprovision,
+			CostCenter:  sh.Id,
+			Text:         "Anteil aus Vertiebsprovision",
+			FileCreated: now,
+			BankCreated: now,
 		}
+		sollacc.Book(anteil_Vertriebsprovision)
+		anteil_Vertriebsprovision.Amount *= -1.0
+		habenacc.Book(anteil_Vertriebsprovision)
+		*/
+		rest -= provisions
+		habenacc.YearS += provisions
 	}
-	log.Println("    rest after Vertriebsprovision: ", rest)
+	log.Println("    rest after Vertriebsprov.: ", math.Round(100*rest)/100)
 
-	sumPartnerFaktura := kaccount.KommitmenschNettoFaktura
+	// erzeugte Kosten von Partner (Hauptkonto) an kommitment (KostenKonto) zurückerstatten
+	log.Println ("    Partner tragen ihre Kosten:")
+	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
+		sollacc,_  := as.GetSubacc(sh.Id, accountSystem.UK_Kosten)
+		habenacc,_  := as.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_Kosten)
+		sollacc.UpdateSaldo()
+		log.Print("      stakeholder: ", sh.Id, ", Kosten: ", math.Round(100*sollacc.Saldo)/100)
+		now := time.Now().AddDate(0, 0, 0)
+
+		// Kosten zurückbuchen
+		kosten := booking.Booking{
+			Amount:      -sollacc.Saldo,
+			Type:        booking.CC_Kostenrueckerstattung,
+			CostCenter:  sh.Id,
+			Text:         "Partner-Kostenübernahme",
+			FileCreated: now,
+			BankCreated: now,
+		}
+		sollacc.Book(kosten)
+		kosten.Amount *= -1.0
+		habenacc.Book(kosten)
+		sollacc.YearS += kosten.Amount
+		rest -= kosten.Amount
+	}
+	log.Println("    rest to distribute: ", rest)
+
+	subacc,_ :=  as.GetSubacc(kaccount.Description.Id, accountSystem.UK_AnteileAuserloesen)
+	sumPartnerFaktura := subacc.SumOfBookingType(booking.CC_PartnerNettoFaktura)
 	log.Println("    Sum of Partnerfaktura", sumPartnerFaktura)
-
 	restToDistribute := rest
+
 	// now determine the Partners Contribution
-	for _,sh := range shrepo.All(util.Global.FinancialYear) {
-		if sh.Type == valueMagnets.StakeholderTypePartner {
+	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
 
-			now := time.Now().AddDate(0, 0, 0)
-			sollacc,_  := as.Get(valueMagnets.StakeholderKM.Id)
-			habenacc,_  := as.Get(sh.Id)
+		now := time.Now().AddDate(0, 0, 0)
+		sollacc,_  := as.Get(valueMagnets.StakeholderKM.Id)
+		habenacc,_  := as.GetSubacc(sh.Id, accountSystem.UK_AnteileAuserloesen)
 
-			// Erlösanteil buchen
-			rev := sumOfBookingsForStakeholder(*kaccount, sh) // sum the partners revenue
-			log.Print(sh.Id,"      this partners revenue: ", math.Round(rev),"€")
-			log.Print(sh.Id,"      this partners revenue: ", math.Round(10000*rev/sumPartnerFaktura)/100,"%")
-			erloesAnteil := math.Round(restToDistribute*100*rev/sumPartnerFaktura )/100
-			log.Print(sh.Id,"      Anteil aus Erlösen: ", erloesAnteil,"€")
-			anteil_erloese := booking.Booking{
-				Amount:      -erloesAnteil,
-				Type:        booking.CC_AnteilAusFaktura,
-				CostCenter:  sh.Id,
-				Text:        "Anteil aus Erloesen: ",
-				FileCreated: now,
-				BankCreated: now,
-			}
-			sollacc.Book(anteil_erloese)
-			anteil_erloese.Amount *= -1.0
-			habenacc.Book(anteil_erloese)
-
-			habenacc.UpdateSaldo()
-			log.Print("      Summe:  ", habenacc.Salesprv+habenacc.Internals+erloesAnteil+habenacc.AnteilAusFairshares,"€")
-			habenacc.YearS = habenacc.Salesprv+habenacc.Internals+erloesAnteil+habenacc.AnteilAusFairshares
-			rest -= erloesAnteil
+		// Erlösanteil buchen
+		subacc,_ := as.GetSubacc(kaccount.Description.Id, accountSystem.UK_AnteileAuserloesen)
+		rev := sumOfBookingsForStakeholder(*subacc, sh) // sum the partners revenue
+		log.Print(sh.Id,"      this partners revenue: ", math.Round(rev),"€")
+		log.Print(sh.Id,"      this partners revenue: ", math.Round(10000*rev/sumPartnerFaktura)/100,"%")
+		erloesAnteil := math.Round(restToDistribute*100*rev/sumPartnerFaktura )/100
+		log.Print(sh.Id,"      Anteil aus Erlösen: ", erloesAnteil,"€")
+		anteil_erloese := booking.Booking{
+			Amount:      -erloesAnteil,
+			Type:        booking.CC_AnteilAusFaktura,
+			CostCenter:  sh.Id,
+			Text:        "Anteil aus Erloesen: ",
+			FileCreated: now,
+			BankCreated: now,
 		}
+		sollacc.Book(anteil_erloese)
+		anteil_erloese.Amount *= -1.0
+		habenacc.Book(anteil_erloese)
+
+		habenacc.UpdateSaldo()
+		log.Print("      Summe:  ", habenacc.Salesprv+habenacc.Internals+erloesAnteil+habenacc.AnteilAusFairshares,"€")
+		habenacc.YearS += habenacc.Salesprv+habenacc.Internals+habenacc.AnteilAusFaktura+habenacc.AnteilAusFairshares
+		rest -= erloesAnteil
 	}
-	log.Println("    rest (should be zero): ", rest)
+	log.Println("    rest (should be zero): ", math.Round(100*rest)/100)
 
 }
 
 func sumOfBookingsForStakeholder (ac account.Account, sh valueMagnets.Stakeholder) float64 {
- 	saldo := 0.0
+	saldo := 0.0
 	for _,bk := range ac.Bookings {
 		if sh.Id == bk.CostCenter && bk.Type == booking.CC_PartnerNettoFaktura {
 			saldo += bk.Amount

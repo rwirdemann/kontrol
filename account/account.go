@@ -30,6 +30,7 @@ type AccountDescription struct {
 	Id   string `json:",omitempty"`
 	Name string
 	Type string
+	Superaccount string
 }
 
 type Account struct {
@@ -39,7 +40,8 @@ type Account struct {
 	AnteilAusFaktura float64
 	AnteilAusFairshares float64
 	KommitmenschDarlehen float64
-	Costs     float64
+	Nbkngs    int
+	Costs     float64 // die Summe alle Buchungen, die als Kosten markiert sind
 	Advances  float64
 	Reserves  float64
 	Rest      float64
@@ -51,6 +53,18 @@ type Account struct {
 	Saldo     float64
 }
 
+func (a *Account) SumOfBookingType  (btype string ) float64 {
+	sum := 0.0
+	for _, b := range a.Bookings {
+		switch btype {
+		case b.Type,"":
+			sum += b.Amount
+		}
+	}
+	return sum
+}
+
+
 func NewAccount(a AccountDescription) *Account {
 	return &Account{Description: a}
 }
@@ -60,6 +74,7 @@ func (a *Account) Book(b booking.Booking) {
 }
 
 func (a *Account) UpdateSaldo() {
+	nbkngs := 0
 	revenue := 0.0
 	saldo := 0.0
 	kommitmenschNettoFaktura := 0.0
@@ -72,8 +87,8 @@ func (a *Account) UpdateSaldo() {
 	anteilAusFaktura := 0.0
 	darlehen := 0.0
 	for _, b := range a.Bookings {
+		nbkngs++
 		saldo += b.Amount
-
 		switch b.Type {
 		case booking.CC_Nettoanteil, booking.CC_Kommitmentanteil:
 			revenue += b.Amount
@@ -105,6 +120,7 @@ func (a *Account) UpdateSaldo() {
 			rest += b.Amount
 		}
 	}
+	a.Nbkngs = nbkngs
 	a.Saldo = saldo
 	a.Advances = advances
 	a.Revenue = revenue

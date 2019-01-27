@@ -65,6 +65,7 @@ const (
 	CC_Gehalt              = "CC_Gehalt"
 	CC_LNSteuer            = "CC_LNSteuer"
 	CC_PartnerNettoFaktura = "CC_PartnerNettofaktura"
+	CC_Kostenrueckerstattung = "CC_Kostenrueckerstattung"
 	SKR03                  = "SKR03"
 	UstVZ                  = "UstVZ"
 	Ust                    = "Ust"

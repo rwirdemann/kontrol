@@ -6,7 +6,6 @@ import (
 	"github.com/ahojsenn/kontrol/accountSystem"
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/util"
-	"github.com/ahojsenn/kontrol/valueMagnets"
 )
 
 
@@ -87,18 +86,6 @@ func (this BookAusgangsrechnungCommand) run() {
 		}
 	umsatzsteuernKonto.Book(c)
 
-}
-
-// Eine Buchung kann mehrere Nettopositionen enthalten, den je einem Stakeholder zugeschrieben wird.
-// Diese Funktion liefert ein Array mit Stateholdern, deren CC_Nettoanteil in der Buchung != 0 ist.
-func (this BookAusgangsrechnungCommand) stakeholderWithNetPositions() []valueMagnets.Stakeholder {
-	var result []valueMagnets.Stakeholder
-	for k, v := range this.Booking.Net {
-		if v != 0 {
-			result = append(result, k)
-		}
-	}
-	return result
 }
 
 // is this an Open Position?

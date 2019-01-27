@@ -39,6 +39,7 @@ func Import(file string, aYear int, positions *[]booking.Booking)  {
 			rownr++
 			record, err := r.Read()
 			if err == io.EOF {
+				fmt.Println("error in row: ", rownr, record)
 				break
 			}
 
@@ -71,6 +72,7 @@ func Import(file string, aYear int, positions *[]booking.Booking)  {
 			}
 		}
 	} else {
+		fmt.Println("file not found", file)
 		panic(err)
 	}
 

@@ -217,16 +217,15 @@ type BookInterneStundenCommand struct {
 
 func (c BookInterneStundenCommand) run() {
 
-	// Buchung interner Stunden auf Kommanditstenkonto
+	// Buchung interner Stunden auf Kommanditstenkonto Unterkonto
 	a := booking.CloneBooking(c.Booking, c.Booking.Amount, booking.CC_InterneStunden, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
-	partnerAccount, _ := c.AccSystem.Get(c.Booking.Responsible)
+	partnerAccount, _ := c.AccSystem.GetSubacc(c.Booking.Responsible, accountSystem.UK_InterneStunden)
 	partnerAccount.Book(a)
 
 	// Buchung interner Stunden von kommitment Konto auf Stakeholder
 	b := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.CC_InterneStunden, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
-	kommitmentAccount, _ := c.AccSystem.Get(valueMagnets.StakeholderKM.Id)
+	kommitmentAccount, _ := c.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_InterneStunden)
 	kommitmentAccount.Book(b)
-
 }
 
 

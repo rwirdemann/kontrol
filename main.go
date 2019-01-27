@@ -20,7 +20,7 @@ import (
 	"github.com/rs/cors"
 )
 
-const DefaultBookingFile = "2017-Buchungen-KG - Buchungen 2017.csv"
+const DefaultBookingFile = "Buchungen-KG.csv"
 
 var (
 	fileName   	string

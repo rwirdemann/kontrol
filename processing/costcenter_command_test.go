@@ -39,12 +39,12 @@ func TestBookCostToCostCenter(t *testing.T) {
 	BookCostToCostCenter{AccSystem: accsystem, Booking: bkng}.run()
 
 	// there is money on the costcenter JM
-	account, _ := accsystem.Get("JM")
+	account, _ := accsystem.GetSubacc("JM", accountSystem.UK_Kosten)
 	util.AssertEquals(t, 1, len(account.Bookings))
 	assert.Equal(t, 1337.23, account.Bookings[0].Amount)
 
 	// there is something on the other account too
-	account2, _ := accsystem.Get(accountSystem.AlleKLRBuchungen.Id)
+	account2, _ := accsystem.Get(valueMagnets.StakeholderKM.Id)
 	util.AssertEquals(t, 1, len(account2.Bookings))
 	assert.Equal(t, -1337.23, account2.Bookings[0].Amount)
 
@@ -64,8 +64,9 @@ func TestBookRevenueToEmployeeCostCenter(t *testing.T) {
 	BookAusgangsrechnungCommand{AccSystem: accsystem, Booking: bkng}.run()
 	BookRevenueToEmployeeCostCenter{AccSystem: accsystem, Booking: bkng}.run()
 
-	// there is money on the costcenter JM
-	acc, _ := accsystem.Get("BW")
+
+	// there is money on the costcenter BW --> now on subaccount
+	acc, _ := accsystem.GetSubacc("BW", accountSystem.UK_AnteileAuserloesen)
 	util.AssertEquals(t, 1, len(acc.Bookings))
 	assert.Equal(t, 1000*  account.EmployeeShare, acc.Bookings[0].Amount)
 }
@@ -87,15 +88,15 @@ func TestExternNettoAnteil(t *testing.T) {
 	BookRevenueToEmployeeCostCenter{AccSystem: accSystem, Booking: *p}.run()
 
 	// and hannes got his provision <-- this is noch anymore booked here
-//	accountHannes, _ := accSystem.Get(valueMagnets.StakeholderRepository{}.Get("JM").Id)
-//	provision := accountHannes.Bookings[0]
-//	util.AssertFloatEquals(t, 10800.0*account.PartnerProvision, provision.Amount)
-//	util.AssertEquals(t, booking.CC_Vertriebsprovision, provision.Type)
+	accountHannes, _ := accSystem.GetSubacc("JM", accountSystem.UK_Vertriebsprovision)
+	provision := accountHannes.Bookings[0]
+	util.AssertFloatEquals(t, 10800.0*account.PartnerProvision, provision.Amount)
+	util.AssertEquals(t, booking.CC_Vertriebsprovision, provision.Type)
+	util.AssertEquals(t, 1, len(accountHannes.Bookings))
 
 	// and kommitment got 95%
-	util.AssertEquals(t, 0, len(accountHannes.Bookings))
 	acc, _ := accSystem.Get(valueMagnets.StakeholderKM.Id)
 	bk := acc.Bookings[0]
-	util.AssertFloatEquals(t, 10800.0*account.KommmitmentExternShare, bk.Amount)
+	util.AssertFloatEquals(t, -10800.0*account.KommmitmentExternShare, bk.Amount)
 	util.AssertEquals(t, booking.CC_KommitmentanteilEX, bk.Type)
 }

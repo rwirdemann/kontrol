@@ -2,47 +2,47 @@
   {
     "Abrechenzeitpunkt": "2016-12-31",
     "Kommitmenschen": [
-      { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "partner", "Arbeit": "1" , "Fairshares": "0.3333"},
-      { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "partner", "Arbeit": "1" , "Fairshares": "0.33333"},
-      { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "partner", "Arbeit": "1" , "Fairshares": "0.33333"},
-      { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "employee", "Arbeit": "0" },
-      { "Id": "KR", "Name": "k: Katja Roth",           "Type": "employee", "Arbeit": "0" },
-      { "Id": "IK", "Name": "k: Ingo Komorowski",      "Type": "employee", "Arbeit": "0" }
+      { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "Partner", "Arbeit": "1" , "Fairshares": "0.3333"},
+      { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "Partner", "Arbeit": "1" , "Fairshares": "0.33333"},
+      { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "Partner", "Arbeit": "1" , "Fairshares": "0.33333"},
+      { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "Employee", "Arbeit": "0" },
+      { "Id": "KR", "Name": "k: Katja Roth",           "Type": "Employee", "Arbeit": "0" },
+      { "Id": "IK", "Name": "k: Ingo Komorowski",      "Type": "Employee", "Arbeit": "0" }
     ]
   },
   {
     "Abrechenzeitpunkt": "2017-12-31",
     "Kommitmenschen": [
-      { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "partner", "Arbeit": "1" , "Fairshares": "0.33333"},
-      { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "partner", "Arbeit": "1" , "Fairshares": "0.33333"},
-      { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "partner", "Arbeit": "1" , "Fairshares": "0.33333"},
-      { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "employee", "Arbeit": "0" },
-      { "Id": "KR", "Name": "k: Katja Roth",           "Type": "employee", "Arbeit": "0" },
-      { "Id": "IK", "Name": "k: Ingo Komorowski",      "Type": "employee", "Arbeit": "0" }
+      { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "Partner", "Arbeit": "1" , "Fairshares": "0.33333"},
+      { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "Partner", "Arbeit": "1" , "Fairshares": "0.33333"},
+      { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "Partner", "Arbeit": "1" , "Fairshares": "0.33333"},
+      { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "Employee", "Arbeit": "0" },
+      { "Id": "KR", "Name": "k: Katja Roth",           "Type": "Employee", "Arbeit": "0" },
+      { "Id": "IK", "Name": "k: Ingo Komorowski",      "Type": "Employee", "Arbeit": "0" }
     ]
   },
   {
     "Abrechenzeitpunkt": "2018-12-31",
     "Kommitmenschen": [
-      { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "partner", "Arbeit": "1.00" , "Fairshares": "0.5"},
-      { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "extern", "Arbeit": "1.00" },
-      { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "partner", "Arbeit": "1.00" , "Fairshares": "0.5"},
-      { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "employee", "Arbeit": "1.00"  },
-      { "Id": "KR", "Name": "k: Katja Roth",           "Type": "employee", "Arbeit": "0.75"},
-      { "Id": "AB", "Name": "k: Anna Blume",           "Type": "employee", "Arbeit": "0.25" },
-      { "Id": "IK", "Name": "k: Ingo Komorowski",      "Type": "employee", "Arbeit": "0.41666" }
+      { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.5"},
+      { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "Extern", "Arbeit": "1.00" },
+      { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.5"},
+      { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "Employee", "Arbeit": "1.00"  },
+      { "Id": "KR", "Name": "k: Katja Roth",           "Type": "Employee", "Arbeit": "0.75"},
+      { "Id": "AB", "Name": "k: Anna Blume",           "Type": "Employee", "Arbeit": "0.25" },
+      { "Id": "IK", "Name": "k: Ingo Komorowski",      "Type": "Employee", "Arbeit": "0.41666" }
     ]
   },
   {
     "Abrechenzeitpunkt": "2019-12-31",
     "Kommitmenschen": [
-      { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "partner", "Arbeit": "1.00" , "Fairshares": "0.425"},
-      { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "extern", "Arbeit": "1.00" },
-      { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "partner", "Arbeit": "1.00" , "Fairshares": "0.425"},
-      { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "employee", "Arbeit": "1.00" , "Fairshares": "0.12"},
-      { "Id": "KR", "Name": "k: Katja Roth",           "Type": "employee", "Arbeit": "0.75", "Fairshares": "0.03"},
-      { "Id": "AB", "Name": "k: Anna Blume",           "Type": "employee", "Arbeit": "0.25" },
-      { "Id": "IK", "Name": "k: Ingo Komorowski",      "Type": "employee", "Arbeit": "0.41666" }
+      { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.425"},
+      { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "Extern", "Arbeit": "1.00" },
+      { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.425"},
+      { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "Employee", "Arbeit": "1.00" , "Fairshares": "0.12"},
+      { "Id": "KR", "Name": "k: Katja Roth",           "Type": "Employee", "Arbeit": "0.75", "Fairshares": "0.03"},
+      { "Id": "AB", "Name": "k: Anna Blume",           "Type": "Employee", "Arbeit": "0.25" },
+      { "Id": "IK", "Name": "k: Ingo Komorowski",      "Type": "Employee", "Arbeit": "0.41666" }
     ]
   }
 

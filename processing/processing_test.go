@@ -1,6 +1,7 @@
 package processing
 
 import (
+	"log"
 	"testing"
 	"time"
 
@@ -219,20 +220,21 @@ func TestInterneStunden(t *testing.T) {
 
 	// given: a internal hours booking
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.NewBooking(13,"IS", "", "", "AN", "Project-X",nil, 8250.0, "Interne Stunden 2017", 12, 2017, its2018)
+	p := *booking.NewBooking(13,"IS", "", "", "AN", "Project-X",nil, 8250.0, "Interne Stunden 2017", 12, 2017, its2018)
 
 	// when: the position is processed
-	Process(accSystem, *p)
+	Process(accSystem, p)
+//	BookRevenueToEmployeeCostCenter{AccSystem: accSystem, Booking: p}.run()
 
 	// the booking is booked to anke's account
-	a1, _ := accSystem.Get(valueMagnets.StakeholderRepository{}.Get("AN").Id)
+	a1, _ := accSystem.GetSubacc("AN", accountSystem.UK_InterneStunden)
 	util.AssertEquals(t, 1, len(a1.Bookings))
 	b1 := a1.Bookings[0]
 	util.AssertFloatEquals(t, 8250.00, b1.Amount)
 	util.AssertEquals(t, booking.CC_InterneStunden, b1.Type)
 
 	// the booking is booked against kommitment account
-	a2, _ := accSystem.Get(valueMagnets.StakeholderKM.Id)
+	a2, _ := accSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_InterneStunden)
 	b2 := a2.Bookings[0]
 	util.AssertFloatEquals(t, -8250.00, b2.Amount)
 	util.AssertEquals(t, booking.CC_InterneStunden, b1.Type)
@@ -370,7 +372,7 @@ func TestProcessOPOS_SKR1600(t *testing.T) {
 	assert.Equal(t, 1, len(bookings1600))
 
 	// the booking is booked to partners via costCenter booking
-	accountK, _ := accSystem.Get(valueMagnets.StakeholderKM.Id)
+	accountK, _ := accSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_Kosten)
 	bookingsK := accountK.Bookings
 	assert.Equal(t, 1, len(bookingsK))
 
@@ -455,8 +457,7 @@ func TestUstVZ(t *testing.T) {
 func TestErloesverteilungAnValueMagnetsSimple(t *testing.T) {
 	as := accountSystem.NewDefaultAccountSystem()
 
-	// given: BOOKING ER
-	// Eingangsrechnung 12852.0€ von Bank an SKR03_sonstigeAufwendungen
+	// given: BOOKING AR
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
 	net := make(map[valueMagnets.Stakeholder]float64)
 	net[valueMagnets.StakeholderRepository{}.Get("BW")] = 1000.0
@@ -466,12 +467,17 @@ func TestErloesverteilungAnValueMagnetsSimple(t *testing.T) {
 	Process(as, *p3)
 	ErloesverteilungAnValueMagnets(as)
 
-	// booking of 25% K-share is on CostCenter K
+	// whats on "K"
 	b,_ := as.Get("K")
 	b.UpdateSaldo()
-	assert.Equal(t, 1, len(b.Bookings))
+	log.Println("in TestErloesverteilungAnValueMagnetsSimple:", b	)
+	assert.Equal(t, 3, len(b.Bookings)) // Vertriebsprovision, Kommitmentanteil und Emnployeeanteil
 	assert.Equal(t, 0.0, b.Advances)
-	assert.Equal(t, 250.0, b.Saldo)
+	assert.Equal(t, -1000.0, b.Saldo)
+
+	// whats on BW subacc. Provision
+	acc, _ := as.GetSubacc("BW", accountSystem.UK_Vertriebsprovision)
+	assert.Equal(t, 1, len(acc.Bookings)) // Vertriebsprovision
 
 }
 
@@ -500,27 +506,27 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 
 
 	// booking ist on CostCenter K
-	b,_ := as.Get("K")
+	b,_ := as.GetSubacc("K", accountSystem.UK_Kosten)
 	b.UpdateSaldo()
-	assert.Equal(t, 4, len(b.Bookings))
-	assert.Equal(t, 5000.0, b.Advances)
-	assert.Equal(t, 5192.0, b.Saldo)
+	assert.Equal(t, 2, len(b.Bookings))
+	assert.Equal(t, -58.0, b.Costs)
+	assert.Equal(t, -58.0, b.Saldo)
 
 	// Booking is on CostCenter BW
-	a, _ := as.Get("BW")
+	a, _ := as.GetSubacc("BW", accountSystem.UK_Kosten)
 	a.UpdateSaldo()
-	assert.Equal(t, 3, len(a.Bookings))
+	assert.Equal(t, 1, len(a.Bookings))
 	typestring := ""
 	for _,bk := range a.Bookings {
 		typestring += bk.Type
 	}
-	assert.Contains(t, typestring, booking.CC_Employeeaanteil)
+	assert.Contains(t, typestring, booking.Kosten)
 	assert.Equal(t, 0.0, a.Internals)
 	assert.Equal(t, 0.0, a.Advances)
-	assert.Equal(t, -9250.0, a.Saldo)
+	assert.Equal(t, -10000.0, a.Saldo)
 
 	// Booking is on CostCenter JM
-	c, _ := as.Get("JM")
+	c, _ := as.GetSubacc("JM", accountSystem.UK_Entnahmen)
 	c.UpdateSaldo()
 	assert.Equal(t, 1, len(c.Bookings))
 	assert.Equal(t, booking.CC_Entnahme, c.Bookings[0].Type)

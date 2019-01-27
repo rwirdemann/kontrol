@@ -10,26 +10,22 @@ import (
 	"github.com/ahojsenn/kontrol/util"
 )
 
-
-
-
-type AccountSystem interface {
-	GetCollectiveAccount() *account.Account
-	Add(a *account.Account)
-	All() []account.Account
-	Get(id string) (*account.Account, bool)
-	CloneAccountsOfType (typ string) []account.Account
-	GetSKR03(id string) *account.Account
-	GetByType (typ string) map[string]*account.Account
-	ClearBookings()
-}
+	type AccountSystem interface {
+		GetCollectiveAccount() *account.Account
+		Add(a *account.Account)
+		All() []account.Account
+		Get(id string) (*account.Account, bool)
+		GetSubacc(id string, subacctype string) (*account.Account, bool)
+		CloneAccountsOfType (typ string) []account.Account
+		GetSKR03(id string) *account.Account
+		GetByType (typ string) map[string]*account.Account
+		ClearBookings()
+	}
 
 type DefaultAccountSystem struct {
 	collectiveAccount *account.Account
 	accounts          map[string]*account.Account
 }
-
-const SKR03 = "SKR03"
 
 // Bilanzkonten
 var SKR03_Anlagen25 = account.AccountDescription{Id: "SKR03_Anlagen25", Name: "01_SKR03_25_Anlagen Ähnl.R&W", Type: account.KontenartAktiv}
@@ -55,6 +51,7 @@ var SKR03_Abschreibungen = account.AccountDescription{Id: "SKR03_Abschreibungen"
 var SKR03_sonstigeAufwendungen = account.AccountDescription{Id: "SKR03_sonstigeAufwendungen", Name: "5 sonstige Aufwendungen", Type: account.KontenartAufwand}
 var SKR03_Steuern = account.AccountDescription{Id: "SKR03_Steuern", Name: "6 SKR03_Steuern 4320", Type: account.KontenartAufwand}
 var ErgebnisNachSteuern = account.AccountDescription{Id: "SKR03_ErgebnisNachSteuern 10000", Name: "7 ErgebnisNachSteuern", Type: account.KontenartVerrechnung}
+
 // Verrechnungskonten
 var SKR03_Saldenvortrag = account.AccountDescription{Id: "SKR03_Saldenvortrag", Name: "Saldenvortrag 9000", Type: account.KontenartVerrechnung}
 var SKR03_9790_Restanteil = account.AccountDescription{Id: "SKR03_9790_Restanteil", Name: "SKR03_9790_Restanteil", Type: account.KontenartVerrechnung}
@@ -64,7 +61,25 @@ var AlleKLRBuchungen = account.AccountDescription{Id: "AlleKLRBuchungen", Name: 
 var k_ErloeseVerteilung = account.AccountDescription{Id: "k_ErloeseVerteilung", Name: "V: k_ErloeseVerteilung", Type: account.KontenartVerrechnung}
 
 
+// Unterkonten
+const UK_Kosten = "_0-Kosten"
+const UK_AnteileausFairshare = "_1-AnteilausFairshare"
+const UK_InterneStunden = "_2-InterneStunden"
+const UK_Vertriebsprovision = "_3-Vertriebsprovision"
+const UK_AnteileAuserloesen = "_4-Anteilauserloesen"
+const UK_Darlehen = "_5-Darlehen"
+const UK_Entnahmen = "_6-Entnahmen"
 
+
+var UK  = [...]string {
+	UK_Kosten,
+	UK_AnteileausFairshare,
+	UK_InterneStunden,
+	UK_Vertriebsprovision,
+	UK_AnteileAuserloesen,
+	UK_Darlehen,
+	UK_Entnahmen,
+}
 
 
 type Accountlist struct {
@@ -121,8 +136,15 @@ func NewDefaultAccountSystem() AccountSystem {
 	// generate accounts for all stakeholders
 	stakeholderRepository := valueMagnets.StakeholderRepository{}
 	for _, sh := range stakeholderRepository.All(year) {
-			ad := account.AccountDescription{Id: sh.Id, Name: sh.Name, Type: sh.Type}
-			accountSystem.Add(account.NewAccount(ad))
+		ad := account.AccountDescription{Id: sh.Id, Name: sh.Name, Type: sh.Type}
+		accountSystem.Add(account.NewAccount(ad))
+
+		// create subaccounts
+		for _, ukname := range UK {
+			sa := account.AccountDescription{Id: sh.Id+ukname, Name: sh.Name+ukname, Type: valueMagnets.StakeholderTypeKUA}
+			sa.Superaccount = ad.Id
+			accountSystem.Add(account.NewAccount(sa))
+		}
 	}
 	return &accountSystem
 }
@@ -152,6 +174,15 @@ func (r *DefaultAccountSystem) Get(id string) (*account.Account, bool) {
 	if a, ok := r.accounts[id]; ok {
 		return a, true
 	}
+	return nil, false
+}
+
+
+func (r *DefaultAccountSystem) GetSubacc(id string, subacctype string) (*account.Account, bool) {
+	if a, ok := r.accounts[id+subacctype]; ok {
+		return a, true
+	}
+	log.Println("in GetSubacc, could not find account ", id+subacctype)
 	return nil, false
 }
 
