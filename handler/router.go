@@ -1,11 +1,10 @@
 package handler
 
 import (
-	"io/ioutil"
-
-		"github.com/ahojsenn/kontrol/middleware"
-	"github.com/gorilla/mux"
 	"github.com/ahojsenn/kontrol/accountSystem"
+	"github.com/ahojsenn/kontrol/middleware"
+	"github.com/gorilla/mux"
+	"io/ioutil"
 )
 
 func NewRouter(githash string, buildstamp string, repository accountSystem.AccountSystem) *mux.Router {
@@ -15,7 +14,9 @@ func NewRouter(githash string, buildstamp string, repository accountSystem.Accou
 	r.HandleFunc("/kontrol/collectiveaccount", middleware.JWTMiddleware(key, MakeGetCollectiveAccountHandler(repository)))
 	r.HandleFunc("/kontrol/bilanz", MakeGetBilanzAccountsHandler(repository))
 	r.HandleFunc("/kontrol/GuV", MakeGetGuVAccountsHandler(repository))
-	r.HandleFunc("/kontrol/kommitmenschen", MakeGetKommitmenschenAccountsHandler(repository))
+	r.HandleFunc("/kontrol/stakeholder", MakeGetStakeholderHandler())
+	r.HandleFunc("/kontrol/kommitmenschenaccounts", MakeGetKommitmenschenAccountsHandler(repository))
+	r.HandleFunc("/kontrol/kommitmenschenaccounts/{id}", MakeGetKommitmenschenAccountsHandler(repository))
 	r.HandleFunc("/kontrol/accounts", MakeGetAccountsHandler(repository))
 	r.HandleFunc("/kontrol/accounts/{id}", MakeGetAccountHandler(repository))
 	r.HandleFunc("/kontrol/projects", MakeGetProjectsHandler(repository))

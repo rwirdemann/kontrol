@@ -6,8 +6,11 @@ import (
 	"github.com/ahojsenn/kontrol/accountSystem"
 	"github.com/ahojsenn/kontrol/util"
 	"github.com/ahojsenn/kontrol/valueMagnets"
+	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 	"sort"
+	"strings"
 )
 
 func MakeGetKommitmenschenAccountsHandler(as accountSystem.AccountSystem) http.HandlerFunc {
@@ -83,6 +86,20 @@ func MakeGetKommitmenschenAccountsHandler(as accountSystem.AccountSystem) http.H
 			}
 		}
 
+		vars := mux.Vars(r)
+		accountId, ok := vars["id"]
+		log.Println("in MakeGetKommitmenschenAccountsHandler:", accountId, ok)
+		if ok {
+			accounts = FilterAccountsByStakeholder(accounts, accountId)
+		} else {
+			accounts = accounts
+		}
+
+		// update all saldos
+		for _,acc := range accounts {
+			acc.UpdateSaldo()
+		}
+
 		// wrap response with "Accounts" element
 		response := struct {
 			Accounts []account.Account
@@ -95,3 +112,13 @@ func MakeGetKommitmenschenAccountsHandler(as accountSystem.AccountSystem) http.H
 	}
 }
 
+
+func FilterAccountsByStakeholder(accounts []account.Account, stakeholder string) []account.Account {
+	var filtered []account.Account
+	for _, b := range accounts {
+		if strings.Contains(b.Description.Id, stakeholder)   {
+			filtered = append(filtered, b)
+		}
+	}
+	return filtered
+}

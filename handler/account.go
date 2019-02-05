@@ -29,17 +29,15 @@ func MakeGetAccountsHandler(repository accountSystem.AccountSystem) http.Handler
 	}
 }
 
-func MakeGetAccountHandler(repository accountSystem.AccountSystem) http.HandlerFunc {
+func MakeGetAccountHandler(as accountSystem.AccountSystem) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		// accept only requests from localhost
 		//...
 
-
-
 		vars := mux.Vars(r)
 		accountId := vars["id"]
-		if a, ok := repository.Get(accountId); ok {
+		if a, ok := as.Get(accountId); ok {
 
 			// Check to filter account by costcenter
 			costcenter := r.URL.Query().Get("cs")

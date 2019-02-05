@@ -51,6 +51,7 @@ type Account struct {
 	Internals float64
 	YearS 	  float64
 	Saldo     float64
+
 }
 
 func (a *Account) SumOfBookingType  (btype string ) float64 {
@@ -66,7 +67,7 @@ func (a *Account) SumOfBookingType  (btype string ) float64 {
 
 
 func NewAccount(a AccountDescription) *Account {
-	return &Account{Description: a}
+	return &Account{Description: a }
 }
 
 func (a *Account) Book(b booking.Booking) {
