@@ -39,7 +39,10 @@ func (c BookFromKtoKommitmensch) run() {
 }
 
 
-
+// for a given booking
+// generate a new pair of bookings,
+// soll in UK_Kosten of the booking responsible Stakeholder
+// haben in the valueMagnets.StakeholderKM.Id accoung (company account)
 type BookCostToCostCenter struct {
 	Booking    booking.Booking
 	AccSystem  accountSystem.AccountSystem
@@ -269,7 +272,8 @@ func (this BookRevenueToEmployeeCostCenter) isOpenPosition() bool {
 }
 
 func isEmployee  (id string) bool {
-	if  strings.Compare (valueMagnets.StakeholderRepository{}.TypeOf(id), valueMagnets.StakeholderTypeEmployee ) ==  0 {
+	shrepo := valueMagnets.Stakeholder{}
+	if  strings.Compare (shrepo.TypeOf(id), valueMagnets.StakeholderTypeEmployee ) ==  0 {
 		return true
 	}
 	return false

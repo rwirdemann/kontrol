@@ -14,7 +14,6 @@ func MakeGetCollectiveAccountHandler(repository accountSystem.AccountSystem) htt
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		a := repository.GetCollectiveAccount()
-		a.UpdateSaldo()
 		w.Header().Set("Content-Type", "application/json")
 		sort.Sort(booking.ByMonth(a.Bookings))
 		json := util.Json(a)

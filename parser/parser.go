@@ -60,8 +60,9 @@ func Import(file string, aYear int, positions *[]booking.Booking)  {
 				if year == aYear {
 					m := make(map[valueMagnets.Stakeholder]float64)
 					for _, p := range netBookings {
-						// die Owner Zuordnung muss hier anders sein...
-						stakeholder := valueMagnets.StakeholderRepository{}.Get(p.Owner)
+						//
+						shrepo := valueMagnets.Stakeholder{}
+						stakeholder := shrepo.Get(p.Owner)
 						m[stakeholder] = parseAmount(record[p.Column])
 					}
 					bkng := booking.NewBooking(rownr, typ, soll, haben, cs, project, m, amount, subject, month, year, bankCreated)

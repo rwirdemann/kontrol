@@ -2,7 +2,7 @@
   {
     "Abrechenzeitpunkt": "2016-12-31",
     "Kommitmenschen": [
-      { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "Partner", "Arbeit": "1" , "Fairshares": "0.3333"},
+      { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "Partner", "Arbeit": "1" , "Fairshares": "0.33333"},
       { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "Partner", "Arbeit": "1" , "Fairshares": "0.33333"},
       { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "Partner", "Arbeit": "1" , "Fairshares": "0.33333"},
       { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "Employee", "Arbeit": "0" },

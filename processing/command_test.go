@@ -5,7 +5,7 @@ import (
 	"github.com/ahojsenn/kontrol/accountSystem"
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/util"
-		"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/assert"
 	)
 
 func TestSKR03Command(t *testing.T) {

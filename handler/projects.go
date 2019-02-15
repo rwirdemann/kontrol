@@ -15,7 +15,6 @@ func MakeGetProjectsHandler(as accountSystem.AccountSystem) http.HandlerFunc {
 		var accounts []account.Account
 		// accounts = as.CloneAccountsOfType(account.KontenartKLR)
 		for _, acc := range as.GetByType(account.KontenartProject) {
-			acc.UpdateSaldo()
 			accounts = append(accounts, *acc)
 		}
 

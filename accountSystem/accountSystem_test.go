@@ -1,19 +1,25 @@
 package accountSystem
 
 import (
-	"testing"
+	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/util"
-		"github.com/ahojsenn/kontrol/account"
-			)
+	"log"
+	"testing"
+)
 
 func TestNewDefaultAccountSystem(t *testing.T) {
 	accountSystem := NewDefaultAccountSystem()
 	util.AssertEquals(t, accountSystem.GetCollectiveAccount().Description.Id, "all")
 
-	_ ,exists := accountSystem.Get("SKR03_Anlagen")
+
+	log.Println("in TestNewDefaultAccountSystem", accountSystem)
+
+	ac ,exists := accountSystem.Get("SKR03_Anlagen")
+	log.Println("in TestNewDefaultAccountSystem", exists, ac)
 	util.AssertTrue(t, exists)
 
 	_ ,exists = accountSystem.Get("JM")
+	log.Println("in TestNewDefaultAccountSystem", exists, ac)
 	util.AssertTrue(t, exists)
 }
 
@@ -35,3 +41,4 @@ func TestAdd (t *testing.T) {
 	a,_ := accountSystem.Get("K")
 	util.AssertEquals(t, a.Description.Name,  "k: Kommitment")
 }
+

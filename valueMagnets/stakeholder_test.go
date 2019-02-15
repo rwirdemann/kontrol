@@ -1,9 +1,9 @@
 package valueMagnets
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
-			"github.com/stretchr/testify/assert"
-	)
+)
 
 func TestGetKommitmenschenRepository(t *testing.T) {
 
@@ -18,13 +18,12 @@ func TestGetKommitmenschenRepository(t *testing.T) {
 
 func TestStakeholderRepository_All(t *testing.T) {
 
-	repo := StakeholderRepository{}
-//	assert.Equal(t, "0%", repo.All(2018)[1].Arbeit)
+	repo := Stakeholder{}
 	assert.Equal(t, "JM", repo.All(2016)[2].Id)
 }
 
 func TestIsValidStakeholder (t *testing.T) {
-	repo := StakeholderRepository{}
+	repo := Stakeholder{}
 	assert.True(t, repo.IsValidStakeholder("K"))
 	assert.True(t, repo.IsValidStakeholder("JM"))
 	assert.True(t, repo.IsValidStakeholder("RR"))

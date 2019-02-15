@@ -37,21 +37,8 @@ type Account struct {
 	Description     AccountDescription
 	Bookings  []booking.Booking `json:",omitempty"`
 	KommitmenschNettoFaktura   float64
-	AnteilAusFaktura float64
-	AnteilAusFairshares float64
-	KommitmenschDarlehen float64
-	Nbkngs    int
-	Costs     float64 // die Summe alle Buchungen, die als Kosten markiert sind
-	Advances  float64
-	Reserves  float64
-	Rest      float64
-	Revenue   float64
-	Salesprv  float64
-	Taxes     float64
-	Internals float64
 	YearS 	  float64
 	Saldo     float64
-
 }
 
 func (a *Account) SumOfBookingType  (btype string ) float64 {
@@ -72,67 +59,22 @@ func NewAccount(a AccountDescription) *Account {
 
 func (a *Account) Book(b booking.Booking) {
 	a.Bookings = append(a.Bookings, b)
+	a.UpdateSaldo()  // this might be expensive, but this way the Salden should always be accurate
 }
 
 func (a *Account) UpdateSaldo() {
-	nbkngs := 0
-	revenue := 0.0
 	saldo := 0.0
 	kommitmenschNettoFaktura := 0.0
-	internals := 0.0
-	advances := 0.0
-	rest := 0.0
-	salesprv := 0.0
-	costs := 0.0
-	anteilAusFairshares := 0.0
-	anteilAusFaktura := 0.0
-	darlehen := 0.0
 	for _, b := range a.Bookings {
-		nbkngs++
 		saldo += b.Amount
 		switch b.Type {
-		case booking.CC_Nettoanteil, booking.CC_Kommitmentanteil:
-			revenue += b.Amount
-		case booking.CC_Entnahme:
-			advances += b.Amount
-		case booking.CC_InterneStunden:
-			internals += b.Amount
-		case booking.CC_Vertriebsprovision:
-			salesprv += b.Amount
-		case booking.Erloese, booking.CC_KommitmentanteilEX:
-			revenue += b.Amount
 		case booking.CC_Employeeaanteil:
-			revenue += b.Amount
 			kommitmenschNettoFaktura += b.Amount/ EmployeeShare
 		case booking.CC_PartnerNettoFaktura:
-			revenue += b.Amount
 			kommitmenschNettoFaktura += b.Amount
-		case booking.Kosten, booking.CC_LNSteuer, booking.CC_GWSteuer, booking.CC_SVBeitrag, booking.CC_Gehalt:
-			costs += b.Amount
-		case booking.CC_AnteilAusFairshares:
-			anteilAusFairshares += b.Amount
-		case booking.CC_AnteilAusFaktura:
-			anteilAusFaktura += b.Amount
-			case booking.CC_KommitmenschDarlehen:
-			darlehen += b.Amount
-		case booking.SKR03:
-			// hier genauer gucken...
-		default:
-			rest += b.Amount
 		}
 	}
-	a.Nbkngs = nbkngs
 	a.Saldo = saldo
-	a.Advances = advances
-	a.Revenue = revenue
-	a.Salesprv = salesprv
-	a.Internals = internals
-	a.Rest = rest
-	a.Costs = costs
-	a.KommitmenschNettoFaktura = kommitmenschNettoFaktura
-	a.AnteilAusFaktura = anteilAusFaktura
-	a.AnteilAusFairshares = anteilAusFairshares
-	a.KommitmenschDarlehen = darlehen
 	a.KommitmenschNettoFaktura = kommitmenschNettoFaktura
 }
 

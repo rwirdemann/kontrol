@@ -1,17 +1,15 @@
 package processing
 
 import (
-	"log"
-	"testing"
-	"time"
-
 	"github.com/ahojsenn/kontrol/account"
-
 	"github.com/ahojsenn/kontrol/accountSystem"
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/util"
 	"github.com/ahojsenn/kontrol/valueMagnets"
 	"github.com/stretchr/testify/assert"
+	"log"
+	"testing"
+	"time"
 )
 
 var accSystem accountSystem.AccountSystem
@@ -19,13 +17,15 @@ var accountBank *account.Account
 var accountHannes *account.Account
 var accountRalf *account.Account
 var accountKommitment *account.Account
+var shrepo  valueMagnets.Stakeholder
 
 func setUp() {
 	accSystem = accountSystem.NewDefaultAccountSystem()
 	accountBank = accSystem.GetCollectiveAccount()
-	accountHannes, _ = accSystem.Get(valueMagnets.StakeholderRepository{}.Get("JM").Id)
-	accountRalf, _ = accSystem.Get(valueMagnets.StakeholderRepository{}.Get("RW").Id)
-	accountKommitment, _ = accSystem.Get(valueMagnets.StakeholderRepository{}.Get("K").Id)
+
+	accountHannes, _ = accSystem.Get(shrepo.Get("JM").Id)
+	accountRalf, _ = accSystem.Get(shrepo.Get("RW").Id)
+	accountKommitment, _ = accSystem.Get(shrepo.Get("K").Id)
 	util.Global.BalanceDate = time.Date(2018, 1, 24, 0, 0, 0, 0, time.UTC)
 
 }
@@ -460,7 +460,8 @@ func TestErloesverteilungAnValueMagnetsSimple(t *testing.T) {
 	// given: BOOKING AR
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
 	net := make(map[valueMagnets.Stakeholder]float64)
-	net[valueMagnets.StakeholderRepository{}.Get("BW")] = 1000.0
+	shrepo := valueMagnets.Stakeholder{}
+	net[shrepo.Get("BW")] = 1000.0
 	p3 := booking.NewBooking(13, "AR", "", "", "BW", "Project-X", net,  1190, "ARGSSLL", 1, 2017, its2018)
 
 	// when: the position is processed
@@ -469,10 +470,7 @@ func TestErloesverteilungAnValueMagnetsSimple(t *testing.T) {
 
 	// whats on "K"
 	b,_ := as.Get("K")
-	b.UpdateSaldo()
-	log.Println("in TestErloesverteilungAnValueMagnetsSimple:", b	)
-	assert.Equal(t, 3, len(b.Bookings)) // Vertriebsprovision, Kommitmentanteil und Emnployeeanteil
-	assert.Equal(t, 0.0, b.Advances)
+	assert.Equal(t, 3, len(b.Bookings)) // Vertriebsprovision, Kommitmentanteil und Employeeanteil
 	assert.Equal(t, -1000.0, b.Saldo)
 
 	// whats on BW subacc. Provision
@@ -481,6 +479,49 @@ func TestErloesverteilungAnValueMagnetsSimple(t *testing.T) {
 
 }
 
+func TestDistributeKTopf(t *testing.T) {
+	as := accountSystem.NewDefaultAccountSystem()
+	as.ClearBookings()
+
+	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
+
+	net := make(map[valueMagnets.Stakeholder]float64)
+	shrepo := valueMagnets.Stakeholder{}
+	net[shrepo.Get("AN")] = 11900.0
+	net[shrepo.Get("JM")] = 11900.0
+
+	hauptbuch := as.GetCollectiveAccount()
+	// Anke und Johannes haben Nettoeinnahmen von 10.000
+	b1 := *booking.NewBooking(13, "AR", "", "", "K", "Project-X", net, 11900, "Anke+Johannes", 1, 2018, its2018)
+	Process(as, b1)
+	// Johannes hat eine Eingangsrechnung von 1000
+	b2 := *booking.NewBooking(14, "ER", "", "", "JM", "Project-X",nil, 119.0, "Johannes Gadget", 1, 2018, its2018)
+	Process(as, b2)
+
+	// nun verteilen
+	for _, p := range hauptbuch.Bookings {
+		Process(as, p)
+	}
+	// now calculate GuV
+	GuV(as)
+	Bilanz(as)
+	// now distribution of costs & profits
+	ErloesverteilungAnValueMagnets(as)
+	DistributeKTopf(as)
+
+	// nun sollten beide in der Verteilung etwas bekommen, Anke etwas mehr
+	johannes_acc, _ := as.GetSubacc("JM", accountSystem.UK_Kosten)
+	log.Println("in TestDistributeKTopf", johannes_acc)
+
+
+	// assert that Johannes and Anke have something on their account
+	log.Println("in TestDistributeKTopf", kommanditistYearlyIncome(as, "JM"))
+
+	// assert, that Anke has more due to Johannes expenses
+	assert.True(t, kommanditistYearlyIncome(as, "AN") > kommanditistYearlyIncome(as, "JM") )
+	assert.Equal(t, 100.0, kommanditistYearlyIncome(as, "AN") - kommanditistYearlyIncome(as, "JM") )
+
+	}
 
 func TestErloesverteilungAnValueMagnets(t *testing.T) {
 	as := accountSystem.NewDefaultAccountSystem()
@@ -491,7 +532,7 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 	p1 := booking.NewBooking(13, "ER", "", "", "K", "Project-X",nil, 119, "hugo 1234", 1, 2017, its2018)
 	p2 := booking.NewBooking(13, "ER", "", "", "BW", "Project-X",nil, 11900, "gugo. blupp", 1, 2017, its2018)
 	net := make(map[valueMagnets.Stakeholder]float64)
-	net[valueMagnets.StakeholderRepository{}.Get("BW")] = 1000.0
+	net[shrepo.Get("BW")] = 1000.0
 	p3 := booking.NewBooking(13, "AR", "", "", "BW", "Project-X", net,  1190, "ARGSSLL", 1, 2017, its2018)
 	p4 := booking.NewBooking(13, "GV", "", "", "JM", "Project-X", nil, 5000, "ARGSSLL", 1, 2017, its2018)
 	p5 := booking.NewBooking(13, "SKR03", "965", "4957", "K", "Project-X",nil, 42, "SKR03test", 1, 2017, its2018)
@@ -507,37 +548,60 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 
 	// booking ist on CostCenter K
 	b,_ := as.GetSubacc("K", accountSystem.UK_Kosten)
-	b.UpdateSaldo()
+	// b.UpdateSaldo()
 	assert.Equal(t, 2, len(b.Bookings))
-	assert.Equal(t, -58.0, b.Costs)
 	assert.Equal(t, -58.0, b.Saldo)
 
 	// Booking is on CostCenter BW
 	a, _ := as.GetSubacc("BW", accountSystem.UK_Kosten)
-	a.UpdateSaldo()
+	// a.UpdateSaldo()
 	assert.Equal(t, 1, len(a.Bookings))
 	typestring := ""
 	for _,bk := range a.Bookings {
 		typestring += bk.Type
 	}
 	assert.Contains(t, typestring, booking.Kosten)
-	assert.Equal(t, 0.0, a.Internals)
-	assert.Equal(t, 0.0, a.Advances)
 	assert.Equal(t, -10000.0, a.Saldo)
 
 	// Booking is on CostCenter JM
 	c, _ := as.GetSubacc("JM", accountSystem.UK_Entnahmen)
-	c.UpdateSaldo()
+	// c.UpdateSaldo()
 	assert.Equal(t, 1, len(c.Bookings))
 	assert.Equal(t, booking.CC_Entnahme, c.Bookings[0].Type)
-	assert.Equal(t, 0.0, c.Revenue)
-	assert.Equal(t, 0.0, c.Internals)
-	assert.Equal(t, -5000.0, c.Advances)
 	assert.Equal(t, -5000.0, c.Saldo)
-
-
 }
 
+
+func TestKommanditistYearlyIncome (t *testing.T) {
+	as := accountSystem.NewDefaultAccountSystem()
+	as.ClearBookings()
+
+	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
+
+	net := make(map[valueMagnets.Stakeholder]float64)
+	shrepo := valueMagnets.Stakeholder{}
+	net[shrepo.Get("AN")] = 119.0
+	net[shrepo.Get("JM")] = 119.0
+
+	hauptbuch := as.GetCollectiveAccount()
+	// Anke und Johannes haben NEttoeinnahmen von 10.000
+	b1 := *booking.NewBooking(13, "AR", "", "", "K", "Project-X", net, 1190, "Anke+Johannes", 1, 2018, its2018)
+	Process(as, b1)
+
+	// nun verteilen
+	for _, p := range hauptbuch.Bookings {
+		Process(as, p)
+	}
+	// now calculate GuV
+	GuV(as)
+	Bilanz(as)
+	// now distribution of costs & profits
+	ErloesverteilungAnValueMagnets(as)
+	DistributeKTopf(as)
+
+	// 33% von 200€ k-anteil + 50% von 800€
+	util.AssertFloatEquals(t, 466.67, kommanditistYearlyIncome(as, "JM") )
+}
 
 func assertBooking(t *testing.T, b booking.Booking, amount float64, text string, destType string) {
 	util.AssertFloatEquals(t, amount, b.Amount)

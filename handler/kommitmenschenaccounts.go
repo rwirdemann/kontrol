@@ -95,11 +95,6 @@ func MakeGetKommitmenschenAccountsHandler(as accountSystem.AccountSystem) http.H
 			accounts = accounts
 		}
 
-		// update all saldos
-		for _,acc := range accounts {
-			acc.UpdateSaldo()
-		}
-
 		// wrap response with "Accounts" element
 		response := struct {
 			Accounts []account.Account

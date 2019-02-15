@@ -14,9 +14,10 @@ import (
 func setCCTestUp() {
 	accSystem = accountSystem.NewDefaultAccountSystem()
 	accountBank = accSystem.GetCollectiveAccount()
-	accountHannes, _ = accSystem.Get(valueMagnets.StakeholderRepository{}.Get("JM").Id)
-	accountRalf, _ = accSystem.Get(valueMagnets.StakeholderRepository{}.Get("RW").Id)
-	accountKommitment, _ = accSystem.Get(valueMagnets.StakeholderRepository{}.Get("K").Id)
+	shrepo := valueMagnets.Stakeholder{}
+	accountHannes, _ = accSystem.Get(shrepo.Get("JM").Id)
+	accountRalf, _ = accSystem.Get(shrepo.Get("RW").Id)
+	accountKommitment, _ = accSystem.Get(shrepo.Get("K").Id)
 }
 
 
@@ -55,8 +56,9 @@ func TestBookRevenueToEmployeeCostCenter(t *testing.T) {
 	// given an accountingSystem and a booking
 	accsystem := accountSystem.NewDefaultAccountSystem()
 	net := make(map[valueMagnets.Stakeholder]float64)
-	net[valueMagnets.StakeholderRepository{}.Get("BW")] = 1000
-	net[valueMagnets.StakeholderRepository{}.Get("JM")] = 3675.0
+	shrepo := valueMagnets.Stakeholder{}
+	net[shrepo.Get("BW")] = 1000
+	net[shrepo.Get("JM")] = 3675.0
 	bkng := *booking.NewBooking(13, "AR", "", "", "JM", "Project-X",net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{})
 
 

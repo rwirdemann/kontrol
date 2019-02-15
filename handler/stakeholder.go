@@ -14,17 +14,15 @@ import (
 func MakeGetStakeholderHandler() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		var stakeholder valueMagnets.StakeholderRepository
-			s := stakeholder.All(util.Global.FinancialYear)
+		var stakeholder valueMagnets.Stakeholder
 
 		// wrap response with "Accounts" element
 		response := struct {
 			Stakeholder []valueMagnets.Stakeholder
 		}{
-			s,
+			stakeholder.All(util.Global.FinancialYear),
 		}
 		json := util.Json(response)
-		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, json)
 	}
 }

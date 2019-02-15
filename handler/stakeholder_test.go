@@ -3,6 +3,8 @@ package handler
 import (
 	"encoding/json"
 	"github.com/ahojsenn/kontrol/accountSystem"
+	"github.com/ahojsenn/kontrol/util"
+	"github.com/ahojsenn/kontrol/valueMagnets"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"log"
@@ -17,6 +19,10 @@ func initRouter() *mux.Router {
 }
 
 func TestGetAllStakeholders(t *testing.T) {
+
+	var stakeholder valueMagnets.Stakeholder
+	sh := stakeholder.All(util.Global.FinancialYear)
+	sh[2].YearlySaldo = 42.0
 
 	req, _ := http.NewRequest("GET", "/kontrol/stakeholder", nil)
 	rr := httptest.NewRecorder()
@@ -33,10 +39,16 @@ func TestGetAllStakeholders(t *testing.T) {
 	}
 	m := f.(map[string]interface{})
 
+	//{"Stakeholder":[{"Id":"AN","Name":"k: Anke Nehrenberg","Type":"Partner","Arbeit":"1.00","Fairshares":"0.5"},{"Id":"RW","Name":"k: Ralf Wirdemann","Type":"Extern","Arbeit":"1.00","Fairshares":""},{"Id":"JM","Name":"k: Johannes Mainusch","Type":"Partner","Arbeit":"1.00","Fairshares":"0.5"},
+
 	ankesName := m["Stakeholder"].([]interface{})[0].(map[string]interface{})["Name"]
 	assert.Equal(t, ankesName, "k: Anke Nehrenberg" )
 
 	johannesName := m["Stakeholder"].([]interface{})[2].(map[string]interface{})["Name"]
 	assert.Equal(t, johannesName, "k: Johannes Mainusch" )
+
+	sh = stakeholder.All(util.Global.FinancialYear)
+	johannesYearlySaldo := m["Stakeholder"].([]interface{})[2].(map[string]interface{})["YearlySaldo"]
+	assert.Equal(t, 42.0 , johannesYearlySaldo )
 
 }

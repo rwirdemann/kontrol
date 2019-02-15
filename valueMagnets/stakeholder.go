@@ -2,11 +2,11 @@ package valueMagnets
 
 import (
 	"fmt"
-		"io/ioutil"
+	"io/ioutil"
 	"log"
 	"os"
 	"encoding/json"
-		"time"
+	"time"
 	"github.com/ahojsenn/kontrol/util"
 		)
 
@@ -26,6 +26,7 @@ type Stakeholder struct {
 	Type string
 	Arbeit string
 	Fairshares string
+	YearlySaldo float64
 }
 
 
@@ -33,11 +34,7 @@ var StakeholderKM = Stakeholder{Id: "K", Name: "k:  Kommitment", Type: Stakehold
 var StakeholderEX = Stakeholder{Id: "EX", Name: "k:  Extern", Type: StakeholderTypeExtern, Arbeit: "1", Fairshares: "0"}
 var StakeholderRR = Stakeholder{Id: "RR", Name: "k:  Buchungsreste AR like Reisekosten etc.", Type: StakeholderTypeOthers, Arbeit: "1", Fairshares: "0"}
 
-// environments and HTTPS certificate locations.
-type KommitmenschenRepository struct {
-	Abrechenzeitpunkt string `json:"Abrechenzeitpunkt"`
-	Menschen []Kommitmenschen `json:"Kommitmenschen"`
-}
+
 
 type Kommitmenschen struct {
 	Id string `json:"Id"`
@@ -45,6 +42,11 @@ type Kommitmenschen struct {
 	Type string `json:"Type"`
 	Arbeit string `json:"Arbeit"`
 	FairShares string `json:"Fairshares"`
+}
+
+type KommitmenschenRepository struct {
+	Abrechenzeitpunkt string `json:"Abrechenzeitpunkt"`
+	Menschen []Kommitmenschen `json:"Kommitmenschen"`
 }
 
 var kmry []KommitmenschenRepository
@@ -88,32 +90,48 @@ func (this KommitmenschenRepository) All(year int) []Kommitmenschen {
 }
 
 
-type StakeholderRepository struct {
-}
 
-func (this StakeholderRepository) All(year int) []Stakeholder {
 
+var StakeholderRepository []Stakeholder
+
+
+// generates the initial stakeholder
+func (this *Stakeholder) Init(year int, shptr *[]Stakeholder) *[]Stakeholder {
+
+	sh := *shptr
 	kmrepo := KommitmenschenRepository{}
-	stakehr := []Stakeholder{}
 	for _, mensch := range kmrepo.All(year) {
 		s := Stakeholder{}
 		s.Type = mensch.Type
-		stakehr = append(stakehr, Stakeholder{Id: mensch.Id, Name: mensch.Name, Type: mensch.Type, Arbeit: mensch.Arbeit, Fairshares: mensch.FairShares})
+		sh = append(sh, Stakeholder{Id: mensch.Id, Name: mensch.Name, Type: mensch.Type, Arbeit: mensch.Arbeit, Fairshares: mensch.FairShares})
 	}
 
 	// add kommitment company
-	stakehr = append(stakehr, StakeholderKM)
+	sh = append(sh, StakeholderKM)
 
 	// add externals
-	stakehr = append(stakehr, StakeholderEX)
+	sh = append(sh, StakeholderEX)
 
 	// add Stakeholder for booking rests like Fakturierte Reisekosten etc. RR
-	stakehr = append(stakehr, StakeholderRR)
+	sh = append(sh, StakeholderRR)
 
-	return stakehr
+	return &sh
 }
 
-func (this StakeholderRepository) IsValidStakeholder (stakeholderId string) bool {
+
+
+// returns an array with a copy of all stakeholders
+func (this *Stakeholder) All(year int) []Stakeholder {
+
+	if len(StakeholderRepository) == 0 {
+		StakeholderRepository = *this.Init(year, &StakeholderRepository)
+	}
+	return StakeholderRepository
+
+}
+
+
+func (this *Stakeholder) IsValidStakeholder (stakeholderId string) bool {
 
 	for _, sh := range this.All(util.Global.FinancialYear) {
 		if sh.Id == stakeholderId  {
@@ -124,8 +142,7 @@ func (this StakeholderRepository) IsValidStakeholder (stakeholderId string) bool
 	return false
 }
 
-func (this StakeholderRepository) TypeOf(id string) string {
-
+func (this *Stakeholder) TypeOf(id string) string {
 
 	for _, s := range this.All(util.Global.FinancialYear) {
 		if s.Id == id ||
@@ -138,7 +155,7 @@ func (this StakeholderRepository) TypeOf(id string) string {
 	panic(fmt.Sprintf("stakeholder '%s' not found", id))
 }
 
-func (this StakeholderRepository) Get(id string) Stakeholder {
+func (this *Stakeholder) Get(id string) Stakeholder {
 
 	for _,s := range this.All(util.Global.FinancialYear) {
 		if s.Id == id {
@@ -148,11 +165,12 @@ func (this StakeholderRepository) Get(id string) Stakeholder {
 	panic(fmt.Sprintf("stakeholder '%s' not found", id))
 }
 
-
-func (this StakeholderRepository) GetAllOfType(typ string) []Stakeholder {
+// return a array of pointers to selected stakeholders
+func (this *Stakeholder) GetAllOfType(typ string) []Stakeholder {
 	var stakeholders []Stakeholder
 	for _,s := range this.All(util.Global.FinancialYear) {
 		if s.Type == typ {
+			// fill it with a pointer to the original stakeholder
 			stakeholders = append(stakeholders, s)
 		}
 	}

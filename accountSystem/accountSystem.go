@@ -2,12 +2,12 @@ package accountSystem
 
 import (
 	"fmt"
+	"github.com/ahojsenn/kontrol/util"
 	"log"
 
-	"github.com/ahojsenn/kontrol/valueMagnets"
 	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/booking"
-	"github.com/ahojsenn/kontrol/util"
+	"github.com/ahojsenn/kontrol/valueMagnets"
 )
 
 	type AccountSystem interface {
@@ -122,7 +122,6 @@ func EmptyDefaultAccountSystem() AccountSystem {
 }
 
 func NewDefaultAccountSystem() AccountSystem {
-	year := util.Global.FinancialYear
 
 	ad := account.AccountDescription{Id: "all", Name: "Hauptbuch", Type: account.KontenartVerrechnung}
 	accountSystem := DefaultAccountSystem{collectiveAccount: &account.Account{Description: ad}, accounts: make(map[string]*account.Account)}
@@ -134,8 +133,9 @@ func NewDefaultAccountSystem() AccountSystem {
 	}
 
 	// generate accounts for all stakeholders
-	stakeholderRepository := valueMagnets.StakeholderRepository{}
-	for _, sh := range stakeholderRepository.All(year) {
+	stakeholder := valueMagnets.Stakeholder{}
+
+	for _, sh := range stakeholder.All(util.Global.FinancialYear) {
 		ad := account.AccountDescription{Id: sh.Id, Name: sh.Name, Type: sh.Type}
 		accountSystem.Add(account.NewAccount(ad))
 
@@ -160,7 +160,6 @@ func (r *DefaultAccountSystem) Add(a *account.Account) {
 func (r *DefaultAccountSystem) All() []account.Account {
 	result := make([]account.Account, 0, len(r.accounts))
 	for _, a := range r.accounts {
-		a.UpdateSaldo()
 		clone := *a
 		clone.Bookings = nil
 		result = append(result, clone)
@@ -192,7 +191,6 @@ func (as *DefaultAccountSystem) GetByType(typ string) map[string]*account.Accoun
 
 	for _, account := range as.accounts {
 		if account.Description.Type == typ {
-			account.UpdateSaldo()
 			clone := account
 			filtered[account.Description.Name] = clone
 		}
@@ -205,7 +203,6 @@ func (as *DefaultAccountSystem) CloneAccountsOfType (typ string) []account.Accou
 	var filtered  []account.Account
 	for _, account := range as.accounts {
 		if account.Description.Type == typ {
-			account.UpdateSaldo()
 			clone := *account
 			clone.Bookings = nil
 			filtered = append(filtered, clone)
@@ -222,6 +219,9 @@ func (r *DefaultAccountSystem) ClearBookings() {
 }
 
 
+
+
+// find the right account for the SKR03konto string
 func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 	var account *account.Account
 	switch SKR03konto {

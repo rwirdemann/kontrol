@@ -45,7 +45,6 @@ func MakeGetAccountHandler(as accountSystem.AccountSystem) http.HandlerFunc {
 				a = a.FilterBookingsByCostcenter(costcenter)
 			}
 
-			a.UpdateSaldo()
 			w.Header().Set("Content-Type", "application/json")
 			sort.Sort(booking.ByRowNr(a.Bookings))
 			json := util.Json(a)

@@ -28,8 +28,8 @@ run:
 	go run ${MAIN} > /tmp/${MAIN}.log 2>&1 &
 
 install:
-	go install bitbucket.org/rwirdemann/kontrol
-	go install bitbucket.org/rwirdemann/kontrol/cli
+	go install github.com/ahojsenn/kontrol
+	go install github.com/ahojsenn/kontrol
 
 SPREADSHEET_KEY="1xkTQDGJkq9UKvZfFJTEK_W1EdM2AAy7xIFikxTCGhnk"
 getdatafile:
