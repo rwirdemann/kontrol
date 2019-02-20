@@ -420,12 +420,13 @@ func CalculateEmployeeBonus (as accountSystem.AccountSystem) accountSystem.Accou
 			BookSKR03Command{AccSystem: as, Booking: bk}.run()
 
 			// book into kommitmentschen accountsystem
-/*			habenAcc,_ := as.Get(sh.Id)
+			habenAcc,_ := as.Get(sh.Id)
 			sollAcc,_ := as.Get(valueMagnets.StakeholderKM.Id)
+			bk.Amount *= -1.0
 			habenAcc.Book(bk)
 			bk.Amount *= -1.0
 			sollAcc.Book(bk)
-*/		}
+		}
 	}
 	return as
 }
