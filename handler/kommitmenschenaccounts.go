@@ -7,7 +7,6 @@ import (
 	"github.com/ahojsenn/kontrol/util"
 	"github.com/ahojsenn/kontrol/valueMagnets"
 	"github.com/gorilla/mux"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -21,8 +20,6 @@ func MakeGetKommitmenschenAccountsHandler(as accountSystem.AccountSystem) http.H
 			al := as.GetAllAccountsOfStakeholder(sh)
 			accounts = append (accounts, al...)
 		}
-
-		log.Println("in MakeGetKommitmenschenAccountsHandler: ", accounts)
 
 		// filter by id if provided in URL
 		vars := mux.Vars(r)

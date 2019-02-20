@@ -394,6 +394,9 @@ func CalculateEmployeeBonus (as accountSystem.AccountSystem) accountSystem.Accou
 	shrepo := valueMagnets.Stakeholder{}
 	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypeEmployee) {
 		bonus := StakeholderYearlyIncome(as, sh.Id)
+
+
+		// take care, this is idempotent, i.e. that the next bonus calculation ovverwrites teh last one...
 		if bonus > 0.0 {
 			// only book positive bonusses of valuemagnets
 			log.Println("in CalculateEmployeeBonus: ", sh.Id, math.Round(bonus*100)/100)
@@ -417,15 +420,12 @@ func CalculateEmployeeBonus (as accountSystem.AccountSystem) accountSystem.Accou
 			BookSKR03Command{AccSystem: as, Booking: bk}.run()
 
 			// book into kommitmentschen accountsystem
-			habenAcc,_ := as.Get(sh.Id)
+/*			habenAcc,_ := as.Get(sh.Id)
 			sollAcc,_ := as.Get(valueMagnets.StakeholderKM.Id)
 			habenAcc.Book(bk)
 			bk.Amount *= -1.0
 			sollAcc.Book(bk)
-
-		}
-
-
+*/		}
 	}
 	return as
 }
