@@ -644,7 +644,7 @@ func TestCalculateEmplyeeBonnusses (t *testing.T) {
 	// 70% of 100€
 	gehaelterAccount, _ := as.Get("4100_4199")
 
-	util.AssertFloatEquals(t, 70.0, gehaelterAccount.Saldo )
+	util.AssertFloatEquals(t, -70.0, gehaelterAccount.Saldo )
 
 }
 
