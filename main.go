@@ -63,11 +63,13 @@ func main() {
 	importAndProcessBookings(accountSystem, *year)
 
 	handler := cors.AllowAll().Handler(handler.NewRouter(githash, buildstamp, accountSystem))
+
 	go func() {
 		fmt.Printf("listing on http://localhost:%s...\n", *httpPort)
 		log.Fatal(http.ListenAndServe(":"+*httpPort, handler))
 	}()
 	log.Println("started http server... ")
+
 	// start HTTPS
 	log.Println("starting https server	 \n  try https://localhost:" + *httpsPort + "/kontrol/accounts")
 	log.Fatal(http.ListenAndServeTLS(":"+*httpsPort, *certFile, *keyFile, handler))

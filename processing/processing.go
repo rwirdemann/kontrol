@@ -395,8 +395,7 @@ func CalculateEmployeeBonus (as accountSystem.AccountSystem) accountSystem.Accou
 	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypeEmployee) {
 		bonus := StakeholderYearlyIncome(as, sh.Id)
 
-
-		// take care, this is idempotent, i.e. that the next bonus calculation ovverwrites teh last one...
+		// take care, this is idempotent, i.e. that the next bonus calculation overwrites the last one...
 		if bonus > 0.0 {
 			// only book positive bonusses of valuemagnets
 			log.Println("in CalculateEmployeeBonus: ", sh.Id, math.Round(bonus*100)/100)
@@ -411,7 +410,7 @@ func CalculateEmployeeBonus (as accountSystem.AccountSystem) accountSystem.Accou
 				Haben: 		 "965",
 				Type:        booking.CC_Gehalt,
 				CostCenter:  sh.Id,
-				Text:        fmt.Sprintf("Bonus für %s in %d", sh.Id, util.Global.FinancialYear),
+				Text:        fmt.Sprintf("Bonusrückstellung für %s in %d", sh.Id, util.Global.FinancialYear),
 				Month:       12,
 				Year:        util.Global.FinancialYear,
 				FileCreated: now,
@@ -420,13 +419,13 @@ func CalculateEmployeeBonus (as accountSystem.AccountSystem) accountSystem.Accou
 			BookSKR03Command{AccSystem: as, Booking: bk}.run()
 
 			// book into kommitmentschen accountsystem
-			habenAcc,_ := as.Get(sh.Id)
+/*			habenAcc,_ := as.Get(sh.Id)
 			sollAcc,_ := as.Get(valueMagnets.StakeholderKM.Id)
 			bk.Amount *= -1.0
 			habenAcc.Book(bk)
 			bk.Amount *= -1.0
 			sollAcc.Book(bk)
-		}
+*/		}
 	}
 	return as
 }

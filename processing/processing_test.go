@@ -635,12 +635,16 @@ func TestCalculateEmplyeeBonnusses (t *testing.T) {
 	// now distribution of costs & profits
 	ErloesverteilungAnStakeholder(as)
 	CalculateEmployeeBonus(as)
+	CalculateEmployeeBonus(as)
 	CalculateEmployeeBonus(as)  // calling this twice should not double the bonus...
 
-	annasAccount, _ := as.Get("AB")
+	//annasAccount, _ := as.Get("AB")
 
-	// 33% von 200€ k-anteil + 50% von 800€
-	util.AssertFloatEquals(t, -70.0, annasAccount.Saldo )
+
+	// 70% of 100€
+	gehaelterAccount, _ := as.Get("4100_4199")
+
+	util.AssertFloatEquals(t, 70.0, gehaelterAccount.Saldo )
 
 }
 
