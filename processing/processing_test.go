@@ -634,8 +634,8 @@ func TestCalculateEmplyeeBonnusses (t *testing.T) {
 
 	// now distribution of costs & profits
 	ErloesverteilungAnStakeholder(as)
-	CalculateEmployeeBonus(as)
-	CalculateEmployeeBonus(as)
+//	CalculateEmployeeBonus(as)
+//	CalculateEmployeeBonus(as)
 	CalculateEmployeeBonus(as)  // calling this twice should not double the bonus...
 
 	//annasAccount, _ := as.Get("AB")
