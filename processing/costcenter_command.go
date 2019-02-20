@@ -64,7 +64,7 @@ func (c BookCostToCostCenter) run() {
 	// Sollbuchung
 	bkresp := c.Booking.CostCenter
 	if bkresp == "" {
-		log.Println("in BookToCostCenter, cc empty in row ", c.Booking.RowNr)
+		log.Println("in BookCostToCostCenter, cc empty in row ", c.Booking.RowNr,  c.Booking)
 		log.Println("    , setting it to 'K' ")
 		bkresp = valueMagnets.StakeholderKM.Id
 	}

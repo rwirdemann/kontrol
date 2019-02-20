@@ -1,6 +1,7 @@
 package processing
 
 import (
+	"fmt"
 	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/accountSystem"
 	"github.com/ahojsenn/kontrol/booking"
@@ -59,7 +60,6 @@ func Process(accsystem accountSystem.AccountSystem, booking booking.Booking) {
 }
 
 func GuV (as accountSystem.AccountSystem) {
-	log.Println("in GuV")
 
 	var jahresueberschuss float64
 
@@ -88,6 +88,7 @@ func GuV (as accountSystem.AccountSystem) {
 	haben := booking.NewBooking(0,"Jahresüberschuss "+strconv.Itoa(util.Global.FinancialYear), "", "", valueMagnets.StakeholderKM.Id, "", nil,  jahresueberschuss, "Buchung Jahresüberschuss", int(now.Month()), now.Year(), now)
 	verb.Book(*haben)
 
+	log.Printf("in GuV, Jahresüberschuss: %6.2f€\n", math.Round(100*jahresueberschuss)/100)
 }
 
 func Bilanz (as accountSystem.AccountSystem) {
@@ -202,7 +203,10 @@ func GenerateProjectControlling  (as accountSystem.AccountSystem) {
 
 
 
-func ErloesverteilungAnValueMagnets (as accountSystem.AccountSystem) {
+
+
+func ErloesverteilungAnStakeholder (as accountSystem.AccountSystem) {
+	log.Println("in ErloesverteilungAnStakeholder:")
 
 	for _, acc := range as.All() {
 		// loop through all accounts in accountSystem,
@@ -219,6 +223,7 @@ func ErloesverteilungAnValueMagnets (as accountSystem.AccountSystem) {
 			}
 
 			// now process other accounts like accountSystem.SKR03_1900.Id
+			// this applies only to kommanditisten
 			switch acc.Description.Id {
 			case accountSystem.SKR03_1900.Id: // Privatentnahmen
 				BookFromKtoKommitmensch{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_Entnahmen}.run()
@@ -362,9 +367,10 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 	// now book the yearlySaldo on Stakeholder.YearlySaldo
 	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
 		s := shrepo.Get(sh.Id)
-		s.YearlySaldo =  kommanditistYearlyIncome (as , s.Id)
-		log.Println("in DistributeKTopf, sh: ", s.Id, " YearlySaldo: ", s.YearlySaldo)
+		s.YearlySaldo =  StakeholderYearlyIncome (as, s.Id)
+		log.Println("in DistributeKTopf:", s.Id, " YearlySaldo: ", math.Round(s.YearlySaldo))
 	}
+
 
 	return as
 
@@ -379,6 +385,52 @@ func sumOfBookingsForStakeholder (ac account.Account, sh valueMagnets.Stakeholde
 	}
 	return saldo
 }
+
+
+
+// loop through the employees, calculates their Bonusses and book them from employee to kommitment cost.
+func CalculateEmployeeBonus (as accountSystem.AccountSystem) accountSystem.AccountSystem {
+
+	shrepo := valueMagnets.Stakeholder{}
+	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypeEmployee) {
+		bonus := StakeholderYearlyIncome(as, sh.Id)
+		if bonus > 0.0 {
+			// only book positive bonusses of valuemagnets
+			log.Println("in CalculateEmployeeBonus: ", sh.Id, math.Round(bonus*100)/100)
+
+			now := time.Now().AddDate(0, 0, 0)
+
+			// book in into GuV
+			bk := booking.Booking{
+				RowNr:       0,
+				Amount:      bonus,
+				Soll:		 "4120",
+				Haben: 		 "965",
+				Type:        booking.CC_Gehalt,
+				CostCenter:  sh.Id,
+				Text:        fmt.Sprintf("Bonus für %s in %d", sh.Id, util.Global.FinancialYear),
+				Month:       12,
+				Year:        util.Global.FinancialYear,
+				FileCreated: now,
+				BankCreated: now,
+			}
+			BookSKR03Command{AccSystem: as, Booking: bk}.run()
+
+			// book into kommitmentschen accountsystem
+			habenAcc,_ := as.Get(sh.Id)
+			sollAcc,_ := as.Get(valueMagnets.StakeholderKM.Id)
+			habenAcc.Book(bk)
+			bk.Amount *= -1.0
+			sollAcc.Book(bk)
+
+		}
+
+
+	}
+	return as
+}
+
+
 
 func sumOfProvisonsForStakeholder (ac account.Account, sh valueMagnets.Stakeholder) float64 {
 	saldo := 0.0
@@ -404,15 +456,17 @@ func accountIfYearlyIncome (ac account.Account) float64 {
 
 
 
-// sum up whatever the kommanditist earned in the actual year
-func kommanditistYearlyIncome (as accountSystem.AccountSystem, kommi string) float64 {
+// sum up whatever the stakeholder earned in the actual year
+func StakeholderYearlyIncome (as accountSystem.AccountSystem, stkhldr string) float64 {
 
 	yearsum := 0.0
 	for _, acc := range as.All() {
-		if strings.HasPrefix(acc.Description.Id, kommi) {
+		if strings.HasPrefix(acc.Description.Id, stkhldr) {
 			// found the main or a subaccount of kommi
 			yearsum += accountIfYearlyIncome (acc)
 		}
 	}
 	return yearsum
 }
+
+

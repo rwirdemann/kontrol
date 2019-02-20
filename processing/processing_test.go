@@ -364,7 +364,7 @@ func TestProcessOPOS_SKR1600(t *testing.T) {
 
 	// when: the position is processed
 	Process(accSystem, *p)
-	ErloesverteilungAnValueMagnets(accSystem)
+	ErloesverteilungAnStakeholder(accSystem)
 
 	// the booking is booked to SRK1600 account
 	account1600, _ := accSystem.Get(accountSystem.SKR03_1600.Id)
@@ -466,7 +466,7 @@ func TestErloesverteilungAnValueMagnetsSimple(t *testing.T) {
 
 	// when: the position is processed
 	Process(as, *p3)
-	ErloesverteilungAnValueMagnets(as)
+	ErloesverteilungAnStakeholder(as)
 
 	// whats on "K"
 	b,_ := as.Get("K")
@@ -506,7 +506,7 @@ func TestDistributeKTopf(t *testing.T) {
 	GuV(as)
 	Bilanz(as)
 	// now distribution of costs & profits
-	ErloesverteilungAnValueMagnets(as)
+	ErloesverteilungAnStakeholder(as)
 	DistributeKTopf(as)
 
 	// nun sollten beide in der Verteilung etwas bekommen, Anke etwas mehr
@@ -515,11 +515,11 @@ func TestDistributeKTopf(t *testing.T) {
 
 
 	// assert that Johannes and Anke have something on their account
-	log.Println("in TestDistributeKTopf", kommanditistYearlyIncome(as, "JM"))
+	log.Println("in TestDistributeKTopf", StakeholderYearlyIncome(as, "JM"))
 
 	// assert, that Anke has more due to Johannes expenses
-	assert.True(t, kommanditistYearlyIncome(as, "AN") > kommanditistYearlyIncome(as, "JM") )
-	assert.Equal(t, 100.0, kommanditistYearlyIncome(as, "AN") - kommanditistYearlyIncome(as, "JM") )
+	assert.True(t, StakeholderYearlyIncome(as, "AN") > StakeholderYearlyIncome(as, "JM") )
+	assert.Equal(t, 100.0, StakeholderYearlyIncome(as, "AN") - StakeholderYearlyIncome(as, "JM") )
 
 	}
 
@@ -543,12 +543,13 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 	Process(as, *p3)
 	Process(as, *p4)
 	Process(as, *p5)
-	ErloesverteilungAnValueMagnets(as)
+	ErloesverteilungAnStakeholder(as)
+
+
 
 
 	// booking ist on CostCenter K
 	b,_ := as.GetSubacc("K", accountSystem.UK_Kosten)
-	// b.UpdateSaldo()
 	assert.Equal(t, 2, len(b.Bookings))
 	assert.Equal(t, -58.0, b.Saldo)
 
@@ -572,7 +573,7 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 }
 
 
-func TestKommanditistYearlyIncome (t *testing.T) {
+func TestStakeholderYearlyIncome (t *testing.T) {
 	as := accountSystem.NewDefaultAccountSystem()
 	as.ClearBookings()
 
@@ -596,11 +597,50 @@ func TestKommanditistYearlyIncome (t *testing.T) {
 	GuV(as)
 	Bilanz(as)
 	// now distribution of costs & profits
-	ErloesverteilungAnValueMagnets(as)
+	ErloesverteilungAnStakeholder(as)
 	DistributeKTopf(as)
 
 	// 33% von 200€ k-anteil + 50% von 800€
-	util.AssertFloatEquals(t, 466.67, kommanditistYearlyIncome(as, "JM") )
+	util.AssertFloatEquals(t, 466.67, StakeholderYearlyIncome(as, "JM") )
+}
+
+
+func TestCalculateEmplyeeBonnusses (t *testing.T) {
+
+	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
+
+	valueMagnets.StakeholderRepository = append(valueMagnets.StakeholderRepository,
+		valueMagnets.Stakeholder{"AB", "Anna Blume", "Employee", "1.0", "", 0})
+	valueMagnets.StakeholderRepository = append(valueMagnets.StakeholderRepository,
+		valueMagnets.Stakeholder{"JM", "Johannes Mainusch", "Kommanditist", "1.0", "0.5", 0})
+	valueMagnets.StakeholderRepository = append(valueMagnets.StakeholderRepository,
+		valueMagnets.Stakeholder{"K", "Kompanie", "Company", "0", "0", 0})
+
+	as := accountSystem.NewDefaultAccountSystem()
+	shrepo := valueMagnets.Stakeholder{}
+	net := make(map[valueMagnets.Stakeholder]float64)
+	net[shrepo.Get("AB")] = 100.0
+	net[shrepo.Get("JM")] = 100.0
+
+	hauptbuch := as.GetCollectiveAccount()
+	// Anke und Johannes haben NEttoeinnahmen von 10.000
+	b1 := *booking.NewBooking(13, "AR", "", "", "K", "Project-X", net, 1190, "Anna+Johannes", 1, 2018, its2018)
+	Process(as, b1)
+
+	// nun verteilen
+	for _, p := range hauptbuch.Bookings {
+		Process(as, p)
+	}
+
+	// now distribution of costs & profits
+	ErloesverteilungAnStakeholder(as)
+	CalculateEmployeeBonus(as)
+
+	annasAccount, _ := as.Get("AB")
+
+	// 33% von 200€ k-anteil + 50% von 800€
+	util.AssertFloatEquals(t, 70.0, annasAccount.Saldo )
+
 }
 
 func assertBooking(t *testing.T, b booking.Booking, amount float64, text string, destType string) {

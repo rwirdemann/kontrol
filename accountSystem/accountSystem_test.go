@@ -3,6 +3,7 @@ package accountSystem
 import (
 	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/util"
+	"github.com/ahojsenn/kontrol/valueMagnets"
 	"log"
 	"testing"
 )
@@ -42,3 +43,12 @@ func TestAdd (t *testing.T) {
 	util.AssertEquals(t, a.Description.Name,  "k: Kommitment")
 }
 
+func TestGetAllAccountsOfStakeholder(t *testing.T) {
+	accountSystem := NewDefaultAccountSystem()
+	shrepo := valueMagnets.Stakeholder{}
+	stakeholder := shrepo.Get("JM")
+
+	al := accountSystem.GetAllAccountsOfStakeholder (stakeholder)
+	util.AssertEquals(t, al[0].Description.Name,  "k: Johannes Mainusch")
+	util.AssertEquals(t, al[4].Description.Name,  "k: Johannes Mainusch_3-Vertriebsprovision")
+}

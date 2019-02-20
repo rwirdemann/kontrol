@@ -9,86 +9,24 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	"sort"
 	"strings"
 )
 
 func MakeGetKommitmenschenAccountsHandler(as accountSystem.AccountSystem) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var stkhldr valueMagnets.Stakeholder
 		var accounts []account.Account
-		//accounts = append(accounts, as.CloneAccountsOfType(valueMagnets.StakeholderTypeCompany)... )
-		// company
-		for _,acc := range as.CloneAccountsOfType(valueMagnets.StakeholderTypeCompany) {
-			accounts = append (accounts, acc)
-			// add underraccounts
-			ua := as.CloneAccountsOfType(valueMagnets.StakeholderTypeKUA)
-			sort.Sort(account.ByName(ua))
-			for _,acc2 := range ua {
-				if acc2.Description.Superaccount ==  acc.Description.Id {
-					accounts = append (accounts, acc2)
-				}
-			}
+
+		for _,sh := range stkhldr.All(util.Global.FinancialYear) {
+			al := as.GetAllAccountsOfStakeholder(sh)
+			accounts = append (accounts, al...)
 		}
 
-		// Others
-		// accounts = append(accounts, as.CloneAccountsOfType(valueMagnets.StakeholderTypeOthers)... )
-		for _,acc := range as.CloneAccountsOfType(valueMagnets.StakeholderTypeOthers) {
-			accounts = append (accounts, acc)
-			// add underraccounts
-			ua := as.CloneAccountsOfType(valueMagnets.StakeholderTypeKUA)
-			sort.Sort(account.ByName(ua))
-			for _,acc2 := range ua {
-				if acc2.Description.Superaccount ==  acc.Description.Id {
-					accounts = append (accounts, acc2)
-				}
-			}
-		}
+		log.Println("in MakeGetKommitmenschenAccountsHandler: ", accounts)
 
-		// external accounts
-		for _,acc := range as.CloneAccountsOfType(valueMagnets.StakeholderTypeExtern) {
-			accounts = append (accounts, acc)
-			// add underraccounts
-			ua := as.CloneAccountsOfType(valueMagnets.StakeholderTypeKUA)
-			sort.Sort(account.ByName(ua))
-			for _,acc2 := range ua {
-				if acc2.Description.Superaccount ==  acc.Description.Id {
-					accounts = append (accounts, acc2)
-				}
-			}
-		}
-
-		// for the  rest of all employees
-		employees := as.CloneAccountsOfType(valueMagnets.StakeholderTypeEmployee)
-		sort.Sort(account.ByName(employees))
-		for _,acc := range employees {
-			accounts = append (accounts, acc)
-			// add underraccounts
-			ua := as.CloneAccountsOfType(valueMagnets.StakeholderTypeKUA)
-			sort.Sort(account.ByName(ua))
-			for _,acc2 := range ua {
-				if acc2.Description.Superaccount ==  acc.Description.Id {
-					accounts = append (accounts, acc2)
-				}
-			}
-		}
-		// for the  rest of all partners
-		partners := as.CloneAccountsOfType(valueMagnets.StakeholderTypePartner )
-		sort.Sort(account.ByName(partners))
-		for _,acc := range partners {
-			accounts = append (accounts, acc)
-			// add underraccounts
-			ua := as.CloneAccountsOfType(valueMagnets.StakeholderTypeKUA)
-			sort.Sort(account.ByName(ua))
-			for _,acc2 := range ua {
-				if acc2.Description.Superaccount ==  acc.Description.Id {
-					accounts = append (accounts, acc2)
-				}
-			}
-		}
-
+		// filter by id if provided in URL
 		vars := mux.Vars(r)
 		accountId, ok := vars["id"]
-		log.Println("in MakeGetKommitmenschenAccountsHandler:", accountId, ok)
 		if ok {
 			accounts = FilterAccountsByStakeholder(accounts, accountId)
 		} else {

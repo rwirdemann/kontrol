@@ -162,7 +162,7 @@ func (this *Stakeholder) Get(id string) Stakeholder {
 			return s
 		}
 	}
-	panic(fmt.Sprintf("stakeholder '%s' not found", id))
+	panic(fmt.Sprintf("in Stakeholder.Get: stakeholder '%s' not found", id))
 }
 
 // return a array of pointers to selected stakeholders
@@ -175,4 +175,14 @@ func (this *Stakeholder) GetAllOfType(typ string) []Stakeholder {
 		}
 	}
 	return stakeholders
+}
+
+// check if this is an employee
+func  (this *Stakeholder) IsEmployee (id string) bool {
+	return (id != "" && this.Get(id).Type == StakeholderTypeEmployee)
+}
+
+// check if this is an kommanditist
+func  (this *Stakeholder) IsPartner (id string) bool {
+	return ( id != "" && this.Get(id).Type == StakeholderTypePartner)
 }

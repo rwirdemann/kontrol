@@ -2,25 +2,26 @@ package accountSystem
 
 import (
 	"fmt"
-	"github.com/ahojsenn/kontrol/util"
-	"log"
-
 	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/booking"
+	"github.com/ahojsenn/kontrol/util"
 	"github.com/ahojsenn/kontrol/valueMagnets"
+	"log"
+	"sort"
 )
 
-	type AccountSystem interface {
-		GetCollectiveAccount() *account.Account
-		Add(a *account.Account)
-		All() []account.Account
-		Get(id string) (*account.Account, bool)
-		GetSubacc(id string, subacctype string) (*account.Account, bool)
-		CloneAccountsOfType (typ string) []account.Account
-		GetSKR03(id string) *account.Account
-		GetByType (typ string) map[string]*account.Account
-		ClearBookings()
-	}
+type AccountSystem interface {
+	GetCollectiveAccount() *account.Account
+	Add(a *account.Account)
+	All() []account.Account
+	Get(id string) (*account.Account, bool)
+	GetSubacc(id string, subacctype string) (*account.Account, bool)
+	CloneAccountsOfType (typ string) []account.Account
+	GetSKR03(id string) *account.Account
+	GetByType (typ string) map[string]*account.Account
+	ClearBookings()
+	GetAllAccountsOfStakeholder (sh valueMagnets.Stakeholder) []account.Account
+}
 
 type DefaultAccountSystem struct {
 	collectiveAccount *account.Account
@@ -69,6 +70,7 @@ const UK_Vertriebsprovision = "_3-Vertriebsprovision"
 const UK_AnteileAuserloesen = "_4-Anteilauserloesen"
 const UK_Darlehen = "_5-Darlehen"
 const UK_Entnahmen = "_6-Entnahmen"
+const Hauptkonto = "Hauptkonto"
 
 
 var UK  = [...]string {
@@ -136,12 +138,13 @@ func NewDefaultAccountSystem() AccountSystem {
 	stakeholder := valueMagnets.Stakeholder{}
 
 	for _, sh := range stakeholder.All(util.Global.FinancialYear) {
-		ad := account.AccountDescription{Id: sh.Id, Name: sh.Name, Type: sh.Type}
+		ad := account.AccountDescription{Id: sh.Id, Name: sh.Name, Type: Hauptkonto}
 		accountSystem.Add(account.NewAccount(ad))
 
 		// create subaccounts
 		for _, ukname := range UK {
-			sa := account.AccountDescription{Id: sh.Id+ukname, Name: sh.Name+ukname, Type: valueMagnets.StakeholderTypeKUA}
+//			sa := account.AccountDescription{Id: sh.Id+ukname, Name: sh.Name+ukname, Type: valueMagnets.StakeholderTypeKUA}
+			sa := account.AccountDescription{Id: sh.Id+ukname, Name: sh.Name+ukname, Type: ukname}
 			sa.Superaccount = ad.Id
 			accountSystem.Add(account.NewAccount(sa))
 		}
@@ -174,6 +177,23 @@ func (r *DefaultAccountSystem) Get(id string) (*account.Account, bool) {
 		return a, true
 	}
 	return nil, false
+}
+
+func (r *DefaultAccountSystem) CloneAccountsOfStakeholder(sh valueMagnets.Stakeholder) []account.Account {
+	var accounts []account.Account
+
+	acc,_ := r.Get(sh.Id)
+	log.Println("in CloneAccountsOfStakeholder", acc)
+	accounts = append(accounts, *acc)
+
+	// find subaccounts
+	for _, ukname := range UK {
+		//			sa := account.AccountDescription{Id: sh.Id+ukname, Name: sh.Name+ukname, Type: valueMagnets.StakeholderTypeKUA}
+		sa := account.AccountDescription{Id: sh.Id+ukname, Name: sh.Name+ukname, Type: ukname}
+		log.Println("in CloneAccountsOfStakeholder", sa)
+	}
+
+	return accounts
 }
 
 
@@ -216,6 +236,31 @@ func (r *DefaultAccountSystem) ClearBookings() {
 	for _, account := range r.accounts {
 		account.Bookings = []booking.Booking{}
 	}
+}
+
+
+// get all accounts and subaccounts of a given Stakeholder of empty
+func  (as *DefaultAccountSystem) GetAllAccountsOfStakeholder (sh valueMagnets.Stakeholder) []account.Account {
+	var accountlist []account.Account
+	var stakeholder valueMagnets.Stakeholder
+
+	// check if stakeholder is in sztakeholder list
+	for _,s := range stakeholder.All(util.Global.FinancialYear){
+		if s == sh {
+			// now add all the beloging accounts...
+			for _, account := range as.accounts {
+				if account.Description.Superaccount == sh.Id || account.Description.Id == sh.Id {
+					clone := *account
+					clone.Bookings = nil
+					accountlist = append(accountlist, clone)
+				}
+			}
+		}
+	}
+
+	sort.Slice(accountlist, func(i, j int) bool { return accountlist[i].Description.Name < accountlist[j].Description.Name })
+//	log.Println("in GetAllAccountsOfStakeholder",sh, accountlist)
+	return accountlist
 }
 
 
@@ -280,3 +325,5 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 	}
 	return account
 }
+
+

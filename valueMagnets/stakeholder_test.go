@@ -31,3 +31,13 @@ func TestIsValidStakeholder (t *testing.T) {
 	assert.False(t, repo.IsValidStakeholder("krümelhügliplis"))
 
 }
+
+func TestIsEmployee (t *testing.T) {
+	repo := Stakeholder{}
+	assert.False(t, repo.IsEmployee("JM"))
+}
+
+func TestIsPartner (t *testing.T) {
+	repo := Stakeholder{}
+	assert.True(t, repo.IsPartner("JM"))
+}

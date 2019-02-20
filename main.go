@@ -82,11 +82,15 @@ func importAndProcessBookings(as accountSystem.AccountSystem, year int) {
 	for _, p := range hauptbuch.Bookings {
 		processing.Process(as, p)
 	}
-	// now calculate GuV
+
+	// verteile Erlöse
+	processing.ErloesverteilungAnStakeholder(as)
+	processing.CalculateEmployeeBonus(as)
+
+	// now calculate GuV and Bilanz
 	processing.GuV(as)
 	processing.Bilanz(as)
-	// now distribution of costs & profits
-	processing.ErloesverteilungAnValueMagnets(as)
+
 	processing.DistributeKTopf(as)
 	// procject Controlling
 	processing.GenerateProjectControlling(as)
