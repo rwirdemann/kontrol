@@ -201,7 +201,7 @@ func (r *DefaultAccountSystem) GetSubacc(id string, subacctype string) (*account
 	if a, ok := r.accounts[id+subacctype]; ok {
 		return a, true
 	}
-	log.Println("in GetSubacc, could not find account ", id+subacctype)
+	log.Println("in accountSystem.GetSubacc, could not find account ", id+subacctype)
 	return nil, false
 }
 

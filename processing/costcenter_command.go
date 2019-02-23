@@ -210,47 +210,59 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 		}
 
 
-		// Die CC_Vertriebsprovision bekommt der Dealbringer
+		// Die CC_Vertriebsprovision bekommt der oder die Dealbringer
 		if benefited.Type != valueMagnets.StakeholderTypeOthers { // Don't give 5% for travel expenses and co...
 			var provisionAccount *account.Account
 			var sollAccount *account.Account
-			/*
-			// nur wenn auf der Buchung der Stakeholder ein employee ist...
-			// log.Println("in BookRevenueToEmployeeCostCenter.run ==>", this.Booking.CostCenter,
-			//	valueMagnets.StakeholderRepository{}.TypeOf(this.Booking.CostCenter))
-			if isEmployee(this.Booking.CostCenter) {
-				//&& provisionAccount.Description.Type != valueMagnets.StakeholderTypePartner
-				// then provision goes to kommitment
-				provisionAccount, _ = this.AccSystem.GetSubacc(this.Booking.Responsible, accountSystem.UK_Vertriebsprovision)
-				// sollAccount, _ = this.AccSystem.Get(this.Booking.Responsible)
-				} else {
-				provisionAccount, _ = this.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_Vertriebsprovision)
-				// sollAccount,_ = this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
-				}
-			// das sind Kosten für Kommitment
-			*/
 
-			provisionAccount, _ = this.AccSystem.GetSubacc(this.Booking.Responsible, accountSystem.UK_Vertriebsprovision)
-			b := booking.Booking{
-				RowNr: 		 this.Booking.RowNr,
-				Amount:      this.Booking.Net[benefited] * account.PartnerProvision,
-				Type:        booking.CC_Vertriebsprovision,
-				Text:        this.Booking.Text + "#Provision#" + benefited.Id,
-				Month:       this.Booking.Month,
-				Year:        this.Booking.Year,
-				FileCreated: this.Booking.FileCreated,
-				BankCreated: this.Booking.BankCreated,
-				CostCenter:  this.Booking.CostCenter}
-			provisionAccount.Book(b)
+			// get all involved Dealbringer
+			// split Vertriebsprovision between all involved CostCenters
+			ccArr := this.getCostCenter()
+			numCc := float64(len(ccArr))
+			for _,cc := range ccArr {
+				// log.Println("in BookRevenueToEmployeeCostCenter:",  benefited.Id, cc)
+				// Buchung Vertriebsprovision
+				provisionAccount, _ = this.AccSystem.GetSubacc(cc, accountSystem.UK_Vertriebsprovision)
+				b := booking.Booking{
+					RowNr: 		 this.Booking.RowNr,
+					Amount:      this.Booking.Net[benefited] * account.PartnerProvision / numCc,
+					Type:        booking.CC_Vertriebsprovision,
+					Text:        this.Booking.Text + "#Provision#" + cc + " of " + this.Booking.Responsible,
+					Month:       this.Booking.Month,
+					Year:        this.Booking.Year,
+					FileCreated: this.Booking.FileCreated,
+					BankCreated: this.Booking.BankCreated,
+					CostCenter:  this.Booking.CostCenter}
+				provisionAccount.Book(b)
+				//log.Println("in BookRevenueToEmployeeCostCenter:", provisionAccount)
 
-			// Gegenbuchung
-			sollAccount,_ = this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
-			b.Amount *= -1
-			sollAccount.Book (b)
+				// Gegenbuchung
+				sollAccount,_ = this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
+				b.Amount *= -1
+				sollAccount.Book (b)
+			}
 		}
 	}
 }
 
+// Split CostCenter String by Comma and rreturn an Array of costCenters
+func  (this BookRevenueToEmployeeCostCenter) getCostCenter() []string {
+	var ccArr []string
+	var sh valueMagnets.Stakeholder
+
+	// check if valid costCenter
+	for _,cc := range strings.Split(this.Booking.Responsible,",") {
+		if !sh.IsValidStakeholder(cc) {
+			log.Printf("in BookRevenueToEmployeeCostCenter.getCostCenter(), invalid cc: '%s'\n", cc)
+			log.Printf("                ==> setting '%s' to '%s'\n", cc, valueMagnets.StakeholderKM.Id)
+			ccArr = append(ccArr, valueMagnets.StakeholderKM.Id)
+		} else {
+			ccArr = append(ccArr, cc)
+		}
+	}
+
+	return ccArr
+}
 
 
 // Eine Buchung kann mehrere Nettopositionen enthalten, den je einem Stakeholder zugeschrieben wird.

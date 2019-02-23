@@ -52,8 +52,8 @@ type KommitmenschenRepository struct {
 var kmry []KommitmenschenRepository
 
 func (this KommitmenschenRepository) Init(year int)  {
-
 	env := util.GetEnv()
+
 	rawFile, err := ioutil.ReadFile(env.KommitmenschenFile)
 	if err != nil {
 		fmt.Println("in KommitmenschenRepository.All(), file: ", env)
@@ -61,7 +61,12 @@ func (this KommitmenschenRepository) Init(year int)  {
 		os.Exit(1)
 	}
 
-	json.Unmarshal(rawFile, &kmry)
+	err = json.Unmarshal(rawFile, &kmry)
+	if err != nil {
+		fmt.Println("in KommitmenschenRepository.All(), cannot Unmarshal rawfile... ", env.KommitmenschenFile)
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
 
 }
 
@@ -85,7 +90,6 @@ func (this KommitmenschenRepository) All(year int) []Kommitmenschen {
 		}
 
 	}
-
 	return kmry[0].Menschen
 }
 

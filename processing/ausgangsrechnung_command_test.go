@@ -58,8 +58,6 @@ func (suite *AusgangsrechnungTestSuite) TestOffeneRechnung() {
 }
 
 
-
-
 func (suite *AusgangsrechnungTestSuite) assertBooking(amount float64, _type string, b *booking.Booking) {
 	suite.Equal(amount, b.Amount)
 	suite.Equal(_type, b.Type)

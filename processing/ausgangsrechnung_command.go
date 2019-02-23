@@ -16,7 +16,6 @@ type BookAusgangsrechnungCommand struct {
 
 func (this BookAusgangsrechnungCommand) run() {
 
-
 	// if booking with empty timestamp in position "BankCreated"
 	// then book it to open positions SKR03_1400
 	//
