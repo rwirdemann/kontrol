@@ -51,7 +51,7 @@ func Import(file string, aYear int, positions *[]booking.Booking)  {
 				typ := record[0]
 				soll := record[1]
 				haben := record[2]
-				cs := record[3]
+				cs :=strings.Replace(record[3], " ", "", -1) // suppress whitespace
 				project := record[4]
 				subject := strings.Replace(record[5], "\n", ",", -1)
 				amount := parseAmount(record[6])
