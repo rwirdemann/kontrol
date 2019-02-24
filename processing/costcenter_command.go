@@ -212,6 +212,9 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 
 		// Die CC_Vertriebsprovision bekommt der oder die Dealbringer
 		if benefited.Type != valueMagnets.StakeholderTypeOthers { // Don't give 5% for travel expenses and co...
+
+			// maybe the have to be given back to kommitment...
+
 			var provisionAccount *account.Account
 			var sollAccount *account.Account
 
@@ -232,7 +235,8 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 					Year:        this.Booking.Year,
 					FileCreated: this.Booking.FileCreated,
 					BankCreated: this.Booking.BankCreated,
-					CostCenter:  this.Booking.CostCenter}
+					CostCenter:  cc,
+				}
 				provisionAccount.Book(b)
 				//log.Println("in BookRevenueToEmployeeCostCenter:", provisionAccount)
 

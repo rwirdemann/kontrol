@@ -243,12 +243,11 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 	ErgebnisNachSteuernKonto ,_ := as.Get(accountSystem.ErgebnisNachSteuern.Id)
 	ergebnisNS := -1.0*ErgebnisNachSteuernKonto.Saldo
 	log.Println("    GuV saldo:", ergebnisNS)
-	log.Println("   ",100*ShareHoldersShare,"% fairshare: ",ergebnisNS*ShareHoldersShare)
 
 	shrepo := valueMagnets.Stakeholder{}
 
 	rest := ergebnisNS
-	log.Println("    Amount to distribute: ", rest)
+	log.Printf("    Amount to distrib. bef. cost: %2.2f€", rest)
 
 	// Partner returns her/his personal cost
 	log.Println ("    Partner tragen ihre Kosten:")
@@ -263,17 +262,13 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 
 	// distribute Shareholders-Share
 	shareHoldersShare := ShareHoldersShare*rest
-	log.Println("    distributing : ",ShareHoldersShare," ShareHoldersShare ", shareHoldersShare)
+	log.Printf("    dist. %2.2f%% ShareHoldersShare=%2.2f€",ShareHoldersShare, shareHoldersShare)
 	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
-		log.Print("    stakeholder: ", sh.Id)
-		arbeit,_ := strconv.ParseFloat(sh.Arbeit, 64)
-		log.Print("      Arbeit: ", arbeit)
 		fairshares,_ := strconv.ParseFloat(sh.Fairshares, 64)
-		log.Print("      Fairshares: ", fairshares)
-		fairshareAnteil :=  math.Round(100*arbeit * fairshares*shareHoldersShare)/100
+		fairshareAnteil :=  fairshares * shareHoldersShare
 
 		// Fairshare Anteil buchen
-		log.Print(sh.Id,"      Anteil aus Fairshares: ", fairshareAnteil,"€")
+		log.Printf("      %s %2.2f%% Fairshares: %2.2f€", sh.Id, 100*fairshares, fairshareAnteil)
 		now := time.Now().AddDate(0, 0, 0)
 		sollacc,_  := as.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteileausFairshare)
 		habenacc,_  := as.GetSubacc(sh.Id, accountSystem.UK_AnteileausFairshare)
@@ -317,7 +312,7 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 		sollacc,_ := as.GetSubacc(sh.Id, accountSystem.UK_Vertriebsprovision)
 		provisions := sumOfProvisonsForStakeholder(*sollacc, sh) // sum the partners revenue
 
-		log.Print(sh.Id,"      Anteil Vertriebsprovision: ", math.Round(provisions*100)/100,"€")
+		log.Printf("      %s Anteil Vertriebsprov: %2.2f€", sh.Id, provisions)
 		sollacc.YearS = accountIfYearlyIncome(*sollacc)
 
 		rest -= provisions
@@ -342,10 +337,9 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 		// Erlösanteil buchen
 		subacc,_ := as.GetSubacc(kaccount.Description.Id, accountSystem.UK_AnteileAuserloesen)
 		rev := sumOfBookingsForStakeholder(*subacc, sh) // sum the partners revenue
-		log.Print(sh.Id,"      this partners revenue: ", math.Round(rev),"€")
-		log.Print(sh.Id,"      this partners revenue: ", math.Round(10000*rev/sumPartnerFaktura)/100,"%")
 		erloesAnteil := math.Round(restToDistribute*100*rev/sumPartnerFaktura )/100
-		log.Print(sh.Id,"      Anteil aus Erlösen: ", erloesAnteil,"€")
+		log.Printf("      %s revenue %2.2f%% = %2.0f€ / %2.0f€", sh.Id, rev/sumPartnerFaktura, rev, sumPartnerFaktura)
+		log.Printf("      %s Anteil aus Erlösen: %2.2f€", sh.Id, erloesAnteil)
 		anteil_erloese := booking.Booking{
 			Amount:      -erloesAnteil,
 			Type:        booking.CC_AnteilAusFaktura,
@@ -365,12 +359,15 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 	log.Println("    rest (should be zero): ", math.Round(100*rest)/100)
 
 	// now book the yearlySaldo on Stakeholder.YearlySaldo
+	sum := 0.0
 	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
 		s := shrepo.Get(sh.Id)
 		s.YearlySaldo =  StakeholderYearlyIncome (as, s.Id)
-		log.Println("in DistributeKTopf:", s.Id, " YearlySaldo: ", math.Round(s.YearlySaldo))
+		sum += s.YearlySaldo
+		log.Printf("DistributeKTopf: %s. YearlySaldo: %2.2f€", s.Id, s.YearlySaldo)
 	}
-
+	log.Printf("DistributeKTopf, sum: %2.2f€", sum)
+	log.Printf("GuV saldo:            %2.2f€", ergebnisNS)
 
 	return as
 
