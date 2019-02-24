@@ -601,7 +601,7 @@ func TestStakeholderYearlyIncome (t *testing.T) {
 	DistributeKTopf(as)
 
 	// 33% von 200€ k-anteil + 50% von 800€
-	util.AssertFloatEquals(t, 466.67, StakeholderYearlyIncome(as, "JM") )
+	util.AssertFloatEquals(t, 466.666, StakeholderYearlyIncome(as, "JM") )
 }
 
 
