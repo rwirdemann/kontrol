@@ -36,9 +36,12 @@ type AccountDescription struct {
 type Account struct {
 	Description     AccountDescription
 	Bookings  []booking.Booking `json:",omitempty"`
-	KommitmenschNettoFaktura   float64
-	YearS 	  float64
-	Saldo     float64
+	Nbookings int
+	Soll	float64
+	Haben 	float64
+	KommitmenschNettoFaktura   float64 	// is used for the net faktura of people
+	YearS	float64 					// this ist used for the sum of all bookings in the current year
+	Saldo	float64
 }
 
 func (a *Account) SumOfBookingType  (btype string ) float64 {
@@ -64,6 +67,8 @@ func (a *Account) Book(b booking.Booking) {
 
 func (a *Account) UpdateSaldo() {
 	saldo := 0.0
+	soll := 0.0
+	haben := 0.0
 	kommitmenschNettoFaktura := 0.0
 	for _, b := range a.Bookings {
 		saldo += b.Amount
@@ -73,8 +78,20 @@ func (a *Account) UpdateSaldo() {
 		case booking.CC_PartnerNettoFaktura:
 			kommitmenschNettoFaktura += b.Amount
 		}
+		// soll und haben richtig veruchen
+		switch a.Description.Type {
+		case KontenartAufwand,  KontenartAktiv:
+			if b.Amount > 0.0 { soll += b.Amount } else { haben += b.Amount }
+		case KontenartErtrag,  KontenartPassiv, KontenartProject:
+			if b.Amount < 0.0 { soll += b.Amount } else { haben += b.Amount }
+		default:
+
+		}
 	}
+	a.Soll = soll
+	a.Haben = haben
 	a.Saldo = saldo
+	a.Nbookings = len(a.Bookings)
 	a.KommitmenschNettoFaktura = kommitmenschNettoFaktura
 }
 

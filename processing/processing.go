@@ -152,55 +152,6 @@ func Bilanz (as accountSystem.AccountSystem) {
 	}
 }
 
-func GenerateProjectControlling  (as accountSystem.AccountSystem) {
-
-	// concat KontenartErtrag and KontenartAufwand into accList
-	accList := as.GetByType(account.KontenartErtrag)
-	for k, v := range as.GetByType(account.KontenartAufwand) {
-		accList[k] = v
-	}
-
-
-	for _, acc := range accList {
-		for _, bk := range acc.Bookings {
-
-			// handle empty projects
-			if bk.Project == "" {
-				bk.Project = "emptyProject"
-			}
-			// check if there is an project account bk.Projects
-			acc, exists := as.Get(bk.Project)
-			if !exists {
-				// create a new projects account
-				acc = account.NewAccount(account.AccountDescription{Id: bk.Project, Name: bk.Project, Type: account.KontenartProject})
-				as.Add(acc)
-			}
-
-			// subtract "ER" from "AR"
-			sign := +1.0
-			if (bk.Type == "ER") {
-				sign = -1.0
-			}
-
-			// now create a booking in the appropriate projectAccount
-			clonedBooking := booking.Booking{
-				RowNr:       bk.RowNr,
-				Amount:      sign*bk.Amount,
-				Project:     bk.Project,
-				Type:        bk.Type,
-				CostCenter:  bk.CostCenter,
-				Month:		 bk.Month,
-				Year:        bk.Year,
-				Text:        bk.Text,
-				FileCreated: bk.FileCreated,
-				BankCreated: bk.BankCreated,
-			}
-			// and book it to tha account
-			acc.Book(clonedBooking)
-		}
-	}
-}
-
 
 
 
@@ -257,7 +208,8 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 		sollacc.YearS = accountIfYearlyIncome(*sollacc)
 		rest -= sollacc.Saldo
 	}
-	log.Println("    rest to distribute: ", rest)
+	totalSumToDistribute := rest
+	log.Printf("    rest: %2.2f€-%2.2f€=%2.2f€", ergebnisNS, (ergebnisNS - rest),totalSumToDistribute)
 
 
 	// distribute Shareholders-Share
@@ -290,19 +242,8 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 	rest -= shareHoldersShare
 	log.Println("    rest to distribute: ", rest)
 
-
-	// now distribute internal hours
-	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
-		//now := time.Now().AddDate(0, 0, 0)
-		//sollacc,_  := as.Get(valueMagnets.StakeholderKM.Id)
-		habenacc,_  := as.GetSubacc(sh.Id, accountSystem.UK_InterneStunden)
-
-		rest -= habenacc.Saldo
-		habenacc.YearS = accountIfYearlyIncome(*habenacc)
-	}
-	log.Println("    rest after internal hours: ", math.Round(100*rest)/100)
-
 	// now care for Vertriebsprovisionen, die sind schon verteilt...
+	sumOfProvisions := 0.0
 	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
 		// now := time.Now().AddDate(0, 0, 0)
 		// sollacc, _ := as.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_Vertriebsprovision)
@@ -311,6 +252,7 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 		// Vertriebsprovision buchen
 		sollacc,_ := as.GetSubacc(sh.Id, accountSystem.UK_Vertriebsprovision)
 		provisions := sumOfProvisonsForStakeholder(*sollacc, sh) // sum the partners revenue
+		sumOfProvisions += provisions
 
 		log.Printf("      %s Anteil Vertriebsprov: %2.2f€", sh.Id, provisions)
 		sollacc.YearS = accountIfYearlyIncome(*sollacc)
@@ -318,7 +260,23 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 		rest -= provisions
 		habenacc.YearS = provisions
 	}
+	provisionPercentage := sumOfProvisions/totalSumToDistribute
+	log.Printf("      Vertriebsprov: %2.2f€ = %2.2f%%", sumOfProvisions, provisionPercentage)
 	log.Println("    rest after Vertriebsprov.: ", math.Round(100*rest)/100)
+
+	// now distribute internal hours
+	sumOfIntHours := 0.0
+	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
+		//now := time.Now().AddDate(0, 0, 0)
+		//sollacc,_  := as.Get(valueMagnets.StakeholderKM.Id)
+		habenacc,_  := as.GetSubacc(sh.Id, accountSystem.UK_InterneStunden)
+		log.Printf("      %s Anteil internal hours: %2.2f€", sh.Id, habenacc.Saldo)
+		rest -= habenacc.Saldo
+		sumOfIntHours += habenacc.Saldo
+		habenacc.YearS = accountIfYearlyIncome(*habenacc)
+	}
+	log.Printf("      internal hours: %2.2f€ = %2.2f%%", sumOfIntHours, sumOfIntHours/totalSumToDistribute)
+	log.Println("    rest after internal hours: ", math.Round(100*rest)/100)
 
 
 	// Erlösanteile
@@ -326,6 +284,7 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 	sumPartnerFaktura := subacc.SumOfBookingType(booking.CC_PartnerNettoFaktura)
 	log.Println("    Sum of Partnerfaktura", sumPartnerFaktura)
 	restToDistribute := rest
+	sumOfErloesAnteil := rest
 
 	// now determine the Partners Contribution
 	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
@@ -356,6 +315,7 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 		habenacc.YearS = habenacc.Saldo
 		rest -= erloesAnteil
 	}
+	log.Printf("      ErlösAnt.: %2.2f€ = %2.2f%%", sumOfErloesAnteil, sumOfErloesAnteil/totalSumToDistribute)
 	log.Println("    rest (should be zero): ", math.Round(100*rest)/100)
 
 	// now book the yearlySaldo on Stakeholder.YearlySaldo

@@ -230,7 +230,7 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 					RowNr: 		 this.Booking.RowNr,
 					Amount:      this.Booking.Net[benefited] * account.PartnerProvision / numCc,
 					Type:        booking.CC_Vertriebsprovision,
-					Text:        this.Booking.Text + "#Provision#" + cc + " of " + this.Booking.Responsible,
+					Text:        this.Booking.Text + "#Provision#" + cc + " of " + benefited.Id,
 					Month:       this.Booking.Month,
 					Year:        this.Booking.Year,
 					FileCreated: this.Booking.FileCreated,
