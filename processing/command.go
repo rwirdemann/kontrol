@@ -211,6 +211,15 @@ func (c BookEingangsrechnungCommand) run() {
 
 }
 
+type DontDoAnything struct {
+	Booking    booking.Booking
+	AccSystem  accountSystem.AccountSystem
+}
+
+func (c DontDoAnything) run() {
+}
+
+
 type BookInterneStundenCommand struct {
 	Booking    booking.Booking
 	AccSystem  accountSystem.AccountSystem

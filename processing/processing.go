@@ -38,7 +38,10 @@ func Process(accsystem accountSystem.AccountSystem, booking booking.Booking) {
 	case "ER":
 		command = BookEingangsrechnungCommand{AccSystem: accsystem, Booking: booking}
 	case "IS":
-		command = BookInterneStundenCommand{AccSystem: accsystem, Booking: booking}
+		// ignore internal hours for this...
+		// command = BookInterneStundenCommand{AccSystem: accsystem, Booking: booking}
+		log.Println("in Process: skipping internal hours",booking.Type, " in row", booking.RowNr)
+		command = DontDoAnything {AccSystem: accsystem, Booking: booking}
 	case "SV-Beitrag":
 		command = BookSVBeitragCommand{AccSystem: accsystem, Booking: booking}
 	case "GWSteuer":
@@ -264,6 +267,54 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 	log.Printf("      Vertriebsprov: %2.2f€ = %2.2f%%", sumOfProvisions, provisionPercentage)
 	log.Println("    rest after Vertriebsprov.: ", math.Round(100*rest)/100)
 
+
+
+	// now distribute 50% of the rest according to factor "Arbeit"
+	// use account interne stunden fpr now...
+
+
+	sumOfArbeit := 0.0
+	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
+		shArbeit,_ := strconv.ParseFloat(sh.Arbeit, 64)
+		sumOfArbeit += shArbeit
+	}
+	log.Printf("      Sum Arbeit =  %2.2f years", sumOfArbeit)
+
+
+	sumOfArbeitShare := 0.0
+	restToDistributeByArbeit := rest*0.5
+	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
+		now := time.Now().AddDate(0, 0, 0)
+		sollacc,_  := as.Get(valueMagnets.StakeholderKM.Id)
+		habenacc,_  := as.GetSubacc(sh.Id, accountSystem.UK_InterneStunden)
+
+		// sumofArbeitShare buchen
+		shArbeit,_ := strconv.ParseFloat(sh.Arbeit, 64)
+		arbeitShare := restToDistributeByArbeit*shArbeit/sumOfArbeit
+		log.Printf("      %s Anteil aus arbeitShare: %2.2f€", sh.Id, arbeitShare)
+		anteil_erloese := booking.Booking{
+			Amount:      -arbeitShare,
+			Type:        booking.CC_AnteilAusFaktura,
+			CostCenter:  sh.Id,
+			Text:        "Anteil aus Erloesen: ",
+			FileCreated: now,
+			BankCreated: now,
+		}
+		sollacc.Book(anteil_erloese)
+		anteil_erloese.Amount *= -1.0
+		habenacc.Book(anteil_erloese)
+
+
+		log.Printf("      %s Anteil ArbeitShare: %2.2f€", sh.Id, habenacc.Saldo)
+		rest -= habenacc.Saldo
+		habenacc.YearS = accountIfYearlyIncome(*habenacc)
+	}
+
+
+	log.Printf("      ArbeitShare: %2.2f€ = %2.2f%%", sumOfArbeitShare, sumOfArbeitShare/totalSumToDistribute)
+	log.Println("    rest after ArbeitShare: ", math.Round(100*rest)/100)
+
+/*
 	// now distribute internal hours
 	sumOfIntHours := 0.0
 	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
@@ -277,7 +328,7 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 	}
 	log.Printf("      internal hours: %2.2f€ = %2.2f%%", sumOfIntHours, sumOfIntHours/totalSumToDistribute)
 	log.Println("    rest after internal hours: ", math.Round(100*rest)/100)
-
+*/
 
 	// Erlösanteile
 	subacc,_ :=  as.GetSubacc(kaccount.Description.Id, accountSystem.UK_AnteileAuserloesen)
