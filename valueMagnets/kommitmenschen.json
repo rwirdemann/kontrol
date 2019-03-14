@@ -24,10 +24,10 @@
   {
     "Abrechenzeitpunkt": "2018-12-31",
     "Kommitmenschen": [
-      { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.425"},
+      { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.437857143"},
       { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "Extern", "Arbeit": "1.00" },
-      { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.425"},
-      { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "Partner", "Arbeit": "1.00", "Fairshares": "0.12"  },
+      { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.437857143"},
+      { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "Partner", "Arbeit": "1.00", "Fairshares": "0.12428571"  },
       { "Id": "KR", "Name": "k: Katja Roth",           "Type": "Employee", "Arbeit": "0.25" },
       { "Id": "AB", "Name": "k: Anna Blume",           "Type": "Employee", "Arbeit": "0.25" },
       { "Id": "IK", "Name": "k: Ingo Komorowski",      "Type": "Employee", "Arbeit": "0.41666" }
@@ -36,10 +36,10 @@
   {
     "Abrechenzeitpunkt": "2019-12-31",
     "Kommitmenschen": [
-      { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.3743"},
+      { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.413"},
       { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "Extern", "Arbeit": "1.00" },
-      { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.3743"},
-      { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "Partner", "Arbeit": "1.00", "Fairshares": "0.1547"  },
+      { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.413"},
+      { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "Partner", "Arbeit": "1.00", "Fairshares": "0.174"  },
       { "Id": "KR", "Name": "k: Katja Roth",           "Type": "Employee", "Arbeit": "1.00" },
       { "Id": "AB", "Name": "k: Anna Blume",           "Type": "Employee", "Arbeit": "1.00" },
       { "Id": "IK", "Name": "k: Ingo Komorowski",      "Type": "Employee", "Arbeit": "1.00" }
