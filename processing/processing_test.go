@@ -8,6 +8,7 @@ import (
 	"github.com/ahojsenn/kontrol/valueMagnets"
 	"github.com/stretchr/testify/assert"
 	"log"
+	"math"
 	"testing"
 	"time"
 )
@@ -211,37 +212,6 @@ func TestRueckstellung(t *testing.T) {
 	util.AssertEquals(t, 0, len(accSystem.GetCollectiveAccount().Bookings))
 }
 
-// Interne Stunden
-// - werden nicht auf das Bankkonto gebucht
-// - 100% werden auf das Rückstellung-Konto gebucht
-// - 100% werden gegen das Kommitment-Konto gebucht
-func TestInterneStunden(t *testing.T) {
-	setUp()
-
-	// given: a internal hours booking
-	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := *booking.NewBooking(13,"IS", "", "", "AN", "Project-X",nil, 8250.0, "Interne Stunden 2017", 12, 2017, its2018)
-
-	// when: the position is processed
-	Process(accSystem, p)
-//	BookRevenueToEmployeeCostCenter{AccSystem: accSystem, Booking: p}.run()
-
-	// the booking is booked to anke's account
-	a1, _ := accSystem.GetSubacc("AN", accountSystem.UK_InterneStunden)
-	util.AssertEquals(t, 1, len(a1.Bookings))
-	b1 := a1.Bookings[0]
-	util.AssertFloatEquals(t, 8250.00, b1.Amount)
-	util.AssertEquals(t, booking.CC_InterneStunden, b1.Type)
-
-	// the booking is booked against kommitment account
-	a2, _ := accSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_InterneStunden)
-	b2 := a2.Bookings[0]
-	util.AssertFloatEquals(t, -8250.00, b2.Amount)
-	util.AssertEquals(t, booking.CC_InterneStunden, b1.Type)
-
-	// internal hours are not booked on bank account
-	util.AssertEquals(t, 0, len(accSystem.GetCollectiveAccount().Bookings))
-}
 
 func TestBookAusgangsrechnungToBankAccount(t *testing.T) {
 	setUp()
@@ -601,7 +571,7 @@ func TestStakeholderYearlyIncome (t *testing.T) {
 	DistributeKTopf(as)
 
 	// 33% von 200€ k-anteil + 50% von 800€
-	util.AssertFloatEquals(t, 466.666, StakeholderYearlyIncome(as, "JM") )
+	util.AssertEquals(t, 400.0, math.Round(StakeholderYearlyIncome(as, "JM")) )
 }
 
 

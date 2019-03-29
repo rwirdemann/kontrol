@@ -30,9 +30,6 @@ func GetEnv() *Environment{
 
 	raw, err := ioutil.ReadFile("./httpsconfig.env")
 	if err != nil {
-		// running the test inside the GoLand ide will only now find the environment file
-		// I am still looking for a better opteion here
-		// so, @rwirdemann, if you ever read this comment, help! :-)
 		//
 		raw, err = ioutil.ReadFile("../httpsconfig.env")
 		if err != nil {

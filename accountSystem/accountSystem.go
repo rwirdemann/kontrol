@@ -29,7 +29,7 @@ type DefaultAccountSystem struct {
 }
 
 // Bilanzkonten
-var SKR03_Anlagen25 = account.AccountDescription{Id: "SKR03_Anlagen25", Name: "01_SKR03_25_Anlagen Ähnl.R&W", Type: account.KontenartAktiv}
+var SKR03_Anlagen25_35 = account.AccountDescription{Id: "SKR03_Anlagen25_35", Name: "01_SKR03_25_35_Anlagen Ähnl.R&W", Type: account.KontenartAktiv}
 var SKR03_Anlagen = account.AccountDescription{Id: "SKR03_Anlagen", Name: "02_SKR03_410-480_Anlagen", Type: account.KontenartAktiv}
 var SKR03_1400 = account.AccountDescription{Id: "1400", Name: "03_SKR03_1400_OPOS-Kunde", Type: account.KontenartAktiv}
 var SKR03_Kautionen = account.AccountDescription{Id: "SKR03_Kautionen", Name: "04_SKR03_1525_Kautionen", Type: account.KontenartAktiv}
@@ -101,7 +101,7 @@ func (this Accountlist) All() []account.AccountDescription {
 		SKR03_AnlagenabgaengeSachanlagen2310,
 		SKR03_sonstigeAufwendungen,
 		SKR03_Anlagen,
-		SKR03_Anlagen25,
+		SKR03_Anlagen25_35,
 		SKR03_Abschreibungen,
 		SKR03_Kautionen,
 		SKR03_Umsatzerloese,
@@ -270,8 +270,8 @@ func  (as *DefaultAccountSystem) GetAllAccountsOfStakeholder (sh valueMagnets.St
 func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 	var account *account.Account
 	switch SKR03konto {
-	case "25": // Anlage buchen
-		account = r.accounts[SKR03_Anlagen25.Id]
+	case "25", "35": // Anlage buchen
+		account = r.accounts[SKR03_Anlagen25_35.Id]
 	case "410": // Anlage buchen
 		account = r.accounts[SKR03_Anlagen.Id]
 	case "480": // Anlage buchen
