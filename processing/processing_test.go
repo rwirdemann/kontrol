@@ -395,7 +395,7 @@ func TestAbschreibungenAufAnlagen(t *testing.T) {
 	assert.Equal(t, 0, len(ba.Bookings))
 
 	// booking is posiv von haben account
-	ha, _ := accSystem.Get(accountSystem.SKR03_Anlagen25.Id)
+	ha, _ := accSystem.Get(accountSystem.SKR03_Anlagen25_35.Id)
 	assert.Equal(t, 1, len(ha.Bookings))
 
 }
