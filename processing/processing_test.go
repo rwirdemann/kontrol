@@ -449,6 +449,39 @@ func TestErloesverteilungAnValueMagnetsSimple(t *testing.T) {
 
 }
 
+func TestErloesverteilungAnValueMagnets_Anlage(t *testing.T) {
+	util.Global.FinancialYear = 2017
+	as := accountSystem.NewDefaultAccountSystem()
+
+	// given: BOOKING AR
+	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
+	net := make(map[valueMagnets.Stakeholder]float64)
+	shrepo := valueMagnets.Stakeholder{}
+	net[shrepo.Get("BW")] = 1000.0
+//	p3 := booking.NewBooking(13, "ER", "", "", "K", "Project-X", net,  4000, "Boxbike - Dienstfahrrad Mainusch birdy Riese Müller", 4, 2018, its2018)
+	p3 := booking.NewBooking(13, "SKR03", "330", "1200", "K", "Project-X", net,  4000, "Boxbike - Dienstfahrrad Mainusch birdy Riese Müller", 4, 2018, its2018)
+
+	// when: the position is processed
+	Process(as, *p3)
+	ErloesverteilungAnStakeholder(as)
+
+	// check, that the Bankaccount is now at 4000
+	bankacc,_ := as.Get(accountSystem.SKR03_1200.Id)
+	assert.Equal(t, 1, len(bankacc.Bookings))
+	assert.Equal(t, 4000.0, bankacc.Bookings[0].Amount )
+
+	// whats on "K"
+	b,_ := as.GetSubacc("K", accountSystem.UK_VeraenderungAnlagen)
+	assert.Equal(t, 3, len(b.Bookings))
+	assert.Equal(t, 4000.0, math.Round(b.Saldo))
+
+	// whats on BW subacc. Provision
+	acc, _ := as.GetSubacc("RW", accountSystem.UK_VeraenderungAnlagen)
+	log.Println("in TestErloesverteilungAnValueMagnets_Anlage", acc.Bookings)
+	assert.Equal(t, 1, len(acc.Bookings))
+
+}
+
 func TestDistributeKTopf(t *testing.T) {
 	as := accountSystem.NewDefaultAccountSystem()
 	as.ClearBookings()
@@ -489,7 +522,7 @@ func TestDistributeKTopf(t *testing.T) {
 
 	// assert, that Anke has more due to Johannes expenses
 	assert.True(t, StakeholderYearlyIncome(as, "AN") > StakeholderYearlyIncome(as, "JM") )
-	assert.Equal(t, 100.0, StakeholderYearlyIncome(as, "AN") - StakeholderYearlyIncome(as, "JM") )
+	assert.Equal(t, 100.0, math.Round(StakeholderYearlyIncome(as, "AN") - StakeholderYearlyIncome(as, "JM") ))
 
 	}
 
@@ -514,8 +547,6 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 	Process(as, *p4)
 	Process(as, *p5)
 	ErloesverteilungAnStakeholder(as)
-
-
 
 
 	// booking ist on CostCenter K

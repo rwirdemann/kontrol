@@ -8,6 +8,7 @@ import (
 	"github.com/ahojsenn/kontrol/valueMagnets"
 	"log"
 	"sort"
+	"strconv"
 )
 
 type AccountSystem interface {
@@ -62,23 +63,27 @@ var AlleKLRBuchungen = account.AccountDescription{Id: "AlleKLRBuchungen", Name: 
 var k_ErloeseVerteilung = account.AccountDescription{Id: "k_ErloeseVerteilung", Name: "V: k_ErloeseVerteilung", Type: account.KontenartVerrechnung}
 
 
-// Unterkonten
-const UK_Kosten = "_0-Kosten"
-const UK_AnteileausFairshare = "_1-AnteilausFairshare"
-const UK_InterneStunden = "_2-InterneStunden"
-const UK_Vertriebsprovision = "_3-Vertriebsprovision"
-const UK_AnteileAuserloesen = "_4-Anteilauserloesen"
-const UK_Darlehen = "_5-Darlehen"
-const UK_Entnahmen = "_6-Entnahmen"
-const Hauptkonto = "Hauptkonto"
+// Unterkonten für kommitmenschen
+const UK_Kosten 				= "_0-Kosten"
+const UK_AnteileausFairshare 	= "_1-AnteilausFairshare"
+const UK_AnteilMitmachen 		= "_2-Anteil-Mitmachen"
+const UK_Vertriebsprovision 	= "_3-Vertriebsprovision"
+const UK_AnteileAuserloesen 	= "_4-Anteilauserloesen"
+const UK_Darlehen 				= "_5-Darlehen"
+const UK_Entnahmen 				= "_6-Entnahmen"
+const UK_VeraenderungAnlagen 	= "_7-VeränderungAnlagen"
+const UK_AnteilAnAnlagen 		= "_8-AnteilAnAnlagen"
+const Hauptkonto 				= "Hauptkonto"
 
 
 var UK  = [...]string {
 	UK_Kosten,
 	UK_AnteileausFairshare,
-	UK_InterneStunden,
+	UK_AnteilMitmachen,
 	UK_Vertriebsprovision,
 	UK_AnteileAuserloesen,
+	UK_VeraenderungAnlagen,
+	UK_AnteilAnAnlagen,
 	UK_Darlehen,
 	UK_Entnahmen,
 }
@@ -143,7 +148,7 @@ func NewDefaultAccountSystem() AccountSystem {
 
 		// create subaccounts
 		for _, ukname := range UK {
-//			sa := account.AccountDescription{Id: sh.Id+ukname, Name: sh.Name+ukname, Type: valueMagnets.StakeholderTypeKUA}
+			//			sa := account.AccountDescription{Id: sh.Id+ukname, Name: sh.Name+ukname, Type: valueMagnets.StakeholderTypeKUA}
 			sa := account.AccountDescription{Id: sh.Id+ukname, Name: sh.Name+ukname, Type: ukname}
 			sa.Superaccount = ad.Id
 			accountSystem.Add(account.NewAccount(sa))
@@ -259,7 +264,7 @@ func  (as *DefaultAccountSystem) GetAllAccountsOfStakeholder (sh valueMagnets.St
 	}
 
 	sort.Slice(accountlist, func(i, j int) bool { return accountlist[i].Description.Name < accountlist[j].Description.Name })
-//	log.Println("in GetAllAccountsOfStakeholder",sh, accountlist)
+	//	log.Println("in GetAllAccountsOfStakeholder",sh, accountlist)
 	return accountlist
 }
 
@@ -269,61 +274,76 @@ func  (as *DefaultAccountSystem) GetAllAccountsOfStakeholder (sh valueMagnets.St
 // find the right account for the SKR03konto string
 func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 	var account *account.Account
-	switch SKR03konto {
-	case "25", "35": // Anlage buchen
+	switch  {
+	case isInRange(SKR03konto, 25, 35): // Anlage buchen
 		account = r.accounts[SKR03_Anlagen25_35.Id]
-	case "410": // Anlage buchen
+	case isInRange(SKR03konto, 300, 490): // Anlage buchen
 		account = r.accounts[SKR03_Anlagen.Id]
-	case "480": // Anlage buchen
-		account = r.accounts[SKR03_Anlagen.Id]
-	case "880": // Eigenkapital bilden
+	case isInRange(SKR03konto, 880, 899): // Eigenkapital bilden
 		account = r.accounts[SKR03_Eigenkapital_880.Id]
-	case "900": // Eigenkapital bilden
+	case isInRange(SKR03konto, 900, 919):
 		account = r.accounts[SKR03_900_Haftkapital.Id]
-	case "920": // Rückstellung bilden
+	case isInRange(SKR03konto, 920, 929):
 		account = r.accounts[SKR03_920_Gesellschafterdarlehen.Id]
-	case "956","965","970","977": // Rückstellung bilden
+	case isInRange(SKR03konto, 930, 979): // Rückstellung bilden
 		account = r.accounts[SKR03_Rueckstellungen.Id]
-	case "1200": // Bank buchen
+	case isInRange(SKR03konto, 1200, 1250): // Bank buchen
 		account = r.accounts[SKR03_1200.Id]
-	case "1525":
+	case SKR03konto == "1525":
 		account = r.accounts[SKR03_Kautionen.Id]
-	case "1548":
+	case isInRange(SKR03konto, 1548, 1587):
 		account = r.accounts[SKR03_Vorsteuer.Id]
-	case "1400", "1595":
+	case SKR03konto == "1400", SKR03konto == "1595":
 		account = r.accounts[SKR03_1400.Id]
-	case "731", "1600":
+	case SKR03konto == "731", SKR03konto == "1600":
 		account = r.accounts[SKR03_1600.Id]
-	case "1770":
+	case SKR03konto == "1770":
 		account = r.accounts[SKR03_Umsatzsteuer.Id]
-	case "1900":
+	case SKR03konto == "1900":
 		account = r.accounts[SKR03_1900.Id]
-	case "2310":
+	case SKR03konto == "2310":
 		account = r.accounts[SKR03_AnlagenabgaengeSachanlagen2310.Id]
-	case "4120":
+	case SKR03konto == "4120":
 		account = r.accounts[SKR03_4100_4199.Id]
-	case "4130", "4138", "4140":
+	case isInRange(SKR03konto, 4130, 4140):
 		account = r.accounts[SKR03_4100_4199.Id]
-	case "4320":
+	case SKR03konto == "4320":
 		account = r.accounts[SKR03_Steuern.Id]
-	case "4822", "4830", "4855":
+	case isInRange(SKR03konto, 4822, 4855):
 		account = r.accounts[SKR03_Abschreibungen.Id]
-	case "4200", "4210", "4250", "4260",
-		"4360", "4380", "4390", "4806", "4595", "4600", "4640", "4650", "4654", "4655", "4663", "4664", "4666", "4670", "4672", "4673", "4674", "4676", "4780", "2300", "4900", "4909", "4910", "4920", "4921", "4925", "4930", "4940", "4945", "4949", "4950", "4955", "4957", "4960", "4964", "4970", "4980":
+	case isInRange(SKR03konto, 2300, 2313),
+		 isInRange(SKR03konto, 2320, 2350),
+		 isInRange(SKR03konto, 2380, 2409),
+		 isInRange(SKR03konto, 4200, 4306),
+		 isInRange(SKR03konto, 4360, 4500),
+		 isInRange(SKR03konto, 4520, 4810),
+ 		 isInRange(SKR03konto, 4886, 4887),
+		 isInRange(SKR03konto, 4900, 4980):
 		account = r.accounts[SKR03_sonstigeAufwendungen.Id]
-	case "8100":
+	case SKR03konto == "8100":
 		account = r.accounts[SKR03_Umsatzerloese.Id]
-	case "9000":
+	case SKR03konto == "9000":
 		account = r.accounts[SKR03_Saldenvortrag.Id]
-	case "9790":
+	case SKR03konto == "9790":
 		account = r.accounts[SKR03_9790_Restanteil.Id]
-	case "10000":
+	case SKR03konto == "10000":
 		account = r.accounts[ErgebnisNachSteuern.Id]
 	default:
 		log.Printf("GetSKR03: could not process booking type '%s'", SKR03konto)
 		panic(fmt.Sprintf("GetSKR03: SKR03Bucket/Stakeholder/Konto '%s' not found", account.Description))
 	}
 	return account
+}
+
+
+// check if an SKR03 account number is in range
+func isInRange (num string, low, high int) bool {
+	n, err := strconv.Atoi(num)
+	if err != nil {
+		fmt.Println("Error in isInRange", num, low, high)
+		panic(err)
+	}
+	return n >= low && n <= high
 }
 
 

@@ -167,24 +167,34 @@ func ErloesverteilungAnStakeholder (as accountSystem.AccountSystem) {
 		// beware: All() returns no bookings, so account here has no bookings[]
 		a, _ := as.Get(acc.Description.Id)
 		for _, bk := range a.Bookings {
-
 			// process bookings on GuV accounts
 			switch acc.Description.Type {
 			case account.KontenartAufwand:
 				BookCostToCostCenter{AccSystem: as, Booking: bk}.run()
 			case account.KontenartErtrag:
 				BookRevenueToEmployeeCostCenter{AccSystem: as, Booking: bk}.run()
-			}
+			case account.KontenartAktiv:
+				// now process other accounts like accountSystem.SKR03_1900.Id
+				// this applies only to kommanditisten
+				switch acc.Description.Id {
+				case accountSystem.SKR03_920_Gesellschafterdarlehen.Id:
+					bk.Type = booking.CC_KommitmenschDarlehen
+					BookFromKtoKommitmensch{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_Darlehen}.run()
+				case accountSystem.SKR03_Anlagen.Id,
+					accountSystem.SKR03_Anlagen25_35.Id:
+					//
+					BookFromKtoKommitmenschenByShares{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_VeraenderungAnlagen}.run()
+				case accountSystem.SKR03_Abschreibungen.Id:
+					//
+					BookFromKtoKommitmenschenByShares{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_VeraenderungAnlagen}.run()
+				default:
+				}
+			case account.KontenartPassiv:
+				switch acc.Description.Id {
+				case accountSystem.SKR03_1900.Id: // Privatentnahmen
+					BookFromKtoKommitmensch{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_Entnahmen}.run()
 
-			// now process other accounts like accountSystem.SKR03_1900.Id
-			// this applies only to kommanditisten
-			switch acc.Description.Id {
-			case accountSystem.SKR03_1900.Id: // Privatentnahmen
-				BookFromKtoKommitmensch{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_Entnahmen}.run()
-			case accountSystem.SKR03_920_Gesellschafterdarlehen.Id:
-				bk.Type = booking.CC_KommitmenschDarlehen
-				BookFromKtoKommitmensch{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_Darlehen}.run()
-			default:
+				}
 			}
 		}
 	}
@@ -286,7 +296,7 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
 		now := time.Now().AddDate(0, 0, 0)
 		sollacc,_  := as.Get(valueMagnets.StakeholderKM.Id)
-		habenacc,_  := as.GetSubacc(sh.Id, accountSystem.UK_InterneStunden)
+		habenacc,_  := as.GetSubacc(sh.Id, accountSystem.UK_AnteilMitmachen)
 
 		// sumofArbeitShare buchen
 		shArbeit,_ := strconv.ParseFloat(sh.Arbeit, 64)
@@ -314,21 +324,6 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 	log.Printf("      ArbeitShare: %2.2f€ = %2.2f%%", sumOfArbeitShare, sumOfArbeitShare/totalSumToDistribute)
 	log.Println("    rest after ArbeitShare: ", math.Round(100*rest)/100)
 
-/*
-	// now distribute internal hours
-	sumOfIntHours := 0.0
-	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
-		//now := time.Now().AddDate(0, 0, 0)
-		//sollacc,_  := as.Get(valueMagnets.StakeholderKM.Id)
-		habenacc,_  := as.GetSubacc(sh.Id, accountSystem.UK_InterneStunden)
-		log.Printf("      %s Anteil internal hours: %2.2f€", sh.Id, habenacc.Saldo)
-		rest -= habenacc.Saldo
-		sumOfIntHours += habenacc.Saldo
-		habenacc.YearS = accountIfYearlyIncome(*habenacc)
-	}
-	log.Printf("      internal hours: %2.2f€ = %2.2f%%", sumOfIntHours, sumOfIntHours/totalSumToDistribute)
-	log.Println("    rest after internal hours: ", math.Round(100*rest)/100)
-*/
 
 	// Erlösanteile
 	subacc,_ :=  as.GetSubacc(kaccount.Description.Id, accountSystem.UK_AnteileAuserloesen)

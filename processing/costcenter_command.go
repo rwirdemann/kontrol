@@ -7,9 +7,38 @@ import (
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/valueMagnets"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 )
+
+
+type BookFromKtoKommitmenschenByShares struct{
+	Booking    booking.Booking
+	AccSystem  accountSystem.AccountSystem
+	SubAcc 	   string
+}
+
+func (c BookFromKtoKommitmenschenByShares) run() {
+
+	// loop through all Stakeholders
+	shrepo := valueMagnets.Stakeholder{}
+	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
+		fairshares,_  := strconv.ParseFloat(sh.Fairshares, 64)
+		amount := c.Booking.Amount*fairshares
+
+		sollAccount,_ := c.AccSystem.GetSubacc(sh.Id, c.SubAcc)
+		b1 := booking.CloneBooking(c.Booking, amount, c.Booking.Type, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
+		b1.Text += " "+sh.Id+" Anteil von "+fmt.Sprintf("%.2f",c.Booking.Amount)+"€"
+		sollAccount.Book(b1)
+
+		// Habenbuchung
+		habenAccount,_ := c.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, c.SubAcc)
+		b2 := booking.CloneBooking(c.Booking, -amount, c.Booking.Type, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
+		b2.Text += " "+sh.Id+" Anteil von "+fmt.Sprintf("%.2f",c.Booking.Amount)+"€"
+		habenAccount.Book(b2)
+	}
+}
 
 
 type BookFromKtoKommitmensch struct{

@@ -229,13 +229,13 @@ func (c BookInterneStundenCommand) run() {
 
 	// Buchung interner Stunden auf Kommanditstenkonto Unterkonto
 	a := booking.CloneBooking(c.Booking, c.Booking.Amount, booking.CC_InterneStunden, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
-	partnerAccount, ok := c.AccSystem.GetSubacc(c.Booking.Responsible, accountSystem.UK_InterneStunden)
+	partnerAccount, ok := c.AccSystem.GetSubacc(c.Booking.Responsible, accountSystem.UK_AnteilMitmachen)
 	if !ok { log.Panicln("in BookInterneStundenCommand, some error with booking ", a) }
 	partnerAccount.Book(a)
 
 	// Buchung interner Stunden von kommitment Konto auf Stakeholder
 	b := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.CC_InterneStunden, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
-	kommitmentAccount, ok := c.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_InterneStunden)
+	kommitmentAccount, ok := c.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteilMitmachen)
 	if !ok { log.Panicln("in BookInterneStundenCommand, some error with booking ", b) }
 	kommitmentAccount.Book(b)
 }
