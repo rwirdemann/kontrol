@@ -57,7 +57,6 @@ func Process(accsystem accountSystem.AccountSystem, booking booking.Booking) {
 	default:
 		log.Println("in Process: unknown command",booking.Type, " in row", booking.RowNr)
 	}
-
 	command.run()
 
 }
