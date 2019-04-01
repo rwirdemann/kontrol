@@ -30,9 +30,9 @@ type DefaultAccountSystem struct {
 }
 
 // Bilanzkonten
-var SKR03_Anlagen25_35 = account.AccountDescription{Id: "SKR03_Anlagen25_35", Name: "01_SKR03_25_35_Anlagen Ähnl.R&W", Type: account.KontenartAktiv}
-var SKR03_Anlagen = account.AccountDescription{Id: "SKR03_Anlagen", Name: "02_SKR03_410-480_Anlagen", Type: account.KontenartAktiv}
-var SKR03_1400 = account.AccountDescription{Id: "1400", Name: "03_SKR03_1400_OPOS-Kunde", Type: account.KontenartAktiv}
+var SKR03_Anlagen25_35 = account.AccountDescription{Id: "SKR03_Anlagen25_35", Name: "01_Immaterielle Vermögensgegenstände", Type: account.KontenartAktiv}
+var SKR03_Anlagen = account.AccountDescription{Id: "SKR03_Anlagen", Name: "02_Sachanlagen", Type: account.KontenartAktiv}
+var SKR03_1400 = account.AccountDescription{Id: "1400", Name: "03_Forderungen und sonstige Vermögensgegenstände", Type: account.KontenartAktiv}
 var SKR03_Kautionen = account.AccountDescription{Id: "SKR03_Kautionen", Name: "04_SKR03_1525_Kautionen", Type: account.KontenartAktiv}
 var SKR03_Vorsteuer = account.AccountDescription{Id: "SKR03_Vorsteuer", Name: "05_SKR03__1570-1579_Steuer: Vorsteuer", Type: account.KontenartAktiv}
 var SKR03_Umsatzsteuer = account.AccountDescription{Id: "SKR03_Umsatzsteuer", Name: "06_SKR03_1770_Steuer: Umsatzsteuer", Type: account.KontenartAktiv}
