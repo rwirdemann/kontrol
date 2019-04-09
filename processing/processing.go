@@ -63,15 +63,45 @@ func Process(accsystem accountSystem.AccountSystem, booking booking.Booking) {
 
 func GuV (as accountSystem.AccountSystem) {
 
-	var jahresueberschuss float64
+	var jahresueberschuss, gwsteuer float64
+	now := time.Now().AddDate(0, 0, 0)
 
 	for _, acc := range as.All() {
-		if acc.Description.Type == account.KontenartAufwand ||  acc.Description.Type == account.KontenartErtrag {
+
+		switch  {
+		case acc.Description.Type == account.KontenartAufwand, acc.Description.Type == account.KontenartErtrag:
 			jahresueberschuss += acc.Saldo
+			if (acc.Description.Id == accountSystem.SKR03_Steuern.Id) {
+				gwsteuer += acc.Saldo
+			}
+		default:
 		}
 	}
 
-	now := time.Now().AddDate(0, 0, 0)
+	// calculate Gewerbesteuer
+	log.Println("in GuV, Gewerbesteuer gebucht:", gwsteuer)
+	log.Println("in GuV, Gewinn vor Steuer:", jahresueberschuss-gwsteuer)
+	log.Println("in GuV, GWsteuer:", berechne_Gewerbesteuer(jahresueberschuss-gwsteuer))
+	gwsRück := math.Round( 100* (berechne_Gewerbesteuer(jahresueberschuss-gwsteuer) + gwsteuer ) /100 )
+
+
+	log.Println("in GuV, Gewerbesteuer-Rückstellung", gwsRück)
+
+	// ermittelte GWSteuer Rückstellung verbuchen
+	gwsKonto,_ := as.Get(accountSystem.SKR03_Steuern.Id)
+	gwsSoll := booking.NewBooking(0,"in kontrol ermittelte Gewerbesteuer-Rückstellung "+strconv.Itoa(util.Global.FinancialYear), "4320", "956", "", "",nil,  -gwsRück, ("in kontrol ermittelte Gewerbesteuer-Rückstellung "+strconv.Itoa(util.Global.FinancialYear)), int(now.Month()), now.Year(), now)
+	gwsKonto.Book(*gwsSoll)
+	//
+	gwsGegenKonto,_ := as.Get(accountSystem.SKR03_Rueckstellungen.Id)
+	gwsHaben := booking.NewBooking(0,"in kontrol ermittelte Gewerbesteuer-Rückstellung "+strconv.Itoa(util.Global.FinancialYear), "", "", "", "",nil,  gwsRück, ("in kontrol ermittelte Gewerbesteuer-Rückstellung "+strconv.Itoa(util.Global.FinancialYear)), int(now.Month()), now.Year(), now)
+	gwsGegenKonto.Book(*gwsHaben)
+
+
+	// ermittelte GWSteuer Rückstellung von jahresueberschuss abziehen
+	jahresueberschuss -= gwsRück
+	log.Println("in GuV, Gewinn nach Steuer:", jahresueberschuss)
+
+
 	// Jahresüberschuss ist nun ermittelt
 
 	// Buchung auf Verrechnungskonto Jahresüberschuss

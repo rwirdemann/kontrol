@@ -33,7 +33,7 @@ type DefaultAccountSystem struct {
 var SKR03_Anlagen25_35 = account.AccountDescription{Id: "SKR03_Anlagen25_35", Name: "01_Immaterielle Vermögensgegenstände", Type: account.KontenartAktiv}
 var SKR03_Anlagen = account.AccountDescription{Id: "SKR03_Anlagen", Name: "02_Sachanlagen", Type: account.KontenartAktiv}
 var SKR03_Vorraete = account.AccountDescription{Id: "SKR03_Vorraete", Name: "03_Vorräte", Type: account.KontenartAktiv}
-var SKR03_1400 = account.AccountDescription{Id: "1400", Name: "04_Forderungen und sonstige Vermögensgegenstände", Type: account.KontenartAktiv}
+var SKR03_1400 = account.AccountDescription{Id: "1400", Name: "04_Forderungen aus L&L + sonstige Vermögensg.", Type: account.KontenartAktiv}
 var SKR03_Kautionen = account.AccountDescription{Id: "SKR03_Kautionen", Name: "05_Anzahlungen & Kautionen", Type: account.KontenartAktiv}
 var SKR03_Vorsteuer = account.AccountDescription{Id: "SKR03_Vorsteuer", Name: "06_SKR03__1570-1579_Steuer: Vorsteuer", Type: account.KontenartAktiv}
 var SKR03_Umsatzsteuer = account.AccountDescription{Id: "SKR03_Umsatzsteuer", Name: "07_SKR03_1770_Steuer: Umsatzsteuer", Type: account.KontenartAktiv}
@@ -52,7 +52,7 @@ var SKR03_4100_4199 = account.AccountDescription{Id: "4100_4199", Name: "3 Löhn
 var SKR03_AnlagenabgaengeSachanlagen2310 = account.AccountDescription{Id: "SKR03_AnlagenabgängeSachanlagen", Name: "4 AnlagenabgängeSachanlagen 2310", Type: account.KontenartAufwand}
 var SKR03_Abschreibungen = account.AccountDescription{Id: "SKR03_Abschreibungen", Name: "4 Abschreibungen auf Anlagen 4822-4855", Type: account.KontenartAufwand}
 var SKR03_sonstigeAufwendungen = account.AccountDescription{Id: "SKR03_sonstigeAufwendungen", Name: "5 sonstige Aufwendungen", Type: account.KontenartAufwand}
-var SKR03_Steuern = account.AccountDescription{Id: "SKR03_Steuern", Name: "6 SKR03_Steuern 4320", Type: account.KontenartAufwand}
+var SKR03_Steuern = account.AccountDescription{Id: "SKR03_Steuern", Name: "6 SKR03_Steuern 4320 Gewerbesteuer", Type: account.KontenartAufwand}
 var ErgebnisNachSteuern = account.AccountDescription{Id: "SKR03_ErgebnisNachSteuern 10000", Name: "7 ErgebnisNachSteuern", Type: account.KontenartVerrechnung}
 
 // Verrechnungskonten
@@ -301,7 +301,7 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 		account = r.accounts[SKR03_1400.Id]
 	case SKR03konto == "731", SKR03konto == "1600":
 		account = r.accounts[SKR03_1600.Id]
-	case SKR03konto == "1770":
+	case isInRange(SKR03konto, 1769, 1791):
 		account = r.accounts[SKR03_Umsatzsteuer.Id]
 	case SKR03konto == "1900":
 		account = r.accounts[SKR03_1900.Id]
@@ -324,7 +324,8 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
  		 isInRange(SKR03konto, 4886, 4887),
 		 isInRange(SKR03konto, 4900, 4980):
 		account = r.accounts[SKR03_sonstigeAufwendungen.Id]
-	case SKR03konto == "8100":
+	case isInRange(SKR03konto, 8000, 8799),
+		 isInRange(SKR03konto, 2700, 2744):
 		account = r.accounts[SKR03_Umsatzerloese.Id]
 	case SKR03konto == "9000":
 		account = r.accounts[SKR03_Saldenvortrag.Id]
