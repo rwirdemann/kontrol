@@ -1,14 +1,14 @@
 package valueMagnets
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/ahojsenn/kontrol/util"
 	"io/ioutil"
 	"log"
 	"os"
-	"encoding/json"
 	"time"
-	"github.com/ahojsenn/kontrol/util"
-		)
+)
 
 // Stakeholder types
 const (
@@ -46,6 +46,7 @@ type Kommitmenschen struct {
 
 type KommitmenschenRepository struct {
 	Abrechenzeitpunkt string `json:"Abrechenzeitpunkt"`
+	Liquiditaetsbedarf string `json:"Liquiditaedsbedarf"`
 	Menschen []Kommitmenschen `json:"Kommitmenschen"`
 }
 
@@ -54,7 +55,7 @@ var kmry []KommitmenschenRepository
 func (this KommitmenschenRepository) Init(year int)  {
 	env := util.GetEnv()
 
-	rawFile, err := ioutil.ReadFile(env.KommitmenschenFile)
+	rawFile, err := ioutil.ReadFile(env.KommitmentFile)
 	if err != nil {
 		fmt.Println("in KommitmenschenRepository.All(), file: ", env)
 		fmt.Println(err.Error())
@@ -63,12 +64,13 @@ func (this KommitmenschenRepository) Init(year int)  {
 
 	err = json.Unmarshal(rawFile, &kmry)
 	if err != nil {
-		fmt.Println("in KommitmenschenRepository.All(), cannot Unmarshal rawfile... ", env.KommitmenschenFile)
+		fmt.Println("in KommitmenschenRepository.All(), cannot Unmarshal rawfile... ", env.KommitmentFile)
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
 
 }
+
 
 
 func (this KommitmenschenRepository) All(year int) []Kommitmenschen {

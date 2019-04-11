@@ -34,6 +34,7 @@ func main() {
 	version := flag.Bool("version", false, "prints current kontrol version")
 	file := flag.String("file", DefaultBookingFile, "booking file")
 	year := flag.Int("year", 2017, "year to control")
+	liquidityNeed := flag.Float64("liquidityNeed", 300000.0, "needed liquidity for this year")
 	httpPort := flag.String("httpPort", "20171", "http server port")
 	httpsPort := flag.String("httpsPort", "20172", "https server port")
 	certFile := flag.String("certFile", environment.CertFile, "https certificate")
@@ -46,16 +47,21 @@ func main() {
 	}
 	fileName = *file
 
+
+
 	// set FinancialYear
 	util.Global.FinancialYear =  *year
 	bd, e := time.Parse("2006 01 02 15 04 05", strconv.Itoa(*year) + " 12 31 23 59 59"  )
 	if e != nil {
 		fmt.Println(e)
 	}
-
 	util.Global.BalanceDate = bd
 	log.Println("in main, util.Global.FinancialYear:", util.Global.FinancialYear,
 		"\n    BalanceDate=",util.Global.BalanceDate)
+
+	// set LiquidityNeed
+	util.Global.LiquidityNeed =  *liquidityNeed
+
 
 	accountSystem := accountSystem.NewDefaultAccountSystem()
 	log.Println("in main, created accountsystem for ", util.Global.FinancialYear)

@@ -14,13 +14,14 @@ type Environment struct {
 	Hostname string `json:"hostname"`
 	CertFile string `json:"certfile"`
 	KeyFile  string `json:"keyfile"`
-	KommitmenschenFile  string `json:"kommitmentschenFile"`
+	KommitmentFile  string `json:"kommitmentFile"`
 }
 
 // global scope
 type GlobalStruct struct {
 	FinancialYear int
 	BalanceDate time.Time
+	LiquidityNeed float64
 }
 
 var Global GlobalStruct

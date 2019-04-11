@@ -57,7 +57,8 @@ set -e
 echo
 echo
 
-#
+#   make sure to have a dayly reboot...
+#   0 4   *   *   *    /sbin/shutdown -r +5
 echo "filling the crontab @reboot..."
 $SSHSERVER "rm -f crontab.del"
 $SSHSERVER "if crontab -l  | grep -v '{TARGETPROGRAM}' | grep -v '@reboot' > crontab.del; then echo "crontab exists"; fi"
