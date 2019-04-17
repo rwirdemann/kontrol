@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/ahojsenn/kontrol/valueMagnets"
 	"net/http"
 	"os"
 	"strconv"
@@ -34,7 +35,6 @@ func main() {
 	version := flag.Bool("version", false, "prints current kontrol version")
 	file := flag.String("file", DefaultBookingFile, "booking file")
 	year := flag.Int("year", 2017, "year to control")
-	liquidityNeed := flag.Float64("liquidityNeed", 300000.0, "needed liquidity for this year")
 	httpPort := flag.String("httpPort", "20171", "http server port")
 	httpsPort := flag.String("httpsPort", "20172", "https server port")
 	certFile := flag.String("certFile", environment.CertFile, "https certificate")
@@ -60,7 +60,8 @@ func main() {
 		"\n    BalanceDate=",util.Global.BalanceDate)
 
 	// set LiquidityNeed
-	util.Global.LiquidityNeed =  *liquidityNeed
+	util.Global.LiquidityNeed =  valueMagnets.KommimtmentYear{}.Liqui(util.Global.FinancialYear)
+	log.Println("in main: util.Global.LiquidityNeed=",util.Global.LiquidityNeed)
 
 
 	accountSystem := accountSystem.NewDefaultAccountSystem()
@@ -91,15 +92,23 @@ func importAndProcessBookings(as accountSystem.AccountSystem, year int) {
 		processing.Process(as, p)
 	}
 
-	// verteile Erlöse
+	// distribute revenues and costs to valueMagnets
+	// in this step only employees revenues will be booked to employee cost centers
+	// partners reneue will bi primarily booked to company account for this step
 	processing.ErloesverteilungAnStakeholder(as)
+	// now employee bonusses are calculated and booked
 	processing.CalculateEmployeeBonus(as)
 
-	// now calculate GuV and Bilanz
+	// now (after employee bonusses are booked) calculate GuV and Bilanz
 	processing.GuV(as)
 	processing.Bilanz(as)
 
+	// distribution profit among partners
 	processing.DistributeKTopf(as)
+	// calculate liquidity needs per partner
+	processing.BookLiquidityNeedToPartners(as, valueMagnets.KommimtmentYear{}.Liqui(util.Global.FinancialYear))
+	processing.BookAmountAtDisposition(as)
+
 	// procject Controlling
 	processing.GenerateProjectControlling(as)
 }

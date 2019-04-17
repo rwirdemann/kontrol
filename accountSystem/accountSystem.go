@@ -70,10 +70,12 @@ const UK_AnteileausFairshare 	= "_1-AnteilausFairshare"
 const UK_AnteilMitmachen 		= "_2-Anteil-Mitmachen"
 const UK_Vertriebsprovision 	= "_3-Vertriebsprovision"
 const UK_AnteileAuserloesen 	= "_4-Anteilauserloesen"
-const UK_Darlehen 				= "_5-Darlehen"
-const UK_Entnahmen 				= "_6-Entnahmen"
-const UK_VeraenderungAnlagen 	= "_7-VeränderungAnlagen"
-const UK_AnteilAnAnlagen 		= "_8-AnteilAnAnlagen"
+const UK_Entnahmen 				= "_5-Entnahmen"
+const UK_VeraenderungAnlagen 	= "_6-VeränderungAnlagen"
+const UK_AnteilAnAnlagen 		= "_7-AnteilAnAnlagen"
+const UK_Darlehen 				= "_8-Darlehen"
+const UK_LiquidityReserve 		= "_9-Liquiditätsreserve"
+const UK_Verfuegungsrahmen		= "_A-Verfuegungsrahmen/Bonus"
 const Hauptkonto 				= "Hauptkonto"
 
 
@@ -87,6 +89,8 @@ var UK  = [...]string {
 	UK_AnteilAnAnlagen,
 	UK_Darlehen,
 	UK_Entnahmen,
+	UK_LiquidityReserve,
+	UK_Verfuegungsrahmen,
 }
 
 

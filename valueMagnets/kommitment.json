@@ -1,6 +1,7 @@
 [
   {
     "Abrechenzeitpunkt": "2016-12-31",
+    "Liquiditaetsbedarf": "42.23",
     "Kommitmenschen": [
       { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "Partner", "Arbeit": "1" , "Fairshares": "0.33333"},
       { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "Partner", "Arbeit": "1" , "Fairshares": "0.33333"},
@@ -23,10 +24,10 @@
   },
   {
     "Abrechenzeitpunkt": "2018-12-31",
-    "Liquiditaetsbedarf": "240000.0",
+    "Liquiditaetsbedarf": "150000.0",
     "Kommitmenschen": [
       { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.437857143"},
-      { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "Extern", "Arbeit": "1.00" },
+      { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "Partner", "Arbeit": "0.5", "Fairshares": "0.0" },
       { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.437857143"},
       { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "Partner", "Arbeit": "1.00", "Fairshares": "0.12428571"  },
       { "Id": "KR", "Name": "k: Katja Roth",           "Type": "Employee", "Arbeit": "0.75" },
@@ -36,7 +37,7 @@
   },
   {
     "Abrechenzeitpunkt": "2019-12-31",
-    "Liquiditaetsbedarf": "280000.0",
+    "Liquiditaetsbedarf": "150000.0",
     "Kommitmenschen": [
       { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.413"},
       { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "Extern", "Arbeit": "1.00" },

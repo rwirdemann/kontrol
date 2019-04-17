@@ -12,62 +12,6 @@ import (
 	"time"
 )
 
-
-type BookFromKtoKommitmenschenByShares struct{
-	Booking    booking.Booking
-	AccSystem  accountSystem.AccountSystem
-	SubAcc 	   string
-}
-
-func (c BookFromKtoKommitmenschenByShares) run() {
-
-	// loop through all Stakeholders
-	shrepo := valueMagnets.Stakeholder{}
-	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
-		fairshares,_  := strconv.ParseFloat(sh.Fairshares, 64)
-		amount := c.Booking.Amount*fairshares
-
-		sollAccount,_ := c.AccSystem.GetSubacc(sh.Id, c.SubAcc)
-		b1 := booking.CloneBooking(c.Booking, amount, c.Booking.Type, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
-		b1.Text += " "+sh.Id+" Anteil von "+fmt.Sprintf("%.2f",c.Booking.Amount)+"€"
-		sollAccount.Book(b1)
-
-		// Habenbuchung
-		habenAccount,_ := c.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, c.SubAcc)
-		b2 := booking.CloneBooking(c.Booking, -amount, c.Booking.Type, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
-		b2.Text += " "+sh.Id+" Anteil von "+fmt.Sprintf("%.2f",c.Booking.Amount)+"€"
-		habenAccount.Book(b2)
-	}
-}
-
-
-type BookFromKtoKommitmensch struct{
-	Booking    booking.Booking
-	AccSystem  accountSystem.AccountSystem
-	SubAcc 	   string
-}
-
-func (c BookFromKtoKommitmensch) run() {
-	amount := c.Booking.Amount
-
-	// Sollbuchung
-	bkresp := c.Booking.CostCenter
-	if bkresp == "" {
-		log.Println("in BookToCostCenter, cc empty in row ", c.Booking.RowNr)
-		log.Println("    , setting it to 'K' ")
-		bkresp = valueMagnets.StakeholderKM.Id
-	}
-	sollAccount,_ := c.AccSystem.GetSubacc(bkresp, c.SubAcc)
-	b1 := booking.CloneBooking(c.Booking, amount, c.Booking.Type, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
-	sollAccount.Book(b1)
-
-	// Habenbuchung
-	habenAccount,_ := c.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, c.SubAcc)
-	b2 := booking.CloneBooking(c.Booking, -amount, c.Booking.Type, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
-	habenAccount.Book(b2)
-}
-
-
 // for a given booking
 // generate a new pair of bookings,
 // soll in UK_Kosten of the booking responsible Stakeholder
@@ -101,12 +45,101 @@ func (c BookCostToCostCenter) run() {
 	b1 := booking.CloneBooking(c.Booking, amount, bkt, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
 	sollAccount.Book(b1)
 
-	// Habenbuchung
-	habenAccount,_ := c.AccSystem.Get(valueMagnets.StakeholderKM.Id)
+	// Habenbuchung: book to K=Company for Partners for now, but for Employees book it to them directly
+	habenAccount,_ := c.AccSystem.Get(bkresp)
+
+//	if !isEmployee(bkresp) {
+//		habenAccount,_ = c.AccSystem.Get(valueMagnets.StakeholderKM.Id)
+//	}
+
 	b2 := booking.CloneBooking(c.Booking, -amount, bkt, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
 	b2.Text = b2.Text + "-Gegenbuchung"
 	habenAccount.Book(b2)
 }
+
+
+
+type BookToValuemagnetsByShares struct{
+	Booking    booking.Booking
+	AccSystem  accountSystem.AccountSystem
+	SubAcc 	   string
+}
+
+func (c BookToValuemagnetsByShares) run() {
+
+	// loop through all Stakeholders
+	shrepo := valueMagnets.Stakeholder{}
+	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
+		fairshares,_  := strconv.ParseFloat(sh.Fairshares, 64)
+		amount := c.Booking.Amount*fairshares
+
+		sollAccount,_ := c.AccSystem.Get(sh.Id)
+		b1 := booking.CloneBooking(c.Booking, -amount, c.Booking.Type, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
+		b1.Text += " "+sh.Id+" Anteil von "+fmt.Sprintf("%.2f",c.Booking.Amount)+"€"
+		sollAccount.Book(b1)
+
+		// Habenbuchung
+		habenAccount,_ := c.AccSystem.GetSubacc(sh.Id, c.SubAcc)
+		b2 := booking.CloneBooking(c.Booking, amount, c.Booking.Type, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
+		b2.Text += " "+sh.Id+" Anteil von "+fmt.Sprintf("%.2f",c.Booking.Amount)+"€"
+		habenAccount.Book(b2)
+	}
+}
+
+
+type BookFromCreditToDebit struct{
+	Booking    booking.Booking
+	AccSystem  accountSystem.AccountSystem
+	Debit	   *account.Account
+	Credit	   *account.Account
+	Reason	   string
+}
+
+func (this BookFromCreditToDebit) run() {
+	b := booking.Booking{
+		RowNr:       this.Booking.RowNr,
+		Amount:      this.Booking.Amount,
+		Type:        this.Booking.Type,
+		CostCenter:  this.Booking.CostCenter,
+		Text:        this.Reason + this.Booking.Text ,
+		Month:       this.Booking.Month,
+		Year:        this.Booking.Year,
+		FileCreated: this.Booking.FileCreated,
+		BankCreated: this.Booking.BankCreated}
+	this.Debit.Book(b)
+
+	b.Amount *= -1.0
+	this.Credit.Book(b)
+}
+
+
+
+type BookFromKtoKommitmensch struct{
+	Booking    booking.Booking
+	AccSystem  accountSystem.AccountSystem
+	SubAcc 	   string
+}
+
+func (c BookFromKtoKommitmensch) run() {
+	amount := c.Booking.Amount
+
+	// Sollbuchung
+	bkresp := c.Booking.CostCenter
+	if bkresp == "" {
+		log.Println("in BookToCostCenter, cc empty in row ", c.Booking.RowNr)
+		log.Println("    , setting it to 'K' ")
+		bkresp = valueMagnets.StakeholderKM.Id
+	}
+	sollAccount,_ := c.AccSystem.GetSubacc(bkresp, c.SubAcc)
+	b1 := booking.CloneBooking(c.Booking, amount, c.Booking.Type, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
+	sollAccount.Book(b1)
+
+	// Habenbuchung
+	habenAccount,_ := c.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, c.SubAcc)
+	b2 := booking.CloneBooking(c.Booking, -amount, c.Booking.Type, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
+	habenAccount.Book(b2)
+}
+
 
 
 type BookRevenueToEmployeeCostCenter struct {
@@ -142,7 +175,7 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 			kommitmentAccount,_ := this.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteileAuserloesen)
 			kommitmentAccount.Book(kommitmentShare)
 
-			// Gegenbuchung
+			// Gegenbuchung for partners to company for now
 			sollAccount,_ := this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
 			kommitmentShare.Amount *= -1
 			sollAccount.Book (kommitmentShare)
@@ -232,8 +265,9 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 			employeeaccount,_ := this.AccSystem.GetSubacc(benefited.Id, accountSystem.UK_AnteileAuserloesen)
 			employeeaccount.Book(employeeshare)
 
-			// Gegenbuchung, das sind Kosten für Kommitment
-			sollAccount,_ = this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
+			// Gegenbuchung to employees main account for now
+//			sollAccount,_ = this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
+			sollAccount,_ = this.AccSystem.Get(benefited.Id)
 			employeeshare.Amount *= -1
 			sollAccount.Book (employeeshare)
 		}
@@ -269,8 +303,9 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 				provisionAccount.Book(b)
 				//log.Println("in BookRevenueToEmployeeCostCenter:", provisionAccount)
 
-				// Gegenbuchung
-				sollAccount,_ = this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
+				// Gegenbuchung to cc's main account
+//				sollAccount,_ = this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
+				sollAccount,_ = this.AccSystem.Get(cc)
 				b.Amount *= -1
 				sollAccount.Book (b)
 			}

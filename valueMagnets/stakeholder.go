@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -44,27 +45,27 @@ type Kommitmenschen struct {
 	FairShares string `json:"Fairshares"`
 }
 
-type KommitmenschenRepository struct {
+type KommimtmentYear struct {
 	Abrechenzeitpunkt string `json:"Abrechenzeitpunkt"`
-	Liquiditaetsbedarf string `json:"Liquiditaedsbedarf"`
+	Liquiditaetsbedarf string `json:"Liquiditaetsbedarf"`
 	Menschen []Kommitmenschen `json:"Kommitmenschen"`
 }
 
-var kmry []KommitmenschenRepository
+var kommitmentHistory []KommimtmentYear
 
-func (this KommitmenschenRepository) Init(year int)  {
+func (this KommimtmentYear) Init(year int)  {
 	env := util.GetEnv()
 
 	rawFile, err := ioutil.ReadFile(env.KommitmentFile)
 	if err != nil {
-		fmt.Println("in KommitmenschenRepository.All(), file: ", env)
+		fmt.Println("in KommimtmentYear.Init(), file: ", env)
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
 
-	err = json.Unmarshal(rawFile, &kmry)
+	err = json.Unmarshal(rawFile, &kommitmentHistory)
 	if err != nil {
-		fmt.Println("in KommitmenschenRepository.All(), cannot Unmarshal rawfile... ", env.KommitmentFile)
+		fmt.Println("in KommimtmentYear.Init(), cannot Unmarshal rawfile... ", env.KommitmentFile)
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
@@ -72,15 +73,15 @@ func (this KommitmenschenRepository) Init(year int)  {
 }
 
 
+func (this KommimtmentYear) Liqui(year int) float64 {
 
-func (this KommitmenschenRepository) All(year int) []Kommitmenschen {
-
-	if len(kmry) == 0 {
+	if len(kommitmentHistory) == 0 {
 		this.Init(year)
 	}
 
+	var liqui = 0.0
 	// find the right year
-	for i,yrep := range kmry {
+	for i,yrep := range kommitmentHistory {
 		layout := "2006-01-02"
 		t, err := time.Parse(layout, yrep.Abrechenzeitpunkt)
 
@@ -88,11 +89,34 @@ func (this KommitmenschenRepository) All(year int) []Kommitmenschen {
 			fmt.Println(err)
 		}
 		if year == t.Year() {
-			return kmry[i].Menschen
+			liqui,_ = strconv.ParseFloat(kommitmentHistory[i].Liquiditaetsbedarf, 64)
+		}
+	}
+
+	return liqui
+}
+
+
+func (this KommimtmentYear) All(year int) []Kommitmenschen {
+
+	if len(kommitmentHistory) == 0 {
+		this.Init(year)
+	}
+
+	// find the right year
+	for i,yrep := range kommitmentHistory {
+		layout := "2006-01-02"
+		t, err := time.Parse(layout, yrep.Abrechenzeitpunkt)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+		if year == t.Year() {
+			return kommitmentHistory[i].Menschen
 		}
 
 	}
-	return kmry[0].Menschen
+	return kommitmentHistory[0].Menschen
 }
 
 
@@ -105,7 +129,7 @@ var StakeholderRepository []Stakeholder
 func (this *Stakeholder) Init(year int, shptr *[]Stakeholder) *[]Stakeholder {
 
 	sh := *shptr
-	kmrepo := KommitmenschenRepository{}
+	kmrepo := KommimtmentYear{}
 	for _, mensch := range kmrepo.All(year) {
 		s := Stakeholder{}
 		s.Type = mensch.Type

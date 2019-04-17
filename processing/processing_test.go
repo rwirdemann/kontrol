@@ -7,7 +7,6 @@ import (
 	"github.com/ahojsenn/kontrol/util"
 	"github.com/ahojsenn/kontrol/valueMagnets"
 	"github.com/stretchr/testify/assert"
-	"log"
 	"math"
 	"testing"
 	"time"
@@ -327,7 +326,6 @@ func TestProcessGV_Vorjahr(t *testing.T) {
 func TestProcessOPOS_SKR1600(t *testing.T) {
 	setUp()
 
-	// given: a internal hours booking
 	bkDate,_ := time.Parse("2006 01 02 15 04 05",  "2017 11 11 11 11 11"  )
 	tomorrow := bkDate.AddDate(+1, 0, +1)
 	p := booking.NewBooking(13,"ER", "", "", "K", "Project-X",nil, 8250.0, "Interne Stunden 2017", 11, 2017, tomorrow)
@@ -352,7 +350,7 @@ func TestProcessOPOS_SKR1600(t *testing.T) {
 func TestBonusRueckstellungAngestellterSKR03(t *testing.T) {
 	accSystem = accountSystem.NewDefaultAccountSystem()
 
-	// given: a internal hours booking
+	// given:
 	now := time.Now().AddDate(0, 0, 0)
 	p := booking.NewBooking(13,"SKR03", "4120", "965", "BW", "Project-X",nil, 1337.42, "CC_Gehalt Januar 2017", 12, 2017, now)
 
@@ -440,8 +438,8 @@ func TestErloesverteilungAnValueMagnetsSimple(t *testing.T) {
 
 	// whats on "K"
 	b,_ := as.Get("K")
-	assert.Equal(t, 3, len(b.Bookings)) // Vertriebsprovision, Kommitmentanteil und Employeeanteil
-	assert.Equal(t, -1000.0, b.Saldo)
+	assert.Equal(t, 1, len(b.Bookings)) // Kommitmentanteil is on k
+	assert.Equal(t, -250.0, b.Saldo)
 
 	// whats on BW subacc. Provision
 	acc, _ := as.GetSubacc("BW", accountSystem.UK_Vertriebsprovision)
@@ -470,14 +468,13 @@ func TestErloesverteilungAnValueMagnets_Anlage(t *testing.T) {
 	assert.Equal(t, 1, len(bankacc.Bookings))
 	assert.Equal(t, 4000.0, bankacc.Bookings[0].Amount )
 
-	// whats on "K"
-	b,_ := as.GetSubacc("K", accountSystem.UK_VeraenderungAnlagen)
-	assert.Equal(t, 3, len(b.Bookings))
-	assert.Equal(t, 4000.0, math.Round(b.Saldo))
+	// whats on "JM"
+	b,_ := as.GetSubacc("JM", accountSystem.UK_VeraenderungAnlagen)
+	assert.Equal(t, 1, len(b.Bookings))
+	assert.Equal(t, -1333.0, math.Round(b.Saldo))
 
 	// whats on BW subacc. Provision
 	acc, _ := as.GetSubacc("RW", accountSystem.UK_VeraenderungAnlagen)
-	log.Println("in TestErloesverteilungAnValueMagnets_Anlage", acc.Bookings)
 	assert.Equal(t, 1, len(acc.Bookings))
 
 }
@@ -511,14 +508,6 @@ func TestDistributeKTopf(t *testing.T) {
 	// now distribution of costs & profits
 	ErloesverteilungAnStakeholder(as)
 	DistributeKTopf(as)
-
-	// nun sollten beide in der Verteilung etwas bekommen, Anke etwas mehr
-	johannes_acc, _ := as.GetSubacc("JM", accountSystem.UK_Kosten)
-	log.Println("in TestDistributeKTopf", johannes_acc)
-
-
-	// assert that Johannes and Anke have something on their account
-	log.Println("in TestDistributeKTopf", StakeholderYearlyIncome(as, "JM"))
 
 	// assert, that Anke has more due to Johannes expenses
 	assert.True(t, StakeholderYearlyIncome(as, "AN") > StakeholderYearlyIncome(as, "JM") )
@@ -567,7 +556,6 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 
 	// Booking is on CostCenter JM
 	c, _ := as.GetSubacc("JM", accountSystem.UK_Entnahmen)
-	// c.UpdateSaldo()
 	assert.Equal(t, 1, len(c.Bookings))
 	assert.Equal(t, booking.CC_Entnahme, c.Bookings[0].Type)
 	assert.Equal(t, -5000.0, c.Saldo)
@@ -610,6 +598,7 @@ func TestCalculateEmplyeeBonnusses (t *testing.T) {
 
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
 
+	valueMagnets.KommimtmentYear{}.Init(2016)
 	valueMagnets.StakeholderRepository = append(valueMagnets.StakeholderRepository,
 		valueMagnets.Stakeholder{"AB", "Anna Blume", "Employee", "1.0", "", 0})
 	valueMagnets.StakeholderRepository = append(valueMagnets.StakeholderRepository,
@@ -618,13 +607,12 @@ func TestCalculateEmplyeeBonnusses (t *testing.T) {
 		valueMagnets.Stakeholder{"K", "Kompanie", "Company", "0", "0", 0})
 
 	as := accountSystem.NewDefaultAccountSystem()
-	shrepo := valueMagnets.Stakeholder{}
+	stakeholder := valueMagnets.Stakeholder{}
 	net := make(map[valueMagnets.Stakeholder]float64)
-	net[shrepo.Get("AB")] = 100.0
-	net[shrepo.Get("JM")] = 100.0
+	net[stakeholder.Get("AB")] = 100.0
+	net[stakeholder.Get("JM")] = 100.0
 
 	hauptbuch := as.GetCollectiveAccount()
-	// Anke und Johannes haben NEttoeinnahmen von 10.000
 	b1 := *booking.NewBooking(13, "AR", "", "", "K", "Project-X", net, 1190, "Anna+Johannes", 1, 2018, its2018)
 	Process(as, b1)
 
@@ -644,8 +632,31 @@ func TestCalculateEmplyeeBonnusses (t *testing.T) {
 
 	// 70% of 100€
 	gehaelterAccount, _ := as.Get("4100_4199")
+	annasAccount, _ := as.GetSubacc("AB", accountSystem.UK_AnteileAuserloesen)
 
+	util.AssertFloatEquals(t, 70.0, annasAccount.Saldo )
 	util.AssertFloatEquals(t, -70.0, gehaelterAccount.Saldo )
+}
+
+func TestBookLiquidityNeedToPartners (t *testing.T) {
+	valueMagnets.KommimtmentYear{}.Init(2016)
+/*
+	valueMagnets.StakeholderRepository = append(valueMagnets.StakeholderRepository,
+		valueMagnets.Stakeholder{"AB", "Anna Blume", "Employee", "1.0", "", 0})
+	valueMagnets.StakeholderRepository = append(valueMagnets.StakeholderRepository,
+		valueMagnets.Stakeholder{"JM", "Johannes Mainusch", "Partner", "1.0", "0.5", 0})
+	valueMagnets.StakeholderRepository = append(valueMagnets.StakeholderRepository,
+		valueMagnets.Stakeholder{"K", "Kompanie", "Company", "0", "0", 0})
+*/
+	as := accountSystem.NewDefaultAccountSystem()
+
+	BookLiquidityNeedToPartners( as, 12.0)
+
+	acc,_ := as.GetSubacc("JM", accountSystem.UK_LiquidityReserve)
+
+	util.AssertFloatEquals(t, 4.0, math.Round(acc.Saldo) )
+
+
 
 }
 

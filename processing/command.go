@@ -4,8 +4,6 @@ import (
 	"github.com/ahojsenn/kontrol/accountSystem"
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/util"
-	"github.com/ahojsenn/kontrol/valueMagnets"
-	"log"
 )
 
 type BookGehaltCommand struct {
@@ -220,27 +218,6 @@ func (c DontDoAnything) run() {
 }
 
 
-type BookInterneStundenCommand struct {
-	Booking    booking.Booking
-	AccSystem  accountSystem.AccountSystem
-}
-
-func (c BookInterneStundenCommand) run() {
-
-	// Buchung interner Stunden auf Kommanditstenkonto Unterkonto
-	a := booking.CloneBooking(c.Booking, c.Booking.Amount, booking.CC_InterneStunden, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
-	partnerAccount, ok := c.AccSystem.GetSubacc(c.Booking.Responsible, accountSystem.UK_AnteilMitmachen)
-	if !ok { log.Panicln("in BookInterneStundenCommand, some error with booking ", a) }
-	partnerAccount.Book(a)
-
-	// Buchung interner Stunden von kommitment Konto auf Stakeholder
-	b := booking.CloneBooking(c.Booking, c.Booking.Amount*-1, booking.CC_InterneStunden, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
-	kommitmentAccount, ok := c.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteilMitmachen)
-	if !ok { log.Panicln("in BookInterneStundenCommand, some error with booking ", b) }
-	kommitmentAccount.Book(b)
-}
-
-
 type BookSKR03Command struct {
 	Booking    		booking.Booking
 	AccSystem  		accountSystem.AccountSystem
@@ -252,12 +229,12 @@ func (c BookSKR03Command) run() {
 
 	// Sollbuchung
 	sollAccount := c.AccSystem.GetSKR03(c.Booking.Soll)
-	a := booking.CloneBooking(c.Booking, -amount, c.Booking.Typ, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
+	a := booking.CloneBooking(c.Booking, -amount, c.Booking.Typ, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
 	sollAccount.Book(a)
 
 	// Habenbuchung
 	habenAccount := c.AccSystem.GetSKR03(c.Booking.Haben)
-	b := booking.CloneBooking(c.Booking, amount, c.Booking.Typ, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
+	b := booking.CloneBooking(c.Booking, amount, c.Booking.Typ, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
 	habenAccount.Book(b)
 
 }

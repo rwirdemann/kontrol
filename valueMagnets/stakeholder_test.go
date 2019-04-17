@@ -8,7 +8,7 @@ import (
 func TestGetKommitmenschenRepository(t *testing.T) {
 
 	// generate accounts for all stakeholders
-	repo := KommitmenschenRepository{}
+	repo := KommimtmentYear{}
 	assert.Equal(t, "AN", repo.All(2016)[0].Id)
 	assert.Equal(t, "JM", repo.All(2016)[2].Id)
 //	assert.Equal(t, "0%", repo.All(2018)[1].Arbeit)
@@ -16,7 +16,7 @@ func TestGetKommitmenschenRepository(t *testing.T) {
 
 }
 
-func TestStakeholderRepository_All(t *testing.T) {
+func TestKommimtmentYear_All(t *testing.T) {
 
 	repo := Stakeholder{}
 	assert.Equal(t, "JM", repo.All(2016)[2].Id)
@@ -30,6 +30,11 @@ func TestIsValidStakeholder (t *testing.T) {
 	assert.True(t, repo.IsValidStakeholder("EX"))
 	assert.False(t, repo.IsValidStakeholder("krümelhügliplis"))
 
+}
+
+func TestKommimtmentYear_Liqui(t *testing.T) {
+	repo := KommimtmentYear{}
+	assert.Equal(t, 42.23, repo.Liqui(2016))
 }
 
 func TestIsEmployee (t *testing.T) {

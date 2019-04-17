@@ -36,16 +36,17 @@ func TestBookCostToCostCenter(t *testing.T) {
 	bkng.Text = "This is a test"
 
 	// when you book it
-	BookSKR03Command{AccSystem: accsystem, Booking: bkng}.run()
+	//BookSKR03Command{AccSystem: accsystem, Booking: bkng}.run()
 	BookCostToCostCenter{AccSystem: accsystem, Booking: bkng}.run()
 
 	// there is money on the costcenter JM
 	account, _ := accsystem.GetSubacc("JM", accountSystem.UK_Kosten)
+
 	util.AssertEquals(t, 1, len(account.Bookings))
 	assert.Equal(t, 1337.23, account.Bookings[0].Amount)
 
 	// there is something on the other account too
-	account2, _ := accsystem.Get(valueMagnets.StakeholderKM.Id)
+	account2, _ := accsystem.Get("JM")
 	util.AssertEquals(t, 1, len(account2.Bookings))
 	assert.Equal(t, -1337.23, account2.Bookings[0].Amount)
 
