@@ -654,7 +654,7 @@ func TestBookLiquidityNeedToPartners (t *testing.T) {
 
 	acc,_ := as.GetSubacc("JM", accountSystem.UK_LiquidityReserve)
 
-	util.AssertFloatEquals(t, 4.0, math.Round(acc.Saldo) )
+	util.AssertFloatEquals(t, -4.0, math.Round(acc.Saldo) )
 
 
 
