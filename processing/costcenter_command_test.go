@@ -40,7 +40,7 @@ func TestBookCostToCostCenter(t *testing.T) {
 	BookCostToCostCenter{AccSystem: accsystem, Booking: bkng}.run()
 
 	// there is money on the costcenter JM
-	account, _ := accsystem.GetSubacc("JM", accountSystem.UK_Kosten)
+	account, _ := accsystem.GetSubacc("JM", accountSystem.UK_Kosten.Id)
 
 	util.AssertEquals(t, 1, len(account.Bookings))
 	assert.Equal(t, 1337.23, account.Bookings[0].Amount)
@@ -69,7 +69,7 @@ func TestBookRevenueToEmployeeCostCenter(t *testing.T) {
 
 
 	// there is money on the costcenter BW --> now on subaccount
-	acc, _ := accsystem.GetSubacc("BW", accountSystem.UK_AnteileAuserloesen)
+	acc, _ := accsystem.GetSubacc("BW", accountSystem.UK_AnteileAuserloesen.Id)
 	util.AssertEquals(t, 1, len(acc.Bookings))
 	assert.Equal(t, 1000*  account.EmployeeShare, acc.Bookings[0].Amount)
 }
@@ -91,7 +91,7 @@ func TestExternNettoAnteil(t *testing.T) {
 	BookRevenueToEmployeeCostCenter{AccSystem: accSystem, Booking: *p}.run()
 
 	// and hannes got his provision <-- this is noch anymore booked here
-	accountHannes, _ := accSystem.GetSubacc("JM", accountSystem.UK_Vertriebsprovision)
+	accountHannes, _ := accSystem.GetSubacc("JM", accountSystem.UK_Vertriebsprovision.Id)
 	provision := accountHannes.Bookings[0]
 	util.AssertFloatEquals(t, 10800.0*account.PartnerProvision, provision.Amount)
 	util.AssertEquals(t, booking.CC_Vertriebsprovision, provision.Type)

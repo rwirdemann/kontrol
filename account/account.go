@@ -40,7 +40,7 @@ type Account struct {
 	Soll	float64
 	Haben 	float64
 	KommitmenschNettoFaktura   float64 	// is used for the net faktura of people
-	YearS	float64 					// this ist used for the sum of all bookings in the current year
+//	YearS	float64 					// this ist used for the sum of all bookings in the current year
 	Saldo	float64
 }
 

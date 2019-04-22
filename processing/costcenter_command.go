@@ -37,11 +37,11 @@ func (c BookCostToCostCenter) run() {
 	// Sollbuchung
 	bkresp := c.Booking.CostCenter
 	if bkresp == "" {
-		log.Println("in BookCostToCostCenter, cc empty in row ", c.Booking.RowNr,  c.Booking)
+		log.Println("in BookCostToCostCenter, cc empty in row ", c.Booking.RowNr)
 		log.Println("    , setting it to 'K' ")
 		bkresp = valueMagnets.StakeholderKM.Id
 	}
-	sollAccount,_ := c.AccSystem.GetSubacc(bkresp, accountSystem.UK_Kosten)
+	sollAccount,_ := c.AccSystem.GetSubacc(bkresp, accountSystem.UK_Kosten.Id)
 	b1 := booking.CloneBooking(c.Booking, amount, bkt, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
 	sollAccount.Book(b1)
 
@@ -172,7 +172,7 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated}
 
-			kommitmentAccount,_ := this.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteileAuserloesen)
+			kommitmentAccount,_ := this.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteileAuserloesen.Id)
 			kommitmentAccount.Book(kommitmentShare)
 
 			// Gegenbuchung for partners to company for now
@@ -195,7 +195,7 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated}
 
-			kommitmentAccount,_ := this.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteileAuserloesen)
+			kommitmentAccount,_ := this.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteileAuserloesen.Id)
 			kommitmentAccount.Book(kommitmentShare)
 
 			// Gegenbuchung
@@ -218,7 +218,7 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 				FileCreated: this.Booking.FileCreated,
 				BankCreated: this.Booking.BankCreated}
 
-			kommitmentAccount,_ := this.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteileAuserloesen)
+			kommitmentAccount,_ := this.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteileAuserloesen.Id)
 			kommitmentAccount.Book(kommitmentShare)
 
 			// Gegenbuchung
@@ -241,7 +241,7 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 				CostCenter:  this.Booking.CostCenter}
 
 
-			kommitmentAccount,_ := this.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteileAuserloesen)
+			kommitmentAccount,_ := this.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteileAuserloesen.Id)
 			kommitmentAccount.Book(kommitmentShare)
 
 			// Gegenbuchung
@@ -262,7 +262,7 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 				BankCreated: this.Booking.BankCreated,
 				CostCenter:  this.Booking.CostCenter}
 
-			employeeaccount,_ := this.AccSystem.GetSubacc(benefited.Id, accountSystem.UK_AnteileAuserloesen)
+			employeeaccount,_ := this.AccSystem.GetSubacc(benefited.Id, accountSystem.UK_AnteileAuserloesen.Id)
 			employeeaccount.Book(employeeshare)
 
 			// Gegenbuchung to employees main account for now
@@ -288,7 +288,7 @@ func (this BookRevenueToEmployeeCostCenter) run() {
 			for _,cc := range ccArr {
 				// log.Println("in BookRevenueToEmployeeCostCenter:",  benefited.Id, cc)
 				// Buchung Vertriebsprovision
-				provisionAccount, _ = this.AccSystem.GetSubacc(cc, accountSystem.UK_Vertriebsprovision)
+				provisionAccount, _ = this.AccSystem.GetSubacc(cc, accountSystem.UK_Vertriebsprovision.Id)
 				b := booking.Booking{
 					RowNr: 		 this.Booking.RowNr,
 					Amount:      this.Booking.Net[benefited] * account.PartnerProvision / numCc,

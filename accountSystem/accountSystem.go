@@ -35,16 +35,17 @@ var SKR03_Anlagen = account.AccountDescription{Id: "SKR03_Anlagen", Name: "02_Sa
 var SKR03_Vorraete = account.AccountDescription{Id: "SKR03_Vorraete", Name: "03_Vorräte", Type: account.KontenartAktiv}
 var SKR03_1400 = account.AccountDescription{Id: "1400", Name: "04_Forderungen aus L&L + sonstige Vermögensg.", Type: account.KontenartAktiv}
 var SKR03_Kautionen = account.AccountDescription{Id: "SKR03_Kautionen", Name: "05_Anzahlungen & Kautionen", Type: account.KontenartAktiv}
-var SKR03_Vorsteuer = account.AccountDescription{Id: "SKR03_Vorsteuer", Name: "06_SKR03__1570-1579_Steuer: Vorsteuer", Type: account.KontenartAktiv}
+var SKR03_Vorsteuer = account.AccountDescription{Id: "SKR03_Vorsteuer", Name: "06_SKR03_1570-1579_Steuer:  Vorsteuer", Type: account.KontenartAktiv}
 var SKR03_Umsatzsteuer = account.AccountDescription{Id: "SKR03_Umsatzsteuer", Name: "07_SKR03_1770_Steuer: Umsatzsteuer", Type: account.KontenartAktiv}
 var SKR03_1200 = account.AccountDescription{Id: "1200", Name: "08_SKR03_1200_Bank", Type: account.KontenartAktiv}
 
-var SKR03_900_Haftkapital = account.AccountDescription{Id: "SKR03_900_Haftkapital", Name: "11_SKR03_900_Haftkapital", Type: account.KontenartPassiv}
-var SKR03_Eigenkapital_880 = account.AccountDescription{Id: "Eigenkapital", Name: "12_SKR03_880_Eigenkapital", Type: account.KontenartPassiv}
-var SKR03_Rueckstellungen = account.AccountDescription{Id: "Rückstellung", Name: "13_SKR03_956-977_Rückstellung", Type: account.KontenartPassiv}
-var SKR03_920_Gesellschafterdarlehen = account.AccountDescription{Id: "SKR03_920_Gesellschafterdarlehen", Name: "14_SKR03_920_Gesellschafterdarlehen", Type: account.KontenartPassiv}
-var SKR03_1600 = account.AccountDescription{Id: "1600", Name: "15_SKR03_1600_OPOS-Lieferant", Type: account.KontenartPassiv}
-var SKR03_1900 = account.AccountDescription{Id: "1900", Name: "16_SKR03_1900_Privatentnahmen", Type: account.KontenartPassiv}
+var SKR03_sonstVerb = account.AccountDescription{Id: "SKR03_sonstVerb", Name: "11_sonstige Verbindlichkeiten", Type: account.KontenartPassiv}
+var SKR03_900_Haftkapital = account.AccountDescription{Id: "SKR03_900_Haftkapital", Name: "12_SKR03_900_Haftkapital", Type: account.KontenartPassiv}
+var SKR03_Eigenkapital_880 = account.AccountDescription{Id: "Eigenkapital", Name: "13_SKR03_880_Eigenkapital", Type: account.KontenartPassiv}
+var SKR03_Rueckstellungen = account.AccountDescription{Id: "Rückstellung", Name: "14_SKR03_956-977_Rückstellung", Type: account.KontenartPassiv}
+var SKR03_920_Gesellschafterdarlehen = account.AccountDescription{Id: "15_SKR03_920_Gesellschafterdarlehen", Name: "14_SKR03_920_Gesellschafterdarlehen", Type: account.KontenartPassiv}
+var SKR03_1600 = account.AccountDescription{Id: "1600", Name: "16_SKR03_1600_OPOS-Lieferant", Type: account.KontenartPassiv}
+var SKR03_1900 = account.AccountDescription{Id: "1900", Name: "17_SKR03_1900_Privatentnahmen", Type: account.KontenartPassiv}
 
 // Erfolgskonten
 var SKR03_Umsatzerloese = account.AccountDescription{Id: "SKR03_Umsatzerloese", Name: "1 SKR03_Umsatzerloese 8100-8402", Type: account.KontenartErtrag}
@@ -65,26 +66,29 @@ var k_ErloeseVerteilung = account.AccountDescription{Id: "k_ErloeseVerteilung", 
 
 
 // Unterkonten für kommitmenschen
-const UK_Kosten 				= "_0-Kosten"
-const UK_AnteileausFairshare 	= "_1-AnteilausFairshare"
-const UK_AnteilMitmachen 		= "_2-Anteil-Mitmachen"
-const UK_Vertriebsprovision 	= "_3-Vertriebsprovision"
-const UK_AnteileAuserloesen 	= "_4-Anteilauserloesen"
-const UK_Entnahmen 				= "_5-Entnahmen"
-const UK_VeraenderungAnlagen 	= "_6-VeränderungAnlagen"
-const UK_AnteilAnAnlagen 		= "_7-AnteilAnAnlagen"
-const UK_Darlehen 				= "_8-Darlehen"
-const UK_LiquidityReserve 		= "_9-Liquiditätsreserve"
-const UK_Verfuegungsrahmen		= "_A-Verfuegungsrahmen/Bonus"
-const Hauptkonto 				= "Hauptkonto"
+var UK_Kosten 				= account.AccountDescription{Id: "_0-Kosten", Name: "", Type: "Aktiv"}
+var UK_AnteileausFairshare 	= account.AccountDescription{Id: "_1-AnteilausFairshare", Name: "", Type: "Aktiv"}
+var UK_AnteilMitmachen 		= account.AccountDescription{Id: "_2-Anteil-Mitmachen", Name: "", Type: "Aktiv"}
+var UK_Vertriebsprovision 	= account.AccountDescription{Id: "_3-Vertriebsprovision", Name: "", Type: "Aktiv"}
+var UK_AnteileAuserloesen 	= account.AccountDescription{Id: "_4-Anteilauserloesen", Name: "", Type: "Aktiv"}
+var UK_unused 				= account.AccountDescription{Id: "_4.2-unused", Name: "", Type: "Aktiv"}
+
+var UK_Entnahmen 			= account.AccountDescription{Id: "_5-Entnahmen", Name: "", Type: "Passiv"}
+var UK_VeraenderungAnlagen 	= account.AccountDescription{Id: "_6-VeränderungAnlagen", Name: "", Type: "Passiv"}
+var UK_AnteilAnAnlagen 		= account.AccountDescription{Id: "_7-AnteilAnAnlagen", Name: "", Type: "Passiv"}
+var UK_Darlehen 			= account.AccountDescription{Id: "_8-Darlehen", Name: "", Type: "Passiv"}
+var UK_LiquidityReserve 	= account.AccountDescription{Id: "_9-Liquiditätsreserve", Name: "", Type: "Passiv"}
+var UK_Verfuegungsrahmen	= account.AccountDescription{Id: "_A-Verfuegungsrahmen/Bonus", Name: "", Type: "Passiv"}
+var Hauptkonto 				= account.AccountDescription{Id: "Hauptkonto", Name: "", Type: "Hauptkonto"}
 
 
-var UK  = [...]string {
+var UK  = [...]account.AccountDescription {
 	UK_Kosten,
 	UK_AnteileausFairshare,
 	UK_AnteilMitmachen,
 	UK_Vertriebsprovision,
 	UK_AnteileAuserloesen,
+	UK_unused,
 	UK_VeraenderungAnlagen,
 	UK_AnteilAnAnlagen,
 	UK_Darlehen,
@@ -120,6 +124,7 @@ func (this Accountlist) All() []account.AccountDescription {
 		SKR03_Vorsteuer,
 		SKR03_Umsatzsteuer,
 		SKR03_Saldenvortrag,
+		SKR03_sonstVerb,
 		ErgebnisNachSteuern,
 		SummeAktiva,
 		SummePassiva,
@@ -149,13 +154,13 @@ func NewDefaultAccountSystem() AccountSystem {
 	stakeholder := valueMagnets.Stakeholder{}
 
 	for _, sh := range stakeholder.All(util.Global.FinancialYear) {
-		ad := account.AccountDescription{Id: sh.Id, Name: sh.Name, Type: Hauptkonto}
+		ad := account.AccountDescription{Id: sh.Id, Name: sh.Name, Type: Hauptkonto.Id}
 		accountSystem.Add(account.NewAccount(ad))
 
 		// create subaccounts
-		for _, ukname := range UK {
+		for _, uk := range UK {
 			//			sa := account.AccountDescription{Id: sh.Id+ukname, Name: sh.Name+ukname, Type: valueMagnets.StakeholderTypeKUA}
-			sa := account.AccountDescription{Id: sh.Id+ukname, Name: sh.Name+ukname, Type: ukname}
+			sa := account.AccountDescription{Id: sh.Id+uk.Id, Name: sh.Name+uk.Id, Type: uk.Type}
 			sa.Superaccount = ad.Id
 			accountSystem.Add(account.NewAccount(sa))
 		}
@@ -198,9 +203,8 @@ func (r *DefaultAccountSystem) CloneAccountsOfStakeholder(sh valueMagnets.Stakeh
 	accounts = append(accounts, *acc)
 
 	// find subaccounts
-	for _, ukname := range UK {
-		//			sa := account.AccountDescription{Id: sh.Id+ukname, Name: sh.Name+ukname, Type: valueMagnets.StakeholderTypeKUA}
-		sa := account.AccountDescription{Id: sh.Id+ukname, Name: sh.Name+ukname, Type: ukname}
+	for _, uk := range UK {
+		sa := account.AccountDescription{Id: sh.Id+uk.Id, Name: sh.Name+uk.Id, Type: uk.Type}
 		log.Println("in CloneAccountsOfStakeholder", sa)
 	}
 
@@ -305,6 +309,8 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 		account = r.accounts[SKR03_1400.Id]
 	case SKR03konto == "731", SKR03konto == "1600":
 		account = r.accounts[SKR03_1600.Id]
+	case isInRange(SKR03konto, 1700, 1759):
+		account =  r.accounts[SKR03_sonstVerb.Id]  // bspw. 1755
 	case isInRange(SKR03konto, 1769, 1791):
 		account = r.accounts[SKR03_Umsatzsteuer.Id]
 	case SKR03konto == "1900":
@@ -314,12 +320,13 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 	case SKR03konto == "4120":
 		account = r.accounts[SKR03_4100_4199.Id]
 	case isInRange(SKR03konto, 4130, 4140):
-		account = r.accounts[SKR03_4100_4199.Id]
+		account = r.accounts[SKR03_4100_4199.Id]  // Löhne & Gehälter
 	case SKR03konto == "4320":
 		account = r.accounts[SKR03_Steuern.Id]
 	case isInRange(SKR03konto, 4822, 4855):
 		account = r.accounts[SKR03_Abschreibungen.Id]
-	case isInRange(SKR03konto, 2300, 2313),
+	case isInRange(SKR03konto, 2000, 2199),
+		 isInRange(SKR03konto, 2300, 2313),
 		 isInRange(SKR03konto, 2320, 2350),
 		 isInRange(SKR03konto, 2380, 2409),
 		 isInRange(SKR03konto, 4200, 4306),
@@ -329,7 +336,8 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 		 isInRange(SKR03konto, 4900, 4980):
 		account = r.accounts[SKR03_sonstigeAufwendungen.Id]
 	case isInRange(SKR03konto, 8000, 8799),
-		 isInRange(SKR03konto, 2700, 2744):
+		 isInRange(SKR03konto, 2700, 2744),
+		 isInRange(SKR03konto, 2510, 2520):
 		account = r.accounts[SKR03_Umsatzerloese.Id]
 	case SKR03konto == "9000":
 		account = r.accounts[SKR03_Saldenvortrag.Id]

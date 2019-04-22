@@ -31,7 +31,7 @@ type Stakeholder struct {
 }
 
 
-var StakeholderKM = Stakeholder{Id: "K", Name: "k:  Kommitment", Type: StakeholderTypeCompany, Arbeit: "1", Fairshares: "0"}
+var StakeholderKM = Stakeholder{Id: "K", Name: "k:  kommitment", Type: StakeholderTypeCompany, Arbeit: "1", Fairshares: "0"}
 var StakeholderEX = Stakeholder{Id: "EX", Name: "k:  Extern", Type: StakeholderTypeExtern, Arbeit: "1", Fairshares: "0"}
 var StakeholderRR = Stakeholder{Id: "RR", Name: "k:  Buchungsreste AR like Reisekosten etc.", Type: StakeholderTypeOthers, Arbeit: "1", Fairshares: "0"}
 

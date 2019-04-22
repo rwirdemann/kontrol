@@ -340,7 +340,7 @@ func TestProcessOPOS_SKR1600(t *testing.T) {
 	assert.Equal(t, 1, len(bookings1600))
 
 	// the booking is booked to partners via costCenter booking
-	accountK, _ := accSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_Kosten)
+	accountK, _ := accSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_Kosten.Id)
 	bookingsK := accountK.Bookings
 	assert.Equal(t, 1, len(bookingsK))
 
@@ -442,7 +442,7 @@ func TestErloesverteilungAnValueMagnetsSimple(t *testing.T) {
 	assert.Equal(t, -250.0, b.Saldo)
 
 	// whats on BW subacc. Provision
-	acc, _ := as.GetSubacc("BW", accountSystem.UK_Vertriebsprovision)
+	acc, _ := as.GetSubacc("BW", accountSystem.UK_Vertriebsprovision.Id)
 	assert.Equal(t, 1, len(acc.Bookings)) // Vertriebsprovision
 
 }
@@ -469,12 +469,12 @@ func TestErloesverteilungAnValueMagnets_Anlage(t *testing.T) {
 	assert.Equal(t, 4000.0, bankacc.Bookings[0].Amount )
 
 	// whats on "JM"
-	b,_ := as.GetSubacc("JM", accountSystem.UK_VeraenderungAnlagen)
+	b,_ := as.GetSubacc("JM", accountSystem.UK_VeraenderungAnlagen.Id)
 	assert.Equal(t, 1, len(b.Bookings))
 	assert.Equal(t, -1333.0, math.Round(b.Saldo))
 
 	// whats on BW subacc. Provision
-	acc, _ := as.GetSubacc("RW", accountSystem.UK_VeraenderungAnlagen)
+	acc, _ := as.GetSubacc("RW", accountSystem.UK_VeraenderungAnlagen.Id)
 	assert.Equal(t, 1, len(acc.Bookings))
 
 }
@@ -539,12 +539,12 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 
 
 	// booking ist on CostCenter K
-	b,_ := as.GetSubacc("K", accountSystem.UK_Kosten)
+	b,_ := as.GetSubacc("K", accountSystem.UK_Kosten.Id)
 	assert.Equal(t, 2, len(b.Bookings))
 	assert.Equal(t, -58.0, b.Saldo)
 
 	// Booking is on CostCenter BW
-	a, _ := as.GetSubacc("BW", accountSystem.UK_Kosten)
+	a, _ := as.GetSubacc("BW", accountSystem.UK_Kosten.Id)
 	// a.UpdateSaldo()
 	assert.Equal(t, 1, len(a.Bookings))
 	typestring := ""
@@ -555,7 +555,7 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 	assert.Equal(t, -10000.0, a.Saldo)
 
 	// Booking is on CostCenter JM
-	c, _ := as.GetSubacc("JM", accountSystem.UK_Entnahmen)
+	c, _ := as.GetSubacc("JM", accountSystem.UK_Entnahmen.Id)
 	assert.Equal(t, 1, len(c.Bookings))
 	assert.Equal(t, booking.CC_Entnahme, c.Bookings[0].Type)
 	assert.Equal(t, -5000.0, c.Saldo)
@@ -632,7 +632,7 @@ func TestCalculateEmplyeeBonnusses (t *testing.T) {
 
 	// 70% of 100€
 	gehaelterAccount, _ := as.Get("4100_4199")
-	annasAccount, _ := as.GetSubacc("AB", accountSystem.UK_AnteileAuserloesen)
+	annasAccount, _ := as.GetSubacc("AB", accountSystem.UK_AnteileAuserloesen.Id)
 
 	util.AssertFloatEquals(t, 70.0, annasAccount.Saldo )
 	util.AssertFloatEquals(t, -70.0, gehaelterAccount.Saldo )
@@ -652,7 +652,7 @@ func TestBookLiquidityNeedToPartners (t *testing.T) {
 
 	BookLiquidityNeedToPartners( as, 12.0)
 
-	acc,_ := as.GetSubacc("JM", accountSystem.UK_LiquidityReserve)
+	acc,_ := as.GetSubacc("JM", accountSystem.UK_LiquidityReserve.Id)
 
 	util.AssertFloatEquals(t, -4.0, math.Round(acc.Saldo) )
 

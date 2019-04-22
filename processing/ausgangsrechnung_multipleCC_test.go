@@ -30,7 +30,7 @@ func TestMultipleCostCenters (t *testing.T) {
 	BookRevenueToEmployeeCostCenter{AccSystem: as, Booking: *bkng}.run()
 
 	// 1/4 of of 5% provision = 12,5€ goes to each of the four parties
-	acc, _ := as.GetSubacc("BW", accountSystem.UK_Vertriebsprovision)
+	acc, _ := as.GetSubacc("BW", accountSystem.UK_Vertriebsprovision.Id)
 //	log.Println("in TestMultipleCostCenters", acc.Saldo)
 	util.AssertFloatEquals(t, 12.5, acc.Saldo)
 
