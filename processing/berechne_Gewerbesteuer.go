@@ -1,7 +1,7 @@
 package processing
 
 
-const Gewerbesteuer_Freibetrag 	= 25000
+const Gewerbesteuer_Freibetrag 	= 24.500
 const Gewerbesteuer_Hebesatz	= 4.70
 const Gewerbesteuer_Messbetrtag = 0.035
 
