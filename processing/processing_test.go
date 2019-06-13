@@ -589,7 +589,7 @@ func TestStakeholderYearlyIncome (t *testing.T) {
 	ErloesverteilungAnStakeholder(as)
 	DistributeKTopf(as)
 
-	// 33% von 200€ k-anteil + 50% von 800€
+	// 33% von 200€ k-anteil + 50% von 800€ - Gewerbesteuer
 	util.AssertEquals(t, 400.0, math.Round(StakeholderYearlyIncome(as, "JM")) )
 }
 
