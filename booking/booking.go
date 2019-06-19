@@ -54,6 +54,7 @@ const (
 	CC_Employeeaanteil     = "CC_Employeeanteil"
 	CC_Kommitmentanteil    = "CC_Kommitmentanteil"
 	CC_KommitmentanteilEX  = "CC_KommitmentanteilEX"
+	CC_KommitmentanteilRest= "CC_KommitmentanteilREST"
 	CC_Entnahme            = "CC_Entnahme"
 	CC_AnteilAusFairshares = "CC_AnteilAusFairshares"
 	CC_AnteilAusFaktura    = "CC_AnteilAusFaktura"
