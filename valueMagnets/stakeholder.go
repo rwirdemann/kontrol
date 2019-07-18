@@ -192,7 +192,9 @@ func (this *Stakeholder) Get(id string) Stakeholder {
 			return s
 		}
 	}
-	panic(fmt.Sprintf("in Stakeholder.Get: stakeholder '%s' not found", id))
+//	log.Println("in Stakeholder.Get: stakeholder '%s' not found", id, util.Global.FinancialYear)
+//	log.Println("in Stakeholder.Get: returning ", StakeholderKM, "  instead...")
+	return StakeholderKM
 }
 
 // return a array of pointers to selected stakeholders

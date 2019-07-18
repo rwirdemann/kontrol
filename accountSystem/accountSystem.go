@@ -71,14 +71,14 @@ var UK_AnteileausFairshare 	= account.AccountDescription{Id: "_1-AnteilausFairsh
 var UK_AnteilMitmachen 		= account.AccountDescription{Id: "_2-Anteil-Mitmachen", Name: "", Type: "Aktiv"}
 var UK_Vertriebsprovision 	= account.AccountDescription{Id: "_3-Vertriebsprovision", Name: "", Type: "Aktiv"}
 var UK_AnteileAuserloesen 	= account.AccountDescription{Id: "_4-Anteilauserloesen", Name: "", Type: "Aktiv"}
-var UK_unused 				= account.AccountDescription{Id: "_4.2-unused", Name: "", Type: "Aktiv"}
+var UK_Erloese 				= account.AccountDescription{Id: "_5-Erloese", Name: "", Type: "Aktiv"}
 
-var UK_Entnahmen 			= account.AccountDescription{Id: "_5-Entnahmen", Name: "", Type: "Passiv"}
-var UK_VeraenderungAnlagen 	= account.AccountDescription{Id: "_6-VeränderungAnlagen", Name: "", Type: "Passiv"}
-var UK_AnteilAnAnlagen 		= account.AccountDescription{Id: "_7-AnteilAnAnlagen", Name: "", Type: "Passiv"}
-var UK_Darlehen 			= account.AccountDescription{Id: "_8-Darlehen", Name: "", Type: "Passiv"}
-var UK_LiquidityReserve 	= account.AccountDescription{Id: "_9-Liquiditätsreserve", Name: "", Type: "Passiv"}
-var UK_Verfuegungsrahmen	= account.AccountDescription{Id: "_A-Verfuegungsrahmen-Bonus", Name: "", Type: "Passiv"}
+var UK_Entnahmen 			= account.AccountDescription{Id: "_6-Entnahmen", Name: "", Type: "Passiv"}
+var UK_VeraenderungAnlagen 	= account.AccountDescription{Id: "_7-VeränderungAnlagen", Name: "", Type: "Passiv"}
+var UK_AnteilAnAnlagen 		= account.AccountDescription{Id: "_8-AnteilAnAnlagen", Name: "", Type: "Passiv"}
+var UK_Darlehen 			= account.AccountDescription{Id: "_9-Darlehen", Name: "", Type: "Passiv"}
+var UK_LiquidityReserve 	= account.AccountDescription{Id: "_A-Liquiditätsreserve", Name: "", Type: "Passiv"}
+var UK_Verfuegungsrahmen	= account.AccountDescription{Id: "_B-Verfuegungsrahmen-Bonus", Name: "", Type: "Passiv"}
 var Hauptkonto 				= account.AccountDescription{Id: "Hauptkonto", Name: "", Type: "Hauptkonto"}
 
 
@@ -88,7 +88,7 @@ var UK  = [...]account.AccountDescription {
 	UK_AnteilMitmachen,
 	UK_Vertriebsprovision,
 	UK_AnteileAuserloesen,
-	UK_unused,
+	UK_Erloese,
 	UK_VeraenderungAnlagen,
 	UK_AnteilAnAnlagen,
 	UK_Darlehen,
@@ -362,5 +362,3 @@ func isInRange (num string, low, high int) bool {
 	}
 	return n >= low && n <= high
 }
-
-

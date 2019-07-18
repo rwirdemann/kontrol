@@ -437,13 +437,24 @@ func TestErloesverteilungAnValueMagnetsSimple(t *testing.T) {
 	ErloesverteilungAnStakeholder(as)
 
 	// whats on "K"
-	b,_ := as.Get("K")
-	assert.Equal(t, 1, len(b.Bookings)) // Kommitmentanteil is on k
-	assert.Equal(t, -250.0, b.Saldo)
+	kommitment,_ := as.Get("K")
+	assert.Equal(t, 1, len(kommitment.Bookings)) // Kommitmentanteil is on k
+	assert.Equal(t, -1000.0, kommitment.Saldo)
+
+	// whats on "K" subaccf
+	kommitment,_ = as.GetSubacc("K", accountSystem.UK_Kosten.Id)
+	assert.Equal(t, 2, len(kommitment.Bookings)) // Kommitmentanteil is on k
+	assert.Equal(t, -750.0, kommitment.Saldo)
 
 	// whats on BW subacc. Provision
 	acc, _ := as.GetSubacc("BW", accountSystem.UK_Vertriebsprovision.Id)
 	assert.Equal(t, 1, len(acc.Bookings)) // Vertriebsprovision
+	assert.Equal(t, 50.0, acc.Saldo)
+
+	// whats on BW subacc. UK_AnteileAuserloesen
+	acc, _ = as.GetSubacc("BW", accountSystem.UK_AnteileAuserloesen.Id)
+	assert.Equal(t, 1, len(acc.Bookings)) // Vertriebsprovision
+	assert.Equal(t, 700.0, acc.Saldo)
 
 }
 

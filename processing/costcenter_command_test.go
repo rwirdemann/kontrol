@@ -7,6 +7,7 @@ import (
 	"github.com/ahojsenn/kontrol/util"
 	"github.com/ahojsenn/kontrol/valueMagnets"
 	"github.com/stretchr/testify/assert"
+	"log"
 	"testing"
 	"time"
 )
@@ -102,4 +103,27 @@ func TestExternNettoAnteil(t *testing.T) {
 	bk := acc.Bookings[0]
 	util.AssertFloatEquals(t, -10800.0*account.KommmitmentExternShare, bk.Amount)
 	util.AssertEquals(t, booking.CC_KommitmentanteilEX, bk.Type)
+}
+
+func TestStakeholderWithNetPositions(t *testing.T) {
+	setCCTestUp()
+
+	// given: a booking
+	net := map[valueMagnets.Stakeholder]float64{
+		valueMagnets.StakeholderEX: 10800.0,
+	}
+	shrepo := valueMagnets.Stakeholder{}
+	net[shrepo.Get("BW")] = 1000
+	net[shrepo.Get("JM")] = 3675.0
+	net[shrepo.Get("KR")] = 3675.0
+	net[shrepo.Get("IK")] = 3675.0
+	p := booking.NewBooking(13, "AR", "", "", "JM", "Project-X",net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{})
+
+	// when: the position is processed
+	Process(accSystem, *p)
+
+	// make shure alle benefitees are recognized
+	benefitees := BookRevenueToEmployeeCostCenter{AccSystem: accSystem, Booking: *p}.stakeholderWithNetPositions()
+	log.Println("in TestStakeholderWithNetPositions:", benefitees)
+	util.AssertEquals(t, 5, len(benefitees))
 }

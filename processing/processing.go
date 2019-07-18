@@ -220,24 +220,12 @@ func ErloesverteilungAnStakeholder (as accountSystem.AccountSystem) {
 					bk.Type = booking.CC_KommitmenschDarlehen
 					debit,_ := as.GetSubacc(bk.CostCenter, accountSystem.UK_Darlehen.Id)
 					credit,_ := as.Get(bk.CostCenter)
-					BookFromCreditToDebit {
-						AccSystem: as,
-						Booking: bk,
-						Debit: debit,
-						Credit: credit,
-						Reason: "costcenter booking: ",
-					}.run()
+					bookFromTo(bk,debit, credit)
 				case accountSystem.SKR03_1900.Id: // Privatentnahmen
 					bk.Type = booking.CC_Entnahme
 					debit,_ := as.GetSubacc(bk.CostCenter, accountSystem.UK_Entnahmen.Id)
 					credit,_ := as.Get(bk.CostCenter)
-					BookFromCreditToDebit {
-						AccSystem: as,
-						Booking: bk,
-						Debit: debit,
-						Credit: credit,
-						Reason: "costcenter booking: ",
-					}.run()
+					bookFromTo(bk,debit, credit)
 				}
 			}
 		}
@@ -366,8 +354,8 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 
 
 	// Erlösanteile
-	subacc,_ :=  as.GetSubacc(kaccount.Description.Id, accountSystem.UK_AnteileAuserloesen.Id)
-	sumPartnerFaktura := subacc.SumOfBookingType(booking.CC_PartnerNettoFaktura)
+	k_erloesAcc,_ :=  as.GetSubacc(kaccount.Description.Id, accountSystem.UK_Erloese.Id)
+	sumPartnerFaktura := sumOfAllBookings(*k_erloesAcc)
 	log.Println("    Sum of Partnerfaktura", sumPartnerFaktura)
 	restToDistribute := rest
 	sumOfErloesAnteil := rest
@@ -380,10 +368,9 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 		habenacc,_  := as.GetSubacc(sh.Id, accountSystem.UK_AnteileAuserloesen.Id)
 
 		// Erlösanteil buchen
-		subacc,_ := as.GetSubacc(kaccount.Description.Id, accountSystem.UK_AnteileAuserloesen.Id)
-		rev := sumOfBookingsForStakeholder(*subacc, sh) // sum the partners revenue
-		erloesAnteil := math.Round(restToDistribute*100*rev/sumPartnerFaktura )/100
-		log.Printf("      %s revenue %2.2f%% = %2.0f€ / %2.0f€", sh.Id, rev/sumPartnerFaktura, rev, sumPartnerFaktura)
+		partnersRev := sumOfBookingsForStakeholder(*k_erloesAcc, sh) // sum the partners revenue
+		erloesAnteil := math.Round(restToDistribute*100*partnersRev/sumPartnerFaktura )/100
+		log.Printf("      %s revenue %2.2f%% = %2.0f€ / %2.0f€", sh.Id, partnersRev/sumPartnerFaktura, partnersRev, sumPartnerFaktura)
 		log.Printf("      %s Anteil aus Erlösen: %2.2f€", sh.Id, erloesAnteil)
 		anteil_erloese := booking.Booking{
 			Amount:      -erloesAnteil,
@@ -443,13 +430,14 @@ func BookLiquidityNeedToPartners (as accountSystem.AccountSystem, liquidityNeed 
 		}
 		debit,_ := as.Get(sh.Id)
 		credit,_ := as.GetSubacc(sh.Id, accountSystem.UK_LiquidityReserve.Id)
-		BookFromCreditToDebit {
+		bookFromTo(bk,debit, credit)
+/*		BookFromCreditToDebit {
 			AccSystem: as,
 			Booking: bk,
 			Debit: debit,
 			Credit: credit,
 			Reason: "costcenter booking: ",
-		}.run()
+		}.run()*/
 
 		log.Println("in bookLiquidityNeedToPartners: ", sh.Id, bk.Amount)
 	}
@@ -474,13 +462,14 @@ func BookAmountAtDisposition (as accountSystem.AccountSystem) {
 			FileCreated: time.Now().AddDate(0, 0, 0),
 			BankCreated: time.Now().AddDate(0, 0, 0),
 		}
-		BookFromCreditToDebit {
+		bookFromTo(bk,debit, credit)
+/*		BookFromCreditToDebit {
 			AccSystem: as,
 			Booking: bk,
 			Debit: debit,
 			Credit: credit,
 			Reason: "costcenter booking: ",
-		}.run()
+		}.run()*/
 
 		log.Println("in bookAmountAtDisposition: ", sh.Id, math.Round(100*credit.Saldo)/100)
 	}
@@ -491,12 +480,23 @@ func BookAmountAtDisposition (as accountSystem.AccountSystem) {
 func sumOfBookingsForStakeholder (ac account.Account, sh valueMagnets.Stakeholder) float64 {
 	saldo := 0.0
 	for _,bk := range ac.Bookings {
-		if sh.Id == bk.CostCenter && bk.Type == booking.CC_PartnerNettoFaktura {
+		if sh.Id == bk.CostCenter && bk.Type == booking.CC_RevDistribution_1 {
 			saldo += bk.Amount
 		}
 	}
 	return saldo
 }
+
+
+func sumOfAllBookings (ac account.Account) float64 {
+	saldo := 0.0
+	shrepo := valueMagnets.Stakeholder{}
+	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
+		saldo += sumOfBookingsForStakeholder (ac, sh)
+	}
+	return saldo
+}
+
 
 
 
@@ -528,16 +528,14 @@ func CalculateEmployeeBonus (as accountSystem.AccountSystem) accountSystem.Accou
 			}
 			BookSKR03Command{AccSystem: as, Booking: bk}.run()
 
+			// book from company cost to valuemagnets Hauptaccount
+			k_subacc_costs,_ := as.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_Kosten.Id)
+			sh_mainacc,_ := as.Get(bk.CostCenter)
+			bookFromTo(bk, k_subacc_costs, sh_mainacc)
+
 			// book from valuemagnets Hauptaccount into valuemagnets bonus account
-			debit,_ := as.Get(bk.CostCenter)
 			credit,_ := as.GetSubacc(bk.CostCenter, accountSystem.UK_Verfuegungsrahmen.Id)
-			BookFromCreditToDebit {
-				AccSystem: as,
-				Booking: bk,
-				Debit: debit,
-				Credit: credit,
-				Reason: "Bonus: ",
-			}.run()
+			bookFromTo(bk, sh_mainacc, credit)
 		}
 	}
 	return as
@@ -555,16 +553,6 @@ func sumOfProvisonsForStakeholder (ac account.Account, sh valueMagnets.Stakehold
 	return saldo
 }
 
-
-// a function that helps to return the yearly income of a kommitmensch...
-func accountIfYearlyIncome (ac account.Account) float64 {
-	switch ac.Description.Type {
-	case "Passiv":
-		return 0.0
-	default:
-		return ac.Saldo
-	}
-}
 
 
 // sum up whatever the stakeholder earned in the actual year

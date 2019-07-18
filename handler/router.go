@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/ahojsenn/kontrol/accountSystem"
-	"github.com/ahojsenn/kontrol/middleware"
+	"github.com/ahojsenn/kontrol/jwt-notimpl"
 	"github.com/gorilla/mux"
 	"io/ioutil"
 )
@@ -10,8 +10,8 @@ import (
 func NewRouter(githash string, buildstamp string, repository accountSystem.AccountSystem) *mux.Router {
 	r := mux.NewRouter()
 	key := keycloakRSAPub()
-	r.HandleFunc("/kontrol/version", middleware.JWTMiddleware(key, MakeVersionHandler(githash, buildstamp)))
-	r.HandleFunc("/kontrol/collectiveaccount", middleware.JWTMiddleware(key, MakeGetCollectiveAccountHandler(repository)))
+	r.HandleFunc("/kontrol/version", jwt_notimpl.JWTMiddleware(key, MakeVersionHandler(githash, buildstamp)))
+	r.HandleFunc("/kontrol/collectiveaccount", jwt_notimpl.JWTMiddleware(key, MakeGetCollectiveAccountHandler(repository)))
 	r.HandleFunc("/kontrol/bilanz", MakeGetBilanzAccountsHandler(repository))
 	r.HandleFunc("/kontrol/GuV", MakeGetGuVAccountsHandler(repository))
 	r.HandleFunc("/kontrol/stakeholder", MakeGetStakeholderHandler())

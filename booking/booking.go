@@ -54,10 +54,12 @@ const (
 	CC_Employeeaanteil     = "CC_Employeeanteil"
 	CC_Kommitmentanteil    = "CC_Kommitmentanteil"
 	CC_KommitmentanteilEX  = "CC_KommitmentanteilEX"
-	CC_KommitmentanteilRest= "CC_KommitmentanteilREST"
+	CC_KommitmentanteilREST= "CC_KommitmentanteilREST"
 	CC_Entnahme            = "CC_Entnahme"
 	CC_AnteilAusFairshares = "CC_AnteilAusFairshares"
 	CC_AnteilAusFaktura    = "CC_AnteilAusFaktura"
+	CC_Fakturasumme        = "CC_Fakturasumme"
+	CC_RevDistribution_1   = "CC_Erlösverteilung Schritt 1"
 	CC_KommitmenschDarlehen = "CC_KommitmenschDarlehen"
 	Eingangsrechnung       = "Eingangsrechnung"
 	CC_SVBeitrag           = "CC_SV-Beitrag"
@@ -182,6 +184,7 @@ func (b *Booking) IsOpenPosition() bool {
 func (b *Booking) IsBeyondBudgetDate () bool {
 	return b.BankCreated.After(util.Global.BalanceDate)
 }
+
 
 
 type ByMonth []Booking

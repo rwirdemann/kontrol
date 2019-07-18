@@ -2,14 +2,12 @@ package processing
 
 import (
 	"fmt"
-	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/accountSystem"
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/valueMagnets"
 	"log"
 	"strconv"
 	"strings"
-	"time"
 )
 
 // for a given booking
@@ -21,40 +19,31 @@ type BookCostToCostCenter struct {
 	AccSystem  accountSystem.AccountSystem
 }
 
-func (c BookCostToCostCenter) run() {
-
-	amount := c.Booking.Amount
-
-	// set booking Type
-	var bkt string = "hier steht der Buchungstyp"
-	switch c.Booking.Type {
-	case booking.Eingangsrechnung, booking.SKR03:
-		bkt = booking.Kosten
-	default:
-		bkt = c.Booking.Type
-	}
+func (this BookCostToCostCenter) run() {
 
 	// Sollbuchung
-	bkresp := c.Booking.CostCenter
+	bkresp := this.Booking.CostCenter
 	if bkresp == "" {
-		log.Println("in BookCostToCostCenter, cc empty in row ", c.Booking.RowNr)
+		log.Println("in BookCostToCostCenter, cc empty in row ", this.Booking.RowNr)
 		log.Println("    , setting it to 'K' ")
 		bkresp = valueMagnets.StakeholderKM.Id
 	}
-	sollAccount,_ := c.AccSystem.GetSubacc(bkresp, accountSystem.UK_Kosten.Id)
-	b1 := booking.CloneBooking(c.Booking, amount, bkt, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
-	sollAccount.Book(b1)
 
-	// Habenbuchung: book to K=Company for Partners for now, but for Employees book it to them directly
-	habenAccount,_ := c.AccSystem.Get(bkresp)
+	// book from kommitment main account to k subacc costs
+	acc_k_main,_ := this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
+	acc_k_subcosts,_ := this.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_Kosten.Id)
+	bookFromTo(this.Booking, acc_k_main, acc_k_subcosts)
 
-//	if !isEmployee(bkresp) {
-//		habenAccount,_ = c.AccSystem.Get(valueMagnets.StakeholderKM.Id)
-//	}
+	// if costcenter is != Company (k) then distribute costs
+	// 1. from acc_k_subcosts to employees main account
+	// 2. and from there to employees subacc.
+	if (bkresp != valueMagnets.StakeholderKM.Id) {
+		habenAccount,_ := this.AccSystem.Get(bkresp)
+		bookFromTo(this.Booking, acc_k_subcosts, habenAccount)
 
-	b2 := booking.CloneBooking(c.Booking, -amount, bkt, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
-	b2.Text = b2.Text + "-Gegenbuchung"
-	habenAccount.Book(b2)
+		sollAccount,_ := this.AccSystem.GetSubacc(bkresp, accountSystem.UK_Kosten.Id)
+		bookFromTo(this.Booking, habenAccount, sollAccount)
+	}
 }
 
 
@@ -67,49 +56,29 @@ type BookToValuemagnetsByShares struct{
 
 func (c BookToValuemagnetsByShares) run() {
 
+
+	// book from k-main account to k-subacc type
+	k_mainAcc,_ := c.AccSystem.Get(valueMagnets.StakeholderKM.Id)
+	k_subAcc,_ := c.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, c.SubAcc)
+	bookFromTo(c.Booking, k_mainAcc, k_subAcc)
+
 	// loop through all Stakeholders
 	shrepo := valueMagnets.Stakeholder{}
 	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
 		fairshares,_  := strconv.ParseFloat(sh.Fairshares, 64)
 		amount := c.Booking.Amount*fairshares
 
-		sollAccount,_ := c.AccSystem.Get(sh.Id)
-		b1 := booking.CloneBooking(c.Booking, -amount, c.Booking.Type, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
+		// book from k-subacc to stakeholders main acc
+
+		sh_mainAcc,_ := c.AccSystem.Get(sh.Id)
+		b1 := booking.CloneBooking(c.Booking, amount, c.Booking.Type, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
 		b1.Text += " "+sh.Id+" Anteil von "+fmt.Sprintf("%.2f",c.Booking.Amount)+"€"
-		sollAccount.Book(b1)
+		bookFromTo(b1, k_subAcc, sh_mainAcc)
 
-		// Habenbuchung
-		habenAccount,_ := c.AccSystem.GetSubacc(sh.Id, c.SubAcc)
-		b2 := booking.CloneBooking(c.Booking, amount, c.Booking.Type, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
-		b2.Text += " "+sh.Id+" Anteil von "+fmt.Sprintf("%.2f",c.Booking.Amount)+"€"
-		habenAccount.Book(b2)
+		// and from stakeholders mainaccount to subacc
+		sh_subAcc,_ := c.AccSystem.GetSubacc(sh.Id, c.SubAcc)
+		bookFromTo(b1, sh_mainAcc,sh_subAcc)
 	}
-}
-
-
-type BookFromCreditToDebit struct{
-	Booking    booking.Booking
-	AccSystem  accountSystem.AccountSystem
-	Debit	   *account.Account
-	Credit	   *account.Account
-	Reason	   string
-}
-
-func (this BookFromCreditToDebit) run() {
-	b := booking.Booking{
-		RowNr:       this.Booking.RowNr,
-		Amount:      this.Booking.Amount,
-		Type:        this.Booking.Type,
-		CostCenter:  this.Booking.CostCenter,
-		Text:        this.Reason + this.Booking.Text ,
-		Month:       this.Booking.Month,
-		Year:        this.Booking.Year,
-		FileCreated: this.Booking.FileCreated,
-		BankCreated: this.Booking.BankCreated}
-	this.Debit.Book(b)
-
-	b.Amount *= -1.0
-	this.Credit.Book(b)
 }
 
 
@@ -142,214 +111,7 @@ func (c BookFromKtoKommitmensch) run() {
 
 
 
-type BookRevenueToEmployeeCostCenter struct {
-	Booking    booking.Booking
-	AccSystem  accountSystem.AccountSystem
 
-}
-
-func (this BookRevenueToEmployeeCostCenter) run() {
-
-	// hier kommt nun die ganze Verteilung unter den kommitmenschen
-	// 1. erst employees auszahlen und vertriebsprovisionen, den Rest auf kommitment
-	// 2. später den kommitment topf unter den kommanditisten aufteilen
-
-
-	benefitees := this.stakeholderWithNetPositions()
-
-	for _, benefited := range benefitees {
-
-		// book Partners revenue to kommitment for now
-		if benefited.Type == valueMagnets.StakeholderTypePartner {
-			kommitmentShare := booking.Booking{
-				RowNr:       this.Booking.RowNr,
-				Amount:      this.Booking.Net[benefited] * (1.00 - account.PartnerProvision),
-				Type:        booking.CC_PartnerNettoFaktura,
-				CostCenter:  benefited.Id,
-				Text:        this.Booking.Text + "#Kommitment#" + benefited.Id,
-				Month:       this.Booking.Month,
-				Year:        this.Booking.Year,
-				FileCreated: this.Booking.FileCreated,
-				BankCreated: this.Booking.BankCreated}
-
-			kommitmentAccount,_ := this.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteileAuserloesen.Id)
-			kommitmentAccount.Book(kommitmentShare)
-
-			// Gegenbuchung for partners to company for now
-			sollAccount,_ := this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
-			kommitmentShare.Amount *= -1
-			sollAccount.Book (kommitmentShare)
-		}
-
-		// book Externals revenue to kommitment
-		if benefited.Type == valueMagnets.StakeholderTypeExtern {
-			bkt := booking.CC_KommitmentanteilEX
-			kommitmentShare := booking.Booking{
-				RowNr:       this.Booking.RowNr,
-				Amount:      this.Booking.Net[benefited] * account.KommmitmentExternShare,
-				Type:        bkt,
-				CostCenter:  this.Booking.CostCenter,
-				Text:        this.Booking.Text + "#Kommitment#" + benefited.Id,
-				Month:       this.Booking.Month,
-				Year:        this.Booking.Year,
-				FileCreated: this.Booking.FileCreated,
-				BankCreated: this.Booking.BankCreated}
-
-			kommitmentAccount,_ := this.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteileAuserloesen.Id)
-			kommitmentAccount.Book(kommitmentShare)
-
-			// Gegenbuchung
-			sollAccount,_ := this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
-			kommitmentShare.Amount *= -1
-			sollAccount.Book (kommitmentShare)
-		}
-
-		// Book the rest (position) to kommitment. This can happen e.g. due to
-		// non person related things on the invoice like travel expenses or similar
-		if benefited.Type == valueMagnets.StakeholderTypeOthers {
-			kommitmentShare := booking.Booking{
-				RowNr: 		 this.Booking.RowNr,
-				Amount:      this.Booking.Net[benefited] * account.KommmitmentOthersShare,
-				Type:        booking.CC_Kommitmentanteil,
-				CostCenter:  this.Booking.CostCenter,
-				Text:        this.Booking.Text + "#Kommitment#Rest#" + benefited.Id,
-				Month:       this.Booking.Month,
-				Year:        this.Booking.Year,
-				FileCreated: this.Booking.FileCreated,
-				BankCreated: this.Booking.BankCreated}
-
-			kommitmentAccount,_ := this.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteileAuserloesen.Id)
-			kommitmentAccount.Book(kommitmentShare)
-
-			// Gegenbuchung
-			sollAccount,_ := this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
-			kommitmentShare.Amount *= -1
-			sollAccount.Book (kommitmentShare)
-		}
-
-		// now book kommitment part of employee's revenue
-		if benefited.Type == valueMagnets.StakeholderTypeEmployee {
-			kommitmentShare := booking.Booking{
-				RowNr: 		 this.Booking.RowNr,
-				Amount:      this.Booking.Net[benefited] * (account.KommmitmentEmployeeShare-account.EmployeeShare),
-				Type:        booking.CC_Kommitmentanteil,
-				Text:        this.Booking.Text,
-				Month:       this.Booking.Month,
-				Year:        this.Booking.Year,
-				FileCreated: this.Booking.FileCreated,
-				BankCreated: this.Booking.BankCreated,
-				CostCenter:  this.Booking.CostCenter}
-
-
-			kommitmentAccount,_ := this.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteileAuserloesen.Id)
-			kommitmentAccount.Book(kommitmentShare)
-
-			// Gegenbuchung
-			sollAccount,_ := this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
-			kommitmentShare.Amount *= -1
-			sollAccount.Book (kommitmentShare)
-
-
-			// book employee share of employees revenue
-			employeeshare := booking.Booking{
-				RowNr: 		 this.Booking.RowNr,
-				Amount:      this.Booking.Net[benefited] * account.EmployeeShare,
-				Type:        booking.CC_Employeeaanteil,
-				Text:        fmt.Sprintf("%f", account.EmployeeShare)+"*Netto: " + this.Booking.Text,
-				Month:       this.Booking.Month,
-				Year:        this.Booking.Year,
-				FileCreated: this.Booking.FileCreated,
-				BankCreated: this.Booking.BankCreated,
-				CostCenter:  this.Booking.CostCenter}
-
-			employeeaccount,_ := this.AccSystem.GetSubacc(benefited.Id, accountSystem.UK_AnteileAuserloesen.Id)
-			employeeaccount.Book(employeeshare)
-
-			// Gegenbuchung to employees main account for now
-//			sollAccount,_ = this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
-			sollAccount,_ = this.AccSystem.Get(benefited.Id)
-			employeeshare.Amount *= -1
-			sollAccount.Book (employeeshare)
-		}
-
-
-		// Die CC_Vertriebsprovision bekommt der oder die Dealbringer
-		if benefited.Type != valueMagnets.StakeholderTypeOthers { // Don't give 5% for travel expenses and co...
-
-			// maybe the have to be given back to kommitment...
-
-			var provisionAccount *account.Account
-			var sollAccount *account.Account
-
-			// get all involved Dealbringer
-			// split Vertriebsprovision between all involved CostCenters
-			ccArr := this.getCostCenter()
-			numCc := float64(len(ccArr))
-			for _,cc := range ccArr {
-				// log.Println("in BookRevenueToEmployeeCostCenter:",  benefited.Id, cc)
-				// Buchung Vertriebsprovision
-				provisionAccount, _ = this.AccSystem.GetSubacc(cc, accountSystem.UK_Vertriebsprovision.Id)
-				b := booking.Booking{
-					RowNr: 		 this.Booking.RowNr,
-					Amount:      this.Booking.Net[benefited] * account.PartnerProvision / numCc,
-					Type:        booking.CC_Vertriebsprovision,
-					Text:        this.Booking.Text + "#Provision#" + cc + " of " + benefited.Id,
-					Month:       this.Booking.Month,
-					Year:        this.Booking.Year,
-					FileCreated: this.Booking.FileCreated,
-					BankCreated: this.Booking.BankCreated,
-					CostCenter:  cc,
-				}
-				provisionAccount.Book(b)
-				//log.Println("in BookRevenueToEmployeeCostCenter:", provisionAccount)
-
-				// Gegenbuchung to cc's main account
-//				sollAccount,_ = this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
-				sollAccount,_ = this.AccSystem.Get(cc)
-				b.Amount *= -1
-				sollAccount.Book (b)
-			}
-		}
-	}
-}
-
-// Split CostCenter String by Comma and rreturn an Array of costCenters
-func  (this BookRevenueToEmployeeCostCenter) getCostCenter() []string {
-	var ccArr []string
-	var sh valueMagnets.Stakeholder
-
-	// check if valid costCenter
-	for _,cc := range strings.Split(this.Booking.Responsible,",") {
-		if !sh.IsValidStakeholder(cc) {
-			log.Printf("in BookRevenueToEmployeeCostCenter.getCostCenter(), invalid cc: '%s'\n", cc)
-			log.Printf("                ==> setting '%s' to '%s'\n", cc, valueMagnets.StakeholderKM.Id)
-			ccArr = append(ccArr, valueMagnets.StakeholderKM.Id)
-		} else {
-			ccArr = append(ccArr, cc)
-		}
-	}
-
-	return ccArr
-}
-
-
-// Eine Buchung kann mehrere Nettopositionen enthalten, den je einem Stakeholder zugeschrieben wird.
-// Diese Funktion liefert ein Array mit Stateholdern, deren CC_Nettoanteil in der Buchung != 0 ist.
-func (this BookRevenueToEmployeeCostCenter) stakeholderWithNetPositions() []valueMagnets.Stakeholder {
-	var result []valueMagnets.Stakeholder
-	for k, v := range this.Booking.Net {
-		if v != 0 {
-			result = append(result, k)
-		}
-	}
-	return result
-}
-
-// is this an Open Position?
-func (this BookRevenueToEmployeeCostCenter) isOpenPosition() bool {
-	emptyTime := time.Time{}
-	return this.Booking.BankCreated == emptyTime
-}
 
 func isEmployee  (id string) bool {
 	shrepo := valueMagnets.Stakeholder{}
