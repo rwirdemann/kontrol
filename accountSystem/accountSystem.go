@@ -307,7 +307,7 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 		account = r.accounts[SKR03_Vorsteuer.Id]
 	case SKR03konto == "1400", SKR03konto == "1595":
 		account = r.accounts[SKR03_1400.Id]
-	case SKR03konto == "731", SKR03konto == "1600":
+	case SKR03konto == "731", isInRange(SKR03konto, 1600, 1699):
 		account = r.accounts[SKR03_1600.Id]
 	case isInRange(SKR03konto, 1700, 1759):
 		account =  r.accounts[SKR03_sonstVerb.Id]  // bspw. 1755

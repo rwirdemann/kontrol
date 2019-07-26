@@ -46,10 +46,10 @@ func TestBookCostToCostCenter(t *testing.T) {
 	util.AssertEquals(t, 1, len(account.Bookings))
 	assert.Equal(t, 1337.23, account.Bookings[0].Amount)
 
-	// there is something on the other account too
+	// this acfcount has two bookings, since it is jus a passing through accound ...
 	account2, _ := accsystem.Get("JM")
-	util.AssertEquals(t, 1, len(account2.Bookings))
-	assert.Equal(t, -1337.23, account2.Bookings[0].Amount)
+	util.AssertEquals(t, 2, len(account2.Bookings))
+	assert.Equal(t, 1337.23, account2.Bookings[0].Amount)
 
 }
 
@@ -101,8 +101,8 @@ func TestExternNettoAnteil(t *testing.T) {
 	// and kommitment got 95%
 	acc, _ := accSystem.Get(valueMagnets.StakeholderKM.Id)
 	bk := acc.Bookings[0]
-	util.AssertFloatEquals(t, -10800.0*account.KommmitmentExternShare, bk.Amount)
-	util.AssertEquals(t, booking.CC_KommitmentanteilEX, bk.Type)
+	util.AssertFloatEquals(t, -10800.0, bk.Amount)
+	util.AssertEquals(t, booking.CC_RevDistribution_1, bk.Type)
 }
 
 func TestStakeholderWithNetPositions(t *testing.T) {
@@ -117,7 +117,7 @@ func TestStakeholderWithNetPositions(t *testing.T) {
 	net[shrepo.Get("JM")] = 3675.0
 	net[shrepo.Get("KR")] = 3675.0
 	net[shrepo.Get("IK")] = 3675.0
-	p := booking.NewBooking(13, "AR", "", "", "JM", "Project-X",net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{})
+	p := booking.NewBooking(13, 	"AR", "", "", "JM", "Project-X",net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{})
 
 	// when: the position is processed
 	Process(accSystem, *p)
