@@ -41,10 +41,10 @@ func TestGetAllStakeholders(t *testing.T) {
 
 	//{"Stakeholder":[{"Id":"AN","Name":"k: Anke Nehrenberg","Type":"Partner","Arbeit":"1.00","Fairshares":"0.5"},{"Id":"RW","Name":"k: Ralf Wirdemann","Type":"Extern","Arbeit":"1.00","Fairshares":""},{"Id":"JM","Name":"k: Johannes Mainusch","Type":"Partner","Arbeit":"1.00","Fairshares":"0.5"},
 
-	ankesName := m["Stakeholder"].([]interface{})[0].(map[string]interface{})["Name"]
-	assert.Equal(t, ankesName, "k: Anke Nehrenberg" )
+	name := m["Stakeholder"].([]interface{})[0].(map[string]interface{})["Name"]
+	assert.Equal(t, "k:  kommitment" , name)
 
-	johannesName := m["Stakeholder"].([]interface{})[2].(map[string]interface{})["Name"]
+	johannesName := m["Stakeholder"].([]interface{})[3].(map[string]interface{})["Name"]
 	assert.Equal(t, johannesName, "k: Johannes Mainusch" )
 
 	sh = stakeholder.All(util.Global.FinancialYear)

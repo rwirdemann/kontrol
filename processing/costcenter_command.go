@@ -29,7 +29,9 @@ func (this BookCostToCostCenter) run() {
 		bkresp = valueMagnets.StakeholderKM.Id
 	}
 
-	// book from kommitment main account to k subacc costs
+	this.Booking.Type = booking.Kosten
+
+	// book from kommitment company account to k subacc costs
 	acc_k_main,_ := this.AccSystem.Get(valueMagnets.StakeholderKM.Id)
 	acc_k_subcosts,_ := this.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_Kosten.Id)
 	bookFromTo(this.Booking, acc_k_main, acc_k_subcosts)
@@ -38,7 +40,9 @@ func (this BookCostToCostCenter) run() {
 	// 1. from acc_k_subcosts to employees main account
 	// 2. and from there to employees subacc.
 	if (bkresp != valueMagnets.StakeholderKM.Id) {
+		this.Booking.Type = booking.Kosten+"_aufKommitmensch"
 		habenAccount,_ := this.AccSystem.Get(bkresp)
+		//log.Println("in BookCostToCostCenter, rowNr:", this.Booking.RowNr)
 		bookFromTo(this.Booking, acc_k_subcosts, habenAccount)
 
 		sollAccount,_ := this.AccSystem.GetSubacc(bkresp, accountSystem.UK_Kosten.Id)
@@ -56,20 +60,20 @@ type BookToValuemagnetsByShares struct{
 
 func (c BookToValuemagnetsByShares) run() {
 
-
 	// book from k-main account to k-subacc type
-	k_mainAcc,_ := c.AccSystem.Get(valueMagnets.StakeholderKM.Id)
-	k_subAcc,_ := c.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, c.SubAcc)
-	bookFromTo(c.Booking, k_mainAcc, k_subAcc)
+	// var k_subAcc *account.Account
+	//k_mainAcc,_ := c.AccSystem.Get(valueMagnets.StakeholderKM.Id)
+	//k_subAcc,_ := c.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, c.SubAcc)
+	//bookFromTo(c.Booking, k_mainAcc, k_subAcc)
 
 	// loop through all Stakeholders
 	shrepo := valueMagnets.Stakeholder{}
 	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
+		k_subAcc,_ := c.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, c.SubAcc)
 		fairshares,_  := strconv.ParseFloat(sh.Fairshares, 64)
 		amount := c.Booking.Amount*fairshares
 
 		// book from k-subacc to stakeholders main acc
-
 		sh_mainAcc,_ := c.AccSystem.Get(sh.Id)
 		b1 := booking.CloneBooking(c.Booking, amount, c.Booking.Type, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
 		b1.Text += " "+sh.Id+" Anteil von "+fmt.Sprintf("%.2f",c.Booking.Amount)+"€"
@@ -82,32 +86,6 @@ func (c BookToValuemagnetsByShares) run() {
 }
 
 
-
-type BookFromKtoKommitmensch struct{
-	Booking    booking.Booking
-	AccSystem  accountSystem.AccountSystem
-	SubAcc 	   string
-}
-
-func (c BookFromKtoKommitmensch) run() {
-	amount := c.Booking.Amount
-
-	// Sollbuchung
-	bkresp := c.Booking.CostCenter
-	if bkresp == "" {
-		log.Println("in BookToCostCenter, cc empty in row ", c.Booking.RowNr)
-		log.Println("    , setting it to 'K' ")
-		bkresp = valueMagnets.StakeholderKM.Id
-	}
-	sollAccount,_ := c.AccSystem.GetSubacc(bkresp, c.SubAcc)
-	b1 := booking.CloneBooking(c.Booking, amount, c.Booking.Type, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
-	sollAccount.Book(b1)
-
-	// Habenbuchung
-	habenAccount,_ := c.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, c.SubAcc)
-	b2 := booking.CloneBooking(c.Booking, -amount, c.Booking.Type, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
-	habenAccount.Book(b2)
-}
 
 
 

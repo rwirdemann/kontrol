@@ -34,7 +34,7 @@ func main() {
 	environment := util.GetEnv()
 	version := flag.Bool("version", false, "prints current kontrol version")
 	file := flag.String("file", DefaultBookingFile, "booking file")
-	year := flag.Int("year", 2017, "year to control")
+	year := flag.Int("year", 2019, "year to control")
 	httpPort := flag.String("httpPort", "20171", "http server port")
 	httpsPort := flag.String("httpsPort", "20172", "https server port")
 	certFile := flag.String("certFile", environment.CertFile, "https certificate")

@@ -569,7 +569,7 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 	c, _ := as.GetSubacc("JM", accountSystem.UK_Entnahmen.Id)
 	assert.Equal(t, 1, len(c.Bookings))
 	assert.Equal(t, booking.CC_Entnahme, c.Bookings[0].Type)
-	assert.Equal(t, 5000.0, c.Saldo)
+	assert.Equal(t, -5000.0, c.Saldo)
 }
 
 
@@ -665,7 +665,7 @@ func TestBookLiquidityNeedToPartners (t *testing.T) {
 
 	acc,_ := as.GetSubacc("JM", accountSystem.UK_LiquidityReserve.Id)
 
-	util.AssertFloatEquals(t, 4.0, math.Round(acc.Saldo) )
+	util.AssertFloatEquals(t, -4.0, math.Round(acc.Saldo) )
 
 
 

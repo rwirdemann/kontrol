@@ -125,7 +125,7 @@ type BookPartnerEntnahmeCommand struct {
 
 func (c BookPartnerEntnahmeCommand) run() {
 
-	// auflösen eines Gesellschafterdarlehens, Buchung: Privatentnahme 1900 an Bank 1200
+	// Buchung: Privatentnahme 1900 an Bank 1200
 	amount := c.Booking.Amount
 
 	// Soll Privatentnahme

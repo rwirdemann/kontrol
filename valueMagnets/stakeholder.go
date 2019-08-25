@@ -129,6 +129,10 @@ var StakeholderRepository []Stakeholder
 func (this *Stakeholder) Init(year int, shptr *[]Stakeholder) *[]Stakeholder {
 
 	sh := *shptr
+
+	// add kommitment company
+	sh = append(sh, StakeholderKM)
+
 	kmrepo := KommimtmentYear{}
 	for _, mensch := range kmrepo.All(year) {
 		s := Stakeholder{}
@@ -136,8 +140,6 @@ func (this *Stakeholder) Init(year int, shptr *[]Stakeholder) *[]Stakeholder {
 		sh = append(sh, Stakeholder{Id: mensch.Id, Name: mensch.Name, Type: mensch.Type, Arbeit: mensch.Arbeit, Fairshares: mensch.FairShares})
 	}
 
-	// add kommitment company
-	sh = append(sh, StakeholderKM)
 
 	// add externals
 	sh = append(sh, StakeholderEX)

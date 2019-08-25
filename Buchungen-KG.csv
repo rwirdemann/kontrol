@@ -2030,7 +2030,6 @@ sonstige_betAw    -780.525,56     -778.078,40
 Delta: 2.447,16
 ","2.447,16 €",2018-12,31.12.2018,"347.430,36 €",,,,,,,,,,
 SKR03,4320,956,K,,GWSteuerRückstellung 2017,"34.800,00 €",2018-12,31.12.2018,"347.430,36 €",,,,,,,,,,
-SKR03,4120,965,K,,Rückstellung Ben Bonus 2017 als periodenfremder Aufwand,"3.495,68 €",2018-12,31.12.2018,"347.430,36 €",,,,,,,,,,
 SKR03,4120,965,BW,,Rückstellung Bonus Ben,"123.000,00 €",2018-12,31.12.2018,"347.430,36 €",,,,,,,,,,
 SKR03,4120,965,KR,,Rückstellung Bonus Katja,"36.662,50 €",2018-12,31.12.2018,"347.430,36 €",,,,,,,,,,
 SKR03,4120,965,IK,,Rückstellung Bonus Ingo,"9.216,69 €",2018-12,31.12.2018,"347.430,36 €",,,,,,,,,,
@@ -2055,7 +2054,7 @@ SKR03,4900,480,K,,"GWG in 2018:
 1590        Umb. 1&1 HomeServer Speed        19,00                126,04
 1700        Apple Tastataur        19,00                167,23
 4855        Sofortabschreibung GWG                        ","-461,25 €",2018-12,31.12.2018,"347.430,36 €",,,,,,,,,,
-SKR03,4140,4900,,,skr03 4140 Freiwillige soziale Aufwendung. LSt-frei,"3.183,27 €",2018-12,31.12.2018,"347.430,36 €",,,,,,,,,,
+SKR03,4140,4900,,,skr03 4140 Freiwillige soziale Aufwendung. LSt-frei,"3.393,27 €",2018-12,31.12.2018,"347.430,36 €",,,,,,,,,,
 SKR03,4957,965,K,,"Rückstellung Steuerberater & Co.,","5.000,00 €",2018-12,31.12.2018,"347.430,36 €",,,,,,,,,,
 SKR03,35,1676,RW,,Umbuchung Abfindung Ralf auf Anlage,54500,2018-12,31.12.2018,"347.430,36 €",,,,,,,,,,
 SKR03,2020,965,,,Bonus Wiedenmann nachträglich 2017,"3495,68",2018-12,31.12.2018,"347.430,36 €",,,,,,,,,,
@@ -2066,16 +2065,19 @@ SKR03,4320,956,K,,GWsteuer Differenzbuchung kontrol -- Thiemer Ralf,-650,2018-12
 SKR03,410,2310,K,,"31.12.2018
 2310
 Abgänge (Restb. Buchverlust)
-1.258,00",1258,2018-12,31.12.2018,"347.430,36 €",,,,,,,,,,
+1.258,00",-1258,2018-12,31.12.2018,"347.430,36 €",,,,,,,,,,
 SKR03,410,2315,K,,"31.12.2018
 2315
 Abgänge (Restb. Buchgewinn)
-2.729,00",2729,2018-12,31.12.2018,"347.430,36 €",,,,,,,,,,
+2.729,00",-2729,2018-12,31.12.2018,"347.430,36 €",,,,,,,,,,
+SKR03,4957,965,K,,"Rückstellung GuV Erlösdifferenz T&R und kontrol
+ich buche den Differenzbetrag auf Rückstellung.
+20190804: ","599,86",2018-12,31.12.2018,"347.430,36 €",,,,,,,,,,
 SKR03,9000,965,K,,EB: Anfangsbestand Rückstellungen Bens Bonus,123000,2019-01,1.1.2019,"347.430,36 €",,,,,,,,,,
 SKR03,9000,965,K,,EB: Anfangsbestand Rückstellungen Katjas Bonus,"36662,5",2019-01,1.1.2019,"347.430,36 €",,,,,,,,,,
 SKR03,9000,965,K,,EB: Anfangsbestand Rückstellungen Ingos Bonus,"9216,69",2019-01,1.1.2019,"347.430,36 €",,,,,,,,,,
 SKR03,9000,25,K,,EB: 25 Ähnliche Rechte und Werte,"0,00 €",2018-12,1.1.2019,"347.430,36 €",,,,,,,,,,
-SKR03,9000,965,K,,Bonus Wiedenmann nachträglich 2017,"3.495,68 €",2018-12,1.1.2019,"347.430,36 €",,,,,,,,,,
+SKR03,9000,965,K,,Bonus Wiedenmann nachträglich 2017,"3.495,68 €",2019-01,1.1.2019,"347.430,36 €",,,,,,,,,,
 SKR03,25,9000,K,,EB: 25 Ähnliche Rechte und Werte,"0,00 €",2019-01,1.1.2019,"347.430,36 €",,,,,,,,,,
 ER,,,K,,SEPA-Basislastschrift WWK ALLGEMEINE VERSICHERUNG 41009214JAN19GEWERBE INHALT SVERSICHERUNG,"235,80 €",2019-01,02.01.2019,"347.194,56 €",,,,,,,,,,
 ER,,,K,,Lebensversicherung Jan. 2019,"100,00 €",2019-01,02.01.2019,"347.094,56 €",   ,,,,,,,,,
@@ -2083,8 +2085,8 @@ GV,,,JM,,Kommanditistenentnahme 2019-01,"6.000,00 €",2019-01,02.01.2019,"341.0
 GV,,,AN,,Kommanditistenentnahme 2019-01,"6.000,00 €",2019-01,02.01.2019,"335.094,56 €",,,,,,,,,,
 ER,,,K,,Württembergische Haftpflicht,"898,81 €",2019-01,02.01.2019,"334.195,75 €",,,,,,,,,,
 ER,,,K,CEWE-Transition,CEWE Reisekosten Johannes,"297,46 €",2018-12,03.01.2019,"333.898,29 €",,,,,,,,,,
-ER,,,K,,Umzug kommitment - Unterstützung Anna Blume,"30,00 €",2018-12,03.01.2019,"333.868,29 €",,,,,,,,,,
-ER,,,K,,sipgate - Telefonie Büro ,"30,00 €",2019-01,04.01.2019,"333.838,29 €","333.838,29 €",,,,,,,,,
+ER,,,K,,Umzug kommitment - Unterstützung Anna Blume,"30,00 €",2018-12,03.01.2019,"333.868,29 €","333.838,29 €",,,,,,,,,
+ER,,,K,,sipgate - Telefonie Büro ,"30,00 €",2019-01,04.01.2019,"333.838,29 €",,,,,,,,,,
 AR,,,KR,10077-10044_BijouBrigitte-ScrumSchulung,RG Nov. | Katja |  Rechnung 2018-12-04-10251-10044,"6.426,00 €",2018-11,04.01.2019,"340.264,29 €",,,,,,"5.400,00 €",,,,"0,00 €"
 ER,,,K,HB-Projektraum,Mindspace Ausgangsrechnung 201900615,"440,31 €",2018-12,07.01.2019,"339.823,98 €",,,,,,,,,,
 ER,,,K,,Mindspace kommitment Ausgangsrechnung 201900123,"2.975,00 €",2018-01,07.01.2019,"336.848,98 €",,,,,,,,,,
@@ -2270,9 +2272,9 @@ ER,,,K,,Mrz. 2019 | sipgate Rechnung B1046463 ,"33,95 €",2019-03,06.03.2019,"9
 GV,,,AN,,Quartals EkSt. Vorauszahlung,"9.900,00 €",2019-03,06.03.2019,"80.720,69 €",,,,,,,,,,
 ER,,,K,,Mrz. 2019 | mite,"30,00 €",2019-03,06.03.2019,"80.690,69 €",,,,,,,,,,
 AR,,,"JM, AN",10106-10053_Edeka_EntwicklungsunterstützungE-Commerce,RG Jan. | José M. Villar | Rechnung 2019-02-05-10288-10053,"20.518,58 €",2019-01,06.03.2019,"101.209,27 €",,,,,,,,,"17.242,50 €","0,00 €"
-AR,,,JM,10090-10021_WWKsolutionlab Workshop,RG Jan. | Anke & Johannes | Rechnung-2019-02-14-10306-10021,"19.535,65 €",2019-02,07.03.2019,"120.744,92 €",,,"8.100,00 €",,"7.931,25 €",,,,,"385,26 €"
-AR,,,JM,,Gutschrift 10025 zu Rechnung-2019-02-14-10306-10021,"-19.535,65 €",2019-02,07.03.2019,"101.209,27 €",,,"-8.100,00 €",,"-7.931,25 €",,,,,"-385,26 €"
-AR,,,JM,10090-10021_WWKsolutionlab Workshop,RG Jan. | Anke & Johannes | Rechnung 2019-02-15-10308-10021,"15.251,65 €",2019-02,07.03.2019,"116.460,92 €","116.460,92 €",,"6.300,00 €",,"6.131,25 €",,,,,"385,26 €"
+AR,,,"JM, AN",10090-10021_WWKsolutionlab Workshop,RG Jan. | Anke & Johannes | Rechnung-2019-02-14-10306-10021,"19.535,65 €",2019-02,07.03.2019,"120.744,92 €",,,"8.100,00 €",,"7.931,25 €",,,,,"385,26 €"
+AR,,,"JM, AN",10090-10021_WWKsolutionlab Workshop,Gutschrift 10025 zu Rechnung-2019-02-14-10306-10021,"-19.535,65 €",2019-02,07.03.2019,"101.209,27 €",,,"-8.100,00 €",,"-7.931,25 €",,,,,"-385,26 €"
+AR,,,"JM, AN",10090-10021_WWKsolutionlab Workshop,RG Jan. | Anke & Johannes | Rechnung 2019-02-15-10308-10021,"15.251,65 €",2019-02,07.03.2019,"116.460,92 €","116.460,92 €",,"6.300,00 €",,"6.131,25 €",,,,,"385,26 €"
 ER,,,K,,Belegabrechnung | Johannes | JM_Belegabrechnung Februar 2019,"1.000,77 €",2019-02,07.03.2019,"115.460,15 €",,,,,,,,,,
 ER,,,IK,10101-10034_EWE_Übergang_Transitionsphase,Belegabrechnung | Ingo | Abrechnung_314628_IngoVonKomrowski,"228,39 €",2019-02,07.03.2019,"115.231,76 €",,,,,,,,,,
 ER,,,IK,10101-10034_EWE_Übergang_Transitionsphase,Belegabrechnung | Ingo | Abrechnung_314636_IngoVonKomrowski,"115,20 €",2019-02,07.03.2019,"115.116,56 €",,,,,,,,,,
@@ -2311,7 +2313,7 @@ ER,,,K,10045-10029_Kanban_EC-IT,Feb. 2019 | sitegeist | m_rg_11129,"2.705,58 €
 ER,,,K,,Mrz. 2019 | Thiemer&Ralf | Rechnung 10745-043,"541,45 €",2019-03,21.03.2019,"121.136,09 €",,,,,,,,,,
 ER,,,K,,Mastercard Abrechnung,"316,71 €",2019-03,21.03.2019,"120.819,38 €",,,,,,,,,,
 ER,,,K,,RG Mrz. | Meetingräume Mindspace | Ausgangsrechnung 201902158,"1.041,25 €",2019-03,21.03.2019,"119.778,13 €",,,,,,,,,,
-AR,,,"KR, JM",EWE Katja,RG Feb. | Susanne Bartel | Rechnung-2019-03-11-10320-10034,"15.232,00 €",2019-02,21.03.2019,"135.010,13 €",,,,,,,,,"12.800,00 €","0,00 €"
+AR,,,KR,EWE Katja,RG Feb. | Susanne Bartel | Rechnung-2019-03-11-10320-10034,"15.232,00 €",2019-02,21.03.2019,"135.010,13 €",,,,,,,,,"12.800,00 €","0,00 €"
 ER,,,K,,Belegabrechnung | Ben | Kennenlernen Netzwerkknoten,"124,50 €",2019-02,21.03.2019,"134.885,63 €",,,,,,,,,,
 ER,,,K,,Belegabrechnung | Anke | Kennenlernen Netzwerkknoten& AgileBeyondIT,"209,05 €",2019-03,21.03.2019,"134.676,58 €",,,,,,,,,,
 ER,,,K,,Belegabrechnung | Ben | AgileBeyondIt,"113,40 €",2019-03,21.03.2019,"134.563,18 €",,,,,,,,,,
@@ -2452,7 +2454,7 @@ ER,,,IK,10127-10009_CEWE_Agiler Wandel,Belegabrechnung | Ingo | Abrechnung_33220
 ER,,,K,,RG Mai | Mite | 201905-28399-416064,"30,00 €",2019-05,07.05.2019,"152.399,85 €",,,,,,,,,,
 ER,,,K,,RG Apr. | Thiemer & Ralf | Re. Nr. 10746-019 - Bundesanzeiger ,"188,62 €",2019-04,07.05.2019,"152.211,23 €","152.211,23 €",,,,,,,,,
 ER,,,K,,RG Apr. | Kauf TimeTimer ,"97,80 €",2019-04,08.05.2019,"152.113,43 €",,,,,,,,,,
-AR,,,"KR, JM",10111-10034_EWE_ScrumMaster_TeamPearl,RG Apr. | Katja | Rechnung-2019-04-09-10337-10034,"19.047,44 €",2019-03,09.05.2019,"171.160,87 €",,,,,,"13.406,25 €",,,,"2.600,00 €"
+AR,,,KR,10111-10034_EWE_ScrumMaster_TeamPearl,RG Apr. | Katja | Rechnung-2019-04-09-10337-10034,"19.047,44 €",2019-03,09.05.2019,"171.160,87 €",,,,,,"13.406,25 €",,,,"2.600,00 €"
 ER,,,K,10126-10003_HB_KundenBanking,Apr. 2019 | Oliver Zeigermann | Rechnung 19/06,"1.523,20 €",2019-04,10.05.2019,"169.637,67 €",,,,,,,,,,
 ER,,,BW,10127-10009_CEWE_Agiler Wandel,Belegabrechnung | Ben | 20190429_k_cewe_Agiler-Wandel_BW,"49,00 €",2019-04,10.05.2019,"169.588,67 €",,,,,,,,,,
 ER,,,BW,10127-10009_CEWE_Agiler Wandel,Belegabrechnung | Ben | 20190430_k_cewe_Agiler-Wandel_BW,"51,00 €",2019-04,10.05.2019,"169.537,67 €",,,,,,,,,,
@@ -2537,7 +2539,7 @@ ER,,,IK,10127-10009_CEWE_Agiler Wandel,Belegabrechnung | Ingo | Abrechnung_34181
 ER,,,IK,10127-10009_CEWE_Agiler Wandel,Belegabrechnung | Ingo | Abrechnung_341819,"393,60 €",2019-05,05.06.2019,"128.499,59 €","128.499,59 €",,,,,,,,,
 ER,,,K,,RG Juni | mite | 201906-28399-420295,"30,00 €",2019-06,06.06.2019,"128.469,59 €",,,,,,,,,,
 AR,,,"KR, JM",10104-10034_EWE_VertriebsplatformGeschäftskunden ,RG Apr. | Inga | Rechnung-2019-05-08-10344-10056,"8.270,50 €",2019-04,06.06.2019,"136.740,09 €",,,,,,,,,"6.950,00 €","0,00 €"
-AR,,,KR,10125-10056_EWE_Stephan_Agile Coach Vertriebsplattform,RG Apr. | Stephan Kambor | Rechnung-2019-05-08-10346-10056,"12.697,30 €",2019-04,06.06.2019,"149.437,39 €",,,,,,,,,"8.840,00 €","1.830,00 €"
+AR,,,"KR, BW",10125-10056_EWE_Stephan_Agile Coach Vertriebsplattform,RG Apr. | Stephan Kambor | Rechnung-2019-05-08-10346-10056,"12.697,30 €",2019-04,06.06.2019,"149.437,39 €",,,,,,,,,"8.840,00 €","1.830,00 €"
 ER,,,K,,RG Juni | Raummiete Mindspace | Ausgangsrechnung 201903843,"2.975,00 €",2019-06,06.06.2019,"146.462,39 €",,,,,,,,,,
 GV,,,AN,,Ekst. Vorrauszahlung | Quartal II 2019,"9.900,00 €",2019-06,06.06.2019,"136.562,39 €","136.562,39 €",,,,,,,,,
 AR,,,KR,10111-10034_EWE_ScrumMaster_TeamPearl,RG Apr. | Katja | Rechnung-2019-05-08-10345-10034,"28.210,44 €",2019-04,07.06.2019,"164.772,83 €",,,,,,"19.906,25 €",,,,"3.800,00 €"
@@ -2565,14 +2567,14 @@ UstVZ,,,K,,STEUERNR 046/638/02084 UMS. ST APR.19,"18.819,04 €",2019-04,17.06.2
 SKR03,970,4120,KR,,Rückstellung auflösen - Katjas Bonus2018- Teil 1,"20.000,00 €",2019-04,17.06.2019,"148.185,77 €",,,,,,,,,,
 SKR03,970,4120,KR,,Rückstellung auflösen - Katjas Bonus2018- Teil 2,"16.662,50 €",2019-05,17.06.2019,"148.185,77 €",,,,,,,,,,
 SKR03,970,4120,IK,,Rückstellung auflösen - Ingos Bonus2018,"9.216,69 €",2019-05,17.06.2019,"148.185,77 €",,,,,,,,,,
-AR,,,K,10106-10053_Edeka_EntwicklungsunterstützungE-Commerce,RG Mai | José Mejía Villar | Rechnung-2019-06-05-10356-10053,"24.707,38 €",2019-05,17.06.2019,"172.893,15 €",,,,,,,,,"20.762,50 €","0,00 €"
+AR,,,"JM, AN",10106-10053_Edeka_EntwicklungsunterstützungE-Commerce,RG Mai | José Mejía Villar | Rechnung-2019-06-05-10356-10053,"24.707,38 €",2019-05,17.06.2019,"172.893,15 €",,,,,,,,,"20.762,50 €","0,00 €"
 ER,,,K,10126-10003_HB_KundenBanking,RG Mai | Jan Schluenzen | Rechnung 2019009,"642,60 €",2019-05,18.06.2019,"172.250,55 €",,,,,,,,,,
 ER,,,K,10106-10053_Edeka_EntwicklungsunterstützungE-Commerce,RG Mai | José Mejía Villar | Rechnung 05-2019,"19.765,90 €",2019-05,18.06.2019,"152.484,65 €",,,,,,,,,,
-AR,,,K,10126-10003_HB_KundenBanking,RG Mai | Jost Künzel & Jan Schluenzen | Rechnung-2019-06-05-10355-10003,"12.554,50 €",2019-05,18.06.2019,"165.039,15 €","165.039,15 €",,,,,,,,"10.550,00 €","0,00 €"
+AR,,,JM,10126-10003_HB_KundenBanking,RG Mai | Jost Künzel & Jan Schluenzen | Rechnung-2019-06-05-10355-10003,"12.554,50 €",2019-05,18.06.2019,"165.039,15 €","165.039,15 €",,,,,,,,"10.550,00 €","0,00 €"
 AR,,,BW,10045-10029_Kanban_EC-IT,RG Mrz. | Catering sitegeist | Rechnung-2019-04-12-10341-10029,"155,94 €",2019-03,19.06.2019,"165.195,09 €",,,,,,,,,"136,50 €","-5,46 €"
 ER,,,K,,Belegabrechnung | Anna | Erstattung Ärtzliches Attest,"5,00 €",2019-05,19.06.2019,"165.190,09 €",,,,,,,,,,
 ER,,,K,,Belegabrechnung | Anke | 2019-05 Belegabrechnung AN ,"83,00 €",2019-05,19.06.2019,"165.107,09 €",,,,,,,,,,
-AR,,,K,10111-10034_EWE_ScrumMaster_TeamPearl,RG Mai | Katja | Rechnung-2019-06-06-10358-10034,"20.981,19 €",2019-05,20.06.2019,"186.088,28 €",,,,,,"15.031,25 €",,,,"2.600,00 €"
+AR,,,KR,10111-10034_EWE_ScrumMaster_TeamPearl,RG Mai | Katja | Rechnung-2019-06-06-10358-10034,"20.981,19 €",2019-05,20.06.2019,"186.088,28 €",,,,,,"15.031,25 €",,,,"2.600,00 €"
 ER,,,K,10133-10040_Intersoft_Marcel_Architekturberatung,RG Mai | Marcel Böttcher | RG Nr. 330,"7.806,40 €",2019-05,21.06.2019,"178.281,88 €",,,,,,,,,,
 ER,,,K,10107-10040_Intersoft,RG Mai | Marcel Böttcher | RG Nr. 330,"2.094,40 €",2019-05,21.06.2019,"176.187,48 €",,,,,,,,,,
 ER,,,K,,RG Juni | Thiemer & Ralf | 10745-048,"541,45 €",2019-06,21.06.2019,"175.646,03 €","175.646,03 €",,,,,,,,,
@@ -2587,7 +2589,7 @@ AR,,,BW,10045-10029_Kanban_EC-IT,RG Mrz. | Catering sitegeist | Skonto zu Rechnu
 ER,,,K,,Belegabrechnung | Anke | 20190618 - HdM - Forschung Organisationen - reisekosten AN,"141,45 €",2019-06,26.06.2019,"168.704,94 €",,,,,,,,,,
 ER,,,K,,RG Mai | Schnittker Möllmann Partners | 20191085,"571,20 €",2019-05,26.06.2019,"168.133,74 €","168.133,74 €",,,,,,,,,
 AR,,,"KR, JM",10104-10034_EWE_VertriebsplatformGeschäftskunden,RG Mai | Inga | Rechnung-2019-05-23-10352-10056,"3.308,20 €",2019-05,27.06.2019,"171.441,94 €",,,,,,,,,"2.780,00 €","0,00 €"
-AR,,,KR,10125-10056_EWE_Stephan_Agile Coach Vertriebsplattform,RG Mai | Stephan | Rechnung-2019-05-23-10353-10056,"5.944,05 €",2019-05,27.06.2019,"177.385,99 €",,,,,,,,,"4.995,00 €","0,00 €"
+AR,,,"KR, BW",10125-10056_EWE_Stephan_Agile Coach Vertriebsplattform,RG Mai | Stephan | Rechnung-2019-05-23-10353-10056,"5.944,05 €",2019-05,27.06.2019,"177.385,99 €",,,,,,,,,"4.995,00 €","0,00 €"
 Gehalt,,,BW,,Gehalt 2019-06,"5.558,70 €",2019-06,28.06.2019,"171.827,29 €",,,,,,,,,,
 Gehalt,,,KR,,Gehalt 2019-06,"3.462,44 €",2019-06,28.06.2019,"168.364,85 €",,,,,,,,,,
 Gehalt,,,IK,,Gehalt 2019-06,"3.250,50 €",2019-06,28.06.2019,"165.114,35 €",,,,,,,,,,
@@ -2598,106 +2600,260 @@ ER,,,K,,GF GmbH an GmbH & Co. KG | Rest aus 2017,"160,65 €",2017-12,28.06.2019
 ER,,,K,,Juni 2019 | Kontoführung ,"20,28 €",2019-06,28.06.2019,"162.283,25 €",,,,,,,,,,
 SKR03,965,4120,BW,,Auflösung Rückstellung Bonus Wiedenmann nachträglich 2017,"3.495,68 €",2019-06,28.06.2019,"162.283,25 €",,,,,,,,,,
 ER,,,K,,Juli 2019 | Signal Iduna | Pensionskasse Ingo,"200,00 €",2019-07,01.07.2019,"162.083,25 €",,,,,,,,,,
-ER,,,K,,Juli 2019 | Lebensversicherung,"100,00 €",2019-07,01.07.2019,"162.183,25 €",,,,,,,,,,
-AR,,,"JM, AN",10107-10040_Intersoft,RG Mai | Marcel | Rechnung-2019-06-18-10360-10021,"2.618,00 €",2019-05,01.07.2019,"164.801,25 €",,,,,,,,,"2.200,00 €","0,00 €"
-AR,,,"JM, AN",10133-10040_Intersoft_Marcel_Architekturberatung,RG Mai | Marcel | Rechnung-2019-06-18-10361-10021,"9.758,00 €",2019-05,01.07.2019,"174.559,25 €","174.359,25 €",,,,,,,,"8.200,00 €","0,00 €"
-ER,,,K,,Juni 2019 | Henrike Keßler | Bilder Sven - Rechnung 21/19,"214,00 €",2019-06,01.07.2019,"174.345,25 €",,,,,,,,,,
-ER,,,K,,Belegabrechnung | Ben | 25052019_k_Bahncard_BW,"515,00 €",2019-05,01.07.2019,"173.830,25 €",,,,,,,,,,
-ER,,,JM,,Belegabrechnung | Johannes | 20190513_Belege Mainusch_RK,"163,40 €",2019-05,02.07.2019,"173.666,85 €",,,,,,,,,,
-ER,,,K,10135-10061_DEVK_Thomas_agilerCoach,RG Juni | Thomas Böhlefeld | KOM-2019-1,"4.998,00 €",2019-06,02.07.2019,"168.668,85 €",,,,,,,,,,
-ER,,,K,,RG Juli 2019 | Mindspace | Ausgangsrechnung 201904587,"2.975,00 €",2019-07,03.07.2019,"165.693,85 €",,,,,,,,,,
-GV,,,JM,,Jul. 2019 | Kommanditistenentnahme,"6.000,00 €",2019-07,03.07.2019,"159.693,85 €","159.493,85 €",,,,,,,,,
-ER,,,K,10045-10029_Kanban_EC-IT,RG Mai | sitegeist | Rechnungsnr. M-RG-11477,"572,63 €",2019-05,04.07.2019,"159.121,22 €",,,,,,,,,,
-ER,,,K,10142-10064_NewStore_JM_Interim-CTO,Belegabrechnung | Johannes | NewStore-JM-Juli-1,"937,99 €",2019-07,04.07.2019,"158.183,23 €",,,,,,,,,,
-ER,,,IK,10127-10009_CEWE_Agiler Wandel,Belegrechnung | Ingo | Abrechnung_346153,"393,60 €",2019-06,04.07.2019,"157.789,63 €",,,,,,,,,,
-ER,,,K,,Belegabrechnung | Ingo | k_week - Abrechnung_346155,"170,20 €",2019-06,04.07.2019,"157.619,43 €",,,,,,,,,,
-ER,,,IK,10127-10009_CEWE_Agiler Wandel,Belegrechnung | Ingo | Abrechnung_346156,"393,60 €",2019-06,04.07.2019,"157.225,83 €",,,,,,,,,,
-ER,,,IK,10127-10009_CEWE_Agiler Wandel,Belegrechnung | Ingo | Abrechnung_346160,"266,80 €",2019-06,04.07.2019,"156.959,03 €",,,,,,,,,,
-ER,,,IK,10127-10009_CEWE_Agiler Wandel,Belegrechnung | Ingo | Abrechnung_349949,"393,60 €",2019-06,04.07.2019,"156.565,43 €","156.365,43 €",,,,,,,,,
-AR,,,BW,10045-10029_Kanban_EC-IT,RG Jan. | Ben | Rechnung-2019-02-21-10313-10029,"162,63 €",2019-01,05.07.2019,"156.728,06 €",,,,,,,,,"136,66 €","0,00 €"
-AR,,,BW,10045-10029_Kanban_EC-IT,RG Feb. | Ben | Rechnung 2019-02-27-10314-10029,"668,63 €",2019-02,05.07.2019,"157.396,69 €",,,,,,,,,"561,87 €","0,00 €"
-ER,,,K,,RG Juli | mite | 201906-28399-420295,"35,00 €",2019-07,8.7.2019,"157.361,69 €",,,,,,,,,,
-ER,,,K,,RG Juli | Schaalsee Offsite | Anzahlung ,"121,00 €",2019-07,10.07.2019,"157.240,69 €",,,,,,,,,,
-AR,,,K,10128-10003_HB_mobileApp,RG Mai | Norman Holz | Rechnung-2019-06-05-10354-10003,"13.905,15 €",2019-05,11.07.2019,"171.145,84 €",,,,,,,,,"11.685,00 €","0,00 €"
-AR,,,"JM, AN",10133-10040_Intersoft_Marcel_Architekturberatung,RG Juni | Marcel Böttcher | Rechnung-2019-07-04-10362-10021,"13.209,00 €",2019-06,11.07.2019,"184.354,84 €",,,,,,,,,"11.100,00 €","0,00 €"
-AR,,,"JM, AN",10131-10040_Intersoft_Sichtbarkeit,RG Juni | Anke & Johannes | Rechnung-2019-07-04-10363-10021,"2.142,00 €",2019-06,11.07.2019,"186.496,84 €",,,"450,00 €",,"1.350,00 €",,,,,"0,00 €"
-ER,,,K,,Belegabrechnung | Anke | ,"129,98 €",2019-07,11.07.2019,"186.366,86 €",,,,,,,,,,
-ER,,,BW,10127-10009_CEWE_Agiler Wandel,Belegabrechnung | Ben | 20190708_cewe_Agiler-Wandel_BW,"123,90 €",2019-07,11.07.2019,"186.242,96 €","186.042,96 €",,,,,,,,,
-ER,,,K,10133-10040_Intersoft_Marcel_Architekturberatung,RG Juni | Marcel Böttcher | Rechnungsnr. 332,"10.567,20 €",2019-06,12.07.2019,"175.675,76 €",,,,,,,,,,
-AR,,,"JM, BW, IK",10127-10009_CEWE_Agiler Wandel,RG Mai | Ben & Ingo | Rechnung-2019-06-06-10357-10009,"35.432,99 €",2019-05,12.07.2019,"211.108,75 €",,"11.803,74 €",,,,,"17.971,88 €",,,"0,00 €"
-AR,,,K,10094-10051_wemag_ScrumSchulung,RG Mai | Katja | Rechnung 2019-06-06-10359-10051,"11.709,60 €",2019-05,12.07.2019,"222.818,35 €","222.618,35 €",,,,,"9.500,00 €",,,,"340,00 €"
-ER,,,SR,10143-10062_Santander_Workshop,Belegabrechnung | Sven | 2019.07.11 SR - RK-Abrechnung Workshop Santander,"207,00 €",2019-07,12.07.2019,"222.611,35 €",,,,,,,,,,
-ER,,,K,10128-10003_HB_mobileApp,RG Juni | Norman Holz | R-20190701-73,"8.889,30 €",2019-06,15.07.2019,"213.722,05 €",,,,,,,,,,
-ER,,,K,10106-10053_Edeka_EntwicklungsunterstützungE-Commerce,RG Juni | José Mejia Villar | Rechnung 06-2019,"17.592,96 €",2019-06,15.07.2019,"196.129,09 €",,,,,,,,,,
-ER,,,K,10126-10003_HB_KundenBanking,RG Juni | Jost Künzel | RE-201906-008,"4.908,75 €",2019-06,15.07.2019,"191.220,34 €",,,,,,,,,,
-ER,,,K,10126-10003_HB_KundenBanking,RG Juni | Jan Schluenzen | 2019010,"12.637,80 €",2019-06,15.07.2019,"178.582,54 €",,,,,,,,,,
-ER,,,AN,,RG Juni | Anke | Telekom Rechnung_23708298012641,"83,79 €",2019-06,16.07.2019,"178.498,75 €",,,,,,,,,,
-ER,,,BW,,RG Juni | Ben | Telekom Rechnung_23703265012641,"79,88 €",2019-06,16.07.2019,"178.418,87 €",,,,,,,,,,
-ER,,,K,,RG Juli | T&R | kommitment KG Rechnung 10745-049,"541,45 €",2019-07,22.07.2019,"177.877,42 €",,,,,,,,,,
-IS,,,JM,,Ausgleich für Vertrieb: -50% ISx,"-15.000,00 €",2018-12,,"177.877,42 €",,,,,,,,,,
-SV-Beitrag,,,IK,,anteilig Techniker Krankenkasse BNR: 93525026 B5640518130 Beitraege 02/19,"832,63 €",2019-06,,"177.877,42 €",,,,,,,,,,
-SV-Beitrag,,,KR,,anteilig Techniker Krankenkasse BNR: 93525026 B5640518130 Beitraege 02/19,"843,98 €",2019-06,,"177.877,42 €",,,,,,,,,,
-LNSteuer,,,BW,,Juni 2019 | Lohnsteuer ,"1.466,71 €",2019-06,,"177.877,42 €",,,,,,,,,,
-LNSteuer,,,KR,,Juni 2019 | Lohnsteuer ,"8.859,79 €",2019-06,,"177.877,42 €",,,,,,,,,,
-LNSteuer,,,IK,,Juni 2019 | Lohnsteuer ,"5.077,29 €",2019-06,,"177.877,42 €",,,,,,,,,,
-LNSteuer,,,AB,,Juni 2019 | Lohnsteuer ,"645,20 €",2019-06,,"177.877,42 €",,,,,,,,,,
-ER,,,AN,,RG Juli | Wolkesicher | Invoice-273261,"4,99 €",2019-07,,"177.877,42 €",,,,,,,,,,
-AR,,,JM,10128-10003_HB_mobileApp,RG Juni | Norman Holz | Rechnung-2019-07-04-10364-10003,"10.123,93 €",2019-06,,"177.877,42 €",,,,,,,,,"8.507,50 €","0,00 €"
-AR,,,JM,10126-10003_HB_KundenBanking,RG Juni | Jan&Jost | Rechnung-2019-07-08-10365-10003,"21.933,19 €",2019-06,,"177.877,42 €",,,,,,,,,"18.431,25 €","0,00 €"
-AR,,,"JM, AN",10106-10053_Edeka_EntwicklungsunterstützungE-Commerce,RG Juni | Jose | Rechnung-2019-07-08-10366-10053,"21.991,20 €",2019-06,,"177.877,42 €",,,,,,,,,"18.480,00 €","0,00 €"
-AR,,,"JM, BW, IK",10127-10009_CEWE_Agiler Wandel,RG Juni | Ingo&Ben | Rechnung-2019-07-08-10367-10009,"24.379,59 €",2019-06,,"177.877,42 €",,"2.795,63 €",,,,,"17.691,42 €",,,"0,00 €"
-AR,,,K,10135-10061_DEVK_Thomas_agilerCoach,RG Juni | Thomas | Rechnung-2019-07-09-10368-10061,"6.247,50 €",2019-06,,"177.877,42 €",,,,,,,,,"5.250,00 €","0,00 €"
-AR,,,BW,10045-10029_OTTO_KanbanCoachOGIT,RG Juni | Ben & sitegeist | Rechnung-2019-07-10-10369-10029,"11.554,38 €",2019-06,,"177.877,42 €",,"2.446,88 €",,,,,,,"7.262,68 €","0,00 €"
-AR,,,BW,10045-10029_OTTO_KanbanCoachOGIT,RG Juni | Catering | Rechnung-2019-07-10-10370-10029,"591,55 €",2019-06,,"177.877,42 €",,,,,,,,,,"497,10 €"
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
-,,,,,,,,,#REF!,,,,,,,,,,
+ER,,,K,,Juli 2019 | Lebensversicherung,"100,00 €",2019-07,01.07.2019,"161.983,25 €",,,,,,,,,,
+AR,,,"JM, AN",10107-10040_Intersoft,RG Mai | Marcel | Rechnung-2019-06-18-10360-10021,"2.618,00 €",2019-05,01.07.2019,"164.601,25 €",,,,,,,,,"2.200,00 €","0,00 €"
+AR,,,"JM, AN",10133-10040_Intersoft_Marcel_Architekturberatung,RG Mai | Marcel | Rechnung-2019-06-18-10361-10021,"9.758,00 €",2019-05,01.07.2019,"174.359,25 €","174.359,25 €",,,,,,,,"8.200,00 €","0,00 €"
+ER,,,K,,Juni 2019 | Henrike Keßler | Bilder Sven - Rechnung 21/19,"214,00 €",2019-06,01.07.2019,"174.145,25 €",,,,,,,,,,
+ER,,,K,,Belegabrechnung | Ben | 25052019_k_Bahncard_BW,"515,00 €",2019-05,01.07.2019,"173.630,25 €",,,,,,,,,,
+ER,,,JM,,Belegabrechnung | Johannes | 20190513_Belege Mainusch_RK,"163,40 €",2019-05,02.07.2019,"173.466,85 €",,,,,,,,,,
+ER,,,K,10135-10061_DEVK_Thomas_agilerCoach,RG Juni | Thomas Böhlefeld | KOM-2019-1,"4.998,00 €",2019-06,02.07.2019,"168.468,85 €",,,,,,,,,,
+ER,,,K,,RG Juli 2019 | Mindspace | Ausgangsrechnung 201904587,"2.975,00 €",2019-07,03.07.2019,"165.493,85 €",,,,,,,,,,
+GV,,,JM,,Jul. 2019 | Kommanditistenentnahme,"6.000,00 €",2019-07,03.07.2019,"159.493,85 €","159.493,85 €",,,,,,,,,
+ER,,,K,10045-10029_Kanban_EC-IT,RG Mai | sitegeist | Rechnungsnr. M-RG-11477,"572,63 €",2019-05,04.07.2019,"158.921,22 €",,,,,,,,,,
+ER,,,K,10142-10064_NewStore_JM_Interim-CTO,Belegabrechnung | Johannes | NewStore-JM-Juli-1,"937,99 €",2019-07,04.07.2019,"157.983,23 €",,,,,,,,,,
+ER,,,IK,10127-10009_CEWE_Agiler Wandel,Belegrechnung | Ingo | Abrechnung_346153,"393,60 €",2019-06,04.07.2019,"157.589,63 €",,,,,,,,,,
+ER,,,K,,Belegabrechnung | Ingo | k_week - Abrechnung_346155,"170,20 €",2019-06,04.07.2019,"157.419,43 €",,,,,,,,,,
+ER,,,IK,10127-10009_CEWE_Agiler Wandel,Belegrechnung | Ingo | Abrechnung_346156,"393,60 €",2019-06,04.07.2019,"157.025,83 €",,,,,,,,,,
+ER,,,IK,10127-10009_CEWE_Agiler Wandel,Belegrechnung | Ingo | Abrechnung_346160,"266,80 €",2019-06,04.07.2019,"156.759,03 €",,,,,,,,,,
+ER,,,IK,10127-10009_CEWE_Agiler Wandel,Belegrechnung | Ingo | Abrechnung_349949,"393,60 €",2019-06,04.07.2019,"156.365,43 €","156.365,43 €",,,,,,,,,
+AR,,,BW,10045-10029_Kanban_EC-IT,RG Jan. | Ben | Rechnung-2019-02-21-10313-10029,"162,63 €",2019-01,05.07.2019,"156.528,06 €",,,,,,,,,"136,66 €","0,00 €"
+AR,,,BW,10045-10029_Kanban_EC-IT,RG Feb. | Ben | Rechnung 2019-02-27-10314-10029,"668,63 €",2019-02,05.07.2019,"157.196,69 €",,,,,,,,,"561,87 €","0,00 €"
+ER,,,K,,RG Juli | mite | 201906-28399-420295,"35,00 €",2019-07,8.7.2019,"157.161,69 €",,,,,,,,,,
+ER,,,K,,RG Juli | Schaalsee Offsite | Anzahlung ,"121,00 €",2019-07,10.07.2019,"157.040,69 €",,,,,,,,,,
+AR,,,K,10128-10003_HB_mobileApp,RG Mai | Norman Holz | Rechnung-2019-06-05-10354-10003,"13.905,15 €",2019-05,11.07.2019,"170.945,84 €",,,,,,,,,"11.685,00 €","0,00 €"
+AR,,,"JM, AN",10133-10040_Intersoft_Marcel_Architekturberatung,RG Juni | Marcel Böttcher | Rechnung-2019-07-04-10362-10021,"13.209,00 €",2019-06,11.07.2019,"184.154,84 €",,,,,,,,,"11.100,00 €","0,00 €"
+AR,,,"JM, AN",10131-10040_Intersoft_Sichtbarkeit,RG Juni | Anke & Johannes | Rechnung-2019-07-04-10363-10021,"2.142,00 €",2019-06,11.07.2019,"186.296,84 €",,,"450,00 €",,"1.350,00 €",,,,,"0,00 €"
+ER,,,K,,Belegabrechnung | Anke | ,"129,98 €",2019-07,11.07.2019,"186.166,86 €",,,,,,,,,,
+ER,,,BW,10127-10009_CEWE_Agiler Wandel,Belegabrechnung | Ben | 20190708_cewe_Agiler-Wandel_BW,"123,90 €",2019-07,11.07.2019,"186.042,96 €","186.042,96 €",,,,,,,,,
+ER,,,K,10133-10040_Intersoft_Marcel_Architekturberatung,RG Juni | Marcel Böttcher | Rechnungsnr. 332,"10.567,20 €",2019-06,12.07.2019,"175.475,76 €",,,,,,,,,,
+AR,,,"JM, BW, IK",10127-10009_CEWE_Agiler Wandel,RG Mai | Ben & Ingo | Rechnung-2019-06-06-10357-10009,"35.432,99 €",2019-05,12.07.2019,"210.908,75 €",,"11.803,74 €",,,,,"17.971,88 €",,,"0,00 €"
+AR,,,KR,10094-10051_wemag_ScrumSchulung,RG Mai | Katja | Rechnung 2019-06-06-10359-10051,"11.709,60 €",2019-05,12.07.2019,"222.618,35 €","222.618,35 €",,,,,"9.500,00 €",,,,"340,00 €"
+ER,,,SR,10143-10062_Santander_Workshop,Belegabrechnung | Sven | 2019.07.11 SR - RK-Abrechnung Workshop Santander,"207,00 €",2019-07,12.07.2019,"222.411,35 €",,,,,,,,,,
+ER,,,K,10128-10003_HB_mobileApp,RG Juni | Norman Holz | R-20190701-73,"8.889,30 €",2019-06,15.07.2019,"213.522,05 €",,,,,,,,,,
+ER,,,K,10106-10053_Edeka_EntwicklungsunterstützungE-Commerce,RG Juni | José Mejia Villar | Rechnung 06-2019,"17.592,96 €",2019-06,15.07.2019,"195.929,09 €",,,,,,,,,,
+ER,,,K,10126-10003_HB_KundenBanking,RG Juni | Jost Künzel | RE-201906-008,"4.908,75 €",2019-06,15.07.2019,"191.020,34 €",,,,,,,,,,
+ER,,,K,10126-10003_HB_KundenBanking,RG Juni | Jan Schluenzen | 2019010,"12.637,80 €",2019-06,15.07.2019,"178.382,54 €",,,,,,,,,,
+SV-Beitrag,,,IK,,anteilig Techniker Krankenkasse BNR: 93525026 B5640518130 Beitraege 06/19,"832,63 €",2019-06,15.07.2019,"177.549,91 €",,,,,,,,,,
+SV-Beitrag,,,KR,,anteilig Techniker Krankenkasse BNR: 93525026 B5640518130 Beitraege 06/19,"843,98 €",2019-06,15.07.2019,"176.705,93 €",,,,,,,,,,
+LNSteuer,,,BW,,Juni 2019 | Lohnsteuer ,"2.905,73 €",2019-06,15.07.2019,"173.800,20 €",,,,,,,,,,
+LNSteuer,,,KR,,Juni 2019 | Lohnsteuer ,"1.476,90 €",2019-06,15.07.2019,"172.323,30 €",,,,,,,,,,
+LNSteuer,,,IK,,Juni 2019 | Lohnsteuer ,"1.282,46 €",2019-06,15.07.2019,"171.040,84 €",,,,,,,,,,
+LNSteuer,,,AB,,Juni 2019 | Lohnsteuer ,"645,20 €",2019-06,15.07.2019,"170.395,64 €",,,,,,,,,,
+ER,,,AN,,RG Juli | Wolkesicher | Invoice-273261,"4,99 €",2019-07,15.07.2019,"170.390,65 €",,,,,,,,,,
+ER,,,AN,,RG Juni | Anke | Telekom Rechnung_23708298012641,"83,79 €",2019-06,16.07.2019,"170.306,86 €",,,,,,,,,,
+ER,,,BW,,RG Juni | Ben | Telekom Rechnung_23703265012641,"79,88 €",2019-06,16.07.2019,"170.226,98 €",,,,,,,,,,
+AR,,,JM,10128-10003_HB_mobileApp,RG Juni | Norman Holz | Rechnung-2019-07-04-10364-10003,"10.123,93 €",2019-06,16.07.2019,"180.350,91 €",,,,,,,,,"8.507,50 €","0,00 €"
+AR,,,JM,10126-10003_HB_KundenBanking,RG Juni | Jan&Jost | Rechnung-2019-07-08-10365-10003,"21.933,19 €",2019-06,16.07.2019,"202.284,10 €",,,,,,,,,"18.431,25 €","0,00 €"
+UstVZ,,,K,,STEUERNR 046/638/02084 UMS.ST MAI,"6.567,29 €",2019-05,16.07.2019,"195.716,81 €",,,,,,,,,,
+ER,,,K,,Juni 2019 | Kreditkartenabrechnung,"19,73 €",2019-07,16.07.2019,"195.697,08 €",,,,,,,,,,
+ER,,,K,,Handelskammerbeitrag 2019,"3.848,06 €",2019-05,19.07.2019,"191.849,02 €",,,,,,,,,,
+ER,,,K,,RG Juli | T&R | kommitment KG Rechnung 10745-049,"541,45 €",2019-07,22.07.2019,"191.307,57 €",,,,,,,,,,
+ER,,,K,,RG Juli | Württembergische - Technik Versicherung - Beitrag 2019,"109,54 €",2019-07,22.07.2019,"191.198,03 €",,,,,,,,,,
+ER,,,K,,Gutschrift Juli / Württembergische - Haftpflichtversicherung 2019,"-34,06 €",2019-07,22.07.2019,"191.232,09 €",,,,,,,,,,
+ER,,,JM,,RG Juni / congstar,"54,94 €",2019-06,23.07.2019,"191.177,15 €",,,,,,,,,,
+Gehalt,,,SR,,Gehalt 2019-07,"2.985,77 €",2019-07,23.07.2019,"188.191,38 €",,,,,,,,,,
+ER,,,JM,,RG Juli / 1&1,"29,99 €",2019-07,25.07.2019,"188.161,39 €",,,,,,,,,,
+Gehalt,,,BW,,Gehalt 2019-07,"3.870,84 €",2019-07,26.07.2019,"184.290,55 €",,,,,,,,,,
+Gehalt,,,IK,,Gehalt 2019-07,"3.250,50 €",2019-07,26.07.2019,"181.040,05 €",,,,,,,,,,
+Gehalt,,,AB,,Gehalt 2019-07,"2.350,10 €",2019-07,26.07.2019,"178.689,95 €",,,,,,,,,,
+ER,,,K,,RG Juli / easybill Halbjahresbeitrag,"119,00 €",2019-07,26.07.2019,"178.570,95 €",,,,,,,,,,
+SV-Beitrag,,,BW,,Juli 2019 | KKH,"1.365,15 €",2019-07,29.07.2019,"177.205,80 €",,,,,,,,,,
+SV-Beitrag,,,SR,,Juli 2019 | Techniker - anteilig,"2.009,14 €",2019-07,29.07.2019,"175.196,66 €",,,,,,,,,,
+SV-Beitrag,,,IK,,Juli 2019 | Techniker - anteilig,"1.301,92 €",2019-07,29.07.2019,"173.894,74 €",,,,,,,,,,
+SV-Beitrag,,,AB,,Juli 2019 | DAK ,"1.619,28 €",2019-07,29.07.2019,"172.275,46 €",,,,,,,,,,
+AR,,,"KR, BW",10135-10061_DEVK_Thomas_agilerCoach,RG Juni | Thomas | Rechnung-2019-07-09-10368-10061,"6.247,50 €",2019-06,31.07.2019,"178.522,96 €",,,,,,,,,"5.250,00 €","0,00 €"
+ER,,,K,,Juli 2019 / Mehrwertsteuerbelastung,"3,08 €",2019-07,31.07.2019,"178.519,88 €",,,,,,,,,,
+ER,,,K,,Juli 2019 | Kontoführung,"16,20 €",2019-07,31.07.2019,"178.503,68 €",,,,,,,,,,
+ER,,,K,,Aug 2019 | Signal Iduna | Pensionskasse Ingo,"200,00 €",2019-08,01.08.2019,"178.303,68 €",,,,,,,,,,
+ER,,,K,,Aug 2019 | Lebensversicherung,"100,00 €",2019-08,01.08.2019,"178.203,68 €",,,,,,,,,,
+GV,,,AN,,Aug 2019 | Kommanditistenentnahme,"3.000,00 €",2019-08,01.08.2019,"175.203,68 €",,,,,,,,,,
+GV,,,JM,,Aug 2019 | Kommanditistenentnahme,"6.000,00 €",2019-08,05.08.2019,"169.203,68 €",,,,,,,,,,
+ER,,,K,,RG Aug 2019 | Mindspace | Ausgangsrechnung 201905310,"2.975,00 €",2019-08,05.08.2019,"166.228,68 €",,,,,,,,,,
+ER,,,K,,RG Aug 2019 / sipgate,"33,95 €",2019-08,06.08.2019,"166.194,73 €",,,,,,,,,,
+ER,,,K,,RG Aug / Mite ,"35,00 €",2019-08,06.08.2019,"166.159,73 €","166.159,73 €",,,,,,,,,
+ER,,,K,10137-10034_ScrumMaster_TeamPEARL,Belegabrechnung Jul / Sven / EWE Kennenlernen,"86,00 €",2019-07,06.08.2019,"166.073,73 €",,,,,,,,,,
+ER,,,K,10137-10034_ScrumMaster_TeamPEARL,Belegabrechnung Jul / Sven / Team Pearl Kw31,"371,70 €",2019-07,06.08.2019,"165.702,03 €",,,,,,,,,,
+ER,,,K,,Belegabrechnung / Ben / Office 365,"99,00 €",2019-07,06.08.2019,"165.603,03 €",,,,,,,,,,
+ER,,,BW,10127-10009_CEWE_Agiler Wandel,Belegabrechnung / Ben / Cewe Kw29,"62,00 €",2019-07,06.08.2019,"165.541,03 €",,,,,,,,,,
+ER,,,BW,10127-10009_CEWE_Agiler Wandel,"Belegabrechnung / Ben / Cewe Kennenlernen A.Stein, Vorb Workshop","41,50 €",2019-07,06.08.2019,"165.499,53 €",,,,,,,,,,
+ER,,,K,,Belegabrechnung / Ben / Termin Equal Experts,"41,50 €",2019-07,06.08.2019,"165.458,03 €",,,,,,,,,,
+ER,,,K,,Belegabrechnung / Ben / EWE Kundengespräch,"51,00 €",2019-07,06.08.2019,"165.407,03 €",,,,,,,,,,
+ER,,,AN,10152-10064 Offsite NewStore,Belegabrechnung / Anke / NewStore Offsite Prep,"32,90 €",2019-07,06.08.2019,"165.374,13 €",,,,,,,,,,
+ER,,,JM,10142-10064_NewStore_JM_Interim-CTO,Belegabrechnung / Johannes / 201907-NewStore-5,"144,00 €",2019-07,06.08.2019,"165.230,13 €",,,,,,,,,,
+ER,,,K,10142-10064_NewStore_JM_Interim-CTO,Belegabrechnung / Johannes / 201907-NewStore-fakturierbar,"1.843,24 €",2019-07,06.08.2019,"163.386,89 €",,,,,,,,,,
+ER,,,JM,10142-10064_NewStore_JM_Interim-CTO,Belegabrechnung / Johannes / 2019-07-NewStore-JM-2,"401,56 €",2019-07,06.08.2019,"162.985,33 €",,,,,,,,,,
+ER,,,JM,10142-10064_NewStore_JM_Interim-CTO,Belegabrechnung/ Johannes / 2019-07-NewStore-JM-4,"297,70 €",2019-07,06.08.2019,"162.687,63 €",,,,,,,,,,
+ER,,,K,,Belegabrechnung / Johannes / 201907-kommitment2Ploenzke,"282,50 €",2019-07,06.08.2019,"162.405,13 €",,,,,,,,,,
+ER,,,JM,10142-10064_NewStore_JM_Interim-CTO,Belegabrechnung / Johannes / 2019-07-NewStore-JM-3,"279,90 €",2019-07,06.08.2019,"162.125,23 €","162.125,23 €",,,,,,,,,
+ER,,,K,,Belegabrechnung / Anke / gls Bewirtung Juli 2019,"204,30 €",2019-07,07.08.2019,"161.920,93 €",,,,,,,,,,
+ER,,,K,,RG Abo 2019 / Neue Narrative Magazin /  KdNr6844949,"29,00 €",2019-07,07.08.2019,"161.891,93 €",,,,,,,,,,
+ER,,,IK,10136-10044_BijouBrigitte_ScrumSchulung,Belegabrechnung | Ingo | Bijou Brigitte - Abrechnung_355252,"256,00 €",2019-07,08.08.2019,"161.635,93 €",,,,,,,,,,
+ER,,,IK,10127-10009_CEWE_Agiler Wandel,Belegabrechnung | Ingo | Cewe - Abrechnung_355253,"347,20 €",2019-07,08.08.2019,"161.288,73 €",,,,,,,,,,
+ER,,,IK,10127-10009_CEWE_Agiler Wandel,Belegabrechnung | Ingo | Cewe - Abrechnung_355254,"391,20 €",2019-07,08.08.2019,"160.897,53 €",,,,,,,,,,
+ER,,,K,,Belegabrechnung | Ingo | Material - Abrechnung_355255,"97,90 €",2019-07,08.08.2019,"160.799,63 €","160.799,63 €",,,,,,,,,
+AR,,,"JM, BW, IK",10127-10009_CEWE_Agiler Wandel,RG Juni | Ingo&Ben | Rechnung-2019-07-08-10367-10009,"24.379,59 €",2019-06,08.08.2019,"185.179,22 €",,"2.795,63 €",,,,,"17.691,42 €",,,"0,00 €"
+ER,,,K,,Belegabrechung | Anna | 20190809_Bewirtung Netzwerkknoten&kommitment,"239,05 €",2019-08,09.08.2019,"184.940,17 €","184.940,17 €",,,,,,,,,
+ER,,,K,,Zahlungserinnerung | Staples | Material Katja,"41,47 €",2019-04,12.08.2019,"184.898,70 €",,,,,,,,,,
+ER,,,K,,Belegabrechnung | Anna | Geburtsgeschenk Marcel Böttcher,"45,50 €",2019-08,12.08.2019,"184.853,20 €","184.853,20 €",,,,,,,,,
+AR,,,"JM, AN",10106-10053_Edeka_EntwicklungsunterstützungE-Commerce,RG Juni | Jose | Rechnung-2019-07-08-10366-10053,"21.991,20 €",2019-06,12.08.2019,"206.844,40 €","206.844,40 €",,,,,,,,"18.480,00 €","0,00 €"
+ER,,,K,10126-10003_HB_KundenBanking,RG Juli / Jan Schluenzen / Rechnungsnr 2019011,"5.355,00 €",2019-07,14.08.2019,"201.489,40 €",,,,,,,,,,
+ER,,,K,10106-10053_Edeka_EntwicklungsunterstützungE-Commerce,RG Juli / Jose Mejia Villar / Rechnung 07-2019,"14.163,38 €",2019-07,14.08.2019,"187.326,02 €",,,,,,,,,,
+AR,,,K,10146-10061_DEVK_Thomas_agilerCoach,RG Juli | Thomas Böhlefeld | Rechnung-2019-08-12-10387-10061,"15.827,00 €",2019-07,14.08.2019,"203.153,02 €",,,,,,,,,"13.300,00 €","0,00 €"
+AR,,,K,10146-10061_DEVK_Thomas_agilerCoach,Gutschrift Juli | Thomas Böhlefeld | Rechnung-2019-08-12-10387-10061,"-15.827,00 €",2019-07,14.08.2019,"187.326,02 €","187.326,02 €",,,,,,,,"-13.300,00 €","0,00 €"
+ER,,,K,,Gutschrift | Staples | Material Katja,"-41,47 €",2019-04,14.08.2019,"187.367,49 €",,,,,,,,,,
+AR,,,"JM, AN",10106-10053_Edeka_EntwicklungsunterstützungE-Commerce,RG Juli | José Mejia Villar | Rechnung-2019-08-08-10380-10053,"17.704,23 €",2019-07,14.08.2019,"205.071,72 €",,,,,,,,,"14.877,50 €","0,00 €"
+ER,,,K,10135-10061_DEVK_Thomas_agilerCoach,RG Juli | Thomas | Rechnung-2019-08-01 KOM-2019-2,"12.661,60 €",2019-07,15.08.2019,"192.410,12 €",,,,,,,,,,
+ER,,,K,10137-10034_ScrumMaster_TeamPEARL,RG Juli / Inga Skowranek / Rechnung Nr. 2019_008,"20.610,80 €",2019-07,15.08.2019,"171.799,32 €",,,,,,,,,"17.320,00 €",
+SV-Beitrag,,,IK,,anteilig Techniker Krankenkasse BNR: 93525026 B5640518130 Beitraege 07/19,"832,63 €",2019-07,15.08.2019,"170.966,69 €",,,,,,,,,,
+ER,,,AN,,RG Aug / Wolkesicher,"4,99 €",2019-08,15.08.2019,"170.961,70 €",,,,,,,,,,
+AR,,,JM,10128-10003_HB_mobileApp,RG Juli / Norma Holz / 2019-08-07-10371-10003,"19.272,05 €",2019-07,15.08.2019,"190.233,75 €",,,,,,,,,"16.195,00 €","0,00 €"
+AR,,,JM,10126-10003_HB_KundenBanking,RG Juli / Jan & Jost / 2019-08-07-10372-10003,"13.201,56 €",2019-07,15.08.2019,"203.435,31 €",,,,,,,,,"11.093,75 €","0,00 €"
+UstVZ,,,K,,STEUERKASSE HAMBURG / STEUERNR 046/638/02084 / UMS.S.JUN.,"5.869,71 €",2019-06,15.08.2019,"197.565,60 €",,,,,,,,,,
+LNSteuer,,,BW,,Juli 2019 | Lohnsteuer ,"1.466,71 €",2019-07,15.08.2019,"196.098,89 €",,,,,,,,,,
+LNSteuer,,,SR, ,Juli 2019 | Lohnsteuer ,"1.070,42 €",2019-07,15.08.2019,"195.028,47 €",,,,,,,,,,
+LNSteuer,,,IK,,Juli 2019 | Lohnsteuer ,"1.282,46 €",2019-07,15.08.2019,"193.746,01 €",,,,,,,,,,
+LNSteuer,,,AB,,Juli 2019 | Lohnsteuer ,"645,20 €",2019-07,15.08.2019,"193.100,81 €",,,,,,,,,,
+ER,,,K,,Rundfunkgebühr / Beitragsnr. 644272921/ 3.Quartal 2019 07-09 2019,"17,49 €",2019-08,15.08.2019,"193.083,32 €","193.083,32 €",,,,,,,,,
+ER,,,K,10137-10034_ScrumMaster_TeamPEARL,Belegabrechnung Aug/ Sven / Ewe Team Pearl,"278,80 €",2019-08,15.08.2019,"192.804,52 €",,,,,,,,,,
+ER,,,K,10137-10034_ScrumMaster_TeamPEARL,Belegabrechnung Aug/ Sven / Ewe Team Pearl,"284,80 €",2019-08,15.08.2019,"192.519,72 €",,,,,,,,,,
+ER,,,K,,Belegabrechnung Sept/ Ben/ MTU Friedrichshafen,"1.118,14 €",2019-09,15.08.2019,"191.401,58 €",,,,,,,,,,
+ER,,,BW,10127-10009_CEWE_Agiler Wandel,Belegabrechnung Aug/ Ben/ Cewe,"250,30 €",2019-08,15.08.2019,"191.151,28 €",,,,,,,,,,
+ER,,,BW,10127-10009_CEWE_Agiler Wandel,Belegabrechnung Aug/ Ben/ Cewe,"49,00 €",2019-08,15.08.2019,"191.102,28 €",,,,,,,,,,
+ER,,,K,10152-10064 Offsite NewStore,Belegabrechnung Aug/ Anke/ newstore offsite,"88,30 €",2019-08,15.08.2019,"191.013,98 €",,,,,,,,,,
+ER,,,K,10142-10064_NewStore_JM_Interim-CTO,Belegabrechnung Aug/ Johannes/ newstore,"279,20 €",2019-08,15.08.2019,"190.734,78 €","190.734,78 €",,,,,,,,,
+ER,,,K,10126-10003_HB_KundenBanking,RG Juli / Jost Künzel / Rechnung 201908-010,"5.206,25 €",2019-07,16.08.2019,"185.528,53 €","185.528,53 €",,,,,,,,,
+ER,,,K,10128-10003_HB_mobileApp,RG Juli / Norman Holz / Rechnung R-20190805-74,"16.921,80 €",2019-07,19.08.2019,"168.606,73 €",,,,,,,,,,
+ER,,,AN,,RG Juni | Anke | TelekomRechnung_23816250012641,"59,89 €",2019-07,19.08.2019,"168.546,84 €",,,,,,,,,,
+ER,,,BW,,RG Juni | Ben | Telekom Rechnung_23810861012641,"79,88 €",2019-07,19.08.2019,"168.466,96 €",,,,,,,,,,
+ER,,,K,,RG Aug/ hauptsache.net/  RE 11364-19,"505,75 €",2019-08,28.8.2019,"167.961,21 €",,,,,,,,,,
+IS,,,JM,,Ausgleich für Vertrieb: -50% ISx,"-15.000,00 €",2018-12,,"167.961,21 €",,,,,,,,,,
+AR,,,BW,10045-10029_OTTO_KanbanCoachOGIT,RG Juni | Ben & sitegeist | Rechnung-2019-07-10-10369-10029,"11.554,38 €",2019-06,,"167.961,21 €",,"2.446,88 €",,,,,,,"7.262,68 €","0,00 €"
+AR,,,BW,10045-10029_OTTO_KanbanCoachOGIT,RG Juni | Catering | Rechnung-2019-07-10-10370-10029,"591,55 €",2019-06,,"167.961,21 €",,,,,,,,,,"497,10 €"
+AR,,,"JM, AN",10131-10040_Intersoft_Sichtbarkeit,RG Juli | Anke & Johannes | Rechnung-2019-08-08-10373-10021,"2.409,75 €",2019-07,,"167.961,21 €",,,"956,25 €",,"1.068,75 €",,,,,"0,00 €"
+AR,,,K,10137-10034_ScrumMaster_TeamPEARL,RG Juli | Inga | Rechnung-2019-08-08-10374-10034,"8.408,09 €",2019-07,,"167.961,21 €",,,,,,,,,,
+AR,,,K,10137-10034_ScrumMaster_TeamPEARL,RG Juli | Inga | Rechnung-2019-08-08-10375-10034,"3.529,09 €",2019-07,,"167.961,21 €",,,,,,,,,"2.965,62 €","0,00 €"
+AR,,,K,10137-10034_ScrumMaster_TeamPEARL,RG Juli | Inga | Rechnung-2019-08-08-10376-10034,"3.287,38 €",2019-07,,"167.961,21 €",,,,,,,,,"2.762,50 €","0,00 €"
+AR,,,K,10137-10034_ScrumMaster_TeamPEARL,RG Juli | Inga | Rechnung-2019-08-08-10377-10034,"3.239,03 €",2019-07,,"167.961,21 €",,,,,,,,,"2.721,87 €","0,00 €"
+AR,,,K,10137-10034_ScrumMaster_TeamPEARL,RG Juli | Inga | Rechnung-2019-08-08-10378-10034,"4.447,63 €",2019-07,,"167.961,21 €",,,,,,,,,"3.737,50 €","0,00 €"
+AR,,,K,10137-10034_ScrumMaster_TeamPEARL,RG Juli | Inga | Rechnung-2019-08-08-10379-10034,"2.852,28 €",2019-07,,"167.961,21 €",,,,,,,,,"2.396,87 €","0,00 €"
+AR,,,K,10101-10083_Kanban Schulung - Coaching pro Bono,RG Juli | Ben & | proBono - EWE,"0,00 €",2019-07,,"167.961,21 €",,"0,00 €",,,,"0,00 €",,,,"0,00 €"
+AR,,,BW,10045-10029_OTTO_KanbanCoachOGIT,RG Juli | Ben & sitegeist | Rechnung-2019-08-08-10381-10029,"8.465,73 €",2019-07,,"167.961,21 €",,"815,63 €",,,,,,,"6.298,43 €","0,00 €"
+AR,,,"BW, IK",10136-10044_BijouBrigitte_ScrumSchulung,RG Juli | Ben & Ingo | Rechnung 2019-08-09-10382-10044,"8.330,00 €",2019-07,,"167.961,21 €",,"3.500,00 €",,,,,"3.500,00 €",,,"0,00 €"
+AR,,,SR,10143-10062_Santander_Workshop,RG Juli | Sven | Rechnung-2019-08-09-10384-10062,"1.785,00 €",2019-07,,"167.961,21 €",,,,,,,,"1.500,00 €",,"0,00 €"
+AR,,,K,10137-10034_ScrumMaster_TeamPEARL,RG Juli / Sven / Rechnung-2019-08-09-10383-10034,"3.666,69 €",2019-07,,"167.961,21 €",,,,,,,,"2.681,25 €",,"400,00 €"
+AR,,,"JM, BW, IK",10127-10009_CEWE_Agiler Wandel,RG Juni | Ingo&Ben | Rechnung 2019-08-09-10385-10009,"18.587,80 €",2019-07,,"167.961,21 €",,"6.434,37 €",,,,,"9.185,63 €",,,"0,00 €"
+AR,,,K,,RG Juli / Katja Roth Fahrrad / Rechnung 2019-08-12-10386-10069,"2.128,32 €",2019-08,,"167.961,21 €",,,,,,,,,,"1.788,50 €"
+AR,,,AN,10148-10053_EDEKADIGITAL_DesignSprint,RG Juli | Anke & Ben - pauschal | Rechnung 2019-08-13-10388-10053,"11.781,00 €",2019-07,,"167.961,21 €",,"4.950,00 €","4.950,00 €",,,,,,,"0,00 €"
+AR,,,AN,10148-10066_EDEKAZENTRALE_DesignSprint,RG Juli | Anke & Ben - pauschal | Rechnung 2019-08-13-10389-10066,"11.781,00 €",2019-07,,"167.961,21 €",,"4.950,00 €","4.950,00 €",,,,,,,"0,00 €"
+AR,,,BW,10145-10007_visable_Organisationsentwicklung,RG Juli | Ben | Rechnung 2019-08-13-10390-10007,"2.352,11 €",2019-07,,"167.961,21 €",,"1.976,56 €",,,,,,,,"0,00 €"
+AR,,,JM,10142-10064_NewStore_JM_Interim-CTO,RG Juli / Johannes / 2019-08-15-10392-10064,"41.832,67 €",2019-07,,"167.961,21 €",,,,,"33.271,13 €",,,,,"1.882,37 €"
+AR,,,K,10135-10061_DEVK_Thomas_agilerCoach,RG Juli | Thomas Böhlefeld | Rechnung 2019-08-14-10391-10061,"15.827,00 €",2019-07,,"167.961,21 €",,,,,,,,,"13.300,00 €","0,00 €"
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,
+,,,,,,,,,"167.961,21 €",,,,,,,,,,

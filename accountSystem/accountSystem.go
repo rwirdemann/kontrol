@@ -50,7 +50,8 @@ var SKR03_1900 = account.AccountDescription{Id: "1900", Name: "17_SKR03_1900_Pri
 // Erfolgskonten
 var SKR03_Umsatzerloese = account.AccountDescription{Id: "SKR03_Umsatzerloese", Name: "1 SKR03_Umsatzerloese 8100-8402", Type: account.KontenartErtrag}
 var SKR03_4100_4199 = account.AccountDescription{Id: "4100_4199", Name: "3 Löhne und Gehälter 4100-4199", Type: account.KontenartAufwand}
-var SKR03_AnlagenabgaengeSachanlagen2310 = account.AccountDescription{Id: "SKR03_AnlagenabgängeSachanlagen", Name: "4 AnlagenabgängeSachanlagen 2310", Type: account.KontenartAufwand}
+var SKR03_AnlagenabgaengeSachanlagen2310 = account.AccountDescription{Id: "SKR03_AnlagenabgängeSachanlagen-Buchverlust", Name: "4 AnlagenabgängeSachanlagen 2310 (Restb. Buchverlust)", Type: account.KontenartAufwand}
+//var SKR03_AnlagenabgaengeSachanlagen2315 = account.AccountDescription{Id: "SKR03_AnlagenabgängeSachanlagen-Buchgewinn", Name: "4 AnlagenabgängeSachanlagen 2315 (Restb. Buchgewinn)", Type: account.KontenartErtrag}
 var SKR03_Abschreibungen = account.AccountDescription{Id: "SKR03_Abschreibungen", Name: "4 Abschreibungen auf Anlagen 4822-4855", Type: account.KontenartAufwand}
 var SKR03_sonstigeAufwendungen = account.AccountDescription{Id: "SKR03_sonstigeAufwendungen", Name: "5 sonstige Aufwendungen", Type: account.KontenartAufwand}
 var SKR03_Steuern = account.AccountDescription{Id: "SKR03_Steuern", Name: "6 SKR03_Steuern 4320 Gewerbesteuer", Type: account.KontenartAufwand}
@@ -68,8 +69,8 @@ var k_ErloeseVerteilung = account.AccountDescription{Id: "k_ErloeseVerteilung", 
 // Unterkonten für kommitmenschen
 var UK_Kosten 				= account.AccountDescription{Id: "_0-Kosten", Name: "", Type: "Aktiv"}
 var UK_AnteileausFairshare 	= account.AccountDescription{Id: "_1-AnteilausFairshare", Name: "", Type: "Aktiv"}
-var UK_AnteilMitmachen 		= account.AccountDescription{Id: "_2-Anteil-Mitmachen", Name: "", Type: "Aktiv"}
-var UK_Vertriebsprovision 	= account.AccountDescription{Id: "_3-Vertriebsprovision", Name: "", Type: "Aktiv"}
+var UK_Vertriebsprovision 	= account.AccountDescription{Id: "_2-Vertriebsprovision", Name: "", Type: "Aktiv"}
+var UK_AnteilMitmachen 		= account.AccountDescription{Id: "_3-Anteil-Mitmachen", Name: "", Type: "Aktiv"}
 var UK_AnteileAuserloesen 	= account.AccountDescription{Id: "_4-Anteilauserloesen", Name: "", Type: "Aktiv"}
 var UK_Erloese 				= account.AccountDescription{Id: "_5-Erloese", Name: "", Type: "Aktiv"}
 
@@ -113,6 +114,7 @@ func (this Accountlist) All() []account.AccountDescription {
 		SKR03_1900,
 		SKR03_4100_4199,
 		SKR03_AnlagenabgaengeSachanlagen2310,
+//		SKR03_AnlagenabgaengeSachanlagen2315,
 		SKR03_sonstigeAufwendungen,
 		SKR03_Anlagen,
 		SKR03_Anlagen25_35,
@@ -315,8 +317,11 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 		account = r.accounts[SKR03_Umsatzsteuer.Id]
 	case SKR03konto == "1900":
 		account = r.accounts[SKR03_1900.Id]
-	case SKR03konto == "2310":
+	case isInRange(SKR03konto, 2310, 2313):
 		account = r.accounts[SKR03_AnlagenabgaengeSachanlagen2310.Id]
+	case isInRange(SKR03konto, 2315, 2318):
+//		account = r.accounts[SKR03_AnlagenabgaengeSachanlagen2315.Id]
+		account = r.accounts[SKR03_Umsatzerloese.Id]
 	case SKR03konto == "4120":
 		account = r.accounts[SKR03_4100_4199.Id]
 	case isInRange(SKR03konto, 4130, 4140):
@@ -326,7 +331,7 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 	case isInRange(SKR03konto, 4822, 4855):
 		account = r.accounts[SKR03_Abschreibungen.Id]
 	case isInRange(SKR03konto, 2000, 2199),
-		 isInRange(SKR03konto, 2300, 2315),
+		 isInRange(SKR03konto, 2300, 2309),
 		 isInRange(SKR03konto, 2320, 2350),
 		 isInRange(SKR03konto, 2380, 2409),
 		 isInRange(SKR03konto, 4200, 4306),

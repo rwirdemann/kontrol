@@ -50,5 +50,5 @@ func TestGetAllAccountsOfStakeholder(t *testing.T) {
 
 	al := accountSystem.GetAllAccountsOfStakeholder (stakeholder)
 	util.AssertEquals(t, al[0].Description.Name,  "k: Johannes Mainusch")
-	util.AssertEquals(t, al[4].Description.Name,  "k: Johannes Mainusch_3-Vertriebsprovision")
+	util.AssertEquals(t, al[3].Description.Name,  "k: Johannes Mainusch_2-Vertriebsprovision")
 }

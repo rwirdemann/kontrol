@@ -60,22 +60,31 @@ func Process(accsystem accountSystem.AccountSystem, booking booking.Booking) {
 
 }
 
+
+
+
 func GuV (as accountSystem.AccountSystem) {
 
-	var jahresueberschuss, gwsteuer float64
+	var jahresueberschuss, gwsteuer, ertrag, aufwand float64
 	now := time.Now().AddDate(0, 0, 0)
 
 	for _, acc := range as.All() {
-
+		if (acc.Description.Id == accountSystem.SKR03_Steuern.Id) {
+			gwsteuer += acc.Saldo
+		}
 		switch  {
-		case acc.Description.Type == account.KontenartAufwand, acc.Description.Type == account.KontenartErtrag:
-			jahresueberschuss += acc.Saldo
-			if (acc.Description.Id == accountSystem.SKR03_Steuern.Id) {
-				gwsteuer += acc.Saldo
-			}
+		case acc.Description.Type == account.KontenartAufwand:
+			aufwand += acc.Saldo
+		case acc.Description.Type == account.KontenartErtrag:
+			ertrag += acc.Saldo
 		default:
 		}
 	}
+	fmt.Printf("			in GuV, Ertrag:  %+9.2f€\n", math.Round(100*ertrag)/100)
+	fmt.Printf("			in GuV, Aufwand: %+9.2f€\n", math.Round(100*aufwand)/100)
+	jahresueberschuss = ertrag + aufwand
+	fmt.Printf("			in GuV, Jahresueberschuss: %+9.2f€\n", math.Round(100*jahresueberschuss)/100)
+
 
 	// calculate Gewerbesteuer
 	// only do that for the current year!
@@ -125,10 +134,14 @@ func GuV (as accountSystem.AccountSystem) {
 	log.Printf("in GuV, Jahresüberschuss: %6.2f€\n", math.Round(100*jahresueberschuss)/100)
 }
 
+
+
+
 func Bilanz (as accountSystem.AccountSystem) {
 
 	var konto *account.Account
 	var okay bool
+	Bilanz := 0.0
 	var bk *booking.Booking
 	now := time.Now().AddDate(0, 0, 0)
 
@@ -156,6 +169,8 @@ func Bilanz (as accountSystem.AccountSystem) {
 				now.Year(),
 				now)
 			konto.Book(*bk)
+			Bilanz += acc.Saldo
+			log.Println("in Bilanz, Aktiva: ", acc.Description.Name, acc.Saldo)
 		}
 	}
 
@@ -182,8 +197,12 @@ func Bilanz (as accountSystem.AccountSystem) {
 				now.Year(),
 				now)
 			konto.Book(*bk)
+			Bilanz += acc.Saldo
+			log.Println("in Bilanz, Passiva: ", acc.Description.Name, acc.Saldo)
 		}
 	}
+	log.Println("in Bilanz: ", math.Round(100*Bilanz)/100, "€")
+
 }
 
 
@@ -199,12 +218,18 @@ func ErloesverteilungAnStakeholder (as accountSystem.AccountSystem) {
 		for _, bk := range a.Bookings {
 			// process bookings on GuV accounts
 			switch acc.Description.Type {
+
+			// alle Kosten
 			case account.KontenartAufwand:
 				bk.Text = "autom. Kostenvert.: " + bk.Text
 				BookCostToCostCenter{AccSystem: as, Booking: bk}.run()
+
+			// alle Ertröge
 			case account.KontenartErtrag:
 				bk.Text = "autom. Ertragsvert.: " + bk.Text
 				BookRevenueToEmployeeCostCenter{AccSystem: as, Booking: bk}.run()
+
+			// alle Anlagen und Abschreibungen
 			case account.KontenartAktiv:
 				// now process other accounts like accountSystem.SKR03_1900.Id
 				// this applies only to kommanditisten
@@ -217,18 +242,34 @@ func ErloesverteilungAnStakeholder (as accountSystem.AccountSystem) {
 					BookToValuemagnetsByShares{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_VeraenderungAnlagen.Id}.run()
 				default:
 				}
+
+			// alle Darlehen und Entnahmen
 			case account.KontenartPassiv:
 				switch acc.Description.Id {
 				case accountSystem.SKR03_920_Gesellschafterdarlehen.Id:
 					bk.Type = booking.CC_KommitmenschDarlehen
-					debit,_ := as.GetSubacc(bk.CostCenter, accountSystem.UK_Darlehen.Id)
+					// book on kommitment.UK_Darlehen auf Hauptkonto kommanditist
+					debit,_ := as.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_Darlehen.Id)
 					credit,_ := as.Get(bk.CostCenter)
-					bookFromTo(bk,debit, credit)
+					bookFromTo(bk, debit, credit)
+
+					// von Hauptkonto kommanditist an kommanditist.UK_Darlehen
+					debit,_ = as.Get(bk.CostCenter)
+					credit,_ = as.GetSubacc(bk.CostCenter, accountSystem.UK_Darlehen.Id)
+					bookFromTo(bk, debit, credit)
+
 				case accountSystem.SKR03_1900.Id: // Privatentnahmen
 					bk.Type = booking.CC_Entnahme
-					debit,_ := as.GetSubacc(bk.CostCenter, accountSystem.UK_Entnahmen.Id)
+
+					// von kommitment.Entnahmen auf Hauptkonto kommanditist
+					debit,_ := as.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_Entnahmen.Id)
 					credit,_ := as.Get(bk.CostCenter)
-					bookFromTo(bk,debit, credit)
+					bookFromTo(bk, debit, credit)
+
+					// von Hauptkonto kommanditist an kommanditist.UK_Entnahmen
+					debit,_ = as.Get(bk.CostCenter)
+					credit,_ = as.GetSubacc(bk.CostCenter, accountSystem.UK_Entnahmen.Id)
+					bookFromTo(bk, debit, credit)
 				}
 			}
 		}
@@ -272,10 +313,6 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 		// Fairshare Anteil buchen
 		log.Printf("      %s %2.2f%% Fairshares: %2.2f€", sh.Id, 100*fairshares, fairshareAnteil)
 		now := time.Now().AddDate(0, 0, 0)
-//		sollacc,_  := as.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteileausFairshare)
-		sollacc,_  := as.Get(sh.Id)
-		habenacc,_  := as.GetSubacc(sh.Id, accountSystem.UK_AnteileausFairshare.Id)
-
 		anteil_fairshares := booking.Booking{
 			Amount:      -fairshareAnteil,
 			Type:        booking.CC_AnteilAusFairshares,
@@ -284,11 +321,15 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 			FileCreated: now,
 			BankCreated: now,
 		}
-		sollacc.Book(anteil_fairshares)
-		anteil_fairshares.Amount *= -1.0
-		habenacc.Book(anteil_fairshares)
-//		habenacc.YearS = accountIfYearlyIncome(*habenacc)
+		// 1. Buchung von StakeholderKM auf sh.Id
+		sollacc,_  := as.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteileausFairshare.Id)
+		habenacc,_  := as.Get(sh.Id)
+		bookFromTo(anteil_fairshares, habenacc, sollacc)
 
+		// 2. Buchung von sh.Id auf subaccf UK_AnteileausFairshare
+		sollacc,_  = as.Get(sh.Id)
+		habenacc,_  = as.GetSubacc(sh.Id, accountSystem.UK_AnteileausFairshare.Id)
+		bookFromTo(anteil_fairshares, habenacc, sollacc)
 	}
 	rest -= shareHoldersShare
 	log.Println("    rest to distribute: ", rest)
@@ -327,8 +368,6 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 	restToDistributeByArbeit := rest*0.5
 	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
 		now := time.Now().AddDate(0, 0, 0)
-		sollacc,_  := as.Get(sh.Id)
-		habenacc,_  := as.GetSubacc(sh.Id, accountSystem.UK_AnteilMitmachen.Id)
 
 		// sumofArbeitShare buchen
 		shArbeit,_ := strconv.ParseFloat(sh.Arbeit, 64)
@@ -342,9 +381,15 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 			FileCreated: now,
 			BankCreated: now,
 		}
-		sollacc.Book(anteil_erloese)
-		anteil_erloese.Amount *= -1.0
-		habenacc.Book(anteil_erloese)
+		// 1. Buchung von StakeholderKM auf sh.Id
+		sollacc,_  := as.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteilMitmachen.Id)
+		habenacc,_  := as.Get(sh.Id)
+		bookFromTo(anteil_erloese, habenacc, sollacc)
+
+		// 2. Buchung von sh.Id auf subaccf UK_AnteilMitmachen
+		sollacc,_  = as.Get(sh.Id)
+		habenacc,_  = as.GetSubacc(sh.Id, accountSystem.UK_AnteilMitmachen.Id)
+		bookFromTo(anteil_erloese, habenacc, sollacc)
 
 		log.Printf("      %s Anteil ArbeitShare: %2.2f€", sh.Id, habenacc.Saldo)
 		rest -= habenacc.Saldo
@@ -367,8 +412,6 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
 
 		now := time.Now().AddDate(0, 0, 0)
-		sollacc,_  := as.Get(sh.Id)
-		habenacc,_  := as.GetSubacc(sh.Id, accountSystem.UK_AnteileAuserloesen.Id)
 
 		// Erlösanteil buchen
 		partnersRev := sumOfBookingsForStakeholder(*k_erloesAcc, sh) // sum the partners revenue
@@ -383,12 +426,16 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 			FileCreated: now,
 			BankCreated: now,
 		}
-		sollacc.Book(anteil_erloese)
-		anteil_erloese.Amount *= -1.0
-		habenacc.Book(anteil_erloese)
+		// 1. Buchung von StakeholderKM auf sh.Id
+		sollacc,_  := as.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_AnteileAuserloesen.Id)
+		habenacc,_  := as.Get(sh.Id)
+		bookFromTo(anteil_erloese, habenacc, sollacc)
 
-		// book the yearly sum from saldo to yearS
-//		habenacc.YearS = habenacc.Saldo
+		// 2. Buchung von sh.Id auf subaccf UK_AnteileAuserloesen
+		sollacc,_  = as.Get(sh.Id)
+		habenacc,_  = as.GetSubacc(sh.Id, accountSystem.UK_AnteileAuserloesen.Id)
+		bookFromTo(anteil_erloese, habenacc, sollacc)
+
 		rest -= erloesAnteil
 	}
 	log.Printf("      ErlösAnt.: %2.2f€ = %2.2f%%", sumOfErloesAnteil, sumOfErloesAnteil/totalSumToDistribute)
@@ -411,7 +458,7 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 
 
 // distribute need for Liquidity between partners
-// book from partner main account to subaccount  "Darlehen"
+// book from partner main account to subaccount  "BookLiquidityNeedToPartners"
 func BookLiquidityNeedToPartners (as accountSystem.AccountSystem, liquidityNeed float64) {
 
 	// each partner takes his share of the needed Liquidity according to her fairshares
@@ -420,7 +467,7 @@ func BookLiquidityNeedToPartners (as accountSystem.AccountSystem, liquidityNeed 
 		fairshares,_ := strconv.ParseFloat(sh.Fairshares, 64)
 		bk := booking.Booking{
 			RowNr:       0,
-			Amount:      fairshares*liquidityNeed,
+			Amount:      -1.0*fairshares*liquidityNeed,
 			Soll:		 "",
 			Haben: 		 "",
 			Type:        booking.CC_LiquidityReserve,
@@ -431,16 +478,16 @@ func BookLiquidityNeedToPartners (as accountSystem.AccountSystem, liquidityNeed 
 			FileCreated: time.Now().AddDate(0, 0, 0),
 			BankCreated: time.Now().AddDate(0, 0, 0),
 		}
-		debit,_ := as.Get(sh.Id)
-		credit,_ := as.GetSubacc(sh.Id, accountSystem.UK_LiquidityReserve.Id)
-		bookFromTo(bk,debit, credit)
-/*		BookFromCreditToDebit {
-			AccSystem: as,
-			Booking: bk,
-			Debit: debit,
-			Credit: credit,
-			Reason: "costcenter booking: ",
-		}.run()*/
+
+		// book from kommitment.UK_UK_LiquidityReserve to stakeholder's main account
+		debit,_ := as.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_LiquidityReserve.Id)
+		credit,_ := as.Get(sh.Id)
+		bookFromTo(bk, debit, credit)
+
+		// book from stakeholders main account to stakeholders subaccount
+		debit,_ = as.Get(sh.Id)
+		credit,_ = as.GetSubacc(sh.Id, accountSystem.UK_LiquidityReserve.Id)
+		bookFromTo(bk, debit, credit)
 
 		log.Println("in bookLiquidityNeedToPartners: ", sh.Id, bk.Amount)
 	}
@@ -448,13 +495,44 @@ func BookLiquidityNeedToPartners (as accountSystem.AccountSystem, liquidityNeed 
 
 
 func BookAmountAtDisposition (as accountSystem.AccountSystem) {
+	// book the kommitment company Sado to Suacc Verfügungsrahmen/Bonus once
+	k,_ := as.Get(valueMagnets.StakeholderKM.Id)
+	k_UK, _ := as.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_Verfuegungsrahmen.Id)
+	bk := booking.Booking{
+		RowNr:       0,
+		Amount:      -1.0*k.Saldo,
+		Soll:		 "",
+		Haben: 		 "",
+		Type:        booking.CC_LiquidityReserve,
+		CostCenter:  valueMagnets.StakeholderKM.Id,
+		Text:        fmt.Sprintf("Erlöse  %d",  util.Global.FinancialYear),
+		Month:       12,
+		Year:        util.Global.FinancialYear,
+		FileCreated: time.Now().AddDate(0, 0, 0),
+		BankCreated: time.Now().AddDate(0, 0, 0),
+	}
+	bookFromTo(bk,k, k_UK)
+
 	shrepo := valueMagnets.Stakeholder{}
 	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
-		debit,_ := as.Get(sh.Id)
+		stakeholder_Saldo := 0.0
+
+		a,_ := as.GetSubacc(sh.Id, accountSystem.UK_Kosten.Id)
+		stakeholder_Saldo += a.Saldo
+		a,_ = as.GetSubacc(sh.Id, accountSystem.UK_AnteileausFairshare.Id)
+		stakeholder_Saldo += a.Saldo
+		a,_ = as.GetSubacc(sh.Id, accountSystem.UK_AnteileAuserloesen.Id)
+		stakeholder_Saldo += a.Saldo
+		a,_ = as.GetSubacc(sh.Id, accountSystem.UK_AnteilMitmachen.Id)
+		stakeholder_Saldo += a.Saldo
+		a,_ = as.GetSubacc(sh.Id, accountSystem.UK_Vertriebsprovision.Id)
+		stakeholder_Saldo += a.Saldo
+
+		debit,_  := as.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_Verfuegungsrahmen.Id)
 		credit,_ := as.GetSubacc(sh.Id, accountSystem.UK_Verfuegungsrahmen.Id)
 		bk := booking.Booking{
 			RowNr:       0,
-			Amount:      -debit.Saldo,
+			Amount:      stakeholder_Saldo,
 			Soll:		 "",
 			Haben: 		 "",
 			Type:        booking.CC_LiquidityReserve,
@@ -466,13 +544,6 @@ func BookAmountAtDisposition (as accountSystem.AccountSystem) {
 			BankCreated: time.Now().AddDate(0, 0, 0),
 		}
 		bookFromTo(bk,debit, credit)
-/*		BookFromCreditToDebit {
-			AccSystem: as,
-			Booking: bk,
-			Debit: debit,
-			Credit: credit,
-			Reason: "costcenter booking: ",
-		}.run()*/
 
 		log.Println("in bookAmountAtDisposition: ", sh.Id, math.Round(100*credit.Saldo)/100)
 	}
@@ -523,7 +594,7 @@ func CalculateEmployeeBonus (as accountSystem.AccountSystem) accountSystem.Accou
 				Haben: 		 "965",
 				Type:        booking.CC_Gehalt,
 				CostCenter:  sh.Id,
-				Text:        fmt.Sprintf("Bonusrückstellung für %s in %d", sh.Id, util.Global.FinancialYear),
+				Text:        fmt.Sprintf("in kontrol kalkulierte Bonusrückstellung für %s in %d", sh.Id, util.Global.FinancialYear),
 				Month:       12,
 				Year:        util.Global.FinancialYear,
 				FileCreated: time.Now().AddDate(0, 0, 0),

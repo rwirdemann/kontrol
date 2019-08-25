@@ -19,7 +19,7 @@ func TestGetKommitmenschenRepository(t *testing.T) {
 func TestKommimtmentYear_All(t *testing.T) {
 
 	repo := Stakeholder{}
-	assert.Equal(t, "JM", repo.All(2016)[2].Id)
+	assert.Equal(t, "JM", repo.All(2016)[3].Id)
 }
 
 func TestIsValidStakeholder (t *testing.T) {

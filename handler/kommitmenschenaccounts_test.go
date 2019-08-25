@@ -41,10 +41,10 @@ func TestMakeGetKommitmenschenAccountsHandler(t *testing.T) {
 
 	//{"Stakeholder":[{"Id":"AN","Name":"k: Anke Nehrenberg","Type":"Partner","Arbeit":"1.00","Fairshares":"0.5"},{"Id":"RW","Name":"k: Ralf Wirdemann","Type":"Extern","Arbeit":"1.00","Fairshares":""},{"Id":"JM","Name":"k: Johannes Mainusch","Type":"Partner","Arbeit":"1.00","Fairshares":"0.5"},
 
-	ankesName := m["Accounts"].([]interface{})[0].(map[string]interface{})["Description"].(map[string]interface{})["Name"]
-	assert.Equal(t,  "k: Anke Nehrenberg" ,ankesName)
+	name := m["Accounts"].([]interface{})[0].(map[string]interface{})["Description"].(map[string]interface{})["Name"]
+	assert.Equal(t,  "k:  kommitment" ,name)
 
-	ankesFSAnteil := m["Accounts"].([]interface{})[2].(map[string]interface{})["Description"].(map[string]interface{})["Name"]
-	assert.Equal(t, "k: Anke Nehrenberg_1-AnteilausFairshare" ,ankesFSAnteil)
+	fSAnteil := m["Accounts"].([]interface{})[2].(map[string]interface{})["Description"].(map[string]interface{})["Name"]
+	assert.Equal(t, "k:  kommitment_1-AnteilausFairshare" ,fSAnteil)
 
 }
