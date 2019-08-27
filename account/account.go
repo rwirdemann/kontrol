@@ -2,6 +2,7 @@ package account
 
 import (
 	"fmt"
+	"log"
 	"sort"
 	"strings"
 
@@ -61,6 +62,9 @@ func NewAccount(a AccountDescription) *Account {
 }
 
 func (a *Account) Book(b booking.Booking) {
+	if a == nil {
+		log.Panic ("in Book, got nil account in row ", b.RowNr,b )
+	}
 	a.Bookings = append(a.Bookings, b)
 	a.UpdateSaldo()  // this might be expensive, but this way the Salden should always be accurate
 }

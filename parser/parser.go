@@ -43,6 +43,7 @@ func Import(file string, aYear int, positions *[]booking.Booking)  {
 				fmt.Println("error in row: ", rownr, record)
 				break
 			}
+			// log.Println("in Import, reading line ", rownr)
 
 			if isHeader(record[0]) {
 				continue
@@ -68,6 +69,8 @@ func Import(file string, aYear int, positions *[]booking.Booking)  {
 					}
 					bkng := booking.NewBooking(rownr, typ, soll, haben, cs, project, m, amount, subject, month, year, bankCreated)
 					*positions = append(*positions, *bkng)
+				} else {
+					// log.Println ("in Immport, ", year, " is not in	 period ", aYear, rownr)
 				}
 			} else {
 				fmt.Printf("unknown booking type '%s' in row '%d'\n", record[0], rownr)

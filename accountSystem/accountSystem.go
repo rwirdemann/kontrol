@@ -79,7 +79,7 @@ var UK_VeraenderungAnlagen 	= account.AccountDescription{Id: "_7-VeränderungAnl
 var UK_AnteilAnAnlagen 		= account.AccountDescription{Id: "_8-AnteilAnAnlagen", Name: "", Type: "Passiv"}
 var UK_Darlehen 			= account.AccountDescription{Id: "_9-Darlehen", Name: "", Type: "Passiv"}
 var UK_LiquidityReserve 	= account.AccountDescription{Id: "_A-Liquiditätsreserve", Name: "", Type: "Passiv"}
-var UK_Verfuegungsrahmen	= account.AccountDescription{Id: "_B-Verfuegungsrahmen-Bonus", Name: "", Type: "Passiv"}
+var UK_Verfuegungsrahmen	= account.AccountDescription{Id: "_B-Jahresüberschuss-Bonus", Name: "", Type: "Passiv"}
 var Hauptkonto 				= account.AccountDescription{Id: "Hauptkonto", Name: "", Type: "Hauptkonto"}
 
 
