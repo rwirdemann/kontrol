@@ -45,7 +45,7 @@
       { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "Partner", "Arbeit": "1.00", "Fairshares": "0.174"  },
       { "Id": "KR", "Name": "k: Katja Roth",           "Type": "Employee", "Arbeit": "1.00" },
       { "Id": "AB", "Name": "k: Anna Blume",           "Type": "Employee", "Arbeit": "1.00" },
-      { "Id": "CS", "Name": "k: Christine Schlonz",    "Type": "Employee", "Arbeit": "0.41666" },
+      { "Id": "CS", "Name": "k: Christine Schlott",    "Type": "Employee", "Arbeit": "0.41666" },
       { "Id": "IK", "Name": "k: Ingo Komorowski",      "Type": "Employee", "Arbeit": "1.00" },
       { "Id": "SR", "Name": "k: Sven Röpstorff",       "Type": "Employee", "Arbeit": "0.50" }
     ]
