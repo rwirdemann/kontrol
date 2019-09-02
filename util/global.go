@@ -19,6 +19,7 @@ type Environment struct {
 
 // global scope
 type GlobalStruct struct {
+	FinancialMonth string
 	FinancialYear int
 	BalanceDate time.Time
 	LiquidityNeed float64

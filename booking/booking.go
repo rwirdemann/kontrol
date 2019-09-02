@@ -65,6 +65,7 @@ const (
 	CC_SVBeitrag           = "CC_SV-Beitrag"
 	CC_GWSteuer            = "CC_GWSteuer"
 	CC_Gehalt              = "CC_Gehalt"
+	CC_J_Bonus			   = "CC_Jahresüberschuss/Bonus"
 	CC_LNSteuer            = "CC_LNSteuer"
 	CC_PartnerNettoFaktura = "CC_PartnerNettofaktura"
 	CC_LiquidityReserve	   = "CC_Liquiditätsreserve"

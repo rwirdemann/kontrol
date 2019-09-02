@@ -100,8 +100,7 @@ func (c BookGWSteuerCommand) run() {
 
 	// Buchung Kommitment-Konto oder Rückstellung oder ...
 	gwAccount,_ := c.AccSystem.Get(accountSystem.SKR03_Steuern.Id)
-	kBooking := booking.CloneBooking(c.Booking, - amount, booking.CC_GWSteuer, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
-	gwAccount.Book(kBooking)
+	kBooking := booking.CloneBooking(c.Booking, -amount, booking.CC_GWSteuer, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
 
 	// Habenbuchung
 	habenAccountId := ""
@@ -111,10 +110,7 @@ func (c BookGWSteuerCommand) run() {
 		habenAccountId = accountSystem.SKR03_1200.Id
 	}
 	habenAccount,_ := c.AccSystem.Get(habenAccountId)
-	habenbk := c.Booking
-	habenbk.Type = booking.CC_GWSteuer
-	habenbk.Amount = amount
-	habenAccount.Book(habenbk)
+	bookFromTo(kBooking, gwAccount, habenAccount)
 
 }
 

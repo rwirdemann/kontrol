@@ -63,76 +63,6 @@ func Process(accsystem accountSystem.AccountSystem, booking booking.Booking) {
 
 
 
-func GuV (as accountSystem.AccountSystem) {
-
-	var jahresueberschuss, gwsteuer, ertrag, aufwand float64
-	now := time.Now().AddDate(0, 0, 0)
-
-	for _, acc := range as.All() {
-		if (acc.Description.Id == accountSystem.SKR03_Steuern.Id) {
-			gwsteuer += acc.Saldo
-		}
-		switch  {
-		case acc.Description.Type == account.KontenartAufwand:
-			aufwand += acc.Saldo
-		case acc.Description.Type == account.KontenartErtrag:
-			ertrag += acc.Saldo
-		default:
-		}
-	}
-	fmt.Printf("			in GuV, Ertrag:  %+9.2f€\n", math.Round(100*ertrag)/100)
-	fmt.Printf("			in GuV, Aufwand: %+9.2f€\n", math.Round(100*aufwand)/100)
-	jahresueberschuss = ertrag + aufwand
-	fmt.Printf("			in GuV, Jahresueberschuss: %+9.2f€\n", math.Round(100*jahresueberschuss)/100)
-
-
-	// calculate Gewerbesteuer
-	// only do that for the current year!
-	log.Println("in GuV, Gewerbesteuer gebucht:", gwsteuer)
-	log.Println("in GuV, Gewinn vor Steuer:", jahresueberschuss-gwsteuer)
-	if  util.Global.FinancialYear == time.Now().Year() {
-		log.Println("in GuV, GWsteuer:", berechne_Gewerbesteuer(jahresueberschuss-gwsteuer))
-		gwsRück := math.Round( 100* (berechne_Gewerbesteuer(jahresueberschuss-gwsteuer) + gwsteuer ) /100 )
-
-
-
-		// ermittelte GWSteuer Rückstellung verbuchen
-		gwsKonto,_ := as.Get(accountSystem.SKR03_Steuern.Id)
-		gwsSoll := booking.NewBooking(0,"in kontrol ermittelte Gewerbesteuer-Rückstellung "+strconv.Itoa(util.Global.FinancialYear), "4320", "956", "", "",nil,  -gwsRück, ("in kontrol ermittelte Gewerbesteuer-Rückstellung "+strconv.Itoa(util.Global.FinancialYear)), int(now.Month()), now.Year(), now)
-		gwsKonto.Book(*gwsSoll)
-		//
-		gwsGegenKonto,_ := as.Get(accountSystem.SKR03_Rueckstellungen.Id)
-		gwsHaben := booking.NewBooking(0,"in kontrol ermittelte Gewerbesteuer-Rückstellung "+strconv.Itoa(util.Global.FinancialYear), "", "", "", "",nil,  gwsRück, ("in kontrol ermittelte Gewerbesteuer-Rückstellung "+strconv.Itoa(util.Global.FinancialYear)), int(now.Month()), now.Year(), now)
-		gwsGegenKonto.Book(*gwsHaben)
-		// ermittelte GWSteuer Rückstellung von jahresueberschuss abziehen
-		log.Println("in GuV, Gewerbesteuer-Rückstellung", gwsRück)
-		jahresueberschuss -= gwsRück
-
-	}
-
-	log.Println("in GuV, Gewinn nach Steuer:", jahresueberschuss)
-
-
-	// Jahresüberschuss ist nun ermittelt
-
-	// Buchung auf Verrechnungskonto Jahresüberschuss
-	jue,okay := as.Get(accountSystem.ErgebnisNachSteuern.Id)
-	if !okay {
-		log.Panic("in GuV, there is no accountSystem.ErgebnisNachSteuern.Id")
-	}
-	soll := booking.NewBooking(0,"Jahresüberschuss "+strconv.Itoa(util.Global.FinancialYear), "", "", "", "",nil,  -jahresueberschuss, "Buchung Jahresüberschuss", int(now.Month()), now.Year(), now)
-	jue.Book(*soll)
-
-	// und Buchung auf Verbindlichkeitenkonto
-	verb,okay := as.Get(accountSystem.SKR03_920_Gesellschafterdarlehen.Id)
-	if !okay {
-		log.Panic("in GuV, there is no accountSystem.SKR03_920_Gesellschafterdarlehen.Id")
-	}
-	haben := booking.NewBooking(0,"Jahresüberschuss "+strconv.Itoa(util.Global.FinancialYear), "", "", valueMagnets.StakeholderKM.Id, "", nil,  jahresueberschuss, "Buchung Jahresüberschuss", int(now.Month()), now.Year(), now)
-	verb.Book(*haben)
-
-	log.Printf("in GuV, Jahresüberschuss: %6.2f€\n", math.Round(100*jahresueberschuss)/100)
-}
 
 
 
@@ -234,9 +164,11 @@ func ErloesverteilungAnStakeholder (as accountSystem.AccountSystem) {
 				// now process other accounts like accountSystem.SKR03_1900.Id
 				// this applies only to kommanditisten
 				switch acc.Description.Id {
-				case accountSystem.SKR03_Anlagen.Id,
-					accountSystem.SKR03_Anlagen25_35.Id:
-					BookToValuemagnetsByShares{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_VeraenderungAnlagen.Id}.run()
+				case accountSystem.SKR03_Anlagen.Id, accountSystem.SKR03_Anlagen25_35.Id:
+					// Eröffnungsbuchungen ausnehmen
+					if (bk.Soll != "9000") {
+						BookToValuemagnetsByShares{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_VeraenderungAnlagen.Id}.run()
+					}
 				case accountSystem.SKR03_Abschreibungen.Id:
 					//
 					BookToValuemagnetsByShares{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_VeraenderungAnlagen.Id}.run()
@@ -513,6 +445,9 @@ func BookAmountAtDisposition (as accountSystem.AccountSystem) {
 	}
 	bookFromTo(bk,k, k_UK)
 
+
+	// book from stakeholder UK_Verfuegungsrahmen back to K_UK_Verfuegungsrahmen
+	// this should give equal Salden at both sides of balance sheet and zero this account
 	shrepo := valueMagnets.Stakeholder{}
 	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
 		stakeholder_Saldo := 0.0
@@ -535,9 +470,9 @@ func BookAmountAtDisposition (as accountSystem.AccountSystem) {
 			Amount:      stakeholder_Saldo,
 			Soll:		 "",
 			Haben: 		 "",
-			Type:        booking.CC_LiquidityReserve,
+			Type:        booking.CC_J_Bonus,
 			CostCenter:  sh.Id,
-			Text:        fmt.Sprintf("Liquiditätsbeitrag %s %d", sh.Id, util.Global.FinancialYear),
+			Text:        fmt.Sprintf("Jahresüberschuss/Bonus %s %d", sh.Id, util.Global.FinancialYear),
 			Month:       12,
 			Year:        util.Global.FinancialYear,
 			FileCreated: time.Now().AddDate(0, 0, 0),

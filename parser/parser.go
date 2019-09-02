@@ -31,7 +31,7 @@ var netBookings = []struct {
 	{Owner: "RR", Column: 19},
 }
 
-func Import(file string, aYear int, positions *[]booking.Booking)  {
+func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)  {
 
 	if f, err := openCsvFile(file); err == nil {
 		r := csv.NewReader(bufio.NewReader(f))
@@ -58,8 +58,9 @@ func Import(file string, aYear int, positions *[]booking.Booking)  {
 				subject := strings.Replace(record[5], "\n", ",", -1)
 				amount := parseAmount(record[6])
 				year, month := parseMonth(record[7])
+				monthStr := fmt.Sprintf("%02d", month)
 				bankCreated := parseFileCreated(record[8])
-				if year == aYear {
+				if year == aYear && (aMonth == "*" || monthStr == aMonth) {
 					m := make(map[valueMagnets.Stakeholder]float64)
 					for _, p := range netBookings {
 						//
