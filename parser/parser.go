@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -32,6 +33,7 @@ var netBookings = []struct {
 }
 
 func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)  {
+	log.Println("in Import for Year, Month", aYear, aMonth)
 
 	if f, err := openCsvFile(file); err == nil {
 		r := csv.NewReader(bufio.NewReader(f))
@@ -60,7 +62,7 @@ func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)
 				year, month := parseMonth(record[7])
 				monthStr := fmt.Sprintf("%02d", month)
 				bankCreated := parseFileCreated(record[8])
-				if year == aYear && (aMonth == "*" || monthStr == aMonth) {
+				if year == aYear && (aMonth == "" || aMonth == "*" || monthStr == aMonth) {
 					m := make(map[valueMagnets.Stakeholder]float64)
 					for _, p := range netBookings {
 						//

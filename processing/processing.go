@@ -336,6 +336,12 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 	// Erlösanteile
 	k_erloesAcc,_ :=  as.GetSubacc(kaccount.Description.Id, accountSystem.UK_Erloese.Id)
 	sumPartnerFaktura := sumOfAllBookings(*k_erloesAcc)
+	if (sumPartnerFaktura < 1.0) {
+		// in the very unli9kely event that there is a mnonth withour partner faktura...
+		// the distribution does not work sesibly anyway ...
+		sumPartnerFaktura = 1.0
+	}
+
 	log.Println("    Sum of Partnerfaktura", sumPartnerFaktura)
 	restToDistribute := rest
 	sumOfErloesAnteil := rest

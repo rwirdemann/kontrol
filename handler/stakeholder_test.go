@@ -13,9 +13,14 @@ import (
 	"testing"
 )
 
+
+
 func initRouter() *mux.Router {
 	acs := accountSystem.EmptyDefaultAccountSystem()
-	return NewRouter("githash", "buildtime", acs)
+	reimport := func (as accountSystem.AccountSystem, year int, month string) {
+		//
+	}
+	return NewRouter("githash", "buildtime", acs, reimport)
 }
 
 func TestGetAllStakeholders(t *testing.T) {

@@ -10,8 +10,11 @@ import (
 	"github.com/ahojsenn/kontrol/util"
 )
 
+
+
 func MakeGetGuVAccountsHandler(as accountSystem.AccountSystem) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		var accounts []account.Account
 		accounts = as.CloneAccountsOfType(account.KontenartErtrag)
 		accounts = append(accounts, as.CloneAccountsOfType(account.KontenartAufwand)... )

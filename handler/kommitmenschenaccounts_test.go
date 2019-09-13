@@ -16,7 +16,10 @@ import (
 
 func TestMakeGetKommitmenschenAccountsHandler(t *testing.T) {
 	acs := accountSystem.NewDefaultAccountSystem()
-	router := NewRouter("githash", "buildtime", acs)
+	reimport := func (as accountSystem.AccountSystem, year int, month string) {
+		//
+	}
+	router := NewRouter("githash", "buildtime", acs, reimport)
 	acs.Add(account.NewAccount(account.AccountDescription{Id: "1400", Name: "SKR03_1400_OPOS-Kunde", Type: "Aktivkonto"}))
 
 

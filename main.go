@@ -3,19 +3,18 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/ahojsenn/kontrol/parser"
+	"github.com/ahojsenn/kontrol/processing"
 	"github.com/ahojsenn/kontrol/valueMagnets"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
 
-	"github.com/ahojsenn/kontrol/processing"
-
 	"log"
 
 	"github.com/ahojsenn/kontrol/accountSystem"
 	"github.com/ahojsenn/kontrol/handler"
-	"github.com/ahojsenn/kontrol/parser"
 	"github.com/ahojsenn/kontrol/util"
 	"github.com/howeyc/fsnotify"
 	"github.com/rs/cors"
@@ -24,7 +23,6 @@ import (
 const DefaultBookingFile = "Buchungen-KG.csv"
 
 var (
-	fileName   	string
 	githash    	string
 	buildstamp 	string
 )
@@ -46,7 +44,7 @@ func main() {
 		fmt.Printf("Build: %s Git: %s\n", buildstamp, githash)
 		os.Exit(0)
 	}
-	fileName = *file
+	util.Global.Filename = *file
 
 
 
@@ -66,12 +64,12 @@ func main() {
 	log.Println("in main: util.Global.LiquidityNeed=",util.Global.LiquidityNeed)
 
 
-	accountSystem := accountSystem.NewDefaultAccountSystem()
+	as := accountSystem.NewDefaultAccountSystem()
 	log.Println("in main, created accountsystem for ", util.Global.FinancialYear)
-	watchBookingFile(accountSystem, *year, *month)
-	importAndProcessBookings(accountSystem, *year, *month)
+	watchBookingFile(as, *year, *month)
+	ImportAndProcessBookings(as, *year, *month)
 
-	handler := cors.AllowAll().Handler(handler.NewRouter(githash, buildstamp, accountSystem))
+	handler := cors.AllowAll().Handler(handler.NewRouter(githash, buildstamp, as, ImportAndProcessBookings ))
 
 	go func() {
 		fmt.Printf("listing on http://localhost:%s...\n", *httpPort)
@@ -84,11 +82,12 @@ func main() {
 	log.Fatal(http.ListenAndServeTLS(":"+*httpsPort, *certFile, *keyFile, handler))
 }
 
-func importAndProcessBookings(as accountSystem.AccountSystem, year int, month string) {
+
+func ImportAndProcessBookings(as accountSystem.AccountSystem, year int, month string) {
 	as.ClearBookings()
-	log.Printf("importAndProcessBookings: %d\n", year)
+	log.Printf("importAndProcessBookings: %d %s\n", year, month	)
 	hauptbuch := as.GetCollectiveAccount()
-	parser.Import(fileName, year, month,&(hauptbuch.Bookings))
+	parser.Import(util.Global.Filename, year, month,&(hauptbuch.Bookings))
 	log.Println("in main, import done")
 	for _, p := range hauptbuch.Bookings {
 		processing.Process(as, p)
@@ -115,6 +114,8 @@ func importAndProcessBookings(as accountSystem.AccountSystem, year int, month st
 	processing.GenerateProjectControlling(as)
 }
 
+
+
 func watchBookingFile(repository accountSystem.AccountSystem, year int, month string) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -134,7 +135,7 @@ func watchBookingFile(repository accountSystem.AccountSystem, year int, month st
 					fmt.Println("timeout 3 sec")
 				}
 				log.Printf("booking reimport start: %s\n", time.Now())
-				importAndProcessBookings(repository, year, month)
+				ImportAndProcessBookings(repository, year, month)
 				log.Printf("booking reimport end: %s\n", time.Now())
 			case err := <-watcher.Error:
 				log.Println("error:", err)
@@ -143,7 +144,7 @@ func watchBookingFile(repository accountSystem.AccountSystem, year int, month st
 		}
 	}()
 
-	err = watcher.Watch(fileName)
+	err = watcher.Watch(util.Global.Filename)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1,10 +1,10 @@
 package util
 
 import (
-	"log"
-	"io/ioutil"
-	"fmt"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 	"time"
 )
@@ -19,6 +19,7 @@ type Environment struct {
 
 // global scope
 type GlobalStruct struct {
+	Filename string
 	FinancialMonth string
 	FinancialYear int
 	BalanceDate time.Time
