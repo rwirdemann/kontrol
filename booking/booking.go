@@ -24,6 +24,8 @@ var ValidBookingTypes = [...]string{
 	"Rückstellung",
 	"Anfangsbestand",
  	"SKR03",
+ 	"openingBalance",
+ 	"closingBalance",
 	"UstVZ",
 }
 

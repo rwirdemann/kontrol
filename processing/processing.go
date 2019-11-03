@@ -51,8 +51,11 @@ func Process(accsystem accountSystem.AccountSystem, booking booking.Booking) {
 		command = BookLNSteuerCommand{AccSystem: accsystem, Booking: booking}
 	case "UstVZ":
 		command = BookUstCommand{AccSystem: accsystem, Booking: booking}
-	case "SKR03":
-		command = BookSKR03Command{AccSystem: accsystem, Booking: booking}
+	case "SKR03", "closingBalance", "openingBalance":
+		command =  DontDoAnything{}
+		sollAccount := accsystem.GetSKR03(booking.Soll)
+		habenAccount := accsystem.GetSKR03(booking.Haben)
+		bookFromTo(booking, sollAccount, habenAccount)
 	default:
 		log.Println("in Process: unknown command",booking.Type, " in row", booking.RowNr)
 	}
@@ -114,6 +117,7 @@ func ErloesverteilungAnKommanditisten(as accountSystem.AccountSystem) {
 		for _, bk := range a.Bookings {
 
 			// skip employees bookings
+			// this applies only to kommanditisten
 			sh := valueMagnets.Stakeholder{}
 			if  sh.IsEmployee(bk.CostCenter) {
 				continue
@@ -135,12 +139,16 @@ func ErloesverteilungAnKommanditisten(as accountSystem.AccountSystem) {
 			// alle Anlagen und Abschreibungen
 			case account.KontenartAktiv:
 				// now process other accounts like accountSystem.SKR03_1900.Id
-				// this applies only to kommanditisten
 				switch acc.Description.Id {
 				case accountSystem.SKR03_Anlagen.Id, accountSystem.SKR03_Anlagen25_35.Id:
-					// Eröffnungsbuchungen ausnehmen
-					if (bk.Soll != "9000") {
+					switch bk.Type {
+					case "openingBalance":
+						BookToValuemagnetsByShares{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_AnteilAnAnlagen.Id}.run()
+					case "SKR03":
 						BookToValuemagnetsByShares{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_VeraenderungAnlagen.Id}.run()
+					// Schlussbilanz ausnehmen
+					case "closingBalance":
+					default:
 					}
 				case accountSystem.SKR03_Abschreibungen.Id:
 					//
@@ -514,7 +522,11 @@ func CalculateEmployeeBonus (as accountSystem.AccountSystem) accountSystem.Accou
 				FileCreated: time.Now().AddDate(0, 0, 0),
 				BankCreated: time.Now().AddDate(0, 0, 0),
 			}
-			BookSKR03Command{AccSystem: as, Booking: bk}.run()
+			// create new booking
+			sollAccount := as.GetSKR03(bk.Soll)
+			habenAccount := as.GetSKR03(bk.Haben)
+			bookFromTo(bk, sollAccount, habenAccount)
+
 
 			// book from company cost to valuemagnets Hauptaccount
 			k_subacc_costs,_ := as.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_Kosten.Id)

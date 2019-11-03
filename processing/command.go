@@ -100,7 +100,7 @@ func (c BookGWSteuerCommand) run() {
 
 	// Buchung Kommitment-Konto oder Rückstellung oder ...
 	gwAccount,_ := c.AccSystem.Get(accountSystem.SKR03_Steuern.Id)
-	kBooking := booking.CloneBooking(c.Booking, -amount, booking.CC_GWSteuer, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
+	kBooking := booking.CloneBooking(c.Booking, amount, booking.CC_GWSteuer, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
 
 	// Habenbuchung
 	habenAccountId := ""
@@ -213,27 +213,6 @@ type DontDoAnything struct {
 func (c DontDoAnything) run() {
 }
 
-
-type BookSKR03Command struct {
-	Booking    		booking.Booking
-	AccSystem  		accountSystem.AccountSystem
-}
-
-func (c BookSKR03Command) run() {
-
-	amount := c.Booking.Amount
-
-	// Sollbuchung
-	sollAccount := c.AccSystem.GetSKR03(c.Booking.Soll)
-	a := booking.CloneBooking(c.Booking, -amount, c.Booking.Typ, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
-	sollAccount.Book(a)
-
-	// Habenbuchung
-	habenAccount := c.AccSystem.GetSKR03(c.Booking.Haben)
-	b := booking.CloneBooking(c.Booking, amount, c.Booking.Typ, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
-	habenAccount.Book(b)
-
-}
 
 type BookUstCommand struct {
 	Booking    booking.Booking
