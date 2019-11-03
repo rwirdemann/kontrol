@@ -41,13 +41,21 @@ func GuV (as accountSystem.AccountSystem) {
 	log.Println("in GuV, Gewerbesteuer gebucht:", gwsteuer)
 	log.Println("in GuV, Gewinn vor Steuer:", jahresueberschuss-gwsteuer)
 	if  util.Global.FinancialYear == time.Now().Year() {
-		log.Println("in GuV, GWsteuer:", berechne_Gewerbesteuer(jahresueberschuss-gwsteuer))
-		gwsRück := math.Round( 100* (berechne_Gewerbesteuer(jahresueberschuss-gwsteuer) + gwsteuer ) /100 )
+		gwsRück := math.Round( 100* (berechneGewerbesteuer(jahresueberschuss-gwsteuer) + gwsteuer ) /100 )
+		log.Println("in GuV, GWsteuer:", gwsRück)
 
 		// ermittelte GWSteuer Rückstellung verbuchen
 		gwsKonto,_ := as.Get(accountSystem.SKR03_Steuern.Id)
 		gwsGegenKonto,_ := as.Get(accountSystem.SKR03_Rueckstellungen.Id)
-		gws := booking.NewBooking(0,"in kontrol ermittelte Gewerbesteuer-Rückstellung "+strconv.Itoa(util.Global.FinancialYear), "4320", "956", "", "",nil,  -gwsRück, ("in kontrol ermittelte Gewerbesteuer-Rückstellung "+strconv.Itoa(util.Global.FinancialYear)), int(now.Month()), now.Year(), now)
+
+
+		// is it -gwsRück or gwsRück here --> test invesigate and fix it!
+
+		gws := booking.NewBooking(0,"in kontrol ermittelte Gewerbesteuer-Rückstellung "+strconv.Itoa(util.Global.FinancialYear), "4320", "956", "K", "",nil,  -gwsRück, ("in kontrol ermittelte Gewerbesteuer-Rückstellung "+strconv.Itoa(util.Global.FinancialYear)), int(now.Month()), now.Year(), now)
+
+
+
+
 
 		bookFromTo( *gws, gwsKonto, gwsGegenKonto)
 		// ermittelte GWSteuer Rückstellung von jahresueberschuss abziehen

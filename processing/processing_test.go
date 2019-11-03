@@ -306,7 +306,7 @@ func TestProcessOPOS_SKR1600(t *testing.T) {
 
 	// when: the position is processed
 	Process(accSystem, *p)
-	ErloesverteilungAnStakeholder(accSystem)
+	ErloesverteilungAnKommanditisten(accSystem)
 
 	// the booking is booked to SRK1600 account
 	account1600, _ := accSystem.Get(accountSystem.SKR03_1600.Id)
@@ -408,7 +408,8 @@ func TestErloesverteilungAnValueMagnetsSimple(t *testing.T) {
 
 	// when: the position is processed
 	Process(as, *p3)
-	ErloesverteilungAnStakeholder(as)
+	ErloesverteilungAnEmployees(as)
+	ErloesverteilungAnKommanditisten(as)
 
 	// whats on "K"
 	kommitment,_ := as.Get("K")
@@ -446,7 +447,7 @@ func TestErloesverteilungAnValueMagnets_Anlage(t *testing.T) {
 
 	// when: the position is processed
 	Process(as, *p3)
-	ErloesverteilungAnStakeholder(as)
+	ErloesverteilungAnKommanditisten(as)
 
 	// check, that the Bankaccount is now at 4000
 	bankacc,_ := as.Get(accountSystem.SKR03_1200.Id)
@@ -491,7 +492,7 @@ func TestDistributeKTopf(t *testing.T) {
 	GuV(as)
 	Bilanz(as)
 	// now distribution of costs & profits
-	ErloesverteilungAnStakeholder(as)
+	ErloesverteilungAnKommanditisten(as)
 	DistributeKTopf(as)
 
 	// assert, that Anke has more due to Johannes expenses
@@ -520,7 +521,8 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 	Process(as, *p3)
 	Process(as, *p4)
 	Process(as, *p5)
-	ErloesverteilungAnStakeholder(as)
+	ErloesverteilungAnEmployees(as)
+	ErloesverteilungAnKommanditisten(as)
 
 
 	// booking ist on CostCenter K
@@ -571,7 +573,7 @@ func TestStakeholderYearlyIncome (t *testing.T) {
 	GuV(as)
 	Bilanz(as)
 	// now distribution of costs & profits
-	ErloesverteilungAnStakeholder(as)
+	ErloesverteilungAnKommanditisten(as)
 	DistributeKTopf(as)
 
 	// 33% von 200€ k-anteil + 50% von 800€ - Gewerbesteuer
@@ -607,7 +609,7 @@ func TestCalculateEmplyeeBonnusses (t *testing.T) {
 	}
 
 	// now distribution of costs & profits
-	ErloesverteilungAnStakeholder(as)
+	ErloesverteilungAnKommanditisten(as)
 //	CalculateEmployeeBonus(as)
 //	CalculateEmployeeBonus(as)
 	CalculateEmployeeBonus(as)  // calling this twice should not double the bonus...

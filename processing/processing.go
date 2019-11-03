@@ -63,89 +63,62 @@ func Process(accsystem accountSystem.AccountSystem, booking booking.Booking) {
 
 
 
+// book all employees cost and revenues
+func ErloesverteilungAnEmployees (as accountSystem.AccountSystem) {
+	for _, acc := range as.All() {
+		// loop through all accounts in accountSystem,
+		// beware: All() returns no bookings, so account here has no bookings[]
+		a, _ := as.Get(acc.Description.Id)
+		for _, bk := range a.Bookings  {
 
-
-
-
-func Bilanz (as accountSystem.AccountSystem) {
-
-	var konto *account.Account
-	var okay bool
-	Bilanz := 0.0
-	var bk *booking.Booking
-	now := time.Now().AddDate(0, 0, 0)
-
-
-	// Aktiva
-	for rownr, acc := range as.All() {
-		if acc.Description.Type == account.KontenartAktiv {
-			// Buchung auf SummeAktiva
-			konto, okay = as.Get(accountSystem.SummeAktiva.Id)
-			if !okay {
-				log.Panic("in Bilanz, could not get account SummeAktiva")
+			// employees bookings only
+			sh := valueMagnets.Stakeholder{}
+			if  !sh.IsEmployee(bk.CostCenter) {
+				continue
 			}
 
-			bk = booking.NewBooking(
-				rownr,
-				acc.Description.Name+strconv.Itoa(util.Global.FinancialYear),
-				"",
-				"",
-				"",
-				"",
-				nil,
-				acc.Saldo,
-				"SummeAktiva "+strconv.Itoa(util.Global.FinancialYear),
-				int(now.Month()),
-				now.Year(),
-				now)
-			konto.Book(*bk)
-			Bilanz += acc.Saldo
-			log.Println("in Bilanz, Aktiva: ", acc.Description.Name, acc.Saldo)
-		}
-	}
+			// process bookings on GuV accounts
+			switch acc.Description.Type {
 
+			// alle Kosten
+			case account.KontenartAufwand:
+				bk.Text = "autom. Kostenvert.: " + bk.Text
+				BookCostToCostCenter{AccSystem: as, Booking: bk}.run()
 
-	// Passiva
-	for rownr, acc := range as.All() {
-		if acc.Description.Type == account.KontenartPassiv {
-			// Buchung auf SummePassiva
-			konto,okay = as.Get(accountSystem.SummePassiva.Id)
-			if !okay {
-				log.Panic("in Bilanz, could not get account SummePassiva")
+			// alle Ertröge
+			case account.KontenartErtrag:
+				bk.Text = "autom. Ertragsvert.: " + bk.Text
+				BookRevenueToEmployeeCostCenter{AccSystem: as, Booking: bk}.run()
+
 			}
-			bk = booking.NewBooking(
-				rownr,
-				acc.Description.Name+strconv.Itoa(util.Global.FinancialYear),
-				"",
-				"",
-				"",
-				"",
-				nil,
-				acc.Saldo,
-				"SummePassiva "+strconv.Itoa(util.Global.FinancialYear),
-				int(now.Month()),
-				now.Year(),
-				now)
-			konto.Book(*bk)
-			Bilanz += acc.Saldo
-			log.Println("in Bilanz, Passiva: ", acc.Description.Name, acc.Saldo)
 		}
 	}
-	log.Println("in Bilanz: ", math.Round(100*Bilanz)/100, "€")
-
 }
+
+
+
+
+
+
 
 
 
 // Distribute Revenues and Costs according to the costcenters provided in the
 // booking sheet
-func ErloesverteilungAnStakeholder (as accountSystem.AccountSystem) {
+func ErloesverteilungAnKommanditisten(as accountSystem.AccountSystem) {
 
 	for _, acc := range as.All() {
 		// loop through all accounts in accountSystem,
 		// beware: All() returns no bookings, so account here has no bookings[]
 		a, _ := as.Get(acc.Description.Id)
 		for _, bk := range a.Bookings {
+
+			// skip employees bookings
+			sh := valueMagnets.Stakeholder{}
+			if  sh.IsEmployee(bk.CostCenter) {
+				continue
+			}
+
 			// process bookings on GuV accounts
 			switch acc.Description.Type {
 

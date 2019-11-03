@@ -65,6 +65,7 @@ $SSHSERVER "if crontab -l  | grep -v '{TARGETPROGRAM}' | grep -v '@reboot' > cro
 $SSHSERVER "echo '@reboot cd /home/$TARGETUSER; ./${TARGETPROGRAM} -httpPort=20191 -httpsPort=20192 -year=2019> /tmp/${TARGETPROGRAM}-2019.log 2>&1 &' >> crontab.del"
 $SSHSERVER "echo '@reboot cd /home/$TARGETUSER; ./${TARGETPROGRAM} -httpPort=20181 -httpsPort=20182 -year=2018> /tmp/${TARGETPROGRAM}.log 2>&1 &' >> crontab.del"
 $SSHSERVER "echo '@reboot cd /home/$TARGETUSER; ./${TARGETPROGRAM} -httpPort=20171 -httpsPort=20172 -year=2017 > /tmp/${TARGETPROGRAM}-2017.log 2>&1 &' >> crontab.del"
+$SSHSERVER "echo '@reboot cd /home/kommitment; ./simpleServer -httpPort=8042 -httpsPort=8043 > /dev/null 2>&1 &' >> crontab.del"
 $SSHSERVER "cat crontab.del | crontab -"
 $SSHSERVER "rm -f crontab.del"
 $SSHSERVER crontab -l

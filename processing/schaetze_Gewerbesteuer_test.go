@@ -9,15 +9,15 @@ import (
 func TestBerechne_Gewerbesteuer(t *testing.T) {
 	var gs = 0.0
 
-	gs =  berechne_Gewerbesteuer(0)
+	gs =  berechneGewerbesteuer(0)
 	assert.Equal(t, 0.0, gs)
 
-	gs = berechne_Gewerbesteuer(Gewerbesteuer_Freibetrag)
+	gs = berechneGewerbesteuer(Gewerbesteuer_Freibetrag)
 	assert.Equal(t, 0.0, gs)
 
-	gs  = math.Round( berechne_Gewerbesteuer(652733.50) )
+	gs  = math.Round( berechneGewerbesteuer(652733.50) )
 	assert.Equal(t, 103339.0, gs)
 
-	gs = math.Round( berechne_Gewerbesteuer(596219.72) )
+	gs = math.Round( berechneGewerbesteuer(596219.72) )
 	assert.Equal(t, 94045.0, gs)
 	}

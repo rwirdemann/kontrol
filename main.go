@@ -32,7 +32,7 @@ func main() {
 	environment := util.GetEnv()
 	version := flag.Bool("version", false, "prints current kontrol version")
 	file := flag.String("file", DefaultBookingFile, "booking file")
-	year := flag.Int("year", 2018, "year to control")
+	year := flag.Int("year", 2019, "year to control")
 	month := flag.String("month", "*", "month to control")
 	httpPort := flag.String("httpPort", "20171", "http server port")
 	httpsPort := flag.String("httpsPort", "20172", "https server port")
@@ -96,7 +96,7 @@ func ImportAndProcessBookings(as accountSystem.AccountSystem, year int, month st
 	// distribute revenues and costs to valueMagnets
 	// in this step only employees revenues will be booked to employee cost centers
 	// partners reneue will bi primarily booked to company account for this step
-	processing.ErloesverteilungAnStakeholder(as)
+	processing.ErloesverteilungAnEmployees(as)
 	// now employee bonusses are calculated and booked
 	processing.CalculateEmployeeBonus(as)
 
@@ -104,6 +104,7 @@ func ImportAndProcessBookings(as accountSystem.AccountSystem, year int, month st
 	processing.GuV(as)
 	processing.Bilanz(as)
 
+	processing.ErloesverteilungAnKommanditisten(as)
 	// distribution profit among partners
 	processing.DistributeKTopf(as)
 	// calculate liquidity needs per partner
