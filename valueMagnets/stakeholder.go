@@ -154,12 +154,10 @@ func (this *Stakeholder) Init(year int, shptr *[]Stakeholder) *[]Stakeholder {
 
 // returns an array with a copy of all stakeholders
 func (this *Stakeholder) All(year int) []Stakeholder {
-
 	if len(StakeholderRepository) == 0 {
 		StakeholderRepository = *this.Init(year, &StakeholderRepository)
 	}
 	return StakeholderRepository
-
 }
 
 
@@ -219,4 +217,35 @@ func  (this *Stakeholder) IsEmployee (id string) bool {
 // check if this is an kommanditist
 func  (this *Stakeholder) IsPartner (id string) bool {
 	return ( id != "" && this.Get(id).Type == StakeholderTypePartner)
+}
+
+
+// loop over all employees
+func (this *Stakeholder) AllEmployees(year int) []Stakeholder {
+	if len(StakeholderRepository) == 0 {
+		StakeholderRepository = *this.Init(year, &StakeholderRepository)
+	}
+	var employees []Stakeholder
+	for _,s := range this.All(util.Global.FinancialYear) {
+		if s.Type == StakeholderTypeEmployee {
+			employees = append(employees, s)
+		}
+	}
+	return employees
+}
+
+
+
+// loop over all kommanditisten
+func (this *Stakeholder) AllPartners(year int) []Stakeholder {
+	if len(StakeholderRepository) == 0 {
+		StakeholderRepository = *this.Init(year, &StakeholderRepository)
+	}
+	var employees []Stakeholder
+	for _,s := range this.All(util.Global.FinancialYear) {
+		if s.Type == StakeholderTypePartner {
+			employees = append(employees, s)
+		}
+	}
+	return employees
 }

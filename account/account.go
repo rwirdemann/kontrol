@@ -2,6 +2,7 @@ package account
 
 import (
 	"fmt"
+	"github.com/ahojsenn/kontrol/util"
 	"log"
 	"sort"
 	"strings"
@@ -65,31 +66,31 @@ func (a *Account) Book(b booking.Booking) {
 	if a == nil {
 		log.Panic ("in Book, got nil account in row ", b.RowNr,b )
 	}
+	b.Id = util.GetNewBookingId()
 	a.Bookings = append(a.Bookings, b)
 	a.UpdateSaldo()  // this might be expensive, but this way the Salden should always be accurate
 }
 
 func (a *Account) UpdateSaldo() {
-	saldo := 0.0
-	soll := 0.0
-	haben := 0.0
+	saldo 	:= 0.0
+	soll 	:= 0.0
+	haben 	:= 0.0
 	kommitmenschNettoFaktura := 0.0
 	for _, b := range a.Bookings {
 		saldo += b.Amount
 		switch b.Type {
 		case booking.CC_Employeeaanteil:
-			kommitmenschNettoFaktura += b.Amount/ EmployeeShare
+			kommitmenschNettoFaktura += b.Amount / EmployeeShare
 		case booking.CC_PartnerNettoFaktura:
 			kommitmenschNettoFaktura += b.Amount
 		}
-		// soll und haben richtig veruchen
+		// soll und haben richtig verbuchen
 		switch a.Description.Type {
 		case KontenartAufwand,  KontenartAktiv:
 			if b.Amount > 0.0 { soll += b.Amount } else { haben += b.Amount }
 		case KontenartErtrag,  KontenartPassiv, KontenartProject:
 			if b.Amount < 0.0 { soll += b.Amount } else { haben += b.Amount }
 		default:
-
 		}
 	}
 	a.Soll = soll

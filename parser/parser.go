@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
+	"github.com/ahojsenn/kontrol/util"
 	"io"
 	"log"
 	"os"
@@ -33,7 +34,6 @@ var netBookings = []struct {
 }
 
 func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)  {
-	log.Println("in Import for Year, Month", aYear, aMonth)
 
 	if f, err := openCsvFile(file); err == nil {
 		r := csv.NewReader(bufio.NewReader(f))
@@ -42,7 +42,6 @@ func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)
 			rownr++
 			record, err := r.Read()
 			if err == io.EOF {
-				fmt.Println("error in row: ", rownr, record)
 				break
 			}
 			// log.Println("in Import, reading line ", rownr)
@@ -76,7 +75,9 @@ func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)
 					// log.Println ("in Immport, ", year, " is not in	 period ", aYear, rownr)
 				}
 			} else {
-				fmt.Printf("unknown booking type '%s' in row '%d'\n", record[0], rownr)
+				err := fmt.Sprintf("unknown booking type '%s' in row '%d'\n", record[0], rownr)
+				util.Global.Errors = append(util.Global.Errors, err)
+				fmt.Printf(err)
 			}
 		}
 	} else {
@@ -117,7 +118,9 @@ func parseAmount(amount string) float64 {
 	if a, err := strconv.ParseFloat(s, 64); err == nil {
 		return a
 	} else {
-		fmt.Printf("parsing error '%s'\n", err)
+		e := fmt.Sprintf("in parseAmount: parsing error '%s' on amount '%s'\n", err, amount)
+		util.Global.Errors = append(util.Global.Errors, e)
+		fmt.Printf(e)
 		return 0
 	}
 }
@@ -127,8 +130,18 @@ func parseMonth(yearMonth string) (int, int) {
 		return 0, 0
 	}
 	s := strings.Split(yearMonth, "-")
-	y, _ := strconv.Atoi(s[0])
-	m, _ := strconv.Atoi(s[1])
+	if len(s) < 2{
+		util.Global.Errors = append(util.Global.Errors, "in parseMonth, something went wrong with this entry")
+		log.Fatal("in parseMonth, something went wrong with this entry", s)
+	}
+	y, err := strconv.Atoi(s[0])
+	if err != nil {
+		log.Fatal("ERROR in parseMonth, ", err)
+	}
+	m, err := strconv.Atoi(s[1])
+	if err != nil {
+		log.Fatal("ERROR in parseMonth, ", err)
+	}
 	return y, m
 }
 

@@ -80,6 +80,7 @@ const (
 )
 
 type Booking struct {
+	Id			int
 	RowNr 		int
 	Type        string // siehe const-Block hier drüber für gültige Werte
 	Soll        string
@@ -116,8 +117,8 @@ func NewBooking(
 			Net:         net,
 		}
 
-
 	return &Booking{
+		Id: 		 util.GetNewBookingId(),
 		RowNr:		 rownr,
 		CsvBookingExtras: extraCsv,
 		Type:        csvType,
@@ -136,6 +137,7 @@ func NewBooking(
 
 func CloneBooking(b Booking, amount float64, typ string, costcenter string, soll string, haben string, project string) Booking {
 	return Booking{
+		Id: 		 util.GetNewBookingId(),
 		Amount:      amount,
 		Type:        typ,
 		RowNr:       b.RowNr,

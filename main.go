@@ -46,7 +46,7 @@ func main() {
 	}
 	util.Global.Filename = *file
 
-
+	log.SetFlags(0)
 
 	// set FinancialYear & month
 	util.Global.FinancialYear =  *year
@@ -56,39 +56,39 @@ func main() {
 		fmt.Println(e)
 	}
 	util.Global.BalanceDate = bd
+	fmt.Println("\n\n#############################################################")
 	log.Println("in main, util.Global.FinancialYear:", util.Global.FinancialYear,
 		"\n    BalanceDate=",util.Global.BalanceDate)
+	fmt.Println("#############################################################")
 
 	// set LiquidityNeed
 	util.Global.LiquidityNeed =  valueMagnets.KommimtmentYear{}.Liqui(util.Global.FinancialYear)
-	log.Println("in main: util.Global.LiquidityNeed=",util.Global.LiquidityNeed)
 
 
 	as := accountSystem.NewDefaultAccountSystem()
-	log.Println("in main, created accountsystem for ", util.Global.FinancialYear)
 	watchBookingFile(as, *year, *month)
-	ImportAndProcessBookings(as, *year, *month)
+	//ImportAndProcessBookings(as, *year, *month)
 
-	handler := cors.AllowAll().Handler(handler.NewRouter(githash, buildstamp, as, ImportAndProcessBookings ))
+	h1 := cors.AllowAll().Handler(handler.NewRouter(githash, buildstamp, as, ImportAndProcessBookings ))
 
 	go func() {
 		fmt.Printf("listing on http://localhost:%s...\n", *httpPort)
-		log.Fatal(http.ListenAndServe(":"+*httpPort, handler))
+		log.Fatal(http.ListenAndServe(":"+*httpPort, h1))
 	}()
 	log.Println("started http server... ")
 
 	// start HTTPS
 	log.Println("starting https server	 \n  try https://localhost:" + *httpsPort + "/kontrol/accounts")
-	log.Fatal(http.ListenAndServeTLS(":"+*httpsPort, *certFile, *keyFile, handler))
+	log.Fatal(http.ListenAndServeTLS(":"+*httpsPort, *certFile, *keyFile, h1))
 }
 
 
 func ImportAndProcessBookings(as accountSystem.AccountSystem, year int, month string) {
+	log.Println("in ImportAndProcessBookings...")
+	util.Global.Errors = nil
 	as.ClearBookings()
-	log.Printf("importAndProcessBookings: %d %s\n", year, month	)
 	hauptbuch := as.GetCollectiveAccount()
 	parser.Import(util.Global.Filename, year, month,&(hauptbuch.Bookings))
-	log.Println("in main, import done")
 	for _, p := range hauptbuch.Bookings {
 		processing.Process(as, p)
 	}

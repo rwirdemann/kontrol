@@ -24,6 +24,8 @@ type GlobalStruct struct {
 	FinancialYear int
 	BalanceDate time.Time
 	LiquidityNeed float64
+	BookingId int
+	Errors []string
 }
 
 var Global GlobalStruct
@@ -58,5 +60,10 @@ func getHostname() string {
 		panic(err)
 	}
 	return hostname
+}
+
+func GetNewBookingId () int {
+	Global.BookingId++
+	return Global.BookingId
 }
 

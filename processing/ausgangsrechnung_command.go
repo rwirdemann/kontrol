@@ -28,24 +28,15 @@ func (this BookAusgangsrechnungCommand) run() {
 	switch {
 	case this.Booking.IsOpenPosition():
 		sollAccId = accountSystem.SKR03_1400.Id
-		this.Booking.Text = "Achtung OPOS: "+this.Booking.Text
+		// this.Booking.Text = "Achtung OPOS: "+this.Booking.Text
 	case this.Booking.IsBeyondBudgetDate():
 		sollAccId = accountSystem.SKR03_1400.Id
-		this.Booking.Text = "OPOS at BalanceDate: "+this.Booking.Text
+		// this.Booking.Text = "OPOS at BalanceDate: "+this.Booking.Text
 	default:
 		// book from bankaccount...
 		sollAccId = accountSystem.SKR03_1200.Id
 	}
 
-/*
-	if this.Booking.IsOpenPosition() || this.Booking.IsBeyondBudgetDate() {
-		sollAccId = accountSystem.SKR03_1400.Id
-		this.Booking.Text = "Achtung OPOS "+this.Booking.Text
-	} else {
-		// book from bankaccount...
-		sollAccId = accountSystem.SKR03_1200.Id
-		}
-*/
 	sollkto,_ := this.AccSystem.Get(sollAccId)
 	a := booking.Booking{
 		RowNr: 		 this.Booking.RowNr,

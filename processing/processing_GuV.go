@@ -1,7 +1,6 @@
 package processing
 
 import (
-	"fmt"
 	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/accountSystem"
 	"github.com/ahojsenn/kontrol/booking"
@@ -14,6 +13,7 @@ import (
 )
 
 func GuV (as accountSystem.AccountSystem) {
+	log.Printf("in GuV")
 
 	var jahresueberschuss, gwsteuer, ertrag, aufwand float64
 	now := time.Now().AddDate(0, 0, 0)
@@ -30,19 +30,19 @@ func GuV (as accountSystem.AccountSystem) {
 			default:
 		}
 	}
-	fmt.Printf("			in GuV, Ertrag:  %+9.2f€\n", math.Round(100*ertrag)/100)
-	fmt.Printf("			in GuV, Aufwand: %+9.2f€\n", math.Round(100*aufwand)/100)
+	log.Printf("	Ertrag:  %+9.2f€\n", math.Round(100*ertrag)/100)
+	log.Printf("	Aufwand: %+9.2f€\n", math.Round(100*aufwand)/100)
 	jahresueberschuss = ertrag + aufwand
-	fmt.Printf("			in GuV, Jahresueberschuss: %+9.2f€\n", math.Round(100*jahresueberschuss)/100)
+	log.Printf("	Jahresueberschuss: %+9.2f€\n", math.Round(100*jahresueberschuss)/100)
 
 
 	// calculate Gewerbesteuer
 	// only do that for the current year!
-	log.Println("in GuV, Gewerbesteuer gebucht:", gwsteuer)
-	log.Println("in GuV, Gewinn vor Steuer:", jahresueberschuss-gwsteuer)
+	log.Println("	Gewerbesteuer gebucht:", gwsteuer)
+	log.Println("	Gewinn vor Steuer:", jahresueberschuss-gwsteuer)
 	if  util.Global.FinancialYear == time.Now().Year() {
 		gwsRück := math.Round( 100* (berechneGewerbesteuer(jahresueberschuss-gwsteuer) + gwsteuer ) /100 )
-		log.Println("in GuV, GWsteuer:", gwsRück)
+		log.Println("	GWsteuer:", gwsRück)
 
 		// ermittelte GWSteuer Rückstellung verbuchen
 		gwsKonto,_ := as.Get(accountSystem.SKR03_Steuern.Id)
@@ -50,11 +50,11 @@ func GuV (as accountSystem.AccountSystem) {
 		gws := booking.NewBooking(0,"in kontrol ermittelte Gewerbesteuer-Rückstellung "+strconv.Itoa(util.Global.FinancialYear), "4320", "956", "K", "",nil,  gwsRück, ("in kontrol ermittelte Gewerbesteuer-Rückstellung "+strconv.Itoa(util.Global.FinancialYear)), int(now.Month()), now.Year(), now)
 		bookFromTo( *gws, gwsKonto, gwsGegenKonto)
 		// ermittelte GWSteuer Rückstellung von jahresueberschuss abziehen
-		log.Println("in GuV, Gewerbesteuer-Rückstellung", gwsRück)
+		log.Println("	Gewerbesteuer-Rückstellung", gwsRück)
 		jahresueberschuss -= gwsRück
 	}
 
-	log.Println("in GuV, Gewinn nach Steuer:", jahresueberschuss)
+	log.Printf("	Gewinn nach Steuer: %+9.2f€\n", math.Round(100*jahresueberschuss)/100)
 
 
 	// Jahresüberschuss ist nun ermittelt
@@ -75,6 +75,6 @@ func GuV (as accountSystem.AccountSystem) {
 	haben := booking.NewBooking(0,"Jahresüberschuss "+strconv.Itoa(util.Global.FinancialYear), "", "", valueMagnets.StakeholderKM.Id, "", nil,  jahresueberschuss, "Buchung Jahresüberschuss", int(now.Month()), now.Year(), now)
 	verb.Book(*haben)
 
-	log.Printf("in GuV, Jahresüberschuss: %6.2f€\n", math.Round(100*jahresueberschuss)/100)
+	log.Printf("	Jahresüberschuss: %6.2f€\n", math.Round(100*jahresueberschuss)/100)
 }
 

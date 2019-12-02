@@ -256,7 +256,7 @@ func (r *DefaultAccountSystem) ClearBookings() {
 }
 
 
-// get all accounts and subaccounts of a given Stakeholder of empty
+// get all accounts and subaccounts of a given Stakeholder or empty
 func  (as *DefaultAccountSystem) GetAllAccountsOfStakeholder (sh valueMagnets.Stakeholder) []account.Account {
 	var accountlist []account.Account
 	var stakeholder valueMagnets.Stakeholder
