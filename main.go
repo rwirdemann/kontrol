@@ -66,10 +66,12 @@ func main() {
 
 
 	as := accountSystem.NewDefaultAccountSystem()
+	ImportAndProcessBookings(as, *year, *month)
+
 	watchBookingFile(as, *year, *month)
 	//ImportAndProcessBookings(as, *year, *month)
 
-	h1 := cors.AllowAll().Handler(handler.NewRouter(githash, buildstamp, as, ImportAndProcessBookings ))
+	h1 := cors.AllowAll().Handler(handler.NewRouter(githash, buildstamp, as ))
 
 	go func() {
 		fmt.Printf("listing on http://localhost:%s...\n", *httpPort)

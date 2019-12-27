@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func GuV (as accountSystem.AccountSystem) {
+func GuV (as accountSystem.AccountSystem) float64 {
 	log.Printf("in GuV")
 
 	var jahresueberschuss, gwsteuer, ertrag, aufwand float64
@@ -76,5 +76,7 @@ func GuV (as accountSystem.AccountSystem) {
 	verb.Book(*haben)
 
 	log.Printf("	Jahresüberschuss: %6.2f€\n", math.Round(100*jahresueberschuss)/100)
+
+	return jahresueberschuss
 }
 

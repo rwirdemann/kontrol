@@ -17,10 +17,7 @@ import (
 
 func initRouter() *mux.Router {
 	acs := accountSystem.EmptyDefaultAccountSystem()
-	reimport := func (as accountSystem.AccountSystem, year int, month string) {
-		//
-	}
-	return NewRouter("githash", "buildtime", acs, reimport)
+	return NewRouter("githash", "buildtime", acs)
 }
 
 func TestGetAllStakeholders(t *testing.T) {

@@ -3,46 +3,14 @@ package handler
 import (
 	"github.com/ahojsenn/kontrol/accountSystem"
 	"github.com/ahojsenn/kontrol/jwt-notimpl"
-	"github.com/ahojsenn/kontrol/util"
 	"github.com/gorilla/mux"
 	"io/ioutil"
-	"log"
-	"net/http"
 )
 
-type reimportFunc func (as accountSystem.AccountSystem, year int, month string)
-type queryParser struct {
-	reimport reimportFunc
-	as accountSystem.AccountSystem
-}
-
-func (qp *queryParser) parseQ(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Do stuff here
-		qp.reimportDataIfneeded(w, r)
-		// Call the next handler, which can be another middleware in the chain, or the final handler.
-		next.ServeHTTP(w, r)
-	})
-}
-
-func (qp *queryParser) reimportDataIfneeded (w http.ResponseWriter, r *http.Request) {
-
-	// find financialMonth if present in query and if changed, reimport data
-	financialMonth := r.URL.Query().Get("financialMonth")
-
-	if financialMonth != util.Global.FinancialMonth &&
-		r.URL.Path != "/kontrol/version" &&
-		r.URL.Path != "/kontrol/stakeholder" &&
-		r.URL.Path != "/kontrol/errors" {
-		util.Global.FinancialMonth  = financialMonth
-		log.Println("MakeParseQueryParams: triggerring reprocessing of data...\n\n", util.Global.FinancialYear, financialMonth, r.URL)
-		//accountSystem.ImportAndProcessBookings(util.Global.AccountSystem, util.Global.FinancialYear, util.Global.FinancialMonth)
-		qp.reimport (qp.as, util.Global.FinancialYear, util.Global.FinancialMonth)
-	}
-}
 
 
-func NewRouter( githash string, buildstamp string, as accountSystem.AccountSystem, reimport reimportFunc ) *mux.Router {
+
+func NewRouter( githash string, buildstamp string, as accountSystem.AccountSystem ) *mux.Router {
 	r := mux.NewRouter()
 	key := keycloakRSAPub()
 
@@ -58,11 +26,6 @@ func NewRouter( githash string, buildstamp string, as accountSystem.AccountSyste
 	r.HandleFunc("/kontrol/accounts", MakeGetAccountsHandler(as))
 	r.HandleFunc("/kontrol/accounts/{id}", MakeGetAccountHandler(as))
 	r.HandleFunc("/kontrol/projects", MakeGetProjectsHandler(as))
-
-	qp := queryParser{}
-	qp.reimport = reimport
-	qp.as = as
-	r.Use( qp.parseQ )
 
 	return r
 }

@@ -18,8 +18,6 @@ func MakeGetGuVAccountsHandler(as accountSystem.AccountSystem) http.HandlerFunc 
 		var accounts []account.Account
 		accounts = as.CloneAccountsOfType(account.KontenartErtrag)
 		accounts = append(accounts, as.CloneAccountsOfType(account.KontenartAufwand)... )
-		// acc ,_ := as.Get("SKR03_ErgebnisNachSteuern")
-		// accounts = append(accounts, *acc )
 
 		sort.Sort(account.ByOwner(accounts))
 

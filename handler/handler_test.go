@@ -45,10 +45,7 @@ func init() {
 	as = repository
 
 
-	reimport := func (as accountSystem.AccountSystem, year int, month string) {
-		//
-	}
-	router = NewRouter("githash", "buildtime", repository, reimport  )
+	router = NewRouter("githash", "buildtime", repository  )
 }
 
 func TestGetAllAccounts(t *testing.T) {

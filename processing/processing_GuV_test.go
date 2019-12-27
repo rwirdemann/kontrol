@@ -38,7 +38,7 @@ func TestProcessGWSteuer(t *testing.T) {
 
 func TestGuV(t *testing.T) {
 	util.Global.FinancialYear = 2018
-	util.Global.Filename = "./Buchungen-KG.csv"
+	util.Global.Filename = "/Users/docjoe/mystuff/development/kontrol/Buchungen-KG.csv"
 	as := accountSystem.NewDefaultAccountSystem()
 	hauptbuch := as.GetCollectiveAccount()
 	log.Println("in TestGuV: ", util.Global.FinancialYear, len(hauptbuch.Bookings), util.Global.Filename)
@@ -57,9 +57,10 @@ func TestGuV(t *testing.T) {
 	CalculateEmployeeBonus(as)
 
 	// now (after employee bonusses are booked) calculate GuV and Bilanz
-	GuV(as)
-	log.Println("in TestGuV: processed GuV")
-
+	jahresüberschuss := GuV(as)
+	util.AssertEquals(t, jahresüberschuss, GuV(as))
+	util.AssertEquals(t, jahresüberschuss, GuV(as))
+	util.AssertEquals(t, jahresüberschuss, GuV(as))
 }
 
 
