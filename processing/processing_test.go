@@ -292,7 +292,6 @@ func TestProcessGV_Vorjahr(t *testing.T) {
 	assert.Equal(t, 1, len(habenAccount.Bookings))
 	actual := habenAccount.Bookings[0]
 	assert.Equal(t, 77777.0, actual.Amount)
-	assert.Equal(t, "Rest Anteil Johannes", actual.Text)
 	assert.Equal(t, "GV-Vorjahr", actual.Type)
 }
 

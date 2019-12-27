@@ -35,6 +35,10 @@ var netBookings = []struct {
 
 func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)  {
 
+	if file == "" {
+		log.Panic("in Import, no file provided...")
+	}
+
 	if f, err := openCsvFile(file); err == nil {
 		r := csv.NewReader(bufio.NewReader(f))
 		rownr := 0
@@ -164,6 +168,8 @@ func openCsvFile(fileName string) (*os.File, error) {
 		return file, nil
 	}
 
+
+	/*
 	// Open file from GOPATH
 	gopath := os.Getenv("GOPATH")
 	if gopath != "" {
@@ -171,6 +177,7 @@ func openCsvFile(fileName string) (*os.File, error) {
 			return file, nil
 		}
 	}
+*/
 
 	return nil, errors.New("could not open " + fileName)
 }
