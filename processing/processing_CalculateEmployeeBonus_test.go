@@ -44,14 +44,14 @@ func TestCalculateEmplyeeBonnusses (t *testing.T) {
 	ErloesverteilungAnEmployees(as)
 	CalculateEmployeeBonus(as)
 	CalculateEmployeeBonus(as)
-	CalculateEmployeeBonus(as)  // calling this twice should not double the bonus... --> in the current version there is no idempotency of this function
+	CalculateEmployeeBonus(as)  // calling this twice should not double the bonus...
 
 	// 70% of 100€
 	gehaelterAccount, _ := as.Get("4100_4199")
 	annasAccount_Erloese, _ := as.GetSubacc("AB", accountSystem.UK_AnteileAuserloesen.Id)
 
 	assert.Equal(t, 210.0, annasAccount_Erloese.Saldo )
-	assert.Equal(t, 220.0, gehaelterAccount.Saldo )
+	assert.Equal(t, -220.0, gehaelterAccount.Saldo )
 
 	return
 }

@@ -306,6 +306,7 @@ func TestProcessOPOS_SKR1600(t *testing.T) {
 
 	// when: the position is processed
 	Process(accSystem, *p)
+	Kostenerteilung(accSystem)
 	ErloesverteilungAnKommanditisten(accSystem)
 
 	// the booking is booked to SRK1600 account
@@ -490,11 +491,14 @@ func TestDistributeKTopf(t *testing.T) {
 	for _, p := range hauptbuch.Bookings {
 		Process(as, p)
 	}
+	Kostenerteilung(as)
+	ErloesverteilungAnEmployees(as)
+	// now employee bonusses are calculated and booked
+	CalculateEmployeeBonus(as)
 	// now calculate GuV
 	GuV(as)
 	Bilanz(as)
 	// now distribution of costs & profits
-	Kostenerteilung(as)
 	ErloesverteilungAnKommanditisten(as)
 	DistributeKTopf(as)
 
@@ -525,8 +529,16 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 	Process(as, *p3)
 	Process(as, *p4)
 	Process(as, *p5)
+	Kostenerteilung(as)
 	ErloesverteilungAnEmployees(as)
+	// now employee bonusses are calculated and booked
+	CalculateEmployeeBonus(as)
+	// now calculate GuV
+	GuV(as)
+	Bilanz(as)
+	// now distribution of costs & profits
 	ErloesverteilungAnKommanditisten(as)
+	DistributeKTopf(as)
 
 
 	// booking ist on CostCenter K
