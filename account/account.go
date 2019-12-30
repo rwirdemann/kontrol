@@ -69,6 +69,7 @@ func (a *Account) Book(b booking.Booking) {
 	b.Id = util.GetNewBookingId()
 	a.Bookings = append(a.Bookings, b)
 	a.UpdateSaldo()  // this might be expensive, but this way the Salden should always be accurate
+	// log.Println("in Book: ", a)
 }
 
 func (a *Account) UpdateSaldo() {

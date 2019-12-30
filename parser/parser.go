@@ -34,7 +34,7 @@ var netBookings = []struct {
 }
 
 func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)  {
-
+	imported := 0
 	if file == "" {
 		log.Panic("in Import, no file provided...")
 	}
@@ -42,6 +42,7 @@ func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)
 	if f, err := openCsvFile(file); err == nil {
 		r := csv.NewReader(bufio.NewReader(f))
 		rownr := 0
+
 		for {
 			rownr++
 			record, err := r.Read()
@@ -63,9 +64,9 @@ func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)
 				subject := strings.Replace(record[5], "\n", ",", -1)
 				amount := parseAmount(record[6])
 				year, month := parseMonth(record[7])
-				monthStr := fmt.Sprintf("%02d", month)
 				bankCreated := parseFileCreated(record[8])
-				if year == aYear && (aMonth == "" || aMonth == "*" || monthStr == aMonth) {
+				if year == aYear {
+					imported++
 					m := make(map[valueMagnets.Stakeholder]float64)
 					for _, p := range netBookings {
 						//
@@ -88,7 +89,7 @@ func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)
 		fmt.Println("file not found", file)
 		panic(err)
 	}
-
+	log.Printf("in Import, imported %d rows from %s", imported, file)
 	return
 }
 

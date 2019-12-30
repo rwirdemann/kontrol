@@ -22,108 +22,54 @@ type Command interface {
 }
 
 // Implementiert den Kommitment-Verteilungsalgorithmus
-func Process(accsystem accountSystem.AccountSystem, booking booking.Booking) {
-
+func Process(accsystem accountSystem.AccountSystem, bk booking.Booking) {
 
 	// find OPOS
 	switch {
-	case booking.IsOpenPosition():
-		booking.Text = "Achtung OPOS: "+booking.Text
-	case booking.IsBeyondBudgetDate():
-		booking.Text = "OPOS at BalanceDate: "+booking.Text
+	case bk.IsOpenPosition():
+		bk.Text = "Achtung OPOS: "+bk.Text
+	case bk.IsBeyondBudgetDate():
+		bk.Text = "OPOS at BalanceDate: "+bk.Text
 	default:
 	}
 
 	// Assign booking GuV and Bilanz accounts
 	var command Command
 
-	switch booking.Typ {
+	switch bk.Type {
 	case "GV":
-		command = BookPartnerEntnahmeCommand{AccSystem: accsystem, Booking: booking}
+		command = BookPartnerEntnahmeCommand{AccSystem: accsystem, Booking: bk}
 	case "GV-Vorjahr":
-		command = BookPartnerEntnahmeVorjahrCommand{AccSystem: accsystem, Booking: booking}
+		command = BookPartnerEntnahmeVorjahrCommand{AccSystem: accsystem, Booking: bk}
 	case "AR":
-		command = BookAusgangsrechnungCommand{AccSystem: accsystem, Booking: booking}
+		command = BookAusgangsrechnungCommand{AccSystem: accsystem, Booking: bk}
 	case "ER":
-		command = BookEingangsrechnungCommand{AccSystem: accsystem, Booking: booking}
+		command = BookEingangsrechnungCommand{AccSystem: accsystem, Booking: bk}
 	case "IS":
 		// ignore internal hours for this...
 		// command = BookInterneStundenCommand{AccSystem: accsystem, Booking: booking}
 		//log.Println("in Process: skipping internal hours",booking.Type, " in row", booking.RowNr)
-		command = DontDoAnything {AccSystem: accsystem, Booking: booking}
+		command = DontDoAnything {AccSystem: accsystem, Booking: bk}
 	case "SV-Beitrag":
-		command = BookSVBeitragCommand{AccSystem: accsystem, Booking: booking}
-	case "GWSteuer":
-		command = BookGWSteuerCommand{AccSystem: accsystem, Booking: booking}
-	case "Gehalt":
-		command = BookGehaltCommand{AccSystem: accsystem, Booking: booking}
+		command = BookSVBeitragCommand{AccSystem: accsystem, Booking: bk}
+	case "GWSteuer", booking.CC_GWSteuer:
+		command = BookGWSteuerCommand{AccSystem: accsystem, Booking: bk}
+	case "Gehalt", booking.CC_Gehalt:
+		command = BookGehaltCommand{AccSystem: accsystem, Booking: bk}
 	case "LNSteuer":
-		command = BookLNSteuerCommand{AccSystem: accsystem, Booking: booking}
+		command = BookLNSteuerCommand{AccSystem: accsystem, Booking: bk}
 	case "UstVZ":
-		command = BookUstCommand{AccSystem: accsystem, Booking: booking}
+		command = BookUstCommand{AccSystem: accsystem, Booking: bk}
 	case "SKR03", "closingBalance", "openingBalance":
 		command =  DontDoAnything{}
-		sollAccount := accsystem.GetSKR03(booking.Soll)
-		habenAccount := accsystem.GetSKR03(booking.Haben)
-		bookFromTo(booking, sollAccount, habenAccount)
+		sollAccount := accsystem.GetSKR03(bk.Soll)
+		habenAccount := accsystem.GetSKR03(bk.Haben)
+		bookFromTo(bk, sollAccount, habenAccount)
 	default:
-		log.Println("in Process: unknown command",booking.Type, " in row", booking.RowNr)
+		log.Println("in Process: unknown command",bk.Type, " in row", bk.RowNr)
 	}
 	command.run()
-
 }
-
-
-
-
-// book all employees cost and revenues
-func ErloesverteilungAnEmployees (as accountSystem.AccountSystem) {
-	log.Println("in ErloesverteilungAnEmployees")
-
-	// loop over employees subaccounts
-	for _, acc := range as.All() {
-		// loop through all accounts in accountSystem,
-		// employees bookings only
-		sh := valueMagnets.Stakeholder{}
-		if  !sh.IsEmployee(acc.Description.Superaccount) {
-			continue
-		}
-
-		// log.Println("	employee", acc.Description.Id)
-		// beware: All() returns no bookings, so account here has no bookings[]
-		a, _ := as.Get(acc.Description.Id)
-		for _, bk := range a.Bookings  {
-
-			// process bookings on GuV accounts
-			switch acc.Description.Type {
-
-			// alle Kosten
-			case account.KontenartAufwand:
-				bk.Text = "autom. Kostenvert.: " + bk.Text
-				BookCostToCostCenter{AccSystem: as, Booking: bk}.run()
-
-			// alle Ertröge
-			case account.KontenartErtrag:
-				bk.Text = "autom. Ertragsvert.: " + bk.Text
-				BookRevenueToEmployeeCostCenter{AccSystem: as, Booking: bk}.run()
-
-			default:
-				log.Println("	ERROR: found booking which is neither Aufwand nor Ertrag", acc.Description.Id, acc.Description.Type)
-			}
-
-		}
-	}
-
-	vm := valueMagnets.Stakeholder{}
-	for _,employee := range vm.AllEmployees(util.Global.FinancialYear) {
-
-		acc,_ := as.Get(employee.Id)
-		log.Println("	:", employee.Name, acc.Saldo )
-	}
-}
-
-
-
 
 
 
@@ -132,11 +78,12 @@ func ErloesverteilungAnEmployees (as accountSystem.AccountSystem) {
 
 // Distribute Revenues and Costs according to the costcenters provided in the
 // booking sheet
+// costs have already been distributed by calling ErloesverteilungAnEmployees previously
 func ErloesverteilungAnKommanditisten(as accountSystem.AccountSystem) {
 
 	for _, acc := range as.All() {
 		// loop through all accounts in accountSystem,
-		// skip employees bookings
+		// skip employees accounts
 		sh := valueMagnets.Stakeholder{}
 		if  sh.IsEmployee(acc.Description.Superaccount) {
 			continue
@@ -151,12 +98,12 @@ func ErloesverteilungAnKommanditisten(as accountSystem.AccountSystem) {
 			// alle Kosten
 			case account.KontenartAufwand:
 				bk.Text = "autom. Kostenvert.: " + bk.Text
-				BookCostToCostCenter{AccSystem: as, Booking: bk}.run()
+				//BookCostToCostCenter{AccSystem: as, Booking: bk}.run()
 
 			// alle Ertröge
 			case account.KontenartErtrag:
 				bk.Text = "autom. Ertragsvert.: " + bk.Text
-				BookRevenueToEmployeeCostCenter{AccSystem: as, Booking: bk}.run()
+				//BookRevenueToEmployeeCostCenter{AccSystem: as, Booking: bk}.run()
 
 			// alle Anlagen und Abschreibungen
 			case account.KontenartAktiv:
@@ -331,6 +278,8 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 
 	//	log.Printf("      ArbeitShare: %2.2f€ = %2.2f%%", sumOfArbeitShare, sumOfArbeitShare/totalSumToDistribute)
 	log.Println("    rest after ArbeitShare: ", math.Round(100*rest)/100)
+
+
 
 	// Erlösanteile
 	k_erloesAcc,_ :=  as.GetSubacc(kaccount.Description.Id, accountSystem.UK_Erloese.Id)
@@ -526,53 +475,6 @@ func sumOfAllBookings (ac account.Account) float64 {
 
 
 
-// loop through the employees, calculates their Bonusses and book them from employee to kommitment cost.
-func CalculateEmployeeBonus (as accountSystem.AccountSystem) accountSystem.AccountSystem {
-	log.Println("in CalculateEmployeeBonus: ")
-	shrepo := valueMagnets.Stakeholder{}
-	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypeEmployee) {
-		bonus := StakeholderYearlyIncome(as, sh.Id)
-		log.Printf("in CalculateEmployeeBonus: %s:  %7.2f€",sh.Id, bonus)
-
-		// take care, this is idempotent, i.e. that the next bonus calculation overwrites the last one...
-		if bonus > 0.0 {
-			// only book positive bonusses of valuemagnets
-			// log.Println("in CalculateEmployeeBonus: ", sh.Id, math.Round(bonus*100)/100)
-			// book in into GuV
-			bk := booking.Booking{
-				RowNr:       0,
-				Amount:      bonus,
-				Soll:		 "4120",
-				Haben: 		 "965",
-				Type:        booking.CC_Gehalt,
-				CostCenter:  sh.Id,
-				Text:        fmt.Sprintf("in kontrol kalkulierte Bonusrückstellung für %s in %d", sh.Id, util.Global.FinancialYear),
-				Month:       12,
-				Year:        util.Global.FinancialYear,
-				FileCreated: time.Now().AddDate(0, 0, 0),
-				BankCreated: time.Now().AddDate(0, 0, 0),
-			}
-			// create new booking
-			sollAccount := as.GetSKR03(bk.Soll)
-			habenAccount := as.GetSKR03(bk.Haben)
-			bookFromTo(bk, sollAccount, habenAccount)
-
-
-			// book from company cost to valuemagnets Hauptaccount
-			k_subacc_costs,_ := as.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_Kosten.Id)
-			sh_mainacc,_ := as.Get(bk.CostCenter)
-			bookFromTo(bk, k_subacc_costs, sh_mainacc)
-
-			// book from valuemagnets Hauptaccount into valuemagnets bonus account
-			credit,_ := as.GetSubacc(bk.CostCenter, accountSystem.UK_Verfuegungsrahmen.Id)
-			bookFromTo(bk, sh_mainacc, credit)
-		}
-	}
-	return as
-}
-
-
-
 func sumOfProvisonsForStakeholder (ac account.Account, sh valueMagnets.Stakeholder) float64 {
 	saldo := 0.0
 	for _,bk := range ac.Bookings {
@@ -582,27 +484,4 @@ func sumOfProvisonsForStakeholder (ac account.Account, sh valueMagnets.Stakehold
 	}
 	return saldo
 }
-
-
-
-// sum up whatever the stakeholder earned in the actual year
-func StakeholderYearlyIncome (as accountSystem.AccountSystem, stkhldr string) float64 {
-
-	a1,_  := as.GetSubacc(stkhldr, accountSystem.UK_Kosten.Id)
-	a2,_  := as.GetSubacc(stkhldr, accountSystem.UK_AnteileausFairshare.Id)
-	a3,_  := as.GetSubacc(stkhldr, accountSystem.UK_Vertriebsprovision.Id)
-	a4,_  := as.GetSubacc(stkhldr, accountSystem.UK_AnteilMitmachen.Id)
-	a5,_  := as.GetSubacc(stkhldr, accountSystem.UK_AnteileAuserloesen.Id)
-	a6,_  := as.GetSubacc(stkhldr, accountSystem.UK_Erloese.Id)
-
-	log.Printf("in StakeholderYearlyIncome: %s %7.2f€ %7.2f€ %7.2f€ %7.2f€ %7.2f€ %7.2f€", stkhldr, a1.Saldo, a2.Saldo, a3.Saldo, a4.Saldo, a5.Saldo, a6.Saldo)
-
-	return	a1.Saldo +
-		a2.Saldo +
-		a3.Saldo +
-		a4.Saldo +
-		a5.Saldo +
-		a6.Saldo
-}
-
 

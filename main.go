@@ -68,6 +68,7 @@ func main() {
 	as := accountSystem.NewDefaultAccountSystem()
 	ImportAndProcessBookings(as, *year, *month)
 
+
 	watchBookingFile(as, *year, *month)
 	//ImportAndProcessBookings(as, *year, *month)
 
@@ -91,13 +92,16 @@ func ImportAndProcessBookings(as accountSystem.AccountSystem, year int, month st
 	as.ClearBookings()
 	hauptbuch := as.GetCollectiveAccount()
 	parser.Import(util.Global.Filename, year, month,&(hauptbuch.Bookings))
-	for _, p := range hauptbuch.Bookings {
-		processing.Process(as, p)
+
+	// process all bookings from the general ledger
+	for _, bk := range hauptbuch.Bookings {
+		processing.Process(as, bk)
 	}
 
 	// distribute revenues and costs to valueMagnets
 	// in this step only employees revenues will be booked to employee cost centers
 	// partners reneue will bi primarily booked to company account for this step
+	processing.Kostenerteilung(as)
 	processing.ErloesverteilungAnEmployees(as)
 	// now employee bonusses are calculated and booked
 	processing.CalculateEmployeeBonus(as)

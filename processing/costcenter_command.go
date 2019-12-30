@@ -36,9 +36,10 @@ func (this BookCostToCostCenter) run() {
 	acc_k_subcosts,_ := this.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_Kosten.Id)
 	bookFromTo(this.Booking, acc_k_main, acc_k_subcosts)
 
+
 	// if costcenter is != Company (k) then distribute costs
-	// 1. from acc_k_subcosts to employees main account
-	// 2. and from there to employees subacc.
+	// 1. from acc_k_subcosts to employees/stakeholders main account
+	// 2. and from there to employees/stakeholders  subacc.
 	if (bkresp != valueMagnets.StakeholderKM.Id) {
 		this.Booking.Type = booking.Kosten+"_aufKommitmensch"
 		habenAccount,_ := this.AccSystem.Get(bkresp)

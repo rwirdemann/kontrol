@@ -182,7 +182,7 @@ func (r *DefaultAccountSystem) All() []account.Account {
 	result := make([]account.Account, 0, len(r.accounts))
 	for _, a := range r.accounts {
 		clone := *a
-		clone.Bookings = nil
+		//clone.Bookings = nil
 		result = append(result, clone)
 	}
 	return result
