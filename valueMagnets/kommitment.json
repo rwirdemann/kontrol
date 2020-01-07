@@ -49,6 +49,21 @@
       { "Id": "IK", "Name": "k: Ingo Komorowski",      "Type": "Employee", "Arbeit": "1.00" },
       { "Id": "SR", "Name": "k: Sven Röpstorff",       "Type": "Employee", "Arbeit": "0.50" }
     ]
+  },
+  {
+    "Abrechenzeitpunkt": "2020-12-31",
+    "Liquiditaetsbedarf": "150000.0",
+    "Kommitmenschen": [
+      { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.3872"},
+      { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "Extern", "Arbeit": "1.00" },
+      { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.3872"},
+      { "Id": "BW", "Name": "k: Benjamin Wiedenmann",  "Type": "Partner", "Arbeit": "1.00", "Fairshares": "0.1933"  },
+      { "Id": "KR", "Name": "k: Katja Roth",           "Type": "Extern", "Arbeit": "1.00" },
+      { "Id": "AB", "Name": "k: Anna Blume",           "Type": "Employee", "Arbeit": "1.00" },
+      { "Id": "CS", "Name": "k: Christine Schlott",    "Type": "Employee", "Arbeit": "1.00" },
+      { "Id": "IK", "Name": "k: Ingo Komorowski",      "Type": "Extern", "Arbeit": "1.00" },
+      { "Id": "SR", "Name": "k: Sven Röpstorff",       "Type": "Employee", "Arbeit": "0.50" }
+    ]
   }
 
 ]
