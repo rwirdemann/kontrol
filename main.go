@@ -89,6 +89,8 @@ func main() {
 func ImportAndProcessBookings(as accountSystem.AccountSystem, year int, month string) {
 	log.Println("in ImportAndProcessBookings...")
 	util.Global.Errors = nil
+	util.Global.JahresAbschluss_done = valueMagnets.ReadJahresAbschluss_done(util.Global.FinancialYear)
+
 	as.ClearBookings()
 	hauptbuch := as.GetCollectiveAccount()
 	parser.Import(util.Global.Filename, year, month,&(hauptbuch.Bookings))

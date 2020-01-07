@@ -22,6 +22,7 @@ type GlobalStruct struct {
 	Filename string
 	FinancialMonth string
 	FinancialYear int
+	JahresAbschluss_done bool
 	BalanceDate time.Time
 	LiquidityNeed float64
 	BookingId int

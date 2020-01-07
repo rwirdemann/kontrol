@@ -48,6 +48,7 @@ type Kommitmenschen struct {
 type KommimtmentYear struct {
 	Abrechenzeitpunkt string `json:"Abrechenzeitpunkt"`
 	Liquiditaetsbedarf string `json:"Liquiditaetsbedarf"`
+	JahresAbschluss_done bool `json:"JahresAbschluss_done"`
 	Menschen []Kommitmenschen `json:"Kommitmenschen"`
 }
 
@@ -72,6 +73,23 @@ func (this KommimtmentYear) Init(year int)  {
 
 }
 
+func ReadJahresAbschluss_done (year int) bool {
+	reval := false
+	// find the right year
+	for i,yrep := range kommitmentHistory {
+		layout := "2006-01-02"
+		t, err := time.Parse(layout, yrep.Abrechenzeitpunkt)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+		if year == t.Year() {
+			reval = kommitmentHistory[i].JahresAbschluss_done
+		}
+	}
+
+	return reval
+}
 
 func (this KommimtmentYear) Liqui(year int) float64 {
 
@@ -139,7 +157,6 @@ func (this *Stakeholder) Init(year int, shptr *[]Stakeholder) *[]Stakeholder {
 		s.Type = mensch.Type
 		sh = append(sh, Stakeholder{Id: mensch.Id, Name: mensch.Name, Type: mensch.Type, Arbeit: mensch.Arbeit, Fairshares: mensch.FairShares})
 	}
-
 
 	// add externals
 	sh = append(sh, StakeholderEX)

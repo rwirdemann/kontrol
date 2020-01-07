@@ -50,7 +50,8 @@ func calculateGewerbesteuerRueckstellung (jahresueberschuss float64, gwsteuer fl
 	gwsRück := 0.0
 	// calculate Gewerbesteuer
 	// only do that for the current year!
-	if  util.Global.FinancialYear == time.Now().Year() {
+	if  !util.Global.JahresAbschluss_done { // JM overwrite for now until jahresabschluss
+		log.Println("in calculateGewerbesteuerRueckstellung, Jahresabschluss not done yet ==> I will estimate the Gewerbesteuer.")
 		gwsRück = berechneGewerbesteuer(jahresueberschuss-gwsteuer) + gwsteuer
 	}
 	log.Printf("	GWsteuerrückstellung: %7.2f€", gwsRück)
