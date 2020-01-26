@@ -44,7 +44,7 @@ func Bilanz (as accountSystem.AccountSystem) {
 				now)
 			konto.Book(*bk)
 			Bilanz += acc.Saldo
-			// log.Println("in Bilanz, Aktiva: ", acc.Description.Name, acc.Saldo)
+			log.Println("in Bilanz, Aktiva: ", acc.Description.Name, acc.Saldo)
 		}
 	}
 

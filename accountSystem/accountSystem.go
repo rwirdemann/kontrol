@@ -31,8 +31,8 @@ type DefaultAccountSystem struct {
 
 // Bilanzkonten
 var SKR03_Anlagen25_35 = account.AccountDescription{Id: "SKR03_Anlagen25_35", Name: "01_Immaterielle Vermögensgegenstände", Type: account.KontenartAktiv}
-var SKR03_Anlagen = account.AccountDescription{Id: "SKR03_Anlagen", Name: "02_Sachanlagen", Type: account.KontenartAktiv}
-var SKR03_Beteiligungen = account.AccountDescription{Id: "519", Name: "Beteiligungen", Type: account.KontenartAktiv}
+var SKR03_Anlagen = account.AccountDescription{Id: "SKR03_Anlagen", Name: "021_Sachanlagen", Type: account.KontenartAktiv}
+var SKR03_FinanzAnlagen = account.AccountDescription{Id: "SKR03_FinanzAnlagen", Name: "022_Finanzanlagen", Type: account.KontenartAktiv}
 var SKR03_Vorraete = account.AccountDescription{Id: "SKR03_Vorraete", Name: "03_Vorräte", Type: account.KontenartAktiv}
 var SKR03_1400 = account.AccountDescription{Id: "1400", Name: "04_Forderungen aus L&L + sonstige Vermögensg.", Type: account.KontenartAktiv}
 var SKR03_Kautionen = account.AccountDescription{Id: "SKR03_Kautionen", Name: "05_Anzahlungen & Kautionen", Type: account.KontenartAktiv}
@@ -120,7 +120,7 @@ func (this Accountlist) All() []account.AccountDescription {
 		SKR03_Anlagen,
 		SKR03_Anlagen25_35,
 		SKR03_Abschreibungen,
-		SKR03_Beteiligungen,
+		SKR03_FinanzAnlagen,
 		SKR03_Vorraete,
 		SKR03_Kautionen,
 		SKR03_Umsatzerloese,
@@ -293,8 +293,8 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 		account = r.accounts[SKR03_Anlagen25_35.Id]
 	case isInRange(SKR03konto, 300, 490): // Anlage buchen
 		account = r.accounts[SKR03_Anlagen.Id]
-	case isInRange(SKR03konto, 519, 519): // Anlage buchen
-		account = r.accounts[SKR03_Beteiligungen.Id]
+	case isInRange(SKR03konto, 500, 599): // Anlage buchen
+		account = r.accounts[SKR03_FinanzAnlagen.Id]
 	case isInRange(SKR03konto, 880, 899): // Eigenkapital bilden
 		account = r.accounts[SKR03_Eigenkapital_880.Id]
 	case isInRange(SKR03konto, 900, 919):

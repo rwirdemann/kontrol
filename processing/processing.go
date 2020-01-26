@@ -109,7 +109,9 @@ func ErloesverteilungAnKommanditisten(as accountSystem.AccountSystem) {
 			case account.KontenartAktiv:
 				// now process other accounts like accountSystem.SKR03_1900.Id
 				switch acc.Description.Id {
-				case accountSystem.SKR03_Anlagen.Id, accountSystem.SKR03_Anlagen25_35.Id:
+				case 	accountSystem.SKR03_Anlagen.Id,
+						accountSystem.SKR03_Anlagen25_35.Id,
+						accountSystem.SKR03_FinanzAnlagen.Id:
 					switch bk.Type {
 					case "openingBalance":
 						BookToValuemagnetsByShares{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_AnteilAnAnlagen.Id}.run()
