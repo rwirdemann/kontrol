@@ -460,12 +460,12 @@ func TestErloesverteilungAnValueMagnets_Anlage(t *testing.T) {
 	assert.Equal(t, 4000.0, bankacc.Bookings[0].Amount )
 
 	// whats on "JM"
-	b,_ := as.GetSubacc("JM", accountSystem.UK_VeraenderungAnlagen.Id)
+	b,_ := as.GetSubacc("JM", accountSystem.UK_AnteilAnAnlagen.Id)
 	assert.Equal(t, 1, len(b.Bookings))
 	assert.Equal(t, -1333.0, math.Round(b.Saldo))
 
-	// whats on BW subacc. Provision
-	acc, _ := as.GetSubacc("RW", accountSystem.UK_VeraenderungAnlagen.Id)
+	// whats on BW subacc.
+	acc, _ := as.GetSubacc("RW", accountSystem.UK_AnteilAnAnlagen.Id)
 	assert.Equal(t, 1, len(acc.Bookings))
 
 }
