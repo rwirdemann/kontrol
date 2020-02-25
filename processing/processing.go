@@ -106,6 +106,8 @@ func ErloesverteilungAnKommanditisten(as accountSystem.AccountSystem) {
 				//BookRevenueToEmployeeCostCenter{AccSystem: as, Booking: bk}.run()
 
 			// alle Anlagen und Abschreibungen
+			// Abschreibungen sind drinnen genauso wie neuzugänge
+			// damit ergibt sich der Anlagenwert aus der Eröffnungsbilanz plus allen Veränderungen
 			case account.KontenartAktiv:
 				// now process other accounts like accountSystem.SKR03_1900.Id
 				switch acc.Description.Id {
@@ -113,17 +115,11 @@ func ErloesverteilungAnKommanditisten(as accountSystem.AccountSystem) {
 						accountSystem.SKR03_Anlagen25_35.Id,
 						accountSystem.SKR03_FinanzAnlagen.Id:
 					switch bk.Type {
-					case "openingBalance":
+					case "openingBalance", "SKR03":
 						BookToValuemagnetsByShares{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_AnteilAnAnlagen.Id}.run()
-					case "SKR03":
-						BookToValuemagnetsByShares{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_VeraenderungAnlagen.Id}.run()
-					// Schlussbilanz ausnehmen
 					case "closingBalance":
 					default:
 					}
-				case accountSystem.SKR03_Abschreibungen.Id:
-					//
-					BookToValuemagnetsByShares{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_VeraenderungAnlagen.Id}.run()
 				default:
 				}
 
@@ -390,32 +386,10 @@ func BookLiquidityNeedToPartners (as accountSystem.AccountSystem, liquidityNeed 
 }
 
 
+
 func BookAmountAtDisposition (as accountSystem.AccountSystem) {
-	// book the kommitment company Sado to Suacc Verfügungsrahmen/Bonus once
-/*
-    k,_ := as.Get(valueMagnets.StakeholderKM.Id)
-	k_UK, _ := as.GetSubacc(valueMagnets.StakeholderKM.Id, accountSystem.UK_Verfuegungsrahmen.Id)
-	bk := booking.Booking{
-		RowNr:       0,
-		Amount:      -1.0*k.Saldo,
-		Soll:		 "",
-		Haben: 		 "",
-		Type:        booking.CC_LiquidityReserve,
-		CostCenter:  valueMagnets.StakeholderKM.Id,
-		Text:        fmt.Sprintf("Erlöse  %d",  util.Global.FinancialYear),
-		Month:       12,
-		Year:        util.Global.FinancialYear,
-		FileCreated: time.Now().AddDate(0, 0, 0),
-		BankCreated: time.Now().AddDate(0, 0, 0),
-	}
-	bookFromTo(bk,k, k_UK)
-*/
-// I think this is not korrekt... 2019-12-02
-
-
 
 	// book from stakeholder UK_Verfuegungsrahmen back to K_UK_Verfuegungsrahmen
-	// this should give equal Salden at both sides of balance sheet and zero this account
 	shrepo := valueMagnets.Stakeholder{}
 	for _,sh := range shrepo.GetAllOfType (valueMagnets.StakeholderTypePartner) {
 		stakeholder_Saldo := 0.0

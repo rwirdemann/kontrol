@@ -45,7 +45,10 @@ func GetEnv() *Environment{
 	}
 	var environments []Environment
 
-	json.Unmarshal(raw, &environments)
+	jsonErr := json.Unmarshal(raw, &environments)
+	if jsonErr != nil {
+		fmt.Println("in GetEnv: error:", err)
+	}
 	for i := range environments {
 		if environments[i].Hostname == hostname {
 			return &environments[i]

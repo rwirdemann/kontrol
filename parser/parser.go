@@ -62,7 +62,7 @@ func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)
 				cs :=strings.Replace(record[3], " ", "", -1) // suppress whitespace
 				project := record[4]
 				subject := strings.Replace(record[5], "\n", ",", -1)
-				amount := parseAmount(record[6])
+				amount := parseAmount(record[6], rownr)
 				year, month := parseMonth(record[7])
 				bankCreated := parseFileCreated(record[8])
 				if year == aYear {
@@ -72,7 +72,7 @@ func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)
 						//
 						shrepo := valueMagnets.Stakeholder{}
 						stakeholder := shrepo.Get(p.Owner)
-						m[stakeholder] = parseAmount(record[p.Column])
+						m[stakeholder] = parseAmount(record[p.Column], rownr)
 					}
 					bkng := booking.NewBooking(rownr, typ, soll, haben, cs, project, m, amount, subject, month, year, bankCreated)
 					*positions = append(*positions, *bkng)
@@ -106,7 +106,7 @@ func isValidBookingType(s string) bool {
 	return false
 }
 
-func parseAmount(amount string) float64 {
+func parseAmount(amount string, rownr int) float64 {
 	amount = strings.Trim(amount, " ")
 	if amount == "" {
 		return 0
@@ -123,7 +123,7 @@ func parseAmount(amount string) float64 {
 	if a, err := strconv.ParseFloat(s, 64); err == nil {
 		return a
 	} else {
-		e := fmt.Sprintf("in parseAmount: parsing error '%s' on amount '%s'\n", err, amount)
+		e := fmt.Sprintf("in parseAmount: parsing error '%s' on amount '%s' in line %d\n", err, amount, rownr)
 		util.Global.Errors = append(util.Global.Errors, e)
 		fmt.Printf(e)
 		return 0

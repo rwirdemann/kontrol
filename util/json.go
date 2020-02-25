@@ -13,6 +13,6 @@ func Json(entities interface{}) string {
 		json := fmt.Sprintf("%s", string(b[:]))
 		return json
 	}
-	log.Fatal(err)
+	log.Fatal("in Json: ", err, entities)
 	return ""
 }
