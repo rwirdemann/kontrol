@@ -116,7 +116,13 @@ func ErloesverteilungAnKommanditisten(as accountSystem.AccountSystem) {
 						accountSystem.SKR03_FinanzAnlagen.Id:
 					switch bk.Type {
 					case "openingBalance", "SKR03":
-						BookToValuemagnetsByShares{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_AnteilAnAnlagen.Id}.run()
+						if bk.CostCenter == "K" {
+							// book to kommitmensch by shares if "K" is the cotCenter
+							BookToValuemagnetsByShares{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_AnteilAnAnlagen.Id}.run()
+						} else {
+							// else book th the kommitmensch who is stated in the costcenter
+							BookToValuemagnet{AccSystem: as, Booking: bk, SubAcc: accountSystem.UK_AnteilAnAnlagen.Id}.run()
+						}
 					case "closingBalance":
 					default:
 					}

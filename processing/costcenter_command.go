@@ -86,6 +86,31 @@ func (c BookToValuemagnetsByShares) run() {
 	}
 }
 
+type BookToValuemagnet struct{
+	Booking    booking.Booking
+	AccSystem  accountSystem.AccountSystem
+	SubAcc 	   string
+}
+
+func (c BookToValuemagnet) run() {
+
+	// book from k-main account to k-subacc type
+	// var k_subAcc *account.Account
+	//k_mainAcc,_ := c.AccSystem.Get(valueMagnets.StakeholderKM.Id)
+	//k_subAcc,_ := c.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, c.SubAcc)
+	//bookFromTo(c.Booking, k_mainAcc, k_subAcc)
+
+	k_subAcc,_ := c.AccSystem.GetSubacc(valueMagnets.StakeholderKM.Id, c.SubAcc)
+
+	// book from k-subacc to stakeholders main acc
+	sh_mainAcc,_ := c.AccSystem.Get(c.Booking.CostCenter)
+	b1 := booking.CloneBooking(c.Booking, c.Booking.Amount, c.Booking.Type, c.Booking.CostCenter, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
+	bookFromTo(b1, k_subAcc, sh_mainAcc)
+
+	// and from stakeholders mainaccount to subacc
+	sh_subAcc,_ := c.AccSystem.GetSubacc(c.Booking.CostCenter, c.SubAcc)
+	bookFromTo(b1, sh_mainAcc,sh_subAcc)
+}
 
 
 
