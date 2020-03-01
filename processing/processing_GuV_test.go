@@ -6,6 +6,7 @@ import (
 	"github.com/ahojsenn/kontrol/parser"
 	"github.com/ahojsenn/kontrol/util"
 	"log"
+	"math"
 	"testing"
 	"time"
 )
@@ -57,10 +58,10 @@ func TestGuV(t *testing.T) {
 	CalculateEmployeeBonus(as)
 
 	// now (after employee bonusses are booked) calculate GuV and Bilanz
-	jahresüberschuss := GuV(as)
-	util.AssertEquals(t, jahresüberschuss, GuV(as))
-	util.AssertEquals(t, jahresüberschuss, GuV(as))
-	util.AssertEquals(t, jahresüberschuss, GuV(as))
+	jahresüberschuss := math.Round( GuV(as) )
+	util.AssertEquals(t, jahresüberschuss, math.Round( GuV(as) ) )
+	util.AssertEquals(t, jahresüberschuss, math.Round( GuV(as) ) )
+	util.AssertEquals(t, jahresüberschuss, math.Round( GuV(as) ) )
 }
 
 
