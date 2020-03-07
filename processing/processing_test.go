@@ -579,6 +579,20 @@ func TestBookLiquidityNeedToPartners (t *testing.T) {
 	util.AssertFloatEquals(t, -4.0, math.Round(acc.Saldo) )
 }
 
+func TestIsAfaSKR03 (t *testing.T ) {
+	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
+	b1 := booking.NewBooking(13, "SKR03", "965", "4957", "K", "Project-X",nil, 42, "SKR03test", 1, 2017, its2018)
+	b2 := booking.NewBooking(13, "SKR03", "100", "4830", "K", "Project-X",nil, 42, "SKR03test", 1, 2017, its2018)
+	b3 := booking.NewBooking(13, "SKR03", "965", "4886", "K", "Project-X",nil, 42, "SKR03test", 1, 2017, its2018)
+	b4 := booking.NewBooking(13, "SKR03", "", "", "K", "Project-X",nil, 42, "SKR03test", 1, 2017, its2018)
+
+	assert.Equal( t, isAfaSKR03(*b1), false)
+	assert.Equal( t, isAfaSKR03(*b2), true)
+	assert.Equal( t, isAfaSKR03(*b3), true)
+	assert.Equal( t, isAfaSKR03(*b4), false)
+}
+
+
 func assertBooking(t *testing.T, b booking.Booking, amount float64, text string, destType string) {
 	util.AssertFloatEquals(t, amount, b.Amount)
 	util.AssertEquals(t, text, b.Text)

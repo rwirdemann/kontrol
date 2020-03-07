@@ -50,6 +50,7 @@ var SKR03_1900 = account.AccountDescription{Id: "1900", Name: "17_SKR03_1900_Pri
 
 // Erfolgskonten
 var SKR03_Umsatzerloese = account.AccountDescription{Id: "SKR03_Umsatzerloese", Name: "1 SKR03_Umsatzerloese 8100-8402", Type: account.KontenartErtrag}
+var SKR03_sonstigeErloese = account.AccountDescription{Id: "SKR03_sonstigeErloese", Name: "2 SKR03_Umsatzerloese 23**-88**", Type: account.KontenartErtrag}
 var SKR03_4100_4199 = account.AccountDescription{Id: "4100_4199", Name: "3 Löhne und Gehälter 4100-4199", Type: account.KontenartAufwand}
 var SKR03_AnlagenabgaengeSachanlagen2310 = account.AccountDescription{Id: "SKR03_AnlagenabgängeSachanlagen-Buchverlust", Name: "4 AnlagenabgängeSachanlagen 2310 (Restb. Buchverlust)", Type: account.KontenartAufwand}
 //var SKR03_AnlagenabgaengeSachanlagen2315 = account.AccountDescription{Id: "SKR03_AnlagenabgängeSachanlagen-Buchgewinn", Name: "4 AnlagenabgängeSachanlagen 2315 (Restb. Buchgewinn)", Type: account.KontenartErtrag}
@@ -124,6 +125,7 @@ func (this Accountlist) All() []account.AccountDescription {
 		SKR03_Vorraete,
 		SKR03_Kautionen,
 		SKR03_Umsatzerloese,
+		SKR03_sonstigeErloese,
 		SKR03_Steuern,
 		SKR03_Vorsteuer,
 		SKR03_Umsatzsteuer,
@@ -289,67 +291,69 @@ func  (as *DefaultAccountSystem) GetAllAccountsOfStakeholder (sh valueMagnets.St
 func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 	var account *account.Account
 	switch  {
-	case isInRange(SKR03konto, 25, 35): // Anlage buchen
+	case IsInRange(SKR03konto, 25, 35): // Anlage buchen
 		account = r.accounts[SKR03_Anlagen25_35.Id]
-	case isInRange(SKR03konto, 300, 490): // Anlage buchen
+	case IsInRange(SKR03konto, 300, 490): // Anlage buchen
 		account = r.accounts[SKR03_Anlagen.Id]
-	case isInRange(SKR03konto, 500, 599): // Anlage buchen
+	case IsInRange(SKR03konto, 500, 599): // Anlage buchen
 		account = r.accounts[SKR03_FinanzAnlagen.Id]
-	case isInRange(SKR03konto, 880, 899): // Eigenkapital bilden
+	case IsInRange(SKR03konto, 880, 899): // Eigenkapital bilden
 		account = r.accounts[SKR03_Eigenkapital_880.Id]
-	case isInRange(SKR03konto, 900, 919):
+	case IsInRange(SKR03konto, 900, 919):
 		account = r.accounts[SKR03_900_Haftkapital.Id]
-	case isInRange(SKR03konto, 920, 929):
+	case IsInRange(SKR03konto, 920, 929):
 		account = r.accounts[SKR03_920_Gesellschafterdarlehen.Id]
-	case isInRange(SKR03konto, 930, 979): // Rückstellung bilden
+	case IsInRange(SKR03konto, 930, 979): // Rückstellung bilden
 		account = r.accounts[SKR03_Rueckstellungen.Id]
-	case isInRange(SKR03konto, 1200, 1250): // Bank buchen
+	case IsInRange(SKR03konto, 1200, 1250): // Bank buchen
 		account = r.accounts[SKR03_1200.Id]
-	case isInRange(SKR03konto, 1518, 1518):
+	case IsInRange(SKR03konto, 1518, 1518):
 		account = r.accounts[SKR03_Vorraete.Id]
-	case isInRange(SKR03konto, 1525, 1525):
+	case IsInRange(SKR03konto, 1525, 1525):
 		account = r.accounts[SKR03_Kautionen.Id]
-	case isInRange(SKR03konto, 1548, 1587):
+	case IsInRange(SKR03konto, 1548, 1587):
 		account = r.accounts[SKR03_Vorsteuer.Id]
 	case SKR03konto == "1400", SKR03konto == "1595":
 		account = r.accounts[SKR03_1400.Id]
-	case SKR03konto == "731", isInRange(SKR03konto, 1600, 1699):
+	case SKR03konto == "731", IsInRange(SKR03konto, 1600, 1699):
 		account = r.accounts[SKR03_1600.Id]
-	case isInRange(SKR03konto, 1700, 1759):
+	case IsInRange(SKR03konto, 1700, 1759):
 		account =  r.accounts[SKR03_sonstVerb.Id]  // bspw. 1755
-	case isInRange(SKR03konto, 1769, 1791):
+	case IsInRange(SKR03konto, 1769, 1791):
 		account = r.accounts[SKR03_Umsatzsteuer.Id]
 	case SKR03konto == "1900":
 		account = r.accounts[SKR03_1900.Id]
-	case isInRange(SKR03konto, 2310, 2313):
+	case IsInRange(SKR03konto, 2310, 2313):
 		account = r.accounts[SKR03_AnlagenabgaengeSachanlagen2310.Id]
-	case isInRange(SKR03konto, 2315, 2318):
-//		account = r.accounts[SKR03_AnlagenabgaengeSachanlagen2315.Id]
-		account = r.accounts[SKR03_Umsatzerloese.Id]
 	case SKR03konto == "4120":
 		account = r.accounts[SKR03_4100_4199.Id]
-	case isInRange(SKR03konto, 4130, 4140):
+	case IsInRange(SKR03konto, 4130, 4140):
 		account = r.accounts[SKR03_4100_4199.Id]  // Löhne & Gehälter
 	case SKR03konto == "4320",
-		isInRange(SKR03konto, 2200, 2289):
+		IsInRange(SKR03konto, 2200, 2289):
 		account = r.accounts[SKR03_Steuern.Id]
-	case isInRange(SKR03konto, 4822, 4855):
+	case IsInRange(SKR03konto, 4822, 4855):
 		account = r.accounts[SKR03_Abschreibungen.Id]
-	case isInRange(SKR03konto, 2000, 2199),
-		 isInRange(SKR03konto, 2300, 2309),
-		 isInRange(SKR03konto, 2320, 2350),
-		 isInRange(SKR03konto, 2380, 2409),
-		 isInRange(SKR03konto, 4200, 4306),
-		 isInRange(SKR03konto, 4360, 4500),
-		 isInRange(SKR03konto, 4520, 4810),
- 		 isInRange(SKR03konto, 4886, 4887),
-		 isInRange(SKR03konto, 4900, 4980):
+	case IsInRange(SKR03konto, 2000, 2199),
+		 IsInRange(SKR03konto, 2300, 2309),
+		 IsInRange(SKR03konto, 2320, 2350),
+		 IsInRange(SKR03konto, 2380, 2409),
+		 IsInRange(SKR03konto, 4200, 4306),
+		 IsInRange(SKR03konto, 4360, 4500),
+		 IsInRange(SKR03konto, 4520, 4810),
+ 		 IsInRange(SKR03konto, 4886, 4887),
+		 IsInRange(SKR03konto, 4900, 4980):
 		account = r.accounts[SKR03_sonstigeAufwendungen.Id]
-	case isInRange(SKR03konto, 8000, 8799),
-		 isInRange(SKR03konto, 8800, 8853),
-		 isInRange(SKR03konto, 2700, 2744),
-		 isInRange(SKR03konto, 2510, 2520):
+	case IsInRange(SKR03konto, 8000, 8402),
+		IsInRange(SKR03konto, 8700, 8799):
 		account = r.accounts[SKR03_Umsatzerloese.Id]
+	case IsInRange(SKR03konto, 2315, 2318),
+		IsInRange(SKR03konto, 2700, 2744),
+		IsInRange(SKR03konto, 2510, 2520),
+		IsInRange(SKR03konto, 2510, 2520),
+		IsInRange(SKR03konto, 8600, 8699),
+		IsInRange(SKR03konto, 8800, 8853):
+		account = r.accounts[SKR03_sonstigeErloese.Id]
 	case SKR03konto == "9000":
 		account = r.accounts[SKR03_Saldenvortrag.Id]
 	case SKR03konto == "9790":
@@ -365,10 +369,10 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 
 
 // check if an SKR03 account number is in range
-func isInRange (num string, low, high int) bool {
+func IsInRange(num string, low, high int) bool {
 	n, err := strconv.Atoi(num)
 	if err != nil {
-		fmt.Println("Error in isInRange", num, low, high)
+		fmt.Println("Error in IsInRange", num, low, high)
 		panic(err)
 	}
 	return n >= low && n <= high

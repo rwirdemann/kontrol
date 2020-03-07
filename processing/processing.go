@@ -106,9 +106,14 @@ func ErloesverteilungAnKommanditisten(as accountSystem.AccountSystem) {
 				//BookRevenueToEmployeeCostCenter{AccSystem: as, Booking: bk}.run()
 
 			// alle Anlagen und Abschreibungen
-			// Abschreibungen sind drinnen genauso wie neuzugänge
+			// Abschreibungen sind ***nicht*** drinnen, aber neuzugänge
+
 			// damit ergibt sich der Anlagenwert aus der Eröffnungsbilanz plus allen Veränderungen
 			case account.KontenartAktiv:
+				// skip if AFA
+				if isAfaSKR03(bk) {
+					continue
+				}
 				// now process other accounts like accountSystem.SKR03_1900.Id
 				switch acc.Description.Id {
 				case 	accountSystem.SKR03_Anlagen.Id,
@@ -465,5 +470,16 @@ func sumOfProvisonsForStakeholder (ac account.Account, sh valueMagnets.Stakehold
 		}
 	}
 	return saldo
+}
+
+func isAfaSKR03( bk booking.Booking ) bool {
+	if (bk.Haben == "" && bk.Soll == "" ) {
+		return false
+	}
+	if accountSystem.IsInRange(bk.Haben, 4820, 4893) ||
+		accountSystem.IsInRange(bk.Soll, 4820, 4893) {
+		return true
+	}
+	return false
 }
 
