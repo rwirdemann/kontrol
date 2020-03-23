@@ -345,7 +345,8 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 		 IsInRange(SKR03konto, 4360, 4500),
 		 IsInRange(SKR03konto, 4520, 4810),
  		 IsInRange(SKR03konto, 4886, 4887),
-		 IsInRange(SKR03konto, 4900, 4980):
+		 IsInRange(SKR03konto, 4900, 4980),
+		 IsInRange(SKR03konto, 8800, 8819):
 		account = r.accounts[SKR03_sonstigeAufwendungen.Id]
 	case IsInRange(SKR03konto, 8000, 8402),
 		IsInRange(SKR03konto, 8700, 8799):
@@ -355,7 +356,7 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 		IsInRange(SKR03konto, 2510, 2520),
 		IsInRange(SKR03konto, 8500, 8579),
 		IsInRange(SKR03konto, 8600, 8699),
-		IsInRange(SKR03konto, 8800, 8853):
+		IsInRange(SKR03konto, 8820, 8853):
 		account = r.accounts[SKR03_sonstigeErloese.Id]
 	case SKR03konto == "9000":
 		account = r.accounts[SKR03_Saldenvortrag.Id]
