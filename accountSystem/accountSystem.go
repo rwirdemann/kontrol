@@ -353,6 +353,7 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 	case IsInRange(SKR03konto, 2315, 2318),
 		IsInRange(SKR03konto, 2700, 2749),
 		IsInRange(SKR03konto, 2510, 2520),
+		IsInRange(SKR03konto, 8500, 8579),
 		IsInRange(SKR03konto, 8600, 8699),
 		IsInRange(SKR03konto, 8800, 8853):
 		account = r.accounts[SKR03_sonstigeErloese.Id]
