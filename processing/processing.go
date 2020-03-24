@@ -62,8 +62,8 @@ func Process(accsystem accountSystem.AccountSystem, bk booking.Booking) {
 		command = BookUstCommand{AccSystem: accsystem, Booking: bk}
 	case "SKR03", "closingBalance", "openingBalance":
 		command =  DontDoAnything{}
-		sollAccount := accsystem.GetSKR03(bk.Soll)
-		habenAccount := accsystem.GetSKR03(bk.Haben)
+		sollAccount := accsystem.GetSKR03(bk.Soll, bk.RowNr)
+		habenAccount := accsystem.GetSKR03(bk.Haben, bk.RowNr)
 		bookFromTo(bk, sollAccount, habenAccount)
 	default:
 		log.Println("in Process: unknown command",bk.Type, " in row", bk.RowNr)

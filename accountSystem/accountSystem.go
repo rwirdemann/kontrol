@@ -18,7 +18,7 @@ type AccountSystem interface {
 	Get(id string) (*account.Account, bool)
 	GetSubacc(id string, subacctype string) (*account.Account, bool)
 	CloneAccountsOfType (typ string) []account.Account
-	GetSKR03(id string) *account.Account
+	GetSKR03(id string, rownr int) *account.Account
 	GetByType (typ string) map[string]*account.Account
 	ClearBookings()
 	GetAllAccountsOfStakeholder (sh valueMagnets.Stakeholder) []account.Account
@@ -288,7 +288,7 @@ func  (as *DefaultAccountSystem) GetAllAccountsOfStakeholder (sh valueMagnets.St
 
 
 // find the right account for the SKR03konto string
-func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
+func (r *DefaultAccountSystem) GetSKR03(SKR03konto string, rownr int) *account.Account {
 	var account *account.Account
 	switch  {
 	case IsInRange(SKR03konto, 25, 35): // Anlage buchen
@@ -365,8 +365,10 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 	case SKR03konto == "10000":
 		account = r.accounts[ErgebnisNachSteuern.Id]
 	default:
-		log.Printf("GetSKR03: could not process booking type '%s'", SKR03konto)
-		panic(fmt.Sprintf("GetSKR03: SKR03Bucket/Stakeholder/Konto '%s' not found", account.Description))
+		err := fmt.Sprintf( "GetSKR03: could not process booking type '%s' in row %d", SKR03konto, rownr)
+		log.Printf( err)
+		util.Global.Errors = append(util.Global.Errors, err)
+		// panic(fmt.Sprintf("GetSKR03: SKR03Bucket/Stakeholder/Konto '%s' not found", account.Description))
 	}
 	return account
 }
@@ -376,8 +378,9 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string) *account.Account {
 func IsInRange(num string, low, high int) bool {
 	n, err := strconv.Atoi(num)
 	if err != nil {
-		fmt.Println("Error in IsInRange", num, low, high)
-		panic(err)
+		// fmt.Println("Error in IsInRange", num, low, high)
+		// panic(err)
+		return false
 	}
 	return n >= low && n <= high
 }

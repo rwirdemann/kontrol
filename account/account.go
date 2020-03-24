@@ -64,7 +64,8 @@ func NewAccount(a AccountDescription) *Account {
 
 func (a *Account) Book(b booking.Booking) {
 	if a == nil {
-		log.Panic ("in Book, got nil account in row ", b.RowNr,b )
+		log.Println ("in Book, got nil account in row ", b.RowNr,b )
+		return
 	}
 	b.Id = util.GetNewBookingId()
 	a.Bookings = append(a.Bookings, b)
