@@ -8,12 +8,13 @@ import (
 	"github.com/ahojsenn/kontrol/valueMagnets"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 )
 
 func GuV (as accountSystem.AccountSystem) float64 {
-	jahresueberschussVs, gwsGezahlt := ermitteleJahresueberschussGWsteuer(as)
-	gwsRück := calculateGewerbesteuerRueckstellung (jahresueberschussVs, gwsGezahlt)
+	jahresueberschussVs, gwsGezahlt, ausgleichsbuchung := ermitteleJahresueberschussGWsteuer(as)
+	gwsRück := calculateGewerbesteuerRueckstellung (jahresueberschussVs, gwsGezahlt)-ausgleichsbuchung
 	bucheGewerbesteuer (as, gwsRück)
 	jahresueberschuss := jahresueberschussVs  - gwsRück
 	bucheJahresueberschuss (as, jahresueberschuss  )
@@ -22,11 +23,20 @@ func GuV (as accountSystem.AccountSystem) float64 {
 }
 
 
-func ermitteleJahresueberschussGWsteuer (as accountSystem.AccountSystem) (float64, float64) {
-	var jahresueberschuss, gwsteuer, ertrag, aufwand float64
+func ermitteleJahresueberschussGWsteuer (as accountSystem.AccountSystem) (float64, float64, float64) {
+	var jahresueberschuss, gwsteuer, ertrag, aufwand, ausgleichsbuchung float64
 
 	for _, acc := range as.All() {
 		if (acc.Description.Id == accountSystem.SKR03_Steuern.Id) {
+			// Ausnahme machen für dien Gewerbesteuerkorrekturbuchumg am JAhresende
+			// die wird zum Ausgleich der Gewerbesteuerberechnung
+			// zwischen Steuerberater und kommitment gebraucht
+			// Kennzeichen ist
+			for _,booking := range acc.Bookings {
+				if strings.Contains(booking.Text, "Ausgleichsbuchung") { // true
+					ausgleichsbuchung += booking.Amount
+				}
+			}
 			gwsteuer += acc.Saldo
 		}
 		switch  {
@@ -40,9 +50,10 @@ func ermitteleJahresueberschussGWsteuer (as accountSystem.AccountSystem) (float6
 	log.Printf("	Ertrag:  %+9.2f€\n", ertrag)
 	log.Printf("	Aufwand [vor Gewerbesteuer Korrektur]: %+9.2f€\n", aufwand)
 	log.Printf("	Gewerbesteuer gebucht: %+9.2f€\n", gwsteuer)
+	log.Printf("	Ausgleichsbuchung: %+9.2f€\n", ausgleichsbuchung)
 	jahresueberschuss = ertrag + aufwand
 	log.Printf("	Gewinn vor GWRücks: %+9.2f€\n", jahresueberschuss)
-	return jahresueberschuss, gwsteuer
+	return jahresueberschuss, gwsteuer, ausgleichsbuchung
 }
 
 

@@ -80,12 +80,14 @@ func (a *Account) UpdateSaldo() {
 	kommitmenschNettoFaktura := 0.0
 	for _, b := range a.Bookings {
 		saldo += b.Amount
+
 		switch b.Type {
 		case booking.CC_Employeeaanteil:
 			kommitmenschNettoFaktura += b.Amount / EmployeeShare
 		case booking.CC_PartnerNettoFaktura:
 			kommitmenschNettoFaktura += b.Amount
 		}
+
 		// soll und haben richtig verbuchen
 		switch a.Description.Type {
 		case KontenartAufwand,  KontenartAktiv:

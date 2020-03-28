@@ -43,6 +43,7 @@ var SKR03_1200 = account.AccountDescription{Id: "1200", Name: "08_SKR03_1200_Ban
 var SKR03_sonstVerb = account.AccountDescription{Id: "SKR03_sonstVerb", Name: "11_sonstige Verbindlichkeiten", Type: account.KontenartPassiv}
 var SKR03_900_Haftkapital = account.AccountDescription{Id: "SKR03_900_Haftkapital", Name: "12_SKR03_900_Haftkapital", Type: account.KontenartPassiv}
 var SKR03_Eigenkapital_880 = account.AccountDescription{Id: "Eigenkapital", Name: "13_SKR03_880_Eigenkapital", Type: account.KontenartPassiv}
+var SKR03_Verrechnungskonten_Kommanditisten = account.AccountDescription{Id: "SKR03_Verrechnungskonten_Kommanditisten", Name: "13.1_SKR03_Verrechnungskonten_Kommanditisten", Type: account.KontenartPassiv}
 var SKR03_Rueckstellungen = account.AccountDescription{Id: "Rückstellung", Name: "14_SKR03_956-977_Rückstellung", Type: account.KontenartPassiv}
 var SKR03_920_Gesellschafterdarlehen = account.AccountDescription{Id: "15_SKR03_920_Gesellschafterdarlehen", Name: "14_SKR03_920_Gesellschafterdarlehen", Type: account.KontenartPassiv}
 var SKR03_1600 = account.AccountDescription{Id: "1600", Name: "16_SKR03_1600_OPOS-Lieferant", Type: account.KontenartPassiv}
@@ -110,6 +111,7 @@ func (this Accountlist) All() []account.AccountDescription {
 		SKR03_Eigenkapital_880,
 		SKR03_900_Haftkapital,
 		SKR03_920_Gesellschafterdarlehen,
+		SKR03_Verrechnungskonten_Kommanditisten,
 		SKR03_1200,
 		SKR03_1400,
 		SKR03_1600,
@@ -201,6 +203,7 @@ func (r *DefaultAccountSystem) Get(id string) (*account.Account, bool) {
 	return nil, false
 }
 
+
 func (r *DefaultAccountSystem) CloneAccountsOfStakeholder(sh valueMagnets.Stakeholder) []account.Account {
 	var accounts []account.Account
 
@@ -251,6 +254,7 @@ func (as *DefaultAccountSystem) CloneAccountsOfType (typ string) []account.Accou
 	}
 	return filtered
 }
+
 
 func (r *DefaultAccountSystem) ClearBookings() {
 	r.collectiveAccount.Bookings = []booking.Booking{}
@@ -341,6 +345,8 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string, rownr int) *account.A
 		 IsInRange(SKR03konto, 2310, 2313),
 		 IsInRange(SKR03konto, 2320, 2350),
 		 IsInRange(SKR03konto, 2380, 2409),
+		 IsInRange(SKR03konto, 3300, 3735),
+		IsInRange(SKR03konto, 3737, 3999),
 		 IsInRange(SKR03konto, 4200, 4306),
 		 IsInRange(SKR03konto, 4360, 4500),
 		 IsInRange(SKR03konto, 4520, 4810),
@@ -352,14 +358,18 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string, rownr int) *account.A
 		IsInRange(SKR03konto, 8700, 8799):
 		account = r.accounts[SKR03_Umsatzerloese.Id]
 	case IsInRange(SKR03konto, 2315, 2318),
-		IsInRange(SKR03konto, 2700, 2749),
 		IsInRange(SKR03konto, 2510, 2520),
+		IsInRange(SKR03konto, 2700, 2749),
+		IsInRange(SKR03konto, 3736, 3736),
 		IsInRange(SKR03konto, 8500, 8579),
 		IsInRange(SKR03konto, 8600, 8699),
 		IsInRange(SKR03konto, 8820, 8853):
 		account = r.accounts[SKR03_sonstigeErloese.Id]
 	case SKR03konto == "9000":
 		account = r.accounts[SKR03_Saldenvortrag.Id]
+	case IsInRange(SKR03konto, 9141, 9145),
+		IsInRange(SKR03konto, 91400, 91450):
+		account = r.accounts[SKR03_Verrechnungskonten_Kommanditisten.Id]
 	case SKR03konto == "9790":
 		account = r.accounts[SKR03_9790_Restanteil.Id]
 	case SKR03konto == "10000":
