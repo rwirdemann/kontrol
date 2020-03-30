@@ -60,6 +60,8 @@ func Process(accsystem accountSystem.AccountSystem, bk booking.Booking) {
 		command = BookLNSteuerCommand{AccSystem: accsystem, Booking: bk}
 	case "UstVZ":
 		command = BookUstCommand{AccSystem: accsystem, Booking: bk}
+	case "Reisekosten", "RKE", "RK-Erstattung":
+		command = BookRKECommand{AccSystem: accsystem, Booking: bk}
 	case "SKR03", "closingBalance", "openingBalance":
 		command =  DontDoAnything{}
 		sollAccount := accsystem.GetSKR03(bk.Soll, bk.RowNr)

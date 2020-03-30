@@ -57,8 +57,10 @@ var SKR03_4100_4199 = account.AccountDescription{Id: "4100_4199", Name: "3 Löhn
 //var SKR03_AnlagenabgaengeSachanlagen2315 = account.AccountDescription{Id: "SKR03_AnlagenabgängeSachanlagen-Buchgewinn", Name: "4 AnlagenabgängeSachanlagen 2315 (Restb. Buchgewinn)", Type: account.KontenartErtrag}
 var SKR03_Abschreibungen = account.AccountDescription{Id: "SKR03_Abschreibungen", Name: "4 Abschreibungen auf Anlagen 4822-4855", Type: account.KontenartAufwand}
 var SKR03_sonstigeAufwendungen = account.AccountDescription{Id: "SKR03_sonstigeAufwendungen", Name: "5 sonstige Aufwendungen", Type: account.KontenartAufwand}
+var SKR03_Reisekosten = account.AccountDescription{Id: "SKR03_Reisekosten", Name: "5.1 erstattete Reisekosten", Type: account.KontenartAufwand}
 var SKR03_Steuern = account.AccountDescription{Id: "SKR03_Steuern", Name: "6 SKR03_Steuern 4320 Gewerbesteuer", Type: account.KontenartAufwand}
 var ErgebnisNachSteuern = account.AccountDescription{Id: "SKR03_ErgebnisNachSteuern 10000", Name: "7 ErgebnisNachSteuern", Type: account.KontenartVerrechnung}
+
 
 // Verrechnungskonten
 var SKR03_Saldenvortrag = account.AccountDescription{Id: "SKR03_Saldenvortrag", Name: "Saldenvortrag 9000", Type: account.KontenartVerrechnung}
@@ -120,6 +122,7 @@ func (this Accountlist) All() []account.AccountDescription {
 //		SKR03_AnlagenabgaengeSachanlagen2310,
 //		SKR03_AnlagenabgaengeSachanlagen2315,
 		SKR03_sonstigeAufwendungen,
+		SKR03_Reisekosten,
 		SKR03_Anlagen,
 		SKR03_Anlagen25_35,
 		SKR03_Abschreibungen,
@@ -354,6 +357,8 @@ func (r *DefaultAccountSystem) GetSKR03(SKR03konto string, rownr int) *account.A
 		 IsInRange(SKR03konto, 4900, 4980),
 		 IsInRange(SKR03konto, 8800, 8819):
 		account = r.accounts[SKR03_sonstigeAufwendungen.Id]
+	case IsInRange(SKR03konto, 4660, 4681):
+		account = r.accounts[SKR03_Reisekosten.Id]
 	case IsInRange(SKR03konto, 8000, 8402),
 		IsInRange(SKR03konto, 8700, 8799):
 		account = r.accounts[SKR03_Umsatzerloese.Id]

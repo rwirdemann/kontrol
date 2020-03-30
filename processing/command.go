@@ -241,3 +241,30 @@ func (c BookUstCommand) run() {
 
 }
 
+
+
+
+type BookRKECommand struct {
+	Booking    booking.Booking
+	AccSystem  accountSystem.AccountSystem
+}
+
+func (c BookRKECommand) run() {
+
+	amount := c.Booking.Amount
+	// Sollbuchung
+	sollAccount,_ := c.AccSystem.Get(accountSystem.SKR03_Reisekosten	.Id)
+	a := booking.CloneBooking(c.Booking, -amount, c.Booking.Typ, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
+	sollAccount.Book(a)
+
+	// Habenbuchung
+	habenAccountId := ""
+	if c.Booking.IsBeyondBudgetDate() {
+		habenAccountId = accountSystem.SKR03_Rueckstellungen.Id
+	} else {
+		habenAccountId = accountSystem.SKR03_1200.Id
+	}
+	habenAccount,_ := c.AccSystem.Get(habenAccountId)
+	b := booking.CloneBooking(c.Booking, amount, c.Booking.Typ, c.Booking.Responsible, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
+	habenAccount.Book(b)
+}
