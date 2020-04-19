@@ -44,6 +44,11 @@ func CalculateEmployeeBonus (as accountSystem.AccountSystem) accountSystem.Accou
 			// book from k-ompanie mainaccount to subacc cos
 			bk.Amount *= -1  // but why???
 			BookCostToCostCenter{AccSystem: as, Booking: bk}.run()
+
+			// now also store the bonus in stakeholders account
+			stakeHoldersAccount, _ := as.Get(sh.Id)
+			stakeHoldersAccount.Bonus = bonus
+
 			sumOfBonusses += bk.Amount
 		}
 	}
