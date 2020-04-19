@@ -36,7 +36,8 @@ var netBookings = []struct {
 func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)  {
 	imported := 0
 	if file == "" {
-		log.Panic("in Import, no file provided...")
+		util.Global.Errors = append(util.Global.Errors, "in Import, no file provided...")
+		log.Println("ErROR: in Import, no file provided...")
 	}
 
 	if f, err := openCsvFile(file); err == nil {

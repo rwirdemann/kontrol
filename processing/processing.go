@@ -335,8 +335,8 @@ func DistributeKTopf (as accountSystem.AccountSystem) accountSystem.AccountSyste
 		habenacc,_  = as.GetSubacc(sh.Id, accountSystem.UK_AnteileAuserloesen.Id)
 		bookFromTo(anteil_erloese, habenacc, sollacc)
 
-		// now book habenacc.KommitmenschNettoFaktura  to anteil_erloese / fakturaPercentage
-		habenacc.KommitmenschNettoFaktura = erloesAnteil / fakturaPercentage
+		// now store habenacc.KommitmenschNettoFaktura
+		habenacc.KommitmenschNettoFaktura = sumOfBookingsForStakeholder(*k_erloesAcc, sh)
 
 		rest -= erloesAnteil
 	}

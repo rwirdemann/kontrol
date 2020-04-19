@@ -1,8 +1,10 @@
 package processing
 
 import (
+	"fmt"
 	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/booking"
+	"github.com/ahojsenn/kontrol/util"
 	"log"
 )
 
@@ -10,7 +12,8 @@ import (
 func bookFromTo (b booking.Booking, source, target *account.Account)  bool {
 
 	if (source == nil || target == nil ) {
-		log.Println("Error: in bookFromTo, got nil account ")
+		log.Println("Error: in bookFromTo, got nil account ", b)
+		util.Global.Errors = append(util.Global.Errors, fmt.Sprintf("Error: in bookFromTo, got nil account:%s ",b))
 		return false
 	}
 
