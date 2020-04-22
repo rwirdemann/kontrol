@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ahojsenn/kontrol/util"
+	"github.com/ahojsenn/kontrol/valueMagnets"
 	"io"
 	"log"
 	"os"
@@ -14,7 +15,6 @@ import (
 	"time"
 
 	"github.com/ahojsenn/kontrol/booking"
-	"github.com/ahojsenn/kontrol/valueMagnets"
 )
 
 // Beschreibt, dass die netto (Rechnungs-)Position in Spalte X der CSV-Datei dem Stakeholder Y gehört
@@ -35,6 +35,14 @@ var netBookings = []struct {
 	{Owner: "RR", Column: 21},
 }
 
+type headerItem = struct {
+	Description  string
+	Column int
+}
+
+var header_basics = []headerItem{}
+var header_stakeholder = []headerItem{}
+
 func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)  {
 	imported := 0
 	if file == "" {
@@ -54,7 +62,23 @@ func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)
 			}
 			// log.Println("in Import, reading line ", rownr)
 
+/*			if isHeader(record[0]) {
+				continue
+			}
+*/
 			if isHeader(record[0]) {
+				log.Println("in Import, read header")
+				var hi headerItem
+				for i, s := range record {
+					hi.Column = i
+					hi.Description = s
+					if ( i< 11 ) {
+						header_basics = append(header_basics, hi )
+					} else {
+						header_stakeholder = append(header_stakeholder, hi)
+					}
+				}
+				log.Println("in Import, read header", header_basics, header_stakeholder)
 				continue
 			}
 
@@ -71,12 +95,27 @@ func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)
 				if year == aYear {
 					imported++
 					m := make(map[valueMagnets.Stakeholder]float64)
+					// now loop over columns with personal revenues of all stakeholders...
+					shrepo := valueMagnets.Stakeholder{}
+					for _, stakeh := range shrepo.All(aYear) {
+						log.Printf("in Import in row %d, reading net booking for stakeholder %s \n", rownr, stakeh.Id)
+					}
+
+					// loop over columns until header column is empty
+					for _, p := range header_stakeholder {
+						//
+						stakeholder := shrepo.Get(p.Description)
+						m[stakeholder] = parseAmount(record[p.Column], rownr)
+					}
+					log.Println("in Import, row ", rownr)
+					/*
 					for _, p := range netBookings {
 						//
-						shrepo := valueMagnets.Stakeholder{}
 						stakeholder := shrepo.Get(p.Owner)
 						m[stakeholder] = parseAmount(record[p.Column], rownr)
 					}
+					*/
+
 					bkng := booking.NewBooking(rownr, typ, soll, haben, cs, project, m, amount, subject, month, year, bankCreated)
 					*positions = append(*positions, *bkng)
 				} else {

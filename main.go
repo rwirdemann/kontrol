@@ -93,6 +93,7 @@ func ImportAndProcessBookings(as accountSystem.AccountSystem, year int, month st
 
 	as.ClearBookings()
 	hauptbuch := as.GetCollectiveAccount()
+
 	parser.Import(util.Global.Filename, year, month,&(hauptbuch.Bookings))
 
 	// process all bookings from the general ledger
