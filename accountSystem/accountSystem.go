@@ -265,6 +265,11 @@ func (r *DefaultAccountSystem) ClearBookings() {
 	r.collectiveAccount.Bookings = []booking.Booking{}
 	for _, account := range r.accounts {
 		account.Bookings = []booking.Booking{}
+		account.Saldo = 0.0
+		account.Bonus = 0.0
+		account.Soll = 0.0
+		account.Haben = 0.0
+		account.Nbookings = 0
 	}
 }
 

@@ -97,9 +97,6 @@ func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)
 					m := make(map[valueMagnets.Stakeholder]float64)
 					// now loop over columns with personal revenues of all stakeholders...
 					shrepo := valueMagnets.Stakeholder{}
-					for _, stakeh := range shrepo.All(aYear) {
-						log.Printf("in Import in row %d, reading net booking for stakeholder %s \n", rownr, stakeh.Id)
-					}
 
 					// loop over columns until header column is empty
 					for _, p := range header_stakeholder {
@@ -107,7 +104,7 @@ func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)
 						stakeholder := shrepo.Get(p.Description)
 						m[stakeholder] = parseAmount(record[p.Column], rownr)
 					}
-					log.Println("in Import, row ", rownr)
+//					log.Println("in Import, row ", rownr)
 					/*
 					for _, p := range netBookings {
 						//

@@ -123,10 +123,6 @@ func ImportAndProcessBookings(as accountSystem.AccountSystem, year int, month st
 	// procject Controlling
 	processing.GenerateProjectControlling(as)
 
-	// update Salden for all accounts
-	for _,acc := range as.All() {
-		acc.UpdateSaldo()
-	}
 }
 
 
