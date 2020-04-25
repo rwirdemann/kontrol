@@ -122,7 +122,6 @@ func ImportAndProcessBookings(as accountSystem.AccountSystem, year int, month st
 
 	// procject Controlling
 	processing.GenerateProjectControlling(as)
-
 }
 
 

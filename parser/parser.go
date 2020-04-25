@@ -104,7 +104,7 @@ func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)
 						stakeholder := shrepo.Get(p.Description)
 						m[stakeholder] = parseAmount(record[p.Column], rownr)
 					}
-//					log.Println("in Import, row ", rownr)
+					//log.Println("in Import, row ", rownr, m)
 					/*
 					for _, p := range netBookings {
 						//
