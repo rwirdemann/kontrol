@@ -68,7 +68,7 @@ func Process(accsystem accountSystem.AccountSystem, bk booking.Booking) {
 		habenAccount := accsystem.GetSKR03(bk.Haben, bk.RowNr)
 		bookFromTo(bk, sollAccount, habenAccount)
 	default:
-		log.Println("in Process: unknown command",bk.Type, " in row", bk.RowNr)
+		log.Println("in Process: unknown command", bk.Type, " in row", bk.RowNr)
 	}
 	command.run()
 }

@@ -13,22 +13,20 @@ import (
 )
 
 func GuV (as accountSystem.AccountSystem) float64 {
-	jahresueberschussVs, gwsGezahlt, ausgleichsbuchung := ermitteleJahresueberschussGWsteuer(as)
-	gwsRück := calculateGewerbesteuerRueckstellung (jahresueberschussVs, gwsGezahlt)-ausgleichsbuchung
-	bucheGewerbesteuer (as, gwsRück)
-	jahresueberschuss := jahresueberschussVs  - gwsRück
+
+	jahresueberschuss := ermitteleJahresueberschuss(as)
 	bucheJahresueberschuss (as, jahresueberschuss  )
 	log.Printf("	Gewinn nach Steuer: %+9.2f€\n", jahresueberschuss)
 	return jahresueberschuss
 }
 
 
-func ermitteleJahresueberschussGWsteuer (as accountSystem.AccountSystem) (float64, float64, float64) {
-	var jahresueberschuss, gwsteuer, ertrag, aufwand, ausgleichsbuchung float64
+func ermitteleJahresueberschuss (as accountSystem.AccountSystem) (float64) {
+	var gewinn_vorSteuer, gwsteuer_gezahlt, ertrag, aufwand, ausgleichsbuchung float64
 
 	for _, acc := range as.All() {
 		if (acc.Description.Id == accountSystem.SKR03_Steuern.Id) {
-			// Ausnahme machen für dien Gewerbesteuerkorrekturbuchumg am JAhresende
+			// Ausnahme machen für dien Gewerbesteuerkorrekturbuchumg am Jahresende
 			// die wird zum Ausgleich der Gewerbesteuerberechnung
 			// zwischen Steuerberater und kommitment gebraucht
 			// Kennzeichen ist
@@ -37,7 +35,7 @@ func ermitteleJahresueberschussGWsteuer (as accountSystem.AccountSystem) (float6
 					ausgleichsbuchung += booking.Amount
 				}
 			}
-			gwsteuer += acc.Saldo
+			gwsteuer_gezahlt += acc.Saldo
 		}
 		switch  {
 		case acc.Description.Type == account.KontenartAufwand:
@@ -47,46 +45,28 @@ func ermitteleJahresueberschussGWsteuer (as accountSystem.AccountSystem) (float6
 		default:
 		}
 	}
+	// ausgleichsbuchung muss aus zahlungen und Aufwand wieder raus...
+	gwsteuer_gezahlt -= ausgleichsbuchung
+	aufwand -= ausgleichsbuchung
+
 	log.Printf("	Ertrag:  %+9.2f€\n", ertrag)
-	log.Printf("	Aufwand [vor Gewerbesteuer Korrektur]: %+9.2f€\n", aufwand)
-	log.Printf("	Gewerbesteuer gebucht: %+9.2f€\n", gwsteuer)
-	log.Printf("	Ausgleichsbuchung: %+9.2f€\n", ausgleichsbuchung)
-	jahresueberschuss = ertrag + aufwand
-	log.Printf("	Gewinn vor GWRücks: %+9.2f€\n", jahresueberschuss)
-	return jahresueberschuss, gwsteuer, ausgleichsbuchung
-}
+	log.Printf("	Aufwand [vor Gewerbesteuer Korrektur]: %+9.2f€\n", aufwand -gwsteuer_gezahlt)
+	gewinn_vorSteuer = ertrag + aufwand - gwsteuer_gezahlt
+	log.Printf("	Gewinn vor Steuer: %+9.2f€\n", gewinn_vorSteuer)
 
+	log.Printf("	Gewerbesteuer gezahlt(ohne ausgleichsbuchung): %+9.2f€\n", gwsteuer_gezahlt)
+	// die ausgleichsbuchung sollte bei der Gewerbesteuer Ermittlung nicht berücksichtig werden.
+	gewerbeSteuerSchätzungKontrol := -1.0*berechneGewerbesteuer (gewinn_vorSteuer)
+	log.Printf("	Gewerbesteuer geschätzt (kontrol): %+9.2f€\n", gewerbeSteuerSchätzungKontrol)
+	gwsRück := gwsteuer_gezahlt - gewerbeSteuerSchätzungKontrol
+	log.Printf("	Gewerbesteuer Rückstellung (kontrol): %+9.2f€\n", gwsRück)
+	bucheGewerbesteuer (as, gwsRück)
+	log.Printf("	GWSteuer Rückstellung aus kontrol: %+9.2f€\n", gwsRück)
+	log.Printf("	GWSteuer Ausgleichsbuchung: %+9.2f€\n", ausgleichsbuchung)
+	gwSteuer := gwsteuer_gezahlt +ausgleichsbuchung-gwsRück
+	log.Printf("	Gewerbesteuergezahlt-Ausgleichsbuchung-GWSteuer Rückst.: %+9.2f€\n", gwSteuer)
 
-func calculateGewerbesteuerRueckstellung (jahresueberschuss float64, gwsteuer float64) float64 {
-	gwsRück := 0.0
-	// calculate Gewerbesteuer
-	// only do that for the current year!
-	if  !util.Global.JahresAbschluss_done { // JM overwrite for now until jahresabschluss
-		log.Println("in calculateGewerbesteuerRueckstellung, Jahresabschluss not done yet ==> I will estimate the Gewerbesteuer.")
-		gwsRück = berechneGewerbesteuer(jahresueberschuss-gwsteuer) + gwsteuer
-	}
-	log.Printf("	GWsteuerrückstellung: %7.2f€", gwsRück)
-	return gwsRück
-}
-
-
-//
-func bucheGewerbesteuer (as accountSystem.AccountSystem, gwsRück float64 )  {
-	if (gwsRück != 0.0) {
-		now := time.Now().AddDate(0, 0, 0)
-		gws := booking.NewBooking(0,booking.CC_GWSteuer, "4320", "956", "K", "",nil,  gwsRück, ("in kontrol ermittelte Gewerbesteuer-Rückstellung "+strconv.Itoa(util.Global.FinancialYear)), int(now.Month()), now.Year(), now)
-		// bookFromTo( *gws, gwsKonto, gwsGegenKonto)
-		Process(as, *gws)
-
-		// costenter bookings
-		gws.Amount *= -1  // but why??? --> Costcenterbookings are negative...
-		BookCostToCostCenter{AccSystem: as, Booking: *gws}.run()
-
-		// ermittelte GWSteuer Rückstellung von jahresueberschuss abziehen
-		log.Printf("	Gewerbesteuer-Rückstellung  %7.2f€", gwsRück)
-	} else {
-		log.Printf("in bucheGewerbesteuer, gwsRück == 0 ==> nothing booked...")
-	}
+	return gewinn_vorSteuer + gwSteuer
 }
 
 //

@@ -2,7 +2,6 @@
   {
     "Abrechenzeitpunkt": "2016-12-31",
     "Liquiditaetsbedarf": "42.23",
-    "Jahresabschluss_done" : true,
     "Kommitmenschen": [
       { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "Partner", "Arbeit": "1" , "Fairshares": "0.33333"},
       { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "Partner", "Arbeit": "1" , "Fairshares": "0.33333"},
@@ -14,7 +13,6 @@
   },
   {
     "Abrechenzeitpunkt": "2017-12-31",
-    "Jahresabschluss_done" : true,
     "Kommitmenschen": [
       { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "Partner", "Arbeit": "1" , "Fairshares": "0.33333"},
       { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "Partner", "Arbeit": "1" , "Fairshares": "0.33333"},
@@ -27,7 +25,6 @@
   {
     "Abrechenzeitpunkt": "2018-12-31",
     "Liquiditaetsbedarf": "150000.0",
-    "Jahresabschluss_done" : true,
     "Kommitmenschen": [
       { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.437857143"},
       { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "Partner", "Arbeit": "0.5", "Fairshares": "0.0" },
@@ -41,7 +38,6 @@
   {
     "Abrechenzeitpunkt": "2019-12-31",
     "Liquiditaetsbedarf": "150000.0",
-    "Jahresabschluss_done" : false,
     "Kommitmenschen": [
       { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.413"},
       { "Id": "RW", "Name": "k: Ralf Wirdemann",       "Type": "Extern", "Arbeit": "1.00" },
@@ -57,7 +53,6 @@
   {
     "Abrechenzeitpunkt": "2020-12-31",
     "Liquiditaetsbedarf": "150000.0",
-    "Jahresabschluss_done" : false,
     "Kommitmenschen": [
       { "Id": "AN", "Name": "k: Anke Nehrenberg",      "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.3996"},
       { "Id": "JM", "Name": "k: Johannes Mainusch",    "Type": "Partner", "Arbeit": "1.00" , "Fairshares": "0.3996"},
