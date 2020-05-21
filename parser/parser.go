@@ -87,7 +87,7 @@ func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)
 				soll := record[1]
 				haben := record[2]
 				cs :=strings.Replace(record[3], " ", "", -1) // suppress whitespace
-				project := record[4]
+				project := strings.Replace(record[4], "/", "-", -1)
 				subject := strings.Replace(record[5], "\n", ",", -1)
 				amount := parseAmount(record[6], rownr)
 				year, month := parseMonth(record[7])
