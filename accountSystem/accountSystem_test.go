@@ -10,7 +10,7 @@ import (
 
 func TestNewDefaultAccountSystem(t *testing.T) {
 	accountSystem := NewDefaultAccountSystem()
-	util.AssertEquals(t, accountSystem.GetCollectiveAccount().Description.Id, "all")
+	util.AssertEquals(t, accountSystem.GetCollectiveAccount_thisYear(2018).Description.Id, "all")
 
 
 	log.Println("in TestNewDefaultAccountSystem", accountSystem)
@@ -26,7 +26,7 @@ func TestNewDefaultAccountSystem(t *testing.T) {
 
 func TestEmptyDefaultAccountSystem (t *testing.T) {
 	accountSystem := EmptyDefaultAccountSystem()
-	util.AssertEquals(t, accountSystem.GetCollectiveAccount().Description.Id, "all")
+	util.AssertEquals(t, accountSystem.GetCollectiveAccount_thisYear(2018).Description.Id, "all")
 
 	_ ,exists := accountSystem.Get("SKR03_Anlagen")
 	util.AssertFalse(t, exists)
@@ -34,7 +34,7 @@ func TestEmptyDefaultAccountSystem (t *testing.T) {
 
 func TestAdd (t *testing.T) {
 	accountSystem := EmptyDefaultAccountSystem()
-	util.AssertEquals(t, accountSystem.GetCollectiveAccount().Description.Id, "all")
+	util.AssertEquals(t, accountSystem.GetCollectiveAccount_thisYear(2018).Description.Id, "all")
 
 	newAccount := account.NewAccount(account.AccountDescription{Id: "K", Name: "k: Kommitment", Type: "company"})
 	accountSystem.Add (newAccount)

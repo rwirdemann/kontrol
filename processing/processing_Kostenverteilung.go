@@ -8,7 +8,7 @@ import (
 
 func Kostenerteilung (as accountSystem.AccountSystem) {
 	sumOfCosts := 0.0
-	//log.Println("in Kostenverteilung, got as with n bookings, n=", len(as.GetCollectiveAccount().Bookings ))
+	//log.Println("in Kostenverteilung, got as with n bookings, n=", len(as.GetCollectiveAccount_thisYear().Bookings ))
 	// precondition: alle bookings from the general ledger havbe been processed and are now booked to GuC accounts
 	// loop though all GuV relevant accounts,
 	// i.e. Aufwand...

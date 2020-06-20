@@ -5,14 +5,16 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
-	"github.com/ahojsenn/kontrol/util"
-	"github.com/ahojsenn/kontrol/valueMagnets"
 	"io"
 	"log"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ahojsenn/kontrol/accountSystem"
+	"github.com/ahojsenn/kontrol/util"
+	"github.com/ahojsenn/kontrol/valueMagnets"
 
 	"github.com/ahojsenn/kontrol/booking"
 )
@@ -36,18 +38,20 @@ var netBookings = []struct {
 }
 
 type headerItem = struct {
-	Description  string
-	Column int
+	Description string
+	Column      int
 }
 
 var header_basics = []headerItem{}
 var header_stakeholder = []headerItem{}
 
-func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)  {
+func Import(file string, aYear int, as accountSystem.AccountSystem) {
 	imported := 0
+	hauptbuch_thisYear := as.GetCollectiveAccount_thisYear(aYear)
+	hauptbuch_allYears := as.GetCollectiveAccount_allYears()
 	if file == "" {
 		util.Global.Errors = append(util.Global.Errors, "in Import, no file provided...")
-		log.Println("ErROR: in Import, no file provided...")
+		log.Println("ERROR: in Import, no file provided...")
 	}
 
 	if f, err := openCsvFile(file); err == nil {
@@ -62,18 +66,18 @@ func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)
 			}
 			// log.Println("in Import, reading line ", rownr)
 
-/*			if isHeader(record[0]) {
-				continue
-			}
-*/
+			/*			if isHeader(record[0]) {
+							continue
+						}
+			*/
 			if isHeader(record[0]) {
 				log.Println("in Import, read header")
 				var hi headerItem
 				for i, s := range record {
 					hi.Column = i
 					hi.Description = s
-					if ( i< 11 ) {
-						header_basics = append(header_basics, hi )
+					if i < 11 {
+						header_basics = append(header_basics, hi)
 					} else {
 						header_stakeholder = append(header_stakeholder, hi)
 					}
@@ -86,35 +90,31 @@ func Import(file string, aYear int, aMonth string, positions *[]booking.Booking)
 				typ := record[0]
 				soll := record[1]
 				haben := record[2]
-				cs :=strings.Replace(record[3], " ", "", -1) // suppress whitespace
-				project := strings.Replace(record[4], "/", "-", -1)
-				subject := strings.Replace(record[5], "\n", ",", -1)
+				cs := strings.Replace(record[3], " ", "", -1) // suppress whitespace
+				project := sanitizeMyString(record[4])
+				subject := sanitizeMyString(record[5])
 				amount := parseAmount(record[6], rownr)
 				year, month := parseMonth(record[7])
 				bankCreated := parseFileCreated(record[8])
+				imported++
+				m := make(map[valueMagnets.Stakeholder]float64)
+				// now loop over columns with personal revenues of all stakeholders...
+				shrepo := valueMagnets.Stakeholder{}
+
+				// loop over columns until header column is empty
+				for _, p := range header_stakeholder {
+					//
+					stakeholder := shrepo.Get(p.Description)
+					m[stakeholder] = parseAmount(record[p.Column], rownr)
+				}
+				bkng := booking.NewBooking(rownr, typ, soll, haben, cs, project, m, amount, subject, month, year, bankCreated)
+
+				//				log.Println ("in Immport, ", imported, year, bkng)
+
+				hauptbuch_allYears.Bookings = append(hauptbuch_allYears.Bookings, *bkng)
+
 				if year == aYear {
-					imported++
-					m := make(map[valueMagnets.Stakeholder]float64)
-					// now loop over columns with personal revenues of all stakeholders...
-					shrepo := valueMagnets.Stakeholder{}
-
-					// loop over columns until header column is empty
-					for _, p := range header_stakeholder {
-						//
-						stakeholder := shrepo.Get(p.Description)
-						m[stakeholder] = parseAmount(record[p.Column], rownr)
-					}
-					//log.Println("in Import, row ", rownr, m)
-					/*
-					for _, p := range netBookings {
-						//
-						stakeholder := shrepo.Get(p.Owner)
-						m[stakeholder] = parseAmount(record[p.Column], rownr)
-					}
-					*/
-
-					bkng := booking.NewBooking(rownr, typ, soll, haben, cs, project, m, amount, subject, month, year, bankCreated)
-					*positions = append(*positions, *bkng)
+					hauptbuch_thisYear.Bookings = append(hauptbuch_thisYear.Bookings, *bkng)
 				} else {
 					// log.Println ("in Immport, ", year, " is not in	 period ", aYear, rownr)
 				}
@@ -174,7 +174,7 @@ func parseMonth(yearMonth string) (int, int) {
 		return 0, 0
 	}
 	s := strings.Split(yearMonth, "-")
-	if len(s) < 2{
+	if len(s) < 2 {
 		util.Global.Errors = append(util.Global.Errors, "in parseMonth, something went wrong with this entry")
 		log.Fatal("in parseMonth, something went wrong with this entry", s)
 	}
@@ -208,16 +208,23 @@ func openCsvFile(fileName string) (*os.File, error) {
 		return file, nil
 	}
 
-
 	/*
-	// Open file from GOPATH
-	gopath := os.Getenv("GOPATH")
-	if gopath != "" {
-		if file, err := os.Open(gopath + "/src/github.com/ahojsenn/kontrol/" + fileName); err == nil {
-			return file, nil
+		// Open file from GOPATH
+		gopath := os.Getenv("GOPATH")
+		if gopath != "" {
+			if file, err := os.Open(gopath + "/src/github.com/ahojsenn/kontrol/" + fileName); err == nil {
+				return file, nil
+			}
 		}
-	}
-*/
+	*/
 
 	return nil, errors.New("could not open " + fileName)
+}
+
+func sanitizeMyString(in string) string {
+	out := in
+	out = strings.Replace(out, "/", "-", -1)
+	out = strings.Replace(out, "\n", ",", -1)
+	out = strings.Replace(out, "%", "Prozent", -1)
+	return out
 }

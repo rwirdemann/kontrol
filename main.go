@@ -66,7 +66,7 @@ func main() {
 
 
 	as := accountSystem.NewDefaultAccountSystem()
-	ImportAndProcessBookings(as, *year, *month)
+	ImportAndProcessBookings(as, *year)
 
 
 	watchBookingFile(as, *year, *month)
@@ -86,17 +86,19 @@ func main() {
 }
 
 
-func ImportAndProcessBookings(as accountSystem.AccountSystem, year int, month string) {
+func ImportAndProcessBookings(as accountSystem.AccountSystem, year int) {
 	log.Println("in ImportAndProcessBookings...")
 	util.Global.Errors = nil
 
 	as.ClearBookings()
-	hauptbuch := as.GetCollectiveAccount()
+//	hauptbuch_allYears := as.GetCollectiveAccount_allYears()
 
-	parser.Import(util.Global.Filename, year, month,&(hauptbuch.Bookings))
+	hauptbuch_thisYear := as.GetCollectiveAccount_thisYear(year)
+
+	parser.Import(util.Global.Filename, year, as)
 
 	// process all bookings from the general ledger
-	for _, bk := range hauptbuch.Bookings {
+	for _, bk := range hauptbuch_thisYear.Bookings {
 		processing.Process(as, bk)
 	}
 
@@ -144,7 +146,7 @@ func watchBookingFile(repository accountSystem.AccountSystem, year int, month st
 					fmt.Println("timeout 3 sec")
 				}
 				log.Printf("booking reimport start: %s\n", time.Now())
-				ImportAndProcessBookings(repository, year, month)
+				ImportAndProcessBookings(repository, year)
 				log.Printf("booking reimport end: %s\n", time.Now())
 			case err := <-watcher.Error:
 				log.Println("error:", err)

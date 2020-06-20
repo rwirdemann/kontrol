@@ -22,7 +22,7 @@ type AusgangsrechnungTestSuite struct {
 
 func (suite *AusgangsrechnungTestSuite) SetupTest() {
 	suite.repository = accountSystem.NewDefaultAccountSystem()
-	suite.accountBank = suite.repository.GetCollectiveAccount()
+	suite.accountBank = suite.repository.GetCollectiveAccount_thisYear(2018)
 	shrepo := valueMagnets.Stakeholder{}
 	suite.accountRalf, _ = suite.repository.Get(  shrepo.Get("RW").Id )
 	suite.accountHannes, _ = suite.repository.Get(  shrepo.Get("JM").Id )

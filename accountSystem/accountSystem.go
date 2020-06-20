@@ -12,7 +12,8 @@ import (
 )
 
 type AccountSystem interface {
-	GetCollectiveAccount() *account.Account
+	GetCollectiveAccount_allYears() *account.Account
+	GetCollectiveAccount_thisYear(year int) *account.Account
 	Add(a *account.Account)
 	All() []account.Account
 	Get(id string) (*account.Account, bool)
@@ -25,8 +26,9 @@ type AccountSystem interface {
 }
 
 type DefaultAccountSystem struct {
-	collectiveAccount *account.Account
-	accounts          map[string]*account.Account
+	collectiveAccount_allYears *account.Account
+	collectiveAccount_thisYear *account.Account
+	accounts                   map[string]*account.Account
 }
 
 // Bilanzkonten
@@ -147,13 +149,18 @@ func (this Accountlist) All() []account.AccountDescription {
 
 func EmptyDefaultAccountSystem() AccountSystem {
 	o := account.AccountDescription{Id: "all", Name: "Hauptbuch", Type: account.KontenartVerrechnung}
-	return &DefaultAccountSystem{collectiveAccount: &account.Account{Description: o}, accounts: make(map[string]*account.Account)}
+	return &DefaultAccountSystem{collectiveAccount_thisYear: &account.Account{Description: o}, accounts: make(map[string]*account.Account)}
 }
 
 func NewDefaultAccountSystem() AccountSystem {
 
-	ad := account.AccountDescription{Id: "all", Name: "Hauptbuch", Type: account.KontenartVerrechnung}
-	accountSystem := DefaultAccountSystem{collectiveAccount: &account.Account{Description: ad}, accounts: make(map[string]*account.Account)}
+	ad := account.AccountDescription{Id: "all_thisYear", Name: "Hauptbuch_thisYear", Type: account.KontenartVerrechnung}
+	ad_thisYear := account.AccountDescription{Id: "all", Name: "Hauptbuch", Type: account.KontenartVerrechnung}
+	accountSystem := DefaultAccountSystem{
+		collectiveAccount_thisYear: &account.Account{Description: ad_thisYear},
+		collectiveAccount_allYears: &account.Account{Description: ad},
+		accounts: make(map[string]*account.Account),
+	}
 
 	// generate accounts according to the AccountList
 	accountlist := Accountlist{}
@@ -179,8 +186,12 @@ func NewDefaultAccountSystem() AccountSystem {
 	return &accountSystem
 }
 
-func (r *DefaultAccountSystem) GetCollectiveAccount() *account.Account {
-	return r.collectiveAccount
+func (r *DefaultAccountSystem) GetCollectiveAccount_allYears() *account.Account {
+	return r.collectiveAccount_allYears
+}
+
+func (r *DefaultAccountSystem) GetCollectiveAccount_thisYear(year int) *account.Account {
+	return r.collectiveAccount_thisYear
 }
 
 func (r *DefaultAccountSystem) Add(a *account.Account) {
@@ -262,7 +273,7 @@ func (as *DefaultAccountSystem) CloneAccountsOfType (typ string) []account.Accou
 
 
 func (r *DefaultAccountSystem) ClearBookings() {
-	r.collectiveAccount.Bookings = []booking.Booking{}
+	r.collectiveAccount_thisYear.Bookings = []booking.Booking{}
 	for _, account := range r.accounts {
 		account.Bookings = []booking.Booking{}
 		account.Saldo = 0.0

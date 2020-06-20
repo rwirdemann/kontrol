@@ -14,7 +14,7 @@ import (
 
 func setCCTestUp() {
 	accSystem = accountSystem.NewDefaultAccountSystem()
-	accountBank = accSystem.GetCollectiveAccount()
+	accountBank = accSystem.GetCollectiveAccount_thisYear(2018)
 	shrepo := valueMagnets.Stakeholder{}
 	accountHannes, _ = accSystem.Get(shrepo.Get("JM").Id)
 	accountRalf, _ = accSystem.Get(shrepo.Get("RW").Id)

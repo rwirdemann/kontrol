@@ -22,7 +22,7 @@ var shrepo  valueMagnets.Stakeholder
 
 func setUp() {
 	accSystem = accountSystem.NewDefaultAccountSystem()
-	accountBank = accSystem.GetCollectiveAccount()
+	accountBank = accSystem.GetCollectiveAccount_thisYear(2018)
 
 	accountHannes, _ = accSystem.Get(shrepo.Get("JM").Id)
 	accountRalf, _ = accSystem.Get(shrepo.Get("RW").Id)
@@ -116,7 +116,7 @@ func TestRueckstellungAufloesen(t *testing.T) {
 	util.AssertEquals(t, booking.SKR03, b1.Type)
 
 	// the booking is not booked to the bankaccout
-	util.AssertEquals(t, 0, len(accSystem.GetCollectiveAccount().Bookings))
+	util.AssertEquals(t, 0, len(accSystem.GetCollectiveAccount_thisYear(2018).Bookings))
 
 	// the booking is  booked on SKR03_sonstigeAufwendungen account
 	a2, _ := accSystem.Get(accountSystem.SKR03_sonstigeAufwendungen.Id)
@@ -147,7 +147,7 @@ func TestAnfangsbestandRueckstellung(t *testing.T) {
 	util.AssertEquals(t, booking.SKR03, b1.Type)
 
 	// the booking is not booked to the bankaccout
-	util.AssertEquals(t, 0, len(accSystem.GetCollectiveAccount().Bookings))
+	util.AssertEquals(t, 0, len(accSystem.GetCollectiveAccount_thisYear(2018).Bookings))
 
 	// the booking is  booked on Rückstellung account
 	a2, _ := accSystem.Get(accountSystem.SKR03_Rueckstellungen.Id)
@@ -209,7 +209,7 @@ func TestRueckstellung(t *testing.T) {
 	util.AssertEquals(t, booking.SKR03, b1.Type)
 
 	// Rückstellungen are not booked on bank account
-	util.AssertEquals(t, 0, len(accSystem.GetCollectiveAccount().Bookings))
+	util.AssertEquals(t, 0, len(accSystem.GetCollectiveAccount_thisYear(2018).Bookings))
 }
 
 
@@ -364,7 +364,7 @@ func TestAbschreibungenAufAnlagen(t *testing.T) {
 	assert.Equal(t, booking.SKR03, a.Bookings[0].Type)
 
 	// booking is not on bankaccount
-	ba := accSystem.GetCollectiveAccount()
+	ba := accSystem.GetCollectiveAccount_thisYear(2018)
 	assert.Equal(t, 0, len(ba.Bookings))
 
 	// booking is posiv von haben account
@@ -481,7 +481,7 @@ func TestDistributeKTopf(t *testing.T) {
 	net[shrepo.Get("AN")] = 1190.0
 	net[shrepo.Get("JM")] = 1190.0
 
-	hauptbuch := as.GetCollectiveAccount()
+	hauptbuch := as.GetCollectiveAccount_thisYear(2018)
 	// Anke und Johannes haben Nettoeinnahmen von 1000
 	Process(as, *booking.NewBooking(13, "AR", "", "", "K", "Project-X", net, 2380, "Anke+Johannes", 1, 2018, its2018))
 	// Johannes hat eine Eingangsrechnung von 100

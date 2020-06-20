@@ -12,7 +12,7 @@ import (
 
 func ErloesverteilungAnEmployees (as accountSystem.AccountSystem) {
 	sumOfRevs := 0.0
-	//log.Println("in ErloesverteilungAnEmployees, got as with n bookings, n=", len(as.GetCollectiveAccount().Bookings ))
+	//log.Println("in ErloesverteilungAnEmployees, got as with n bookings, n=", len(as.GetCollectiveAccount_thisYear().Bookings ))
 	// precondition: alle bookings from the general ledger have been processed and are now booked to GuC accounts
 	// loop though all GuV relevant accounts,
 	// i.e. Ertrag

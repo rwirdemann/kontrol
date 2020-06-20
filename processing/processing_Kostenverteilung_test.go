@@ -23,7 +23,7 @@ func TestKostenerteilung (t *testing.T) {
 	net[shrepo.Get("JM")] = 119.0
 	net[shrepo.Get("BW")] = 119.0
 
-	hauptbuch := as.GetCollectiveAccount()
+	hauptbuch := as.GetCollectiveAccount_thisYear(2018)
 	// Anke und Johannes haben Nettoeinnahmen von 100€
 	// Ben hat Kosten von 10€ netto
 	// Bebn hat Einkünfte von 100€ netto, davon werden 70% angerechnet = 70€
@@ -35,10 +35,10 @@ func TestKostenerteilung (t *testing.T) {
 	*bkgs =  append (*bkgs,  *booking.NewBooking(13, "ER", "", "", "JM", "Project-X", net, 11.9, "H-costs", 1, 2018, its2018) )
 	*bkgs =  append (*bkgs,  *booking.NewBooking(13, "ER", "", "", "BW", "Project-X", net, 11.9, "H-costs", 1, 2018, its2018) )
 
-	log.Println("in TestKostenerteilung: ", len(as.GetCollectiveAccount().Bookings) )
+	log.Println("in TestKostenerteilung: ", len(as.GetCollectiveAccount_thisYear(2018).Bookings) )
 
 	// nun verteilen
-	for _, p := range as.GetCollectiveAccount().Bookings {
+	for _, p := range as.GetCollectiveAccount_thisYear(2018).Bookings {
 		Process(as, p)
 	}
 	Kostenerteilung(as)
