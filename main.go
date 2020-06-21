@@ -93,7 +93,7 @@ func ImportAndProcessBookings(as accountSystem.AccountSystem, year int) {
 	as.ClearBookings()
 //	hauptbuch_allYears := as.GetCollectiveAccount_allYears()
 
-	hauptbuch_thisYear := as.GetCollectiveAccount_thisYear(year)
+	hauptbuch_thisYear := as.GetCollectiveAccount_thisYear()
 
 	parser.Import(util.Global.Filename, year, as)
 

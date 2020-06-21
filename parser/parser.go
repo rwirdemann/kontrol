@@ -47,7 +47,7 @@ var header_stakeholder = []headerItem{}
 
 func Import(file string, aYear int, as accountSystem.AccountSystem) {
 	imported := 0
-	hauptbuch_thisYear := as.GetCollectiveAccount_thisYear(aYear)
+	hauptbuch_thisYear := as.GetCollectiveAccount_thisYear()
 	hauptbuch_allYears := as.GetCollectiveAccount_allYears()
 	if file == "" {
 		util.Global.Errors = append(util.Global.Errors, "in Import, no file provided...")
@@ -223,7 +223,7 @@ func openCsvFile(fileName string) (*os.File, error) {
 
 func sanitizeMyString(in string) string {
 	out := in
-	out = strings.Replace(out, "/", "-", -1)
+//	out = strings.Replace(out, "/", "-", -1)
 	out = strings.Replace(out, "\n", ",", -1)
 	out = strings.Replace(out, "%", "Prozent", -1)
 	return out

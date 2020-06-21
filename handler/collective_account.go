@@ -26,9 +26,10 @@ func MakeGetCollectiveAccountHandler(repository accountSystem.AccountSystem) htt
 			resultAccount.Bookings = filterBookingsByYear (repository.GetCollectiveAccount_allYears(), year)
 
 		} else {
-			fmt.Sprintf( resultAccount.Description.Id,  "allBookings_%s")
-			fmt.Sprintf( resultAccount.Description.Name,  "allBookings_%s", year)
-			resultAccount = repository.GetCollectiveAccount_allYears()
+			fmt.Sprintf( resultAccount.Description.Id,  "allBookings")
+			fmt.Sprintf( resultAccount.Description.Name,  "allBookings")
+			ca  := repository.GetCollectiveAccount_allYears()
+			resultAccount.Bookings = ca.Bookings
 		}
 
 		// kopie erstellen!

@@ -16,7 +16,7 @@ import (
 
 
 func initRouter() *mux.Router {
-	acs := accountSystem.EmptyDefaultAccountSystem()
+	acs := accountSystem.NewDefaultAccountSystem()
 	return NewRouter("githash", "buildtime", acs)
 }
 

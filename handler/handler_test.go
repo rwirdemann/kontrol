@@ -21,7 +21,7 @@ var router *mux.Router
 var as accountSystem.AccountSystem
 
 func init() {
-	repository := accountSystem.EmptyDefaultAccountSystem()
+	repository := accountSystem.NewDefaultAccountSystem()
 	repository.Add(account.NewAccount(account.AccountDescription{Id: "JM", Name: "k: Ralf", Type: "partner"}))
 	repository.Add(account.NewAccount(account.AccountDescription{Id: "RW", Name: "k: Ralf", Type: "partner"}))
 	repository.Add(account.NewAccount(account.AccountDescription{Id: "BW", Name: "k: Ben", Type: "partner"}))
@@ -67,12 +67,12 @@ func TestGetAllAccounts(t *testing.T) {
 	acc0 := m["Accounts"].([]interface{})[0].
 	(map[string]interface{})["Description"].
 	(map[string]interface{})["Id"]
-	assert.Equal(t, "SKR03_ErgebnisNachSteuern", acc0)
+	assert.Equal(t, "SKR03_Anlagen25_35", acc0)
 
 	acc2 := m["Accounts"].([]interface{})[2].
 	(map[string]interface{})["Description"].
 	(map[string]interface{})["Id"]
-	assert.Equal(t, "BW", acc2)
+	assert.Equal(t, "SKR03_FinanzAnlagen", acc2)
 
 	//	expected := "{\"Accounts\":[{\"Description\":{\"Id\":\"SKR03_ErgebnisNachSteuern\",\"Name\":\"SKR03_ErgebnisNachSteuern\",\"Type\":\"Verrechnungskonto\",\"Superaccount\":\"\"},\"KommitmenschNettoFaktura\":0,\"AnteilAusFaktura\":0,\"AnteilAusFairshares\":0,\"KommitmenschDarlehen\":0,\"Nbkngs\":0,\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Rest\":0,\"Revenue\":0,\"Salesprv\":0,\"Taxes\":0,\"Internals\":0,\"YearS\":0,\"Saldo\":0},{\"Description\":{\"Id\":\"AN\",\"Name\":\"k: Anke Nehrenberg\",\"Type\":\"partner\",\"Superaccount\":\"\"},\"KommitmenschNettoFaktura\":0,\"AnteilAusFaktura\":0,\"AnteilAusFairshares\":0,\"KommitmenschDarlehen\":0,\"Nbkngs\":0,\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Rest\":0,\"Revenue\":0,\"Salesprv\":0,\"Taxes\":0,\"Internals\":0,\"YearS\":0,\"Saldo\":0},{\"Description\":{\"Id\":\"BW\",\"Name\":\"k: Ben\",\"Type\":\"partner\",\"Superaccount\":\"\"},\"KommitmenschNettoFaktura\":0,\"AnteilAusFaktura\":0,\"AnteilAusFairshares\":0,\"KommitmenschDarlehen\":0,\"Nbkngs\":0,\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Rest\":0,\"Revenue\":0,\"Salesprv\":0,\"Taxes\":0,\"Internals\":0,\"YearS\":0,\"Saldo\":0},{\"Description\":{\"Id\":\"K\",\"Name\":\"k: Kommitment\",\"Type\":\"company\",\"Superaccount\":\"\"},\"KommitmenschNettoFaktura\":0,\"AnteilAusFaktura\":0,\"AnteilAusFairshares\":0,\"KommitmenschDarlehen\":0,\"Nbkngs\":3,\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Rest\":4400,\"Revenue\":0,\"Salesprv\":0,\"Taxes\":0,\"Internals\":0,\"YearS\":0,\"Saldo\":6800},{\"Description\":{\"Id\":\"JM\",\"Name\":\"k: Ralf\",\"Type\":\"partner\",\"Superaccount\":\"\"},\"KommitmenschNettoFaktura\":0,\"AnteilAusFaktura\":0,\"AnteilAusFairshares\":0,\"KommitmenschDarlehen\":0,\"Nbkngs\":0,\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Rest\":0,\"Revenue\":0,\"Salesprv\":0,\"Taxes\":0,\"Internals\":0,\"YearS\":0,\"Saldo\":0},{\"Description\":{\"Id\":\"RW\",\"Name\":\"k: Ralf\",\"Type\":\"partner\",\"Superaccount\":\"\"},\"KommitmenschNettoFaktura\":0,\"AnteilAusFaktura\":0,\"AnteilAusFairshares\":0,\"KommitmenschDarlehen\":0,\"Nbkngs\":0,\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Rest\":0,\"Revenue\":0,\"Salesprv\":0,\"Taxes\":0,\"Internals\":0,\"YearS\":0,\"Saldo\":0}]}"
 }
@@ -82,7 +82,6 @@ func TestGetCollectiveAccount(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	router.ServeHTTP(rr, req)
-
 	assert.Equal(t, http.StatusOK, rr.Code)
 }
 
@@ -132,12 +131,12 @@ func TestGetAccountsBilanzkonten (t *testing.T) {
 	acc0 := m["Accounts"].([]interface{})[0].
 	(map[string]interface{})["Description"].
 	(map[string]interface{})["Id"]
-	assert.Equal(t, "1400", acc0)
+	assert.Equal(t, "SKR03_Anlagen25_35", acc0)
 
 	acc2 := m["Accounts"].([]interface{})[0].
 	(map[string]interface{})["Description"].
 	(map[string]interface{})["Name"]
-	assert.Equal(t, "SKR03_1400_OPOS-Kunde", acc2)
+	assert.Equal(t, "01_Immaterielle Vermögensgegenstände", acc2)
 
 	// expected := "{\"Accounts\":[{\"Description\":{\"Id\":\"1400\",\"Name\":\"SKR03_1400_OPOS-Kunde\",\"Type\":\"Aktivkonto\",\"Superaccount\":\"\"},\"KommitmenschNettoFaktura\":0,\"AnteilAusFaktura\":0,\"AnteilAusFairshares\":0,\"KommitmenschDarlehen\":0,\"Nbkngs\":0,\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Rest\":0,\"Revenue\":0,\"Salesprv\":0,\"Taxes\":0,\"Internals\":0,\"YearS\":0,\"Saldo\":0}]}"
 }
@@ -163,12 +162,12 @@ func TestGetAccountsGuV(t *testing.T) {
 	acc0 := m["Accounts"].([]interface{})[0].
 	(map[string]interface{})["Description"].
 	(map[string]interface{})["Id"]
-	assert.Equal(t, "8100", acc0)
+	assert.Equal(t, "SKR03_Umsatzerloese", acc0)
 
 	acc2 := m["Accounts"].([]interface{})[0].
 	(map[string]interface{})["Description"].
 	(map[string]interface{})["Name"]
-	assert.Equal(t, "Ertrag", acc2)
+	assert.Equal(t, "1 SKR03_Umsatzerloese 8100-8402", acc2)
 	//expected := "{\"Accounts\":[{\"Description\":{\"Id\":\"8100\",\"Name\":\"Ertrag\",\"Type\":\"Ertragskonto\",\"Superaccount\":\"\"},\"KommitmenschNettoFaktura\":0,\"AnteilAusFaktura\":0,\"AnteilAusFairshares\":0,\"KommitmenschDarlehen\":0,\"Nbkngs\":0,\"Costs\":0,\"Advances\":0,\"Reserves\":0,\"Rest\":0,\"Revenue\":0,\"Salesprv\":0,\"Taxes\":0,\"Internals\":0,\"YearS\":0,\"Saldo\":0}]}"
 
 }

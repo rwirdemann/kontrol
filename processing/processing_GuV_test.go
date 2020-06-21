@@ -41,7 +41,7 @@ func TestGuV(t *testing.T) {
 	util.Global.FinancialYear = 2018
 	util.Global.Filename = "/Users/docjoe/mystuff/development/kontrol/Buchungen-KG.csv"
 	as := accountSystem.NewDefaultAccountSystem()
-	hauptbuch := as.GetCollectiveAccount_thisYear(util.Global.FinancialYear)
+	hauptbuch := as.GetCollectiveAccount_thisYear()
 	log.Println("in TestGuV: ", util.Global.FinancialYear, len(hauptbuch.Bookings), util.Global.Filename)
 
 	parser.Import(util.Global.Filename, util.Global.FinancialYear, as)

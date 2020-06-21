@@ -13,7 +13,7 @@ import (
 
 type AccountSystem interface {
 	GetCollectiveAccount_allYears() *account.Account
-	GetCollectiveAccount_thisYear(year int) *account.Account
+	GetCollectiveAccount_thisYear() *account.Account
 	Add(a *account.Account)
 	All() []account.Account
 	Get(id string) (*account.Account, bool)
@@ -146,16 +146,17 @@ func (this Accountlist) All() []account.AccountDescription {
 		k_ErloeseVerteilung,
 	}
 }
-
+/*
 func EmptyDefaultAccountSystem() AccountSystem {
 	o := account.AccountDescription{Id: "all", Name: "Hauptbuch", Type: account.KontenartVerrechnung}
 	return &DefaultAccountSystem{collectiveAccount_thisYear: &account.Account{Description: o}, accounts: make(map[string]*account.Account)}
 }
-
+*/
 func NewDefaultAccountSystem() AccountSystem {
 
-	ad := account.AccountDescription{Id: "all_thisYear", Name: "Hauptbuch_thisYear", Type: account.KontenartVerrechnung}
-	ad_thisYear := account.AccountDescription{Id: "all", Name: "Hauptbuch", Type: account.KontenartVerrechnung}
+	ad := account.AccountDescription{Id: "all", Name: "Hauptbuch_thisYear", Type: account.KontenartVerrechnung}
+	id_thisYear := fmt.Sprintf("all_%d",util.Global.FinancialYear)
+	ad_thisYear := account.AccountDescription{Id: id_thisYear , Name: "Hauptbuch", Type: account.KontenartVerrechnung}
 	accountSystem := DefaultAccountSystem{
 		collectiveAccount_thisYear: &account.Account{Description: ad_thisYear},
 		collectiveAccount_allYears: &account.Account{Description: ad},
@@ -190,7 +191,7 @@ func (r *DefaultAccountSystem) GetCollectiveAccount_allYears() *account.Account 
 	return r.collectiveAccount_allYears
 }
 
-func (r *DefaultAccountSystem) GetCollectiveAccount_thisYear(year int) *account.Account {
+func (r *DefaultAccountSystem) GetCollectiveAccount_thisYear() *account.Account {
 	return r.collectiveAccount_thisYear
 }
 

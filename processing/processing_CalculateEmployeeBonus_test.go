@@ -27,7 +27,7 @@ func TestCalculateEmplyeeBonnusses (t *testing.T) {
 	net[stakeholder.Get("AB")] = 100.0
 	net[stakeholder.Get("JM")] = 100.0
 
-	hauptbuch := as.GetCollectiveAccount_thisYear(2018)
+	hauptbuch := as.GetCollectiveAccount_thisYear()
 //	b1 := *booking.NewBooking(13, "AR", "", "", "K", "Project-X", net, 1190, "Anna+Johannes", 1, 2018, its2018)
 	Process(as, *booking.NewBooking(13, "AR", "", "", "K", "Project-X", net, 238, "Anna+Johannes", 1, 2018, its2018))
 	Process(as, *booking.NewBooking(13, "AR", "", "", "AB", "Project-X", net, 238, "Anna+Johannes", 1, 2018, its2018))

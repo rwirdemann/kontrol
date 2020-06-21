@@ -15,7 +15,7 @@ func TestImport(t *testing.T) {
 	as := accountSystem.NewDefaultAccountSystem()
 
 	Import("bookings.csv", 2017,  as)
-	positions := as.GetCollectiveAccount_thisYear(2017).Bookings
+	positions := as.GetCollectiveAccount_thisYear().Bookings
 	assert.Equal(t, 10, len(positions))
 	assertPosition(t, positions[0], "ER", "800", "1337", "K", "Ulrike Klode", 2142, 2017, 2, 0, 0, 0)
 	assertPosition(t, positions[1], "AR", "", "", "AN", "moebel.de", 4730.25, 2017, 1, 0, 0, 3975)

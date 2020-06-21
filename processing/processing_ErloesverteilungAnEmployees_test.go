@@ -23,7 +23,7 @@ func TestErloesverteilungAnEmployees (t *testing.T) {
 	net[shrepo.Get("JM")] = 100.0
 	net[shrepo.Get("BW")] = 100.0
 
-	hauptbuch := as.GetCollectiveAccount_thisYear(2018)
+	hauptbuch := as.GetCollectiveAccount_thisYear()
 	// Anke und Johannes haben Nettoeinnahmen von 100€
 	// Ben hat Kosten von 10€ netto
 	// ==> Ben sollte nun  70€ + 70€ + 5% von 300€ netto€ = 155€ Jahreseinkommen haben...
@@ -33,10 +33,10 @@ func TestErloesverteilungAnEmployees (t *testing.T) {
 	*bkgs = append(*bkgs, *booking.NewBooking(13, "ER", "", "", "JM", "Project-X", net, 11.9, "H-costs", 1, 2018, its2018))
 	*bkgs = append(*bkgs, *booking.NewBooking(13, "ER", "", "", "BW", "Project-X", net, 11.9, "H-costs", 1, 2018, its2018))
 
-	if (DEBUG) {log.Println("in TestStakeholderYearlyIncome: ", len(as.GetCollectiveAccount_thisYear(2018).Bookings))}
+	if (DEBUG) {log.Println("in TestStakeholderYearlyIncome: ", len(as.GetCollectiveAccount_thisYear().Bookings))}
 
 	// nun verteilen
-	for _, p := range as.GetCollectiveAccount_thisYear(2018).Bookings {
+	for _, p := range as.GetCollectiveAccount_thisYear().Bookings {
 		if (DEBUG) {log.Println("   processing ", p)}
 		Process(as, p)
 	}
