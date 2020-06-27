@@ -49,6 +49,8 @@ func Import(file string, aYear int, as accountSystem.AccountSystem) {
 	imported := 0
 	hauptbuch_thisYear := as.GetCollectiveAccount_thisYear()
 	hauptbuch_allYears := as.GetCollectiveAccount_allYears()
+	hauptbuch_thisYear.Bookings = nil
+	hauptbuch_allYears.Bookings = nil
 	if file == "" {
 		util.Global.Errors = append(util.Global.Errors, "in Import, no file provided...")
 		log.Println("ERROR: in Import, no file provided...")
