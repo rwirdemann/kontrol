@@ -39,8 +39,8 @@ func TestEmptyDefaultAccountSystem (t *testing.T) {
 }
 */
 func TestAdd (t *testing.T) {
-	accountSystem := EmptyDefaultAccountSystem()
-	assert.Equal(t, accountSystem.GetCollectiveAccount_thisYear().Description.Id, "all")
+	accountSystem :=  NewDefaultAccountSystem()
+	assert.Equal(t, accountSystem.GetCollectiveAccount_thisYear().Description.Id, "all_1337")
 
 	newAccount := account.NewAccount(account.AccountDescription{Id: "K", Name: "k: Kommitment", Type: "company"})
 	accountSystem.Add (newAccount)

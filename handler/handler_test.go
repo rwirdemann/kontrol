@@ -78,7 +78,7 @@ func TestGetAllAccounts(t *testing.T) {
 }
 
 func TestGetCollectiveAccount(t *testing.T) {
-	req, _ := http.NewRequest("GET", "/kontrol/collectiveaccount", nil)
+	req, _ := http.NewRequest("GET", "/kontrol/collectiveaccount/2018/01", nil)
 	rr := httptest.NewRecorder()
 
 	router.ServeHTTP(rr, req)
