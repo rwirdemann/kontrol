@@ -15,7 +15,7 @@ func MakeGetCollectiveAccountHandler(repository accountSystem.AccountSystem) htt
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		ad := account.AccountDescription{Id: "all", Name: "Hauptbuch", Type: account.KontenartVerrechnung}
-		resultAccount := &account.Account{Description: ad}
+		resultAccount := account.Account{Description: ad}
 		vars := mux.Vars(r)
 		year, urlHasAYear := vars["year"]
 		month, urlHasAMonth := vars["month"]
