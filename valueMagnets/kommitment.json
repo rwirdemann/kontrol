@@ -61,7 +61,9 @@
       { "Id": "CS", "Name": "k: Christine Schlott",    "Type": "Employee", "Arbeit": "1.00" },
       { "Id": "SR", "Name": "k: Sven Röpstorff",       "Type": "Employee", "Arbeit": "1.00" },
       { "Id": "MH", "Name": "k: Michael Häussler",     "Type": "Employee", "Arbeit": "0.75" },
-      { "Id": "JK", "Name": "k: Jost Künzel",          "Type": "Employee", "Arbeit": "0.666" }
+      { "Id": "JK", "Name": "k: Jost Künzel",          "Type": "Employee", "Arbeit": "0.666" },
+      { "Id": "MG", "Name": "k: Michael Gallus",       "Type": "Employee", "Arbeit": "0.25" },
+      { "Id": "TB", "Name": "k: Thomas Boehlefeld",    "Type": "Employee", "Arbeit": "0.25" },
     ]
   }
 
