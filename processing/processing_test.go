@@ -1,16 +1,17 @@
 package processing
 
 import (
+	"log"
+	"math"
+	"testing"
+	"time"
+
 	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/accountSystem"
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/util"
 	"github.com/ahojsenn/kontrol/valueMagnets"
 	"github.com/stretchr/testify/assert"
-	"log"
-	"math"
-	"testing"
-	"time"
 )
 
 var accSystem accountSystem.AccountSystem
@@ -18,7 +19,7 @@ var accountBank *account.Account
 var accountHannes *account.Account
 var accountRalf *account.Account
 var accountKommitment *account.Account
-var shrepo  valueMagnets.Stakeholder
+var shrepo valueMagnets.Stakeholder
 
 func setUp() {
 	accSystem = accountSystem.NewDefaultAccountSystem()
@@ -31,7 +32,6 @@ func setUp() {
 
 }
 
-
 // CC_Gehalt Angestellter
 // - 100% Brutto gegen Bankkonto
 // - 100% Brutto gegen Kommitmentkonto
@@ -41,7 +41,7 @@ func TestGehaltAngestellter(t *testing.T) {
 
 	// given: a booking
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.NewBooking(13, "Gehalt", "", "", "BW", "Project-X",nil, 3869.65, "Gehalt Ben", 1, 2017, its2018)
+	p := booking.NewBooking(13, "Gehalt", "", "", "BW", "Project-X", nil, 3869.65, "Gehalt Ben", 1, 2017, its2018)
 
 	// when: the position is processed
 	Process(repository, *p)
@@ -52,13 +52,11 @@ func TestGehaltAngestellter(t *testing.T) {
 	assert.Equal(t, -3869.65, account2.Bookings[0].Amount)
 	assert.Equal(t, booking.CC_Gehalt, account2.Bookings[0].Type)
 
-
 	// 100% Brutto gegen Bankkonto
-	accountBank,_ := repository.Get(accountSystem.SKR03_1200.Id)
+	accountBank, _ := repository.Get(accountSystem.SKR03_1200.Id)
 	assert.Equal(t, 3869.65, accountBank.Bookings[0].Amount)
 	assert.Equal(t, "Gehalt Ben", accountBank.Bookings[0].Text)
 	assert.Equal(t, "CC_Gehalt", accountBank.Bookings[0].Type)
-
 
 	// Kommitment-Buchung ist der Kostenstelle "BW" zugeordnet
 	assert.Equal(t, "BW", account2.Bookings[0].CostCenter)
@@ -73,7 +71,7 @@ func TestEingangsrechnung(t *testing.T) {
 	// given: BOOKING ER
 	// Eingangsrechnung 12852.0€ von Bank an SKR03_sonstigeAufwendungen
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.NewBooking(13, "ER", "", "", "K", "Project-X",nil, 12852.0, "Eingangsrechnung 1234", 1, 2017, its2018)
+	p := booking.NewBooking(13, "ER", "", "", "K", "Project-X", nil, 12852.0, "Eingangsrechnung 1234", 1, 2017, its2018)
 
 	// when: the position is processed
 	Process(accSystem, *p)
@@ -82,18 +80,17 @@ func TestEingangsrechnung(t *testing.T) {
 	a, _ := accSystem.Get(accountSystem.SKR03_sonstigeAufwendungen.Id)
 	assert.Equal(t, 1, len(a.Bookings))
 	bk := a.Bookings[0]
-	assert.Equal(t, util.Net(-12852.0), bk.Amount)
+	assert.Equal(t, util.Net2020(-12852.0, 2020, 06), bk.Amount)
 	assert.Equal(t, bk.Type, booking.Kosten)
 	assert.Equal(t, "K", bk.CostCenter)
 
 	//  Haben wurde auf das Bankkonto gebucht, Achtung Bank ist Aktivkonto, da werden Soll Eintrage im Haben gebucht
-	habenAccount,_ := accSystem.Get(accountSystem.SKR03_1200.Id)
+	habenAccount, _ := accSystem.Get(accountSystem.SKR03_1200.Id)
 	assert.Equal(t, 1, len(habenAccount.Bookings))
 	actual := habenAccount.Bookings[0]
-	assert.Equal(t,12852.0, actual.Amount)
+	assert.Equal(t, 12852.0, actual.Amount)
 	assert.Equal(t, "Eingangsrechnung 1234", actual.Text)
 	assert.Equal(t, booking.Kosten, actual.Type)
-
 
 }
 
@@ -103,7 +100,7 @@ func TestRueckstellungAufloesen(t *testing.T) {
 
 	// given a Buchung Eingangsrechnung gegen Rücksttellung
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.NewBooking(13,"SKR03", "965", "4957", "K", "Project-X",nil, 12852.0, "Auflösung Rückstellungsdifferenz", 1, 2017, its2018)
+	p := booking.NewBooking(13, "SKR03", "965", "4957", "K", "Project-X", nil, 12852.0, "Auflösung Rückstellungsdifferenz", 1, 2017, its2018)
 
 	// when: the position is processed
 	Process(accSystem, *p)
@@ -127,14 +124,13 @@ func TestRueckstellungAufloesen(t *testing.T) {
 	assert.Equal(t, "K", bk.CostCenter)
 }
 
-
 func TestAnfangsbestandRueckstellung(t *testing.T) {
 	setUp()
 	// Rückstellungen können gegen das kommitment Konto aufgelöst werden
 
 	// given a Buchung Eingangsrechnung gegen Rücksttellung
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.NewBooking(13,"SKR03", "9000", "956", "K", "Project-X",nil, 12852.0, "Anfangsbestand GWteuewrRückst.", 1, 2017, its2018)
+	p := booking.NewBooking(13, "SKR03", "9000", "956", "K", "Project-X", nil, 12852.0, "Anfangsbestand GWteuewrRückst.", 1, 2017, its2018)
 
 	// when: the position is processed
 	Process(accSystem, *p)
@@ -164,17 +160,17 @@ func TestPartnerEntnahme(t *testing.T) {
 	extras := booking.CsvBookingExtras{Typ: "GV", Responsible: "RW"}
 	extras.Net = make(map[valueMagnets.Stakeholder]float64)
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	b := booking.NewBooking(13,"GV", "", "", "RW", "Project-X",nil, 6000, "", 1, 2017, its2018)
+	b := booking.NewBooking(13, "GV", "", "", "RW", "Project-X", nil, 6000, "", 1, 2017, its2018)
 
 	Process(accSystem, *b)
 
-	acc1,_ := accSystem.Get(accountSystem.SKR03_1900.Id)
+	acc1, _ := accSystem.Get(accountSystem.SKR03_1900.Id)
 	bRalf := acc1.Bookings[0]
 	util.AssertFloatEquals(t, -6000, bRalf.Amount)
 	util.AssertEquals(t, booking.CC_Entnahme, bRalf.Type)
 
 	// Buchung wurde gegen das Bankkonto gebucht
-	acc,_ := accSystem.Get(accountSystem.SKR03_1200.Id)
+	acc, _ := accSystem.Get(accountSystem.SKR03_1200.Id)
 	util.AssertEquals(t, 1, len(acc.Bookings))
 	actual := acc.Bookings[0]
 	util.AssertFloatEquals(t, 6000, actual.Amount)
@@ -190,7 +186,7 @@ func TestRueckstellung(t *testing.T) {
 
 	// given: a Rückstellung booking
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.NewBooking(13,"SKR03", "4120", "965", "BW", "Project-X",nil, 4711.0, "Bonus Rückstellung", 12, 2017, its2018)
+	p := booking.NewBooking(13, "SKR03", "4120", "965", "BW", "Project-X", nil, 4711.0, "Bonus Rückstellung", 12, 2017, its2018)
 
 	// when: the position is processed
 	Process(accSystem, *p)
@@ -212,11 +208,10 @@ func TestRueckstellung(t *testing.T) {
 	util.AssertEquals(t, 0, len(accSystem.GetCollectiveAccount_thisYear().Bookings))
 }
 
-
 func TestBookAusgangsrechnungToBankAccount(t *testing.T) {
 	setUp()
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	b := booking.NewBooking(13,"AR", "", "", "K", "Project-X",nil, 6000, "Ausgangsrechnung", 1, 2017, its2018)
+	b := booking.NewBooking(13, "AR", "", "", "K", "Project-X", nil, 6000, "Ausgangsrechnung", 1, 2017, its2018)
 
 	Process(accSystem, *b)
 	acc, _ := accSystem.Get(accountSystem.SKR03_1200.Id)
@@ -232,7 +227,7 @@ func TestBookAusgangsrechnungToBankAccount(t *testing.T) {
 func TestProcessSVBeitrag(t *testing.T) {
 	setUp()
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	b := booking.NewBooking(13,"SV-Beitrag", "", "", "BW", "Project-X",nil, 1385.10, "KKH, Ben", 5, 2017, its2018)
+	b := booking.NewBooking(13, "SV-Beitrag", "", "", "BW", "Project-X", nil, 1385.10, "KKH, Ben", 5, 2017, its2018)
 
 	Process(accSystem, *b)
 
@@ -244,7 +239,7 @@ func TestProcessSVBeitrag(t *testing.T) {
 	assert.Equal(t, "BW", b1.CostCenter)
 
 	// Buchung wurde aufs Bankkonto gebucht
-	acc,_ := accSystem.Get(accountSystem.SKR03_1200.Id)
+	acc, _ := accSystem.Get(accountSystem.SKR03_1200.Id)
 	assert.Equal(t, 1, len(acc.Bookings))
 	actual := acc.Bookings[0]
 	assert.Equal(t, 1385.10, actual.Amount)
@@ -258,7 +253,7 @@ func TestProcessSVBeitrag(t *testing.T) {
 func TestProcessLNSteuer(t *testing.T) {
 	setUp()
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	b := booking.NewBooking(13,"LNSteuer", "", "", "BW", "Project-X",nil, 1511.45, "Lohnsteuer Ben", 5, 2017, its2018)
+	b := booking.NewBooking(13, "LNSteuer", "", "", "BW", "Project-X", nil, 1511.45, "Lohnsteuer Ben", 5, 2017, its2018)
 
 	Process(accSystem, *b)
 
@@ -272,12 +267,11 @@ func TestProcessLNSteuer(t *testing.T) {
 	assertBooking(t, bacc.Bookings[0], 1511.45, "Lohnsteuer Ben", "CC_LNSteuer")
 }
 
-
 // 100% werden auf das Bankkonto gebucht
 // 100% werden gegen das JahresüberschussVJ gebucht
 func TestProcessGV_Vorjahr(t *testing.T) {
 	setUp()
-	b := booking.NewBooking(13,"GV-Vorjahr", "", "", "JM", "Project-X",nil, 77777, "Rest Anteil Johannes", 5, 2017, time.Time{})
+	b := booking.NewBooking(13, "GV-Vorjahr", "", "", "JM", "Project-X", nil, 77777, "Rest Anteil Johannes", 5, 2017, time.Time{})
 
 	Process(accSystem, *b)
 
@@ -289,7 +283,7 @@ func TestProcessGV_Vorjahr(t *testing.T) {
 	assert.Equal(t, "JM", b1.CostCenter)
 
 	// Buchung wurde aufs Bankkonto gebucht
-	habenAccount,_ := accSystem.Get(accountSystem.SKR03_1200.Id)
+	habenAccount, _ := accSystem.Get(accountSystem.SKR03_1200.Id)
 	assert.Equal(t, 1, len(habenAccount.Bookings))
 	actual := habenAccount.Bookings[0]
 	assert.Equal(t, 77777.0, actual.Amount)
@@ -300,9 +294,9 @@ func TestProcessGV_Vorjahr(t *testing.T) {
 func TestProcessOPOS_SKR1600(t *testing.T) {
 	setUp()
 
-	bkDate,_ := time.Parse("2006 01 02 15 04 05",  "2017 11 11 11 11 11"  )
+	bkDate, _ := time.Parse("2006 01 02 15 04 05", "2017 11 11 11 11 11")
 	tomorrow := bkDate.AddDate(+1, 0, +1)
-	p := booking.NewBooking(13,"ER", "", "", "K", "Project-X",nil, 8250.0, "Interne Stunden 2017", 11, 2017, tomorrow)
+	p := booking.NewBooking(13, "ER", "", "", "K", "Project-X", nil, 8250.0, "Interne Stunden 2017", 11, 2017, tomorrow)
 
 	// when: the position is processed
 	Process(accSystem, *p)
@@ -327,7 +321,7 @@ func TestBonusRueckstellungAngestellterSKR03(t *testing.T) {
 
 	// given:
 	now := time.Now().AddDate(0, 0, 0)
-	p := booking.NewBooking(13,"SKR03", "4120", "965", "BW", "Project-X",nil, 1337.42, "CC_Gehalt Januar 2017", 12, 2017, now)
+	p := booking.NewBooking(13, "SKR03", "4120", "965", "BW", "Project-X", nil, 1337.42, "CC_Gehalt Januar 2017", 12, 2017, now)
 
 	// when: the position is processed
 	Process(accSystem, *p)
@@ -352,7 +346,7 @@ func TestAbschreibungenAufAnlagen(t *testing.T) {
 
 	// given: Abschreibung
 	now := time.Now().AddDate(0, 0, 0)
-	p := booking.NewBooking(13,"SKR03", "4830", "25", "", "Project-X",nil, 1337.23, "Abschreibung Sachanlage", 12, 2017, now)
+	p := booking.NewBooking(13, "SKR03", "4830", "25", "", "Project-X", nil, 1337.23, "Abschreibung Sachanlage", 12, 2017, now)
 
 	// when: the position is processed
 	Process(accSystem, *p)
@@ -360,7 +354,7 @@ func TestAbschreibungenAufAnlagen(t *testing.T) {
 	// soll account
 	a, _ := accSystem.Get(accountSystem.SKR03_Abschreibungen.Id)
 	assert.Equal(t, 1, len(a.Bookings))
-	assert.Equal(t, -1337.23 , a.Bookings[0].Amount )
+	assert.Equal(t, -1337.23, a.Bookings[0].Amount)
 	assert.Equal(t, booking.SKR03, a.Bookings[0].Type)
 
 	// booking is not on bankaccount
@@ -378,8 +372,8 @@ func TestUstVZ(t *testing.T) {
 	accSystem = accountSystem.NewDefaultAccountSystem()
 
 	// given: Abschreibung
-	now,_ := time.Parse("2006 01 02 15 04 05",  "2017 11 11 11 11 11"  )
-	p := booking.NewBooking(13,"UstVZ", "", "", "","Project-X",nil, 1337.23, "UST", 12, 2017, now)
+	now, _ := time.Parse("2006 01 02 15 04 05", "2017 11 11 11 11 11")
+	p := booking.NewBooking(13, "UstVZ", "", "", "", "Project-X", nil, 1337.23, "UST", 12, 2017, now)
 
 	// when: the position is processed
 	Process(accSystem, *p)
@@ -387,13 +381,13 @@ func TestUstVZ(t *testing.T) {
 	// soll account
 	a, _ := accSystem.Get(accountSystem.SKR03_Umsatzsteuer.Id)
 	assert.Equal(t, 1, len(a.Bookings))
-	assert.Equal(t, -1337.23 , a.Bookings[0].Amount )
+	assert.Equal(t, -1337.23, a.Bookings[0].Amount)
 	assert.Equal(t, booking.UstVZ, a.Bookings[0].Type)
 
 	// booking is  on bankaccount
-	habenAccount,_ := accSystem.Get(accountSystem.SKR03_1200.Id)
+	habenAccount, _ := accSystem.Get(accountSystem.SKR03_1200.Id)
 	assert.Equal(t, 1, len(habenAccount.Bookings))
-	assert.Equal(t, 1337.23 , habenAccount.Bookings[0].Amount )
+	assert.Equal(t, 1337.23, habenAccount.Bookings[0].Amount)
 
 }
 
@@ -405,7 +399,7 @@ func TestErloesverteilungAnValueMagnetsSimple(t *testing.T) {
 	net := make(map[valueMagnets.Stakeholder]float64)
 	shrepo := valueMagnets.Stakeholder{}
 	net[shrepo.Get("BW")] = 1000.0
-	p3 := booking.NewBooking(13, "AR", "", "", "BW", "Project-X", net,  1190, "ARGSSLL", 1, 2017, its2018)
+	p3 := booking.NewBooking(13, "AR", "", "", "BW", "Project-X", net, 1190, "ARGSSLL", 1, 2017, its2018)
 
 	// when: the position is processed
 	Process(as, *p3)
@@ -414,15 +408,15 @@ func TestErloesverteilungAnValueMagnetsSimple(t *testing.T) {
 	ErloesverteilungAnKommanditisten(as)
 
 	// whats on "K"
-	kommitment,_ := as.Get("K")
+	kommitment, _ := as.Get("K")
 	assert.Equal(t, 1, len(kommitment.Bookings)) // Kommitmentanteil is on k
-	for _,b := range kommitment.Bookings {
+	for _, b := range kommitment.Bookings {
 		log.Println("     b:", b.Amount, b.Text)
 	}
 	assert.Equal(t, -1000.0, kommitment.Saldo)
 
 	// whats on "K" subaccf
-	kommitment,_ = as.GetSubacc("K", accountSystem.UK_Kosten.Id)
+	kommitment, _ = as.GetSubacc("K", accountSystem.UK_Kosten.Id)
 	assert.Equal(t, 2, len(kommitment.Bookings)) // Kommitmentanteil is on k
 	assert.Equal(t, -750.0, kommitment.Saldo)
 
@@ -447,20 +441,20 @@ func TestErloesverteilungAnValueMagnets_Anlage(t *testing.T) {
 	net := make(map[valueMagnets.Stakeholder]float64)
 	shrepo := valueMagnets.Stakeholder{}
 	net[shrepo.Get("BW")] = 1000.0
-//	p3 := booking.NewBooking(13, "ER", "", "", "K", "Project-X", net,  4000, "Boxbike - Dienstfahrrad Mainusch birdy Riese Müller", 4, 2018, its2018)
-	p3 := booking.NewBooking(13, "SKR03", "330", "1200", "K", "Project-X", net,  4000, "Boxbike - Dienstfahrrad Mainusch birdy Riese Müller", 4, 2018, its2018)
+	//	p3 := booking.NewBooking(13, "ER", "", "", "K", "Project-X", net,  4000, "Boxbike - Dienstfahrrad Mainusch birdy Riese Müller", 4, 2018, its2018)
+	p3 := booking.NewBooking(13, "SKR03", "330", "1200", "K", "Project-X", net, 4000, "Boxbike - Dienstfahrrad Mainusch birdy Riese Müller", 4, 2018, its2018)
 
 	// when: the position is processed
 	Process(as, *p3)
 	ErloesverteilungAnKommanditisten(as)
 
 	// check, that the Bankaccount is now at 4000
-	bankacc,_ := as.Get(accountSystem.SKR03_1200.Id)
+	bankacc, _ := as.Get(accountSystem.SKR03_1200.Id)
 	assert.Equal(t, 1, len(bankacc.Bookings))
-	assert.Equal(t, 4000.0, bankacc.Bookings[0].Amount )
+	assert.Equal(t, 4000.0, bankacc.Bookings[0].Amount)
 
 	// whats on "JM"
-	b,_ := as.GetSubacc("JM", accountSystem.UK_AnteilAnAnlagen.Id)
+	b, _ := as.GetSubacc("JM", accountSystem.UK_AnteilAnAnlagen.Id)
 	assert.Equal(t, 1, len(b.Bookings))
 	assert.Equal(t, -1333.0, math.Round(b.Saldo))
 
@@ -485,7 +479,7 @@ func TestDistributeKTopf(t *testing.T) {
 	// Anke und Johannes haben Nettoeinnahmen von 1000
 	Process(as, *booking.NewBooking(13, "AR", "", "", "K", "Project-X", net, 2380, "Anke+Johannes", 1, 2018, its2018))
 	// Johannes hat eine Eingangsrechnung von 100
-	Process(as, *booking.NewBooking(14, "ER", "", "", "JM", "Project-X",nil, 119.0, "Johannes Gadget", 1, 2018, its2018))
+	Process(as, *booking.NewBooking(14, "ER", "", "", "JM", "Project-X", nil, 119.0, "Johannes Gadget", 1, 2018, its2018))
 
 	// nun verteilen
 	for _, p := range hauptbuch.Bookings {
@@ -503,11 +497,11 @@ func TestDistributeKTopf(t *testing.T) {
 	DistributeKTopf(as)
 
 	// assert, that Anke has more due to Johannes expenses
-	assert.True(t, StakeholderYearlyIncome(as, "AN") > StakeholderYearlyIncome(as, "JM") )
-	assert.Equal(t, 100.0, math.Round(StakeholderYearlyIncome(as, "AN") - StakeholderYearlyIncome(as, "JM") ))
-	assert.Equal(t, 1900.0, math.Round(StakeholderYearlyIncome(as, "AN") + StakeholderYearlyIncome(as, "JM") + StakeholderYearlyIncome(as, "RW")))
+	assert.True(t, StakeholderYearlyIncome(as, "AN") > StakeholderYearlyIncome(as, "JM"))
+	assert.Equal(t, 100.0, math.Round(StakeholderYearlyIncome(as, "AN")-StakeholderYearlyIncome(as, "JM")))
+	assert.Equal(t, 1900.0, math.Round(StakeholderYearlyIncome(as, "AN")+StakeholderYearlyIncome(as, "JM")+StakeholderYearlyIncome(as, "RW")))
 
-	}
+}
 
 func TestErloesverteilungAnValueMagnets(t *testing.T) {
 	as := accountSystem.NewDefaultAccountSystem()
@@ -515,13 +509,13 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 	// given: BOOKING ER
 	// Eingangsrechnung 12852.0€ von Bank an SKR03_sonstigeAufwendungen
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p1 := booking.NewBooking(13, "ER", "", "", "K", "Project-X",nil, 119, "hugo 1234", 1, 2017, its2018)
-	p2 := booking.NewBooking(13, "ER", "", "", "BW", "Project-X",nil, 11900, "gugo. blupp", 1, 2017, its2018)
+	p1 := booking.NewBooking(13, "ER", "", "", "K", "Project-X", nil, 119, "hugo 1234", 1, 2017, its2018)
+	p2 := booking.NewBooking(13, "ER", "", "", "BW", "Project-X", nil, 11900, "gugo. blupp", 1, 2017, its2018)
 	net := make(map[valueMagnets.Stakeholder]float64)
 	net[shrepo.Get("BW")] = 1000.0
-	p3 := booking.NewBooking(13, "AR", "", "", "BW", "Project-X", net,  1190, "ARGSSLL", 1, 2017, its2018)
+	p3 := booking.NewBooking(13, "AR", "", "", "BW", "Project-X", net, 1190, "ARGSSLL", 1, 2017, its2018)
 	p4 := booking.NewBooking(13, "GV", "", "", "JM", "Project-X", nil, 5000, "ARGSSLL", 1, 2017, its2018)
-	p5 := booking.NewBooking(13, "SKR03", "965", "4957", "K", "Project-X",nil, 42, "SKR03test", 1, 2017, its2018)
+	p5 := booking.NewBooking(13, "SKR03", "965", "4957", "K", "Project-X", nil, 42, "SKR03test", 1, 2017, its2018)
 
 	// when: the position is processed
 	Process(as, *p1)
@@ -540,9 +534,8 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 	ErloesverteilungAnKommanditisten(as)
 	DistributeKTopf(as)
 
-
 	// booking ist on CostCenter K
-	b,_ := as.GetSubacc("K", accountSystem.UK_Kosten.Id)
+	b, _ := as.GetSubacc("K", accountSystem.UK_Kosten.Id)
 	assert.Equal(t, 6, len(b.Bookings))
 	assert.Equal(t, -808.0, b.Saldo)
 
@@ -551,7 +544,7 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 	// a.UpdateSaldo()
 	assert.Equal(t, 1, len(a.Bookings))
 	typestring := ""
-	for _,bk := range a.Bookings {
+	for _, bk := range a.Bookings {
 		typestring += bk.Type
 	}
 	assert.Contains(t, typestring, booking.Kosten)
@@ -564,34 +557,29 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 	assert.Equal(t, -5000.0, c.Saldo)
 }
 
-
-
-
-
-func TestBookLiquidityNeedToPartners (t *testing.T) {
+func TestBookLiquidityNeedToPartners(t *testing.T) {
 	valueMagnets.KommimtmentYear{}.Init(2016)
 	as := accountSystem.NewDefaultAccountSystem()
 
-	BookLiquidityNeedToPartners( as, 12.0)
+	BookLiquidityNeedToPartners(as, 12.0)
 
-	acc,_ := as.GetSubacc("JM", accountSystem.UK_LiquidityReserve.Id)
+	acc, _ := as.GetSubacc("JM", accountSystem.UK_LiquidityReserve.Id)
 
-	util.AssertFloatEquals(t, -4.0, math.Round(acc.Saldo) )
+	util.AssertFloatEquals(t, -4.0, math.Round(acc.Saldo))
 }
 
-func TestIsAfaSKR03 (t *testing.T ) {
+func TestIsAfaSKR03(t *testing.T) {
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	b1 := booking.NewBooking(13, "SKR03", "965", "4957", "K", "Project-X",nil, 42, "SKR03test", 1, 2017, its2018)
-	b2 := booking.NewBooking(13, "SKR03", "100", "4830", "K", "Project-X",nil, 42, "SKR03test", 1, 2017, its2018)
-	b3 := booking.NewBooking(13, "SKR03", "965", "4886", "K", "Project-X",nil, 42, "SKR03test", 1, 2017, its2018)
-	b4 := booking.NewBooking(13, "SKR03", "", "", "K", "Project-X",nil, 42, "SKR03test", 1, 2017, its2018)
+	b1 := booking.NewBooking(13, "SKR03", "965", "4957", "K", "Project-X", nil, 42, "SKR03test", 1, 2017, its2018)
+	b2 := booking.NewBooking(13, "SKR03", "100", "4830", "K", "Project-X", nil, 42, "SKR03test", 1, 2017, its2018)
+	b3 := booking.NewBooking(13, "SKR03", "965", "4886", "K", "Project-X", nil, 42, "SKR03test", 1, 2017, its2018)
+	b4 := booking.NewBooking(13, "SKR03", "", "", "K", "Project-X", nil, 42, "SKR03test", 1, 2017, its2018)
 
-	assert.Equal( t, isAfaSKR03(*b1), false)
-	assert.Equal( t, isAfaSKR03(*b2), true)
-	assert.Equal( t, isAfaSKR03(*b3), true)
-	assert.Equal( t, isAfaSKR03(*b4), false)
+	assert.Equal(t, isAfaSKR03(*b1), false)
+	assert.Equal(t, isAfaSKR03(*b2), true)
+	assert.Equal(t, isAfaSKR03(*b3), true)
+	assert.Equal(t, isAfaSKR03(*b4), false)
 }
-
 
 func assertBooking(t *testing.T, b booking.Booking, amount float64, text string, destType string) {
 	util.AssertFloatEquals(t, amount, b.Amount)

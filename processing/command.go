@@ -189,12 +189,12 @@ func (c BookEingangsrechnungCommand) run() {
 
 		// Soll Buchung UST-Konto, Erträge werden im Haben gebucht, Ausgaben im Soll
 		ustAccount, _ := c.AccSystem.Get(accountSystem.SKR03_Vorsteuer.Id)
-		b2 := booking.CloneBooking(c.Booking, -1.0*(amount-util.Net(amount)), booking.Ust, cc, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
+		b2 := booking.CloneBooking(c.Booking, -1.0*(amount-util.Net2020(amount, c.Booking.Year, c.Booking.Month)), booking.Ust, cc, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
 		ustAccount.Book(b2)
 
 		// Soll Buchung Kommitment-Konto
 		sollAccount, _ := c.AccSystem.Get(accountSystem.SKR03_sonstigeAufwendungen.Id)
-		b := booking.CloneBooking(c.Booking, -util.Net(amount), booking.Kosten, cc, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
+		b := booking.CloneBooking(c.Booking, -util.Net2020(amount, c.Booking.Year, c.Booking.Month), booking.Kosten, cc, c.Booking.Soll, c.Booking.Haben, c.Booking.Project)
 		sollAccount.Book(b)
 
 		// Haben Buchung Bank if not booking.IsBeyondBudgetDate()
