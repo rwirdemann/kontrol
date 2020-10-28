@@ -2,19 +2,20 @@ package parser
 
 import (
 	"fmt"
-	"github.com/ahojsenn/kontrol/accountSystem"
 	"testing"
 	"time"
+
+	"github.com/ahojsenn/kontrol/accountSystem"
 
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/valueMagnets"
 	"github.com/stretchr/testify/assert"
-	)
+)
 
 func TestImport(t *testing.T) {
 	as := accountSystem.NewDefaultAccountSystem()
 
-	Import("bookings.csv", 2017,  as)
+	Import("bookings.csv", 2017, as)
 	positions := as.GetCollectiveAccount_thisYear().Bookings
 	assert.Equal(t, 10, len(positions))
 	assertPosition(t, positions[0], "ER", "800", "1337", "K", "Ulrike Klode", 2142, 2017, 2, 0, 0, 0)
@@ -41,11 +42,11 @@ func assertPosition(t *testing.T, p booking.Booking, typ string, soll string, ha
 	assert.Equal(t, amount, p.Amount)
 	assert.Equal(t, year, p.Year)
 	assert.Equal(t, month, p.Month)
-	fmt.Println("in assertPosition", p.Net	)
-	shrepo := valueMagnets.Stakeholder {}
-	assert.Equal(t, nettoRW, p.Net[ shrepo.Get("RW") ])
-	assert.Equal(t, nettoJM, p.Net[ shrepo.Get("JM") ])
-	assert.Equal(t, nettoAN, p.Net[ shrepo.Get("AN") ])
+	fmt.Println("in assertPosition", p.Net)
+	shrepo := valueMagnets.Stakeholder{}
+	assert.Equal(t, nettoRW, p.Net[shrepo.Get("RW").Id])
+	assert.Equal(t, nettoJM, p.Net[shrepo.Get("JM").Id])
+	assert.Equal(t, nettoAN, p.Net[shrepo.Get("AN").Id])
 }
 
 func TestParseFileCreated(t *testing.T) {

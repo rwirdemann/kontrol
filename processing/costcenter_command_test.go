@@ -1,15 +1,16 @@
 package processing
 
 import (
+	"log"
+	"testing"
+	"time"
+
 	"github.com/ahojsenn/kontrol/account"
 	"github.com/ahojsenn/kontrol/accountSystem"
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/util"
 	"github.com/ahojsenn/kontrol/valueMagnets"
 	"github.com/stretchr/testify/assert"
-	"log"
-	"testing"
-	"time"
 )
 
 func setCCTestUp() {
@@ -21,18 +22,17 @@ func setCCTestUp() {
 	accountKommitment, _ = accSystem.Get(shrepo.Get("K").Id)
 }
 
-
 func TestBookCostToCostCenter(t *testing.T) {
 
 	// given an accountingSystem and a booking
 	accsystem := accountSystem.NewDefaultAccountSystem()
 	bkng := booking.Booking{}
 	bkng.Type = "SKR03"
-	bkng.Amount =  1337.23
+	bkng.Amount = 1337.23
 	bkng.Year = 2017
 	bkng.Month = 7
 	bkng.Haben = "4200"
-	bkng.Soll = "1200"  //
+	bkng.Soll = "1200" //
 	bkng.CostCenter = "JM"
 	bkng.Text = "This is a test"
 
@@ -57,35 +57,31 @@ func TestBookRevenueToEmployeeCostCenter(t *testing.T) {
 
 	// given an accountingSystem and a booking
 	accsystem := accountSystem.NewDefaultAccountSystem()
-	net := make(map[valueMagnets.Stakeholder]float64)
+	net := make(map[string]float64)
 	shrepo := valueMagnets.Stakeholder{}
-	net[shrepo.Get("BW")] = 1000
-	net[shrepo.Get("JM")] = 3675.0
-	bkng := *booking.NewBooking(13, "AR", "", "", "JM", "Project-X",net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{})
-
+	net[shrepo.Get("BW").Id] = 1000
+	net[shrepo.Get("JM").Id] = 3675.0
+	bkng := *booking.NewBooking(13, "AR", "", "", "JM", "Project-X", net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{})
 
 	// when you book it
 	BookAusgangsrechnungCommand{AccSystem: accsystem, Booking: bkng}.run()
 	BookRevenueToEmployeeCostCenter{AccSystem: accsystem, Booking: bkng}.run()
 
-
 	// there is money on the costcenter BW --> now on subaccount
 	acc, _ := accsystem.GetSubacc("BW", accountSystem.UK_AnteileAuserloesen.Id)
 	util.AssertEquals(t, 1, len(acc.Bookings))
-	assert.Equal(t, 1000*  account.EmployeeShare, acc.Bookings[0].Amount)
+	assert.Equal(t, 1000*account.EmployeeShare, acc.Bookings[0].Amount)
 }
-
-
 
 func TestExternNettoAnteil(t *testing.T) {
 	setCCTestUp()
 
 	// given: a booking
-	net := map[valueMagnets.Stakeholder]float64{
-		valueMagnets.StakeholderEX: 10800.0,
+	net := map[string]float64{
+		valueMagnets.StakeholderEX.Id: 10800.0,
 	}
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	p := booking.NewBooking(13, "AR", "", "", "JM", "Project-X",net, 12852.0, "Rechnung 1234", 1, 2017, its2018)
+	p := booking.NewBooking(13, "AR", "", "", "JM", "Project-X", net, 12852.0, "Rechnung 1234", 1, 2017, its2018)
 
 	// when: the position is processed
 	Process(accSystem, *p)
@@ -109,15 +105,15 @@ func TestStakeholderWithNetPositions(t *testing.T) {
 	setCCTestUp()
 
 	// given: a booking
-	net := map[valueMagnets.Stakeholder]float64{
-		valueMagnets.StakeholderEX: 10800.0,
+	net := map[string]float64{
+		valueMagnets.StakeholderEX.Id: 10800.0,
 	}
 	shrepo := valueMagnets.Stakeholder{}
-	net[shrepo.Get("BW")] = 1000
-	net[shrepo.Get("JM")] = 3675.0
-	net[shrepo.Get("KR")] = 3675.0
-	net[shrepo.Get("IK")] = 3675.0
-	p := booking.NewBooking(13, 	"AR", "", "", "JM", "Project-X",net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{})
+	net[shrepo.Get("BW").Id] = 1000
+	net[shrepo.Get("JM").Id] = 3675.0
+	net[shrepo.Get("KR").Id] = 3675.0
+	net[shrepo.Get("IK").Id] = 3675.0
+	p := booking.NewBooking(13, "AR", "", "", "JM", "Project-X", net, 17225.25, "Rechnung 1234", 1, 2017, time.Time{})
 
 	// when: the position is processed
 	Process(accSystem, *p)

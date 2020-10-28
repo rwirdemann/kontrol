@@ -158,7 +158,7 @@ func TestPartnerEntnahme(t *testing.T) {
 	setUp()
 
 	extras := booking.CsvBookingExtras{Typ: "GV", Responsible: "RW"}
-	extras.Net = make(map[valueMagnets.Stakeholder]float64)
+	extras.Net = make(map[string]float64)
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
 	b := booking.NewBooking(13, "GV", "", "", "RW", "Project-X", nil, 6000, "", 1, 2017, its2018)
 
@@ -396,9 +396,9 @@ func TestErloesverteilungAnValueMagnetsSimple(t *testing.T) {
 
 	// given: BOOKING AR
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	net := make(map[valueMagnets.Stakeholder]float64)
+	net := make(map[string]float64)
 	shrepo := valueMagnets.Stakeholder{}
-	net[shrepo.Get("BW")] = 1000.0
+	net[shrepo.Get("BW").Id] = 1000.0
 	p3 := booking.NewBooking(13, "AR", "", "", "BW", "Project-X", net, 1190, "ARGSSLL", 1, 2017, its2018)
 
 	// when: the position is processed
@@ -438,9 +438,9 @@ func TestErloesverteilungAnValueMagnets_Anlage(t *testing.T) {
 
 	// given: BOOKING AR
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
-	net := make(map[valueMagnets.Stakeholder]float64)
+	net := make(map[string]float64)
 	shrepo := valueMagnets.Stakeholder{}
-	net[shrepo.Get("BW")] = 1000.0
+	net[shrepo.Get("BW").Id] = 1000.0
 	//	p3 := booking.NewBooking(13, "ER", "", "", "K", "Project-X", net,  4000, "Boxbike - Dienstfahrrad Mainusch birdy Riese Müller", 4, 2018, its2018)
 	p3 := booking.NewBooking(13, "SKR03", "330", "1200", "K", "Project-X", net, 4000, "Boxbike - Dienstfahrrad Mainusch birdy Riese Müller", 4, 2018, its2018)
 
@@ -470,10 +470,10 @@ func TestDistributeKTopf(t *testing.T) {
 
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
 
-	net := make(map[valueMagnets.Stakeholder]float64)
+	net := make(map[string]float64)
 	shrepo := valueMagnets.Stakeholder{}
-	net[shrepo.Get("AN")] = 1190.0
-	net[shrepo.Get("JM")] = 1190.0
+	net[shrepo.Get("AN").Id] = 1190.0
+	net[shrepo.Get("JM").Id] = 1190.0
 
 	hauptbuch := as.GetCollectiveAccount_thisYear()
 	// Anke und Johannes haben Nettoeinnahmen von 1000
@@ -511,8 +511,8 @@ func TestErloesverteilungAnValueMagnets(t *testing.T) {
 	its2018 := time.Date(2018, 1, 23, 0, 0, 0, 0, time.UTC)
 	p1 := booking.NewBooking(13, "ER", "", "", "K", "Project-X", nil, 119, "hugo 1234", 1, 2017, its2018)
 	p2 := booking.NewBooking(13, "ER", "", "", "BW", "Project-X", nil, 11900, "gugo. blupp", 1, 2017, its2018)
-	net := make(map[valueMagnets.Stakeholder]float64)
-	net[shrepo.Get("BW")] = 1000.0
+	net := make(map[string]float64)
+	net[shrepo.Get("BW").Id] = 1000.0
 	p3 := booking.NewBooking(13, "AR", "", "", "BW", "Project-X", net, 1190, "ARGSSLL", 1, 2017, its2018)
 	p4 := booking.NewBooking(13, "GV", "", "", "JM", "Project-X", nil, 5000, "ARGSSLL", 1, 2017, its2018)
 	p5 := booking.NewBooking(13, "SKR03", "965", "4957", "K", "Project-X", nil, 42, "SKR03test", 1, 2017, its2018)

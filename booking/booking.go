@@ -2,12 +2,12 @@ package booking
 
 import (
 	"fmt"
-	"github.com/ahojsenn/kontrol/util"
 	"time"
+
+	"github.com/ahojsenn/kontrol/util"
 
 	"golang.org/x/text/language"
 
-	"github.com/ahojsenn/kontrol/valueMagnets"
 	"golang.org/x/text/message"
 )
 
@@ -26,9 +26,9 @@ var ValidBookingTypes = [...]string{
 	"LNSteuer",
 	"Rückstellung",
 	"Anfangsbestand",
- 	"SKR03",
- 	"openingBalance",
- 	"closingBalance",
+	"SKR03",
+	"openingBalance",
+	"closingBalance",
 	"UstVZ",
 }
 
@@ -47,49 +47,50 @@ type CsvBookingExtras struct {
 	Responsible string
 
 	// Verteilung der netto Rechnungspositionen auf Stakeholder
-	Net map[valueMagnets.Stakeholder]float64
+	// Net map[valueMagnets.Stakeholder]float64
+	Net map[string]float64
 }
 
 // Aus einer Buchung in der Quelldatei wird eine oder mehrere virtuelle Buchungen erstellt. Dies ist die Liste
 // möglicher Werte für den Type einer virtuellen Buchung
 const (
-	Erloese                = "Erloese"
-	CC_Vertriebsprovision  = "CC_Vertriebsprovision"
-	CC_Nettoanteil         = "CC_Nettoanteil"
-	CC_Employeeaanteil     = "CC_Employeeanteil"
-	CC_Kommitmentanteil    = "CC_Kommitmentanteil"
-	CC_KommitmentanteilEX  = "CC_KommitmentanteilEX"
-	CC_KommitmentanteilREST= "CC_KommitmentanteilREST"
-	CC_Entnahme            = "CC_Entnahme"
-	CC_AnteilAusFairshares = "CC_AnteilAusFairshares"
-	CC_AnteilAusFaktura    = "CC_AnteilAusFaktura"
-	CC_Fakturasumme        = "CC_Fakturasumme"
-	CC_RevDistribution_1   = "CC_Erlösverteilung Schritt 1"
-	CC_KommitmenschDarlehen = "CC_KommitmenschDarlehen"
-	Eingangsrechnung       = "Eingangsrechnung"
-	CC_SVBeitrag           = "CC_SV-Beitrag"
-	CC_GWSteuer            = "CC_GWSteuer"
-	CC_Gehalt              = "CC_Gehalt"
-	CC_J_Bonus			   = "CC_Jahresüberschuss/Bonus"
-	CC_LNSteuer            = "CC_LNSteuer"
-	CC_PartnerNettoFaktura = "CC_PartnerNettofaktura"
-	CC_LiquidityReserve	   = "CC_Liquiditätsreserve"
+	Erloese                  = "Erloese"
+	CC_Vertriebsprovision    = "CC_Vertriebsprovision"
+	CC_Nettoanteil           = "CC_Nettoanteil"
+	CC_Employeeaanteil       = "CC_Employeeanteil"
+	CC_Kommitmentanteil      = "CC_Kommitmentanteil"
+	CC_KommitmentanteilEX    = "CC_KommitmentanteilEX"
+	CC_KommitmentanteilREST  = "CC_KommitmentanteilREST"
+	CC_Entnahme              = "CC_Entnahme"
+	CC_AnteilAusFairshares   = "CC_AnteilAusFairshares"
+	CC_AnteilAusFaktura      = "CC_AnteilAusFaktura"
+	CC_Fakturasumme          = "CC_Fakturasumme"
+	CC_RevDistribution_1     = "CC_Erlösverteilung Schritt 1"
+	CC_KommitmenschDarlehen  = "CC_KommitmenschDarlehen"
+	Eingangsrechnung         = "Eingangsrechnung"
+	CC_SVBeitrag             = "CC_SV-Beitrag"
+	CC_GWSteuer              = "CC_GWSteuer"
+	CC_Gehalt                = "CC_Gehalt"
+	CC_J_Bonus               = "CC_Jahresüberschuss/Bonus"
+	CC_LNSteuer              = "CC_LNSteuer"
+	CC_PartnerNettoFaktura   = "CC_PartnerNettofaktura"
+	CC_LiquidityReserve      = "CC_Liquiditätsreserve"
 	CC_Kostenrueckerstattung = "CC_Kostenrueckerstattung"
-	CC_Anlagenzugang		= "CC_Anlagenzugang"
-	SKR03                  = "SKR03"
-	UstVZ                  = "UstVZ"
-	Ust                    = "Ust"
-	Kosten                 = "Kosten"
+	CC_Anlagenzugang         = "CC_Anlagenzugang"
+	SKR03                    = "SKR03"
+	UstVZ                    = "UstVZ"
+	Ust                      = "Ust"
+	Kosten                   = "Kosten"
 )
 
 type Booking struct {
-	Id			int
-	RowNr 		int
+	Id          int
+	RowNr       int
 	Type        string // siehe const-Block hier drüber für gültige Werte
 	Soll        string
 	Haben       string
 	CostCenter  string
-	Project 	string
+	Project     string
 	Amount      float64
 	Text        string
 	Year        int
@@ -97,7 +98,7 @@ type Booking struct {
 	FileCreated time.Time
 	BankCreated time.Time
 
-	CsvBookingExtras `json:"-"`
+	CsvBookingExtras `json:"Net"`
 }
 
 func NewBooking(
@@ -107,40 +108,40 @@ func NewBooking(
 	haben string,
 	costCenter string,
 	project string,
-	net map[valueMagnets.Stakeholder]float64,
+	//net map[valueMagnets.Stakeholder]float64,
+	net map[string]float64,
 	amount float64,
 	text string,
 	month int,
 	year int,
 	bankCreated time.Time) *Booking {
 
-		extraCsv := CsvBookingExtras{
-			Typ:         csvType,
-			Responsible: costCenter,
-			Net:         net,
-		}
+	extraCsv := CsvBookingExtras{
+		Typ:         csvType,
+		Responsible: costCenter,
+		Net:         net,
+	}
 
 	return &Booking{
-		Id: 		 util.GetNewBookingId(),
-		RowNr:		 rownr,
+		Id:               util.GetNewBookingId(),
+		RowNr:            rownr,
 		CsvBookingExtras: extraCsv,
-		Type:        csvType,
-		Soll:        soll,
-		Haben:       haben,
-		CostCenter:  costCenter,
-		Project: 	 project,
-		Amount:      amount,
-		Text:        text,
-		Month:       month,
-		Year:        year,
-		BankCreated: bankCreated,
+		Type:             csvType,
+		Soll:             soll,
+		Haben:            haben,
+		CostCenter:       costCenter,
+		Project:          project,
+		Amount:           amount,
+		Text:             text,
+		Month:            month,
+		Year:             year,
+		BankCreated:      bankCreated,
 	}
 }
 
-
 func CloneBooking(b Booking, amount float64, typ string, costcenter string, soll string, haben string, project string) Booking {
 	return Booking{
-		Id: 		 util.GetNewBookingId(),
+		Id:          util.GetNewBookingId(),
 		Amount:      amount,
 		Type:        typ,
 		RowNr:       b.RowNr,
@@ -150,9 +151,9 @@ func CloneBooking(b Booking, amount float64, typ string, costcenter string, soll
 		FileCreated: b.FileCreated,
 		BankCreated: b.BankCreated,
 		CostCenter:  costcenter,
-		Soll: soll,
-		Haben: haben,
-		Project: project,
+		Soll:        soll,
+		Haben:       haben,
+		Project:     project,
 	}
 }
 
@@ -189,11 +190,9 @@ func (b *Booking) IsOpenPosition() bool {
 }
 
 // ist this booking beyond the budget date?
-func (b *Booking) IsBeyondBudgetDate () bool {
+func (b *Booking) IsBeyondBudgetDate() bool {
 	return b.BankCreated.After(util.Global.BalanceDate)
 }
-
-
 
 type ByMonth []Booking
 
@@ -202,6 +201,7 @@ func (a ByMonth) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByMonth) Less(i, j int) bool { return a[i].Month < a[j].Month }
 
 type ByRowNr []Booking
+
 func (a ByRowNr) Len() int           { return len(a) }
 func (a ByRowNr) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByRowNr) Less(i, j int) bool { return a[i].RowNr < a[j].RowNr }

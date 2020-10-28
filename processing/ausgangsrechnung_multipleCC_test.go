@@ -1,27 +1,28 @@
 package processing
 
 import (
+	"testing"
+	"time"
+
 	"github.com/ahojsenn/kontrol/accountSystem"
 	"github.com/ahojsenn/kontrol/booking"
 	"github.com/ahojsenn/kontrol/util"
 	"github.com/ahojsenn/kontrol/valueMagnets"
-	"testing"
-	"time"
 )
 
-func TestMultipleCostCenters (t *testing.T) {
+func TestMultipleCostCenters(t *testing.T) {
 
 	var as accountSystem.AccountSystem
 	util.Global.FinancialYear = 2017
 	as = accountSystem.NewDefaultAccountSystem()
 
-	net := make(map[valueMagnets.Stakeholder]float64)
+	net := make(map[string]float64)
 	shrepo := valueMagnets.Stakeholder{}
 
 	// given the following booking of 1190
-	net[shrepo.Get("AN")] = 500.0
-	net[shrepo.Get("JM")] = 500.0
-	net[shrepo.Get("Rest")] = 190.0
+	net[shrepo.Get("AN").Id] = 500.0
+	net[shrepo.Get("JM").Id] = 500.0
+	net[shrepo.Get("Rest").Id] = 190.0
 
 	bkng := booking.NewBooking(13, "AR", "", "", "BW,JM,AN,blupp", "Project-X", net, 1119.0, "Rechnung 1234", 1, 2017, time.Time{})
 
@@ -31,8 +32,7 @@ func TestMultipleCostCenters (t *testing.T) {
 
 	// 1/4 of of 5% provision = 12,5€ goes to each of the four parties
 	acc, _ := as.GetSubacc("BW", accountSystem.UK_Vertriebsprovision.Id)
-//	log.Println("in TestMultipleCostCenters", acc.Saldo)
+	//	log.Println("in TestMultipleCostCenters", acc.Saldo)
 	util.AssertFloatEquals(t, 12.5, acc.Saldo)
 
 }
-

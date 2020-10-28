@@ -73,7 +73,7 @@ func Import(file string, aYear int, as accountSystem.AccountSystem) {
 						}
 			*/
 			if isHeader(record[0]) {
-				log.Println("in Import, read header")
+				//log.Println("in Import, read header")
 				var hi headerItem
 				for i, s := range record {
 					hi.Column = i
@@ -84,7 +84,7 @@ func Import(file string, aYear int, as accountSystem.AccountSystem) {
 						header_stakeholder = append(header_stakeholder, hi)
 					}
 				}
-				log.Println("in Import, read header", header_basics, header_stakeholder)
+				//log.Println("in Import, read header", header_basics, header_stakeholder)
 				continue
 			}
 
@@ -99,14 +99,15 @@ func Import(file string, aYear int, as accountSystem.AccountSystem) {
 				year, month := parseMonth(record[7])
 				bankCreated := parseFileCreated(record[8])
 				imported++
-				m := make(map[valueMagnets.Stakeholder]float64)
+				//m := make(map[valueMagnets.Stakeholder]float64)
+				m := make(map[string]float64)
 				// now loop over columns with personal revenues of all stakeholders...
 				shrepo := valueMagnets.Stakeholder{}
 
 				// loop over columns until header column is empty
 				for _, p := range header_stakeholder {
 					//
-					stakeholder := shrepo.Get(p.Description)
+					stakeholder := shrepo.Get(p.Description).Id
 					m[stakeholder] = parseAmount(record[p.Column], rownr)
 				}
 				bkng := booking.NewBooking(rownr, typ, soll, haben, cs, project, m, amount, subject, month, year, bankCreated)
@@ -225,7 +226,7 @@ func openCsvFile(fileName string) (*os.File, error) {
 
 func sanitizeMyString(in string) string {
 	out := in
-//	out = strings.Replace(out, "/", "-", -1)
+	//	out = strings.Replace(out, "/", "-", -1)
 	out = strings.Replace(out, "\n", ",", -1)
 	out = strings.Replace(out, "%", "Prozent", -1)
 	return out
