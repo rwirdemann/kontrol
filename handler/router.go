@@ -15,6 +15,7 @@ func NewRouter(githash string, buildstamp string, as accountSystem.AccountSystem
 
 	r.HandleFunc("/kontrol/version", jwt_notimpl.JWTMiddleware(key, MakeVersionHandler(githash, buildstamp)))
 	r.HandleFunc("/kontrol/stakeholder", MakeGetStakeholderHandler())
+	r.HandleFunc("/kontrol/stakeholder/{year}", MakeGetStakeholderHandler())
 	r.HandleFunc("/kontrol/errors", MakeGetErrorHandler(as))
 	r.HandleFunc("/kontrol/collectiveaccount", MakeGetCollectiveAccountHandler(as))
 	r.HandleFunc("/kontrol/collectiveaccount/{year}", MakeGetCollectiveAccountHandler(as))

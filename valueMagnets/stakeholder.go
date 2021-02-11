@@ -97,7 +97,7 @@ func (this KommimtmentYear) Liqui(year int) float64 {
 }
 
 
-func (this KommimtmentYear) All(year int) []Kommitmenschen {
+func (this *KommimtmentYear) All(year int) []Kommitmenschen {
 
 	if len(kommitmentHistory) == 0 {
 		this.Init(year)
