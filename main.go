@@ -145,7 +145,7 @@ func watchBookingFile(repository accountSystem.AccountSystem, year int, month st
 				// so wait for year mod 10 (seconds year %5)*5 seconds
 				waitFor := (util.Global.FinancialYear % 5) * 5.0
 				time.Sleep(time.Duration(waitFor)* time.Second)
-				log.Printf("booking reimport start: %s %i\n", time.Now(), waitFor)
+				log.Printf("booking reimport start: %s\n", time.Now())
 				ImportAndProcessBookings(repository, year)
 				log.Printf("booking reimport end: %s\n", time.Now())
 			case err := <-watcher.Error:
