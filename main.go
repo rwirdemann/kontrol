@@ -3,13 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/ahojsenn/kontrol/parser"
-	"github.com/ahojsenn/kontrol/processing"
-	"github.com/ahojsenn/kontrol/valueMagnets"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/ahojsenn/kontrol/parser"
+	"github.com/ahojsenn/kontrol/processing"
+	"github.com/ahojsenn/kontrol/valueMagnets"
 
 	"log"
 
@@ -23,10 +24,9 @@ import (
 const DefaultBookingFile = "Buchungen-KG.csv"
 
 var (
-	githash    	string
-	buildstamp 	string
+	githash    string
+	buildstamp string
 )
-
 
 func main() {
 	environment := util.GetEnv()
@@ -49,30 +49,28 @@ func main() {
 	log.SetFlags(0)
 
 	// set FinancialYear & month
-	util.Global.FinancialYear =  *year
-	util.Global.FinancialMonth =  *month
-	bd, e := time.Parse("2006 01 02 15 04 05", strconv.Itoa(*year) + " 12 31 23 59 59"  )
+	util.Global.FinancialYear = *year
+	util.Global.FinancialMonth = *month
+	bd, e := time.Parse("2006 01 02 15 04 05", strconv.Itoa(*year)+" 12 31 23 59 59")
 	if e != nil {
 		fmt.Println(e)
 	}
 	util.Global.BalanceDate = bd
 	fmt.Println("\n\n#############################################################")
 	log.Println("in main, util.Global.FinancialYear:", util.Global.FinancialYear,
-		"\n    BalanceDate=",util.Global.BalanceDate)
+		"\n    BalanceDate=", util.Global.BalanceDate)
 	fmt.Println("#############################################################")
 
 	// set LiquidityNeed
-	util.Global.LiquidityNeed =  valueMagnets.KommimtmentYear{}.Liqui(util.Global.FinancialYear)
-
+	util.Global.LiquidityNeed = valueMagnets.KommimtmentYear{}.Liqui(util.Global.FinancialYear)
 
 	as := accountSystem.NewDefaultAccountSystem()
 	ImportAndProcessBookings(as, *year)
 
-
 	watchBookingFile(as, *year, *month)
 	//ImportAndProcessBookings(as, *year, *month)
 
-	h1 := cors.AllowAll().Handler(handler.NewRouter(githash, buildstamp, as ))
+	h1 := cors.AllowAll().Handler(handler.NewRouter(githash, buildstamp, as))
 
 	go func() {
 		fmt.Printf("listing on http://localhost:%s...\n", *httpPort)
@@ -85,17 +83,17 @@ func main() {
 	log.Fatal(http.ListenAndServeTLS(":"+*httpsPort, *certFile, *keyFile, h1))
 }
 
-
 func ImportAndProcessBookings(as accountSystem.AccountSystem, year int) {
 	log.Println("in ImportAndProcessBookings...")
 	util.Global.Errors = nil
 
 	as.ClearBookings()
-//	hauptbuch_allYears := as.GetCollectiveAccount_allYears()
+	//	hauptbuch_allYears := as.GetCollectiveAccount_allYears()
 
 	hauptbuch_thisYear := as.GetCollectiveAccount_thisYear()
 
 	parser.Import(util.Global.Filename, year, as)
+	log.Println("in ImportAndProcessBookings, import done...")
 
 	// process all bookings from the general ledger
 	for _, bk := range hauptbuch_thisYear.Bookings {
@@ -125,8 +123,6 @@ func ImportAndProcessBookings(as accountSystem.AccountSystem, year int) {
 	processing.GenerateProjectControlling(as)
 }
 
-
-
 func watchBookingFile(repository accountSystem.AccountSystem, year int, month string) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -145,7 +141,11 @@ func watchBookingFile(repository accountSystem.AccountSystem, year int, month st
 				case <-time.After(3 * time.Second):
 					fmt.Println("timeout 3 sec")
 				}
-				log.Printf("booking reimport start: %s\n", time.Now())
+				// there might be more than one server of this kind running on this server
+				// so wait for year mod 10 (seconds year %5)*5 seconds
+				waitFor := (util.Global.FinancialYear % 5) * 5.0
+				time.Sleep(time.Duration(waitFor)* time.Second)
+				log.Printf("booking reimport start: %s %i\n", time.Now(), waitFor)
 				ImportAndProcessBookings(repository, year)
 				log.Printf("booking reimport end: %s\n", time.Now())
 			case err := <-watcher.Error:
