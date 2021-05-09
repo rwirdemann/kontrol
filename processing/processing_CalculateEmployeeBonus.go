@@ -27,8 +27,8 @@ func CalculateEmployeeBonus (as accountSystem.AccountSystem) accountSystem.Accou
 			bk := booking.Booking{
 				RowNr:       0,
 				Amount:      bonus,
-				Soll:		 "4120",
-				Haben: 		 "965",
+				Soll:		 		"4120",
+				Haben: 		 	"965",
 				Type:        booking.CC_Gehalt,
 				CostCenter:  sh.Id,
 				Text:        fmt.Sprintf("in kontrol kalkulierte Bonusrückstellung für %s in %d", sh.Id, util.Global.FinancialYear),
