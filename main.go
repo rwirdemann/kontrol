@@ -7,109 +7,123 @@ import (
 	"os"
 	"strconv"
 	"time"
-	"io/ioutil"
-	"encoding/json"
 
-	"bitbucket.org/rwirdemann/kontrol/account"
-
-	"bitbucket.org/rwirdemann/kontrol/processing"
+	"github.com/ahojsenn/kontrol/parser"
+	"github.com/ahojsenn/kontrol/processing"
+	"github.com/ahojsenn/kontrol/valueMagnets"
 
 	"log"
 
-	"bitbucket.org/rwirdemann/kontrol/handler"
-	"bitbucket.org/rwirdemann/kontrol/parser"
+	"github.com/ahojsenn/kontrol/accountSystem"
+	"github.com/ahojsenn/kontrol/handler"
+	"github.com/ahojsenn/kontrol/util"
 	"github.com/howeyc/fsnotify"
 	"github.com/rs/cors"
 )
 
-const DefaultBookingFile = "2017-Buchungen-KG - Buchungen 2017.csv"
+const DefaultBookingFile = "Buchungen-KG.csv"
 
 var (
-	fileName   string
 	githash    string
 	buildstamp string
-	certFile string
-	keyFile string
 )
 
-// environments and HTTPS certificate locations.
-type Environment struct {
-		Hostname string  `json:"hostname"`
-		CertFile string  `json:"certfile"`
-		KeyFile  string  `json:"keyfile"`
-}
-
-const port = 8991
-const httpsPort = 8992
-
-func getEnvironment() *Environment {
-    raw, err := ioutil.ReadFile("./httpsconfig.env")
-    if err != nil {
-        fmt.Println(err.Error())
-        os.Exit(1)
-    }
-		var environments []Environment
-		hostname := getHostname()
-		json.Unmarshal(raw, &environments)
-		for i := range environments {
-		    if environments[i].Hostname == hostname {
-		        // Found hostname
-						return &environments[i]
-		        break
-		    }
-		}
-		return nil
-}
-
-func getHostname() string {
-	hostname, err := os.Hostname()
-	if err != nil {
-		panic(err)
-	}
-	return hostname
-}
-
 func main() {
-	environment := getEnvironment()
-	log.Println ("Environment: ", environment.Hostname)
-	log.Println ("    keyfile: ", environment.CertFile)
-	log.Println ("   certfile: ", environment.KeyFile)
+	environment := util.GetEnv()
 	version := flag.Bool("version", false, "prints current kontrol version")
 	file := flag.String("file", DefaultBookingFile, "booking file")
-	year := flag.Int("year", 2017, "year to control")
-	certFile = *flag.String("certFile", environment.CertFile, "https certificate")
-	keyFile = *flag.String("keyFile", environment.KeyFile, "https key")
+	year := flag.Int("year", 2019, "year to control")
+	month := flag.String("month", "*", "month to control")
+	httpPort := flag.String("httpPort", "20171", "http server port")
+	httpsPort := flag.String("httpsPort", "20172", "https server port")
+	certFile := flag.String("certFile", environment.CertFile, "https certificate")
+	keyFile := flag.String("keyFile", environment.KeyFile, "https key")
 	flag.Parse()
+
 	if *version {
 		fmt.Printf("Build: %s Git: %s\n", buildstamp, githash)
 		os.Exit(0)
 	}
-	fileName = *file
+	util.Global.Filename = *file
 
-	repository := account.NewDefaultRepository()
-	watchBookingFile(repository, *year)
-	importAndProcessBookings(repository, *year)
+	log.SetFlags(0)
 
-	handler := cors.AllowAll().Handler(handler.NewRouter(githash, buildstamp, repository))
-	go func() {
-		fmt.Printf("listing on http://localhost:%d...\n", port)
-		log.Fatal(http.ListenAndServe(":"+strconv.Itoa(port), handler))
-	} ()
-	log.Println("    started http server... ")
-	// start HTTPS
-	log.Println("    starting https server \n    try https://localhost:"+strconv.Itoa(httpsPort)+"/kontrol/accounts")
-	log.Fatal(http.ListenAndServeTLS(":"+strconv.Itoa(httpsPort), certFile, keyFile, handler))
-}
-
-func importAndProcessBookings(repository account.Repository, year int) {
-	repository.ClearBookings()
-	bookings := parser.Import(fileName, year)
-	for _, p := range bookings {
-		processing.Process(repository, p)
+	// set FinancialYear & month
+	util.Global.FinancialYear = *year
+	util.Global.FinancialMonth = *month
+	bd, e := time.Parse("2006 01 02 15 04 05", strconv.Itoa(*year)+" 12 31 23 59 59")
+	if e != nil {
+		fmt.Println(e)
 	}
+	util.Global.BalanceDate = bd
+	fmt.Println("\n\n#############################################################")
+	log.Println("in main, util.Global.FinancialYear:", util.Global.FinancialYear,
+		"\n    BalanceDate=", util.Global.BalanceDate)
+	fmt.Println("#############################################################")
+
+	// set LiquidityNeed
+	util.Global.LiquidityNeed = valueMagnets.KommimtmentYear{}.Liqui(util.Global.FinancialYear)
+
+	as := accountSystem.NewDefaultAccountSystem()
+	ImportAndProcessBookings(as, *year)
+
+	watchBookingFile(as, *year, *month)
+	//ImportAndProcessBookings(as, *year, *month)
+
+	h1 := cors.AllowAll().Handler(handler.NewRouter(githash, buildstamp, as))
+
+	go func() {
+		fmt.Printf("listing on http://localhost:%s...\n", *httpPort)
+		log.Fatal(http.ListenAndServe(":"+*httpPort, h1))
+	}()
+	log.Println("started http server... ")
+
+	// start HTTPS
+	log.Println("starting https server	 \n  try https://localhost:" + *httpsPort + "/kontrol/accounts")
+	log.Fatal(http.ListenAndServeTLS(":"+*httpsPort, *certFile, *keyFile, h1))
 }
 
-func watchBookingFile(repository account.Repository, year int) {
+func ImportAndProcessBookings(as accountSystem.AccountSystem, year int) {
+	log.Println("in ImportAndProcessBookings...")
+	util.Global.Errors = nil
+
+	as.ClearBookings()
+	//	hauptbuch_allYears := as.GetCollectiveAccount_allYears()
+
+	hauptbuch_thisYear := as.GetCollectiveAccount_thisYear()
+
+	parser.Import(util.Global.Filename, year, as)
+	log.Println("in ImportAndProcessBookings, import done...")
+
+	// process all bookings from the general ledger
+	for _, bk := range hauptbuch_thisYear.Bookings {
+		processing.Process(as, bk)
+	}
+
+	// distribute revenues and costs to valueMagnets
+	// in this step only employees revenues will be booked to employee cost centers
+	// partners reneue will bi primarily booked to company account for this step
+	processing.Kostenerteilung(as)
+	processing.ErloesverteilungAnEmployees(as)
+	// now employee bonusses are calculated and booked
+	processing.CalculateEmployeeBonus(as)
+
+	// now (after employee bonusses are booked) calculate GuV and Bilanz
+	processing.GuV(as)
+	processing.Bilanz(as)
+
+	processing.ErloesverteilungAnKommanditisten(as)
+	// distribution profit among partners
+	processing.DistributeKTopf(as)
+	// calculate liquidity needs per partner
+	processing.BookLiquidityNeedToPartners(as, valueMagnets.KommimtmentYear{}.Liqui(util.Global.FinancialYear))
+	processing.BookAmountAtDisposition(as)
+
+	// procject Controlling
+	processing.GenerateProjectControlling(as)
+}
+
+func watchBookingFile(repository accountSystem.AccountSystem, year int, month string) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)
@@ -117,19 +131,33 @@ func watchBookingFile(repository account.Repository, year int) {
 
 	go func() {
 		for {
+
 			select {
-			case <-watcher.Event:
+			case event := <-watcher.Event:
+				// reset the timer if there are more events within the 3 seconds
+				// i.e. when the file ist still loading
+				log.Println("event:", event)
+				select {
+				case <-time.After(3 * time.Second):
+					fmt.Println("timeout 3 sec")
+				}
+				// there might be more than one server of this kind running on this server
+				// so wait for year mod 10 (seconds year %5)*5 seconds
+				waitFor := (util.Global.FinancialYear % 5) * 5.0
+				time.Sleep(time.Duration(waitFor)* time.Second)
 				log.Printf("booking reimport start: %s\n", time.Now())
-				importAndProcessBookings(repository, year)
+				ImportAndProcessBookings(repository, year)
 				log.Printf("booking reimport end: %s\n", time.Now())
 			case err := <-watcher.Error:
 				log.Println("error:", err)
 			}
+
 		}
 	}()
 
-	err = watcher.Watch(fileName)
+	err = watcher.Watch(util.Global.Filename)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 }

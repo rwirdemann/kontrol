@@ -5,13 +5,14 @@ import (
 	"net/http"
 	"sort"
 
-	"bitbucket.org/rwirdemann/kontrol/account"
-	"bitbucket.org/rwirdemann/kontrol/util"
+	"github.com/ahojsenn/kontrol/account"
+	"github.com/ahojsenn/kontrol/booking"
+	"github.com/ahojsenn/kontrol/util"
 	"github.com/gorilla/mux"
-	"bitbucket.org/rwirdemann/kontrol/booking"
+	"github.com/ahojsenn/kontrol/accountSystem"
 )
 
-func MakeGetAccountsHandler(repository account.Repository) http.HandlerFunc {
+func MakeGetAccountsHandler(repository accountSystem.AccountSystem) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		accounts := repository.All()
 		sort.Sort(account.ByOwner(accounts))
@@ -28,12 +29,12 @@ func MakeGetAccountsHandler(repository account.Repository) http.HandlerFunc {
 	}
 }
 
-func MakeGetAccountHandler(repository account.Repository) http.HandlerFunc {
+func MakeGetAccountHandler(as accountSystem.AccountSystem) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		accountId := vars["id"]
-		if a, ok := repository.Get(accountId); ok {
+		if a, ok := as.Get(accountId); ok {
 
 			// Check to filter account by costcenter
 			costcenter := r.URL.Query().Get("cs")
@@ -41,9 +42,8 @@ func MakeGetAccountHandler(repository account.Repository) http.HandlerFunc {
 				a = a.FilterBookingsByCostcenter(costcenter)
 			}
 
-			a.UpdateSaldo()
 			w.Header().Set("Content-Type", "application/json")
-			sort.Sort(booking.ByMonth(a.Bookings))
+			sort.Sort(booking.ByRowNr(a.Bookings))
 			json := util.Json(a)
 			fmt.Fprintf(w, json)
 		} else {

@@ -1,0 +1,346 @@
+[
+  {
+    "Abrechenzeitpunkt": "2016-12-31",
+    "Liquiditaetsbedarf": "42.23",
+    "Kommitmenschen": [
+      {
+        "Id": "AN",
+        "Name": "k: Anke Nehrenberg",
+        "Type": "Partner",
+        "Arbeit": "1",
+        "Fairshares": "0.33333"
+      },
+      {
+        "Id": "RW",
+        "Name": "k: Ralf Wirdemann",
+        "Type": "Partner",
+        "Arbeit": "1",
+        "Fairshares": "0.33333"
+      },
+      {
+        "Id": "JM",
+        "Name": "k: Johannes Mainusch",
+        "Type": "Partner",
+        "Arbeit": "1",
+        "Fairshares": "0.33333"
+      },
+      {
+        "Id": "BW",
+        "Name": "k: Benjamin Wiedenmann",
+        "Type": "Employee",
+        "Arbeit": "0"
+      },
+      {
+        "Id": "KR",
+        "Name": "k: Katja Roth",
+        "Type": "Employee",
+        "Arbeit": "0"
+      },
+      {
+        "Id": "IK",
+        "Name": "k: Ingo Komorowski",
+        "Type": "Employee",
+        "Arbeit": "0"
+      }
+    ]
+  },
+  {
+    "Abrechenzeitpunkt": "2017-12-31",
+    "Kommitmenschen": [
+      {
+        "Id": "AN",
+        "Name": "k: Anke Nehrenberg",
+        "Type": "Partner",
+        "Arbeit": "1",
+        "Fairshares": "0.33333"
+      },
+      {
+        "Id": "RW",
+        "Name": "k: Ralf Wirdemann",
+        "Type": "Partner",
+        "Arbeit": "1",
+        "Fairshares": "0.33333"
+      },
+      {
+        "Id": "JM",
+        "Name": "k: Johannes Mainusch",
+        "Type": "Partner",
+        "Arbeit": "1",
+        "Fairshares": "0.33333"
+      },
+      {
+        "Id": "BW",
+        "Name": "k: Benjamin Wiedenmann",
+        "Type": "Employee",
+        "Arbeit": "0"
+      },
+      {
+        "Id": "KR",
+        "Name": "k: Katja Roth",
+        "Type": "Employee",
+        "Arbeit": "0"
+      },
+      {
+        "Id": "IK",
+        "Name": "k: Ingo Komorowski",
+        "Type": "Employee",
+        "Arbeit": "0"
+      }
+    ]
+  },
+  {
+    "Abrechenzeitpunkt": "2018-12-31",
+    "Liquiditaetsbedarf": "150000.0",
+    "Kommitmenschen": [
+      {
+        "Id": "AN",
+        "Name": "k: Anke Nehrenberg",
+        "Type": "Partner",
+        "Arbeit": "1.00",
+        "Fairshares": "0.437857143"
+      },
+      {
+        "Id": "RW",
+        "Name": "k: Ralf Wirdemann",
+        "Type": "Partner",
+        "Arbeit": "0.5",
+        "Fairshares": "0.0"
+      },
+      {
+        "Id": "JM",
+        "Name": "k: Johannes Mainusch",
+        "Type": "Partner",
+        "Arbeit": "1.00",
+        "Fairshares": "0.437857143"
+      },
+      {
+        "Id": "BW",
+        "Name": "k: Benjamin Wiedenmann",
+        "Type": "Partner",
+        "Arbeit": "1.00",
+        "Fairshares": "0.12428571"
+      },
+      {
+        "Id": "KR",
+        "Name": "k: Katja Roth",
+        "Type": "Employee",
+        "Arbeit": "0.75"
+      },
+      {
+        "Id": "AB",
+        "Name": "k: Anna Blume",
+        "Type": "Employee",
+        "Arbeit": "0.25"
+      },
+      {
+        "Id": "IK",
+        "Name": "k: Ingo Komorowski",
+        "Type": "Employee",
+        "Arbeit": "0.41666"
+      }
+    ]
+  },
+  {
+    "Abrechenzeitpunkt": "2019-12-31",
+    "Liquiditaetsbedarf": "150000.0",
+    "Kommitmenschen": [
+      {
+        "Id": "AN",
+        "Name": "k: Anke Nehrenberg",
+        "Type": "Partner",
+        "Arbeit": "1.00",
+        "Fairshares": "0.413"
+      },
+      {
+        "Id": "RW",
+        "Name": "k: Ralf Wirdemann",
+        "Type": "Extern",
+        "Arbeit": "1.00"
+      },
+      {
+        "Id": "JM",
+        "Name": "k: Johannes Mainusch",
+        "Type": "Partner",
+        "Arbeit": "1.00",
+        "Fairshares": "0.413"
+      },
+      {
+        "Id": "BW",
+        "Name": "k: Benjamin Wiedenmann",
+        "Type": "Partner",
+        "Arbeit": "1.00",
+        "Fairshares": "0.174"
+      },
+      {
+        "Id": "KR",
+        "Name": "k: Katja Roth",
+        "Type": "Employee",
+        "Arbeit": "1.00"
+      },
+      {
+        "Id": "AB",
+        "Name": "k: Anna Blume",
+        "Type": "Employee",
+        "Arbeit": "1.00"
+      },
+      {
+        "Id": "CS",
+        "Name": "k: Christine Schlott",
+        "Type": "Employee",
+        "Arbeit": "0.41666"
+      },
+      {
+        "Id": "IK",
+        "Name": "k: Ingo Komorowski",
+        "Type": "Employee",
+        "Arbeit": "1.00"
+      },
+      {
+        "Id": "SR",
+        "Name": "k: Sven Röpstorff",
+        "Type": "Employee",
+        "Arbeit": "0.50"
+      }
+    ]
+  },
+  {
+    "Abrechenzeitpunkt": "2020-12-31",
+    "Liquiditaetsbedarf": "150000.0",
+    "Kommitmenschen": [
+      {
+        "Id": "AN",
+        "Name": "k: Anke Nehrenberg",
+        "Type": "Partner",
+        "Arbeit": "1.00",
+        "Fairshares": "0.3996"
+      },
+      {
+        "Id": "JM",
+        "Name": "k: Johannes Mainusch",
+        "Type": "Partner",
+        "Arbeit": "1.00",
+        "Fairshares": "0.3996"
+      },
+      {
+        "Id": "BW",
+        "Name": "k: Benjamin Wiedenmann",
+        "Type": "Partner",
+        "Arbeit": "1.00",
+        "Fairshares": "0.2008"
+      },
+      {
+        "Id": "AB",
+        "Name": "k: Anna Blume",
+        "Type": "Employee",
+        "Arbeit": "1.00"
+      },
+      {
+        "Id": "CS",
+        "Name": "k: Christine Schlott",
+        "Type": "Employee",
+        "Arbeit": "1.00"
+      },
+      {
+        "Id": "SR",
+        "Name": "k: Sven Röpstorff",
+        "Type": "Employee",
+        "Arbeit": "1.00"
+      },
+      {
+        "Id": "MH",
+        "Name": "k: Michael Häussler",
+        "Type": "Employee",
+        "Arbeit": "0.75"
+      },
+      {
+        "Id": "JK",
+        "Name": "k: Jost Künzel",
+        "Type": "Employee",
+        "Arbeit": "0.666"
+      },
+      {
+        "Id": "MG",
+        "Name": "k: Michael Gallus",
+        "Type": "Employee",
+        "Arbeit": "0.25"
+      },
+      {
+        "Id": "TB",
+        "Name": "k: Thomas Boehlefeld",
+        "Type": "Employee",
+        "Arbeit": "0.25"
+      }
+    ]
+  },
+  {
+    "Abrechenzeitpunkt": "2021-12-31",
+    "Liquiditaetsbedarf": "150000.0",
+    "Kommitmenschen": [
+      {
+        "Id": "AN",
+        "Name": "k: Anke Nehrenberg",
+        "Type": "Partner",
+        "Arbeit": "1.00",
+        "Fairshares": "0.355"
+      },
+      {
+        "Id": "JM",
+        "Name": "k: Johannes Mainusch",
+        "Type": "Partner",
+        "Arbeit": "1.00",
+        "Fairshares": "0.355"
+      },
+      {
+        "Id": "BW",
+        "Name": "k: Benjamin Wiedenmann",
+        "Type": "Partner",
+        "Arbeit": "1.00",
+        "Fairshares": "0.1933"
+      },
+      {
+        "Id": "AB",
+        "Name": "k: Anna Blume",
+        "Type": "Employee",
+        "Arbeit": "1.00"
+      },
+      {
+        "Id": "SR",
+        "Name": "k: Sven Röpstorff",
+        "Type": "Partner",
+        "Arbeit": "1.00",
+        "Fairshares": "0.04833"
+      },
+      {
+        "Id": "MH",
+        "Name": "k: Michael Häussler",
+        "Type": "Partner",
+        "Arbeit": "1.00",
+        "Fairshares": "0.04833"
+      },
+      {
+        "Id": "JK",
+        "Name": "k: Jost Künzel",
+        "Type": "Employee",
+        "Arbeit": "1.00"
+      },
+      {
+        "Id": "MG",
+        "Name": "k: Michael Gallus",
+        "Type": "Employee",
+        "Arbeit": "1.00"
+      },
+      {
+        "Id": "TB",
+        "Name": "k: Thomas Boehlefeld",
+        "Type": "Employee",
+        "Arbeit": "1.00"
+      },
+      {
+        "Id": "FL",
+        "Name": "k: Faton Lekaj",
+        "Type": "Employee",
+        "Arbeit": "0.8333"
+      }
+    ]
+  }
+]

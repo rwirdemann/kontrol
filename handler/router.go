@@ -1,19 +1,34 @@
 package handler
 
 import (
-	"bitbucket.org/rwirdemann/kontrol/account"
-	"github.com/gorilla/mux"
-	"bitbucket.org/rwirdemann/kontrol/middleware"
 	"io/ioutil"
+
+	"github.com/ahojsenn/kontrol/accountSystem"
+	jwt_notimpl "github.com/ahojsenn/kontrol/jwt-notimpl"
+	"github.com/gorilla/mux"
 )
 
-func NewRouter(githash string, buildstamp string, repository account.Repository) *mux.Router {
+// NewRouter ...
+func NewRouter(githash string, buildstamp string, as accountSystem.AccountSystem) *mux.Router {
 	r := mux.NewRouter()
 	key := keycloakRSAPub()
-	r.HandleFunc("/kontrol/version", middleware.JWTMiddleware(key, MakeVersionHandler(githash, buildstamp)))
-	r.HandleFunc("/kontrol/bankaccount", middleware.JWTMiddleware(key, MakeGetBankAccountHandler(repository)))
-	r.HandleFunc("/kontrol/accounts", MakeGetAccountsHandler(repository))
-	r.HandleFunc("/kontrol/accounts/{id}", MakeGetAccountHandler(repository))
+
+	r.HandleFunc("/kontrol/version", jwt_notimpl.JWTMiddleware(key, MakeVersionHandler(githash, buildstamp)))
+	r.HandleFunc("/kontrol/stakeholder", MakeGetStakeholderHandler())
+	r.HandleFunc("/kontrol/stakeholder/{year}", MakeGetStakeholderHandler())
+	r.HandleFunc("/kontrol/errors", MakeGetErrorHandler(as))
+	r.HandleFunc("/kontrol/collectiveaccount", MakeGetCollectiveAccountHandler(as))
+	r.HandleFunc("/kontrol/collectiveaccount/{year}", MakeGetCollectiveAccountHandler(as))
+	r.HandleFunc("/kontrol/collectiveaccount/{year}/{month}", MakeGetCollectiveAccountHandler(as))
+	r.HandleFunc("/kontrol/bilanz", MakeGetBilanzAccountsHandler(as))
+	r.HandleFunc("/kontrol/GuV", MakeGetGuVAccountsHandler(as))
+	r.HandleFunc("/kontrol/kommitmenschenaccounts", MakeGetKommitmenschenAccountsHandler(as))
+	r.HandleFunc("/kontrol/kommitmenschenaccounts/{id}", MakeGetKommitmenschenAccountsHandler(as))
+	r.HandleFunc("/kontrol/accounts", MakeGetAccountsHandler(as))
+	r.HandleFunc("/kontrol/accounts/{id}", MakeGetAccountHandler(as))
+	r.HandleFunc("/kontrol/projects", MakeGetProjectsHandler(as))
+	r.HandleFunc("/kontrol/health", MakeGetHealthHandler(as))
+
 	return r
 }
 

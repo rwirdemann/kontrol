@@ -1,104 +1,100 @@
 package processing
 
 import (
-	"bitbucket.org/rwirdemann/kontrol/account"
-	"bitbucket.org/rwirdemann/kontrol/booking"
-	"bitbucket.org/rwirdemann/kontrol/owner"
+	"time"
+
+	"github.com/ahojsenn/kontrol/accountSystem"
+	"github.com/ahojsenn/kontrol/booking"
+	"github.com/ahojsenn/kontrol/util"
 )
 
 type BookAusgangsrechnungCommand struct {
-	Booking    booking.Booking
-	Repository account.Repository
+	Booking   booking.Booking
+	AccSystem accountSystem.AccountSystem
 }
 
 func (this BookAusgangsrechnungCommand) run() {
-	benefitees := this.stakeholderWithNetPositions()
-	for _, benefited := range benefitees {
 
-		if benefited.Type == owner.StakeholderTypePartner {
+	// if booking with empty timestamp in position "BankCreated"
+	// then book it to open positions SKR03_1400
+	//
+	// the same
+	// if booking is beyond the current financial year / balance date, then book to SKR 1400
+	// "Forderungen aus Lieferung und Leistung"
+	// and from that to bank... || this.isBeyondBudgetDate()
 
-			// book partner share
-			b := booking.Booking{
-				Amount: this.Booking.Net[benefited] * owner.PartnerShare,
-				Type:   booking.Nettoanteil,
-				Text:   this.Booking.Text + "#NetShare#" + benefited.Id,
-				Month:  this.Booking.Month,
-				Year:   this.Booking.Year}
-			a, _ := this.Repository.Get(benefited.Id)
-			a.Book(b)
-
-			// book kommitment share
-			kommitmentShare := booking.Booking{
-				Amount: this.Booking.Net[benefited] * owner.KommmitmentShare,
-				Type:   booking.Kommitmentanteil,
-				Text:   this.Booking.Text + "#Kommitment#" + benefited.Id,
-				Month:  this.Booking.Month,
-				Year:   this.Booking.Year}
-
-			kommitmentAccount, _ := this.Repository.Get(owner.StakeholderKM.Id)
-			kommitmentAccount.Book(kommitmentShare)
-		}
-
-		if benefited.Type == owner.StakeholderTypeExtern {
-
-			// book kommitment share
-			kommitmentShare := booking.Booking{
-				Amount: this.Booking.Net[benefited] * owner.KommmitmentExternShare,
-				Type:   booking.Kommitmentanteil,
-				Text:   this.Booking.Text + "#Kommitment#" + benefited.Id,
-				Month:  this.Booking.Month,
-				Year:   this.Booking.Year}
-			kommitmentAccount, _ := this.Repository.Get(owner.StakeholderKM.Id)
-			kommitmentAccount.Book(kommitmentShare)
-		}
-
-		if benefited.Type == owner.StakeholderTypeEmployee {
-
-			// book kommitment share
-			kommitmentShare := booking.Booking{
-				Amount:     this.Booking.Net[benefited] * owner.KommmitmentEmployeeShare,
-				Type:       booking.Kommitmentanteil,
-				Text:       this.Booking.Text,
-				Month:      this.Booking.Month,
-				Year:       this.Booking.Year,
-				CostCenter: benefited.Id}
-			kommitmentAccount, _ := this.Repository.Get(owner.StakeholderKM.Id)
-			kommitmentAccount.Book(kommitmentShare)
-		}
-
-		// Die Vertriebsprovision bekommt entweder ein Partner, oder wird dem K-Account gut geschrieben.
-		// Letzters, wenn der Vertriebserfolg einem Angestellten zuzuordnen ist. In diesem Fall wird die
-		// Kostenstelle auf die Id des Angestellten gesetzt, so dass die Gutschrift diesem zugeordnet
-		// werden kann.
-		var provisionAccount *account.Account
-		var costcenter string
-		stakeholderRepository := owner.StakeholderRepository{}
-		if stakeholderRepository.TypeOf(this.Booking.Responsible) == owner.StakeholderTypeEmployee {
-			provisionAccount, _ = this.Repository.Get(owner.StakeholderKM.Id)
-			costcenter = this.Booking.Responsible
-		} else {
-			provisionAccount, _ = this.Repository.Get(this.Booking.Responsible)
-		}
-		b := booking.Booking{
-			Amount:     this.Booking.Net[benefited] * owner.PartnerProvision,
-			Type:       booking.Vertriebsprovision,
-			Text:       this.Booking.Text + "#Provision#" + benefited.Id,
-			Month:      this.Booking.Month,
-			Year:       this.Booking.Year,
-			CostCenter: costcenter}
-		provisionAccount.Book(b)
+	sollAccId := ""
+	switch {
+	case this.Booking.IsOpenPosition():
+		sollAccId = accountSystem.SKR03_1400.Id
+		// this.Booking.Text = "Achtung OPOS: "+this.Booking.Text
+	case this.Booking.IsBeyondBudgetDate():
+		sollAccId = accountSystem.SKR03_1400.Id
+		// this.Booking.Text = "OPOS at BalanceDate: "+this.Booking.Text
+	default:
+		// book from bankaccount...
+		sollAccId = accountSystem.SKR03_1200.Id
 	}
+
+	sollkto, _ := this.AccSystem.Get(sollAccId)
+	a := booking.Booking{
+		RowNr:            this.Booking.RowNr,
+		Amount:           -this.Booking.Amount,
+		Project:          this.Booking.Project,
+		Type:             booking.Erloese,
+		Text:             this.Booking.Text,
+		Month:            this.Booking.Month,
+		Year:             this.Booking.Year,
+		FileCreated:      this.Booking.FileCreated,
+		BankCreated:      this.Booking.BankCreated,
+		CsvBookingExtras: this.Booking.CsvBookingExtras,
+	}
+	sollkto.Book(a)
+
+	// haben umsatzerloese
+	umsatzerloese, _ := this.AccSystem.Get(accountSystem.SKR03_Umsatzerloese.Id)
+	b := booking.Booking{
+		RowNr:            this.Booking.RowNr,
+		CostCenter:       this.Booking.CostCenter,
+		Project:          this.Booking.Project,
+		Amount:           util.Net2020(this.Booking.Amount, this.Booking.Year, this.Booking.Month),
+		Type:             booking.Erloese,
+		Text:             this.Booking.Text,
+		Month:            this.Booking.Month,
+		Year:             this.Booking.Year,
+		FileCreated:      this.Booking.FileCreated,
+		BankCreated:      this.Booking.BankCreated,
+		CsvBookingExtras: this.Booking.CsvBookingExtras,
+	}
+	umsatzerloese.Book(b)
+
+	// haben Steuern
+	umsatzsteuernKonto, _ := this.AccSystem.Get(accountSystem.SKR03_Umsatzsteuer.Id)
+	c :=
+		booking.Booking{
+			RowNr:            this.Booking.RowNr,
+			Amount:           this.Booking.Amount - util.Net2020(this.Booking.Amount, this.Booking.Year, this.Booking.Month),
+			CostCenter:       this.Booking.CostCenter,
+			Project:          this.Booking.Project,
+			Type:             booking.Erloese,
+			Text:             this.Booking.Text,
+			Month:            this.Booking.Month,
+			Year:             this.Booking.Year,
+			FileCreated:      this.Booking.FileCreated,
+			BankCreated:      this.Booking.BankCreated,
+			CsvBookingExtras: this.Booking.CsvBookingExtras,
+		}
+	umsatzsteuernKonto.Book(c)
+
 }
 
-// Eine Buchung kann mehrere Nettopositionen enthalten, den je einem Stakeholder zugeschrieben wird.
-// Diese Funktion liefert ein Array mit Stateholder, deren Nettoanteil in der Buchung > 0 ist.
-func (this BookAusgangsrechnungCommand) stakeholderWithNetPositions() []owner.Stakeholder {
-	var result []owner.Stakeholder
+// is this an Open Position?
+func (this BookAusgangsrechnungCommand) isOpenPosition() bool {
+	emptyTime := time.Time{}
+	return this.Booking.BankCreated == emptyTime
+}
 
-	for k, v := range this.Booking.Net {
-		if v > 0 {
-			result = append(result, k)
-		}
-	}
-	return result
+// ist this booking beyond the budget date?
+func (this BookAusgangsrechnungCommand) isBeyondBudgetDate() bool {
+	return this.Booking.BankCreated.After(util.Global.BalanceDate)
 }

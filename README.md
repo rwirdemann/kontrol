@@ -1,13 +1,21 @@
 # Kontrol Backend
 
 ## Konfiguration
-Damit HTTPS funktioniert müssen Zertifikate hinterlegt sein und der Ort, wo diese sich auf dem Server befinden müssen in **environments.json** eingetragen sein.
+Damit HTTPS funktioniert müssen Zertifikate hinterlegt sein und der Ort, wo diese sich auf dem Server befinden müssen in **./httpsconfig.env** eingetragen sein.
+
+## HTTPS
+Use the following to generate your test cetificates (or similar)
+    #!/bin/bash
+    #
+    openssl req -nodes -x509 -newkey rsa:4096 \
+      -keyout privkey.pem \
+      -out fullchain.pem \
+      -days 365 \
+      -subj "/C=DE/ST=Hamburg/L=Hamburg/O=kommitment/OU=kommitment/CN=localhost/emailAddress=johannes.mainusch@kommitment.biz"
 
 ## Todos
 
-* Deployment automatisieren
-* Excel Dartei regelmäßg abholen und parsen
-* Vertriebsprovision für Angestellte auf deren Accounts buchen
+* werden in moday gepflegt: [https://kommitment.monday.com/boards/101064786/pulses/121382210]{https://kommitment.monday.com/boards/101064786/pulses/121382210}
 
 ## API
 
@@ -15,15 +23,15 @@ Damit HTTPS funktioniert müssen Zertifikate hinterlegt sein und der Ort, wo die
 
 Aktuelle Version.
 
-### GET http://localhost:8991/kontrol/bankaccount
+### GET http://localhost:8991/kontrol/collectiveaccount
 
-Das Bankkonto inkl. Buchungen.
+hier liegen alle Buchungen, das ist also das Hauptbuch...
 
 ```
 {
     "Owner": {
-        "Name": "Kommitment GmbH & Co. KG",
-        "Type": "bank"
+        "Name": "alle Buchungen",
+        "Type": "all"
     },
     "Bookings": [
         {

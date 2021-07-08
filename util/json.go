@@ -13,6 +13,17 @@ func Json(entities interface{}) string {
 		json := fmt.Sprintf("%s", string(b[:]))
 		return json
 	}
-	log.Fatal(err)
+	log.Fatal("in Json: ", err, entities)
+	return ""
+}
+
+func DeepJson(entities interface{}) string {
+	var b []byte
+	var err error
+	if b, err = json.Marshal(entities); err == nil {
+		json := fmt.Sprintf("%s", string(b[:]))
+		return json
+	}
+	log.Fatal("in Json: ", err, entities)
 	return ""
 }

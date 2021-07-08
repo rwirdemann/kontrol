@@ -6,66 +6,133 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"strconv"
 	"strings"
 	"time"
 
-	"bitbucket.org/rwirdemann/kontrol/booking"
-	"bitbucket.org/rwirdemann/kontrol/owner"
+	"github.com/ahojsenn/kontrol/accountSystem"
+	"github.com/ahojsenn/kontrol/util"
+	"github.com/ahojsenn/kontrol/valueMagnets"
+
+	"github.com/ahojsenn/kontrol/booking"
 )
 
 // Beschreibt, dass die netto (Rechnungs-)Position in Spalte X der CSV-Datei dem Stakeholder Y gehört
 var netBookings = []struct {
-	Owner  owner.Stakeholder
+	Owner  string
 	Column int
 }{
-	{Owner: owner.StakeholderRW, Column: 21},
-	{Owner: owner.StakeholderAN, Column: 20},
-	{Owner: owner.StakeholderJM, Column: 22},
-	{Owner: owner.StakeholderBW, Column: 19},
-	{Owner: owner.StakeholderEX, Column: 23},
+	{Owner: "BW", Column: 11},
+	{Owner: "AN", Column: 12},
+	{Owner: "RW", Column: 13},
+	{Owner: "JM", Column: 14},
+	{Owner: "KR", Column: 15},
+	{Owner: "IK", Column: 16},
+	{Owner: "SR", Column: 17},
+	{Owner: "MH", Column: 18},
+	{Owner: "JK", Column: 19},
+	{Owner: "EX", Column: 20},
+	{Owner: "RR", Column: 21},
 }
 
-func Import(file string, aYear int) []booking.Booking {
-	var positions []booking.Booking
+type headerItem = struct {
+	Description string
+	Column      int
+}
+
+var header_basics = []headerItem{}
+var header_stakeholder = []headerItem{}
+
+func Import(file string, aYear int, as accountSystem.AccountSystem) {
+	imported := 0
+	hauptbuch_thisYear := as.GetCollectiveAccount_thisYear()
+	hauptbuch_allYears := as.GetCollectiveAccount_allYears()
+	hauptbuch_thisYear.Bookings = nil
+	hauptbuch_allYears.Bookings = nil
+	if file == "" {
+		util.Global.Errors = append(util.Global.Errors, "in Import, no file provided...")
+		log.Println("ERROR: in Import, no file provided...")
+	}
 
 	if f, err := openCsvFile(file); err == nil {
 		r := csv.NewReader(bufio.NewReader(f))
+		rownr := 0
+
 		for {
+			rownr++
 			record, err := r.Read()
 			if err == io.EOF {
 				break
 			}
+			// log.Println("in Import, reading line ", rownr)
 
+			/*			if isHeader(record[0]) {
+							continue
+						}
+			*/
 			if isHeader(record[0]) {
+				//log.Println("in Import, read header")
+				var hi headerItem
+				for i, s := range record {
+					hi.Column = i
+					hi.Description = s
+					if i < 11 {
+						header_basics = append(header_basics, hi)
+					} else {
+						header_stakeholder = append(header_stakeholder, hi)
+					}
+				}
+				//log.Println("in Import, read header", header_basics, header_stakeholder)
 				continue
 			}
 
 			if isValidBookingType(record[0]) {
 				typ := record[0]
-				cs := record[1]
-				subject := strings.Replace(record[2], "\n", ",", -1)
-				amount := parseAmount(record[3])
-				year, month := parseMonth(record[4])
-				fileCreated := parseFileCreated(record[5])
+				soll := record[1]
+				haben := record[2]
+				cs := strings.Replace(record[3], " ", "", -1) // suppress whitespace
+				project := sanitizeMyString(record[4])
+				subject := sanitizeMyString(record[5])
+				amount := parseAmount(record[6], rownr)
+				year, month := parseMonth(record[7])
+				bankCreated := parseFileCreated(record[8])
+				imported++
+				//m := make(map[valueMagnets.Stakeholder]float64)
+				m := make(map[string]float64)
+				// now loop over columns with personal revenues of all stakeholders...
+				shrepo := valueMagnets.Stakeholder{}
+
+				// loop over columns until header column is empty
+				for _, p := range header_stakeholder {
+					//
+					stakeholder := shrepo.Get(p.Description).Id
+					m[stakeholder] = parseAmount(record[p.Column], rownr)
+				}
+				bkng := booking.NewBooking(rownr, typ, soll, haben, cs, project, m, amount, subject, month, year, bankCreated)
+
+				//				log.Println ("in Immport, ", imported, year, bkng)
+
+				hauptbuch_allYears.Bookings = append(hauptbuch_allYears.Bookings, *bkng)
+
 				if year == aYear {
-					m := make(map[owner.Stakeholder]float64)
-					for _, p := range netBookings {
-						m[p.Owner] = parseAmount(record[p.Column])
-					}
-					position := booking.NewBooking(typ, cs, m, amount, subject, month, year, fileCreated)
-					positions = append(positions, *position)
+					hauptbuch_thisYear.Bookings = append(hauptbuch_thisYear.Bookings, *bkng)
+				} else {
+					// log.Println ("in Immport, ", year, " is not in	 period ", aYear, rownr)
 				}
 			} else {
-				fmt.Printf("unknown booking type '%s'\n", record[0])
+				err := fmt.Sprintf("unknown booking type '%s' in row '%d'\n", record[0], rownr)
+				util.Global.Errors = append(util.Global.Errors, err)
+				fmt.Printf(err)
 			}
 		}
 	} else {
+		fmt.Println("file not found", file)
 		panic(err)
 	}
-
-	return positions
+	log.Printf("in Import, imported %d rows from %s", imported, file)
+	return
 }
 
 func isHeader(s string) bool {
@@ -81,7 +148,7 @@ func isValidBookingType(s string) bool {
 	return false
 }
 
-func parseAmount(amount string) float64 {
+func parseAmount(amount string, rownr int) float64 {
 	amount = strings.Trim(amount, " ")
 	if amount == "" {
 		return 0
@@ -98,6 +165,9 @@ func parseAmount(amount string) float64 {
 	if a, err := strconv.ParseFloat(s, 64); err == nil {
 		return a
 	} else {
+		e := fmt.Sprintf("in parseAmount: parsing error '%s' on amount '%s' in line %d\n", err, amount, rownr)
+		util.Global.Errors = append(util.Global.Errors, e)
+		fmt.Printf(e)
 		return 0
 	}
 }
@@ -107,8 +177,18 @@ func parseMonth(yearMonth string) (int, int) {
 		return 0, 0
 	}
 	s := strings.Split(yearMonth, "-")
-	y, _ := strconv.Atoi(s[0])
-	m, _ := strconv.Atoi(s[1])
+	if len(s) < 2 {
+		util.Global.Errors = append(util.Global.Errors, "in parseMonth, something went wrong with this entry")
+		log.Fatal("in parseMonth, something went wrong with this entry", s)
+	}
+	y, err := strconv.Atoi(s[0])
+	if err != nil {
+		log.Fatal("ERROR in parseMonth, ", err)
+	}
+	m, err := strconv.Atoi(s[1])
+	if err != nil {
+		log.Fatal("ERROR in parseMonth, ", err)
+	}
 	return y, m
 }
 
@@ -131,13 +211,23 @@ func openCsvFile(fileName string) (*os.File, error) {
 		return file, nil
 	}
 
-	// Open file from GOPATH
-	gopath := os.Getenv("GOPATH")
-	if gopath != "" {
-		if file, err := os.Open(gopath + "/src/bitbucket.org/rwirdemann/kontrol/" + fileName); err == nil {
-			return file, nil
+	/*
+		// Open file from GOPATH
+		gopath := os.Getenv("GOPATH")
+		if gopath != "" {
+			if file, err := os.Open(gopath + "/src/github.com/ahojsenn/kontrol/" + fileName); err == nil {
+				return file, nil
+			}
 		}
-	}
+	*/
 
 	return nil, errors.New("could not open " + fileName)
+}
+
+func sanitizeMyString(in string) string {
+	out := in
+	//	out = strings.Replace(out, "/", "-", -1)
+	out = strings.Replace(out, "\n", ",", -1)
+	out = strings.Replace(out, "%", "Prozent", -1)
+	return out
 }

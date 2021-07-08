@@ -3,7 +3,7 @@ package processing
 import (
 	"errors"
 
-	"bitbucket.org/rwirdemann/kontrol/booking"
+	"github.com/ahojsenn/kontrol/booking"
 )
 
 func findBookingByText(bookings []booking.Booking, text string) (*booking.Booking, error) {
