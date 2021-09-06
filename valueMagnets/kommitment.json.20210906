@@ -2,37 +2,6 @@
   {
     "Abrechenzeitpunkt": "2016-12-31",
     "Liquiditaetsbedarf": "42.23",
-    "Vertriebsprovision": 0.05,
-    "AngestelltenUmsatzAnteil": 0.7,
-    "Kommitmenschen": [
-      {
-        "Id": "AN",
-        "Name": "k: Anke Nehrenberg",
-        "Type": "Partner",
-        "Arbeit": "1",
-        "Fairshares": "0.33333"
-      },
-      {
-        "Id": "RW",
-        "Name": "k: Ralf Wirdemann",
-        "Type": "Partner",
-        "Arbeit": "1",
-        "Fairshares": "0.33333"
-      },
-      {
-        "Id": "JM",
-        "Name": "k: Johannes Mainusch",
-        "Type": "Partner",
-        "Arbeit": "1",
-        "Fairshares": "0.33333"
-      }
-    ]
-  },
-  {
-    "Abrechenzeitpunkt": "2017-12-31",
-    "Liquiditaetsbedarf": "150000.0",
-    "Vertriebsprovision": 0.05,
-    "AngestelltenUmsatzAnteil": 0.7,
     "Kommitmenschen": [
       {
         "Id": "AN",
@@ -59,16 +28,69 @@
         "Id": "BW",
         "Name": "k: Benjamin Wiedenmann",
         "Type": "Employee",
-        "Arbeit": "0.5",
-        "Fairshares": "0"
+        "Arbeit": "0"
+      },
+      {
+        "Id": "KR",
+        "Name": "k: Katja Roth",
+        "Type": "Employee",
+        "Arbeit": "0"
+      },
+      {
+        "Id": "IK",
+        "Name": "k: Ingo Komorowski",
+        "Type": "Employee",
+        "Arbeit": "0"
+      }
+    ]
+  },
+  {
+    "Abrechenzeitpunkt": "2017-12-31",
+    "Kommitmenschen": [
+      {
+        "Id": "AN",
+        "Name": "k: Anke Nehrenberg",
+        "Type": "Partner",
+        "Arbeit": "1",
+        "Fairshares": "0.33333"
+      },
+      {
+        "Id": "RW",
+        "Name": "k: Ralf Wirdemann",
+        "Type": "Partner",
+        "Arbeit": "1",
+        "Fairshares": "0.33333"
+      },
+      {
+        "Id": "JM",
+        "Name": "k: Johannes Mainusch",
+        "Type": "Partner",
+        "Arbeit": "1",
+        "Fairshares": "0.33333"
+      },
+      {
+        "Id": "BW",
+        "Name": "k: Benjamin Wiedenmann",
+        "Type": "Employee",
+        "Arbeit": "0"
+      },
+      {
+        "Id": "KR",
+        "Name": "k: Katja Roth",
+        "Type": "Employee",
+        "Arbeit": "0"
+      },
+      {
+        "Id": "IK",
+        "Name": "k: Ingo Komorowski",
+        "Type": "Employee",
+        "Arbeit": "0"
       }
     ]
   },
   {
     "Abrechenzeitpunkt": "2018-12-31",
     "Liquiditaetsbedarf": "150000.0",
-    "Vertriebsprovision": 0.05,
-    "AngestelltenUmsatzAnteil": 0.7,
     "Kommitmenschen": [
       {
         "Id": "AN",
@@ -102,30 +124,25 @@
         "Id": "KR",
         "Name": "k: Katja Roth",
         "Type": "Employee",
-        "Arbeit": "0.75",
-        "Fairshares": "0"
+        "Arbeit": "0.75"
       },
       {
         "Id": "AB",
         "Name": "k: Anna Blume",
         "Type": "Employee",
-        "Arbeit": "0.25",
-        "Fairshares": "0"
+        "Arbeit": "0.25"
       },
       {
         "Id": "IK",
         "Name": "k: Ingo Komorowski",
         "Type": "Employee",
-        "Arbeit": "0.41666",
-        "Fairshares": "0"
+        "Arbeit": "0.41666"
       }
     ]
   },
   {
     "Abrechenzeitpunkt": "2019-12-31",
     "Liquiditaetsbedarf": "150000.0",
-    "Vertriebsprovision": 0.05,
-    "AngestelltenUmsatzAnteil": 0.7,
     "Kommitmenschen": [
       {
         "Id": "AN",
@@ -138,8 +155,7 @@
         "Id": "RW",
         "Name": "k: Ralf Wirdemann",
         "Type": "Extern",
-        "Arbeit": "1.00",
-        "Fairshares": "0"
+        "Arbeit": "1.00"
       },
       {
         "Id": "JM",
@@ -159,58 +175,49 @@
         "Id": "KR",
         "Name": "k: Katja Roth",
         "Type": "Employee",
-        "Arbeit": "1.00",
-        "Fairshares": "0"
+        "Arbeit": "1.00"
       },
       {
         "Id": "AB",
         "Name": "k: Anna Blume",
         "Type": "Employee",
-        "Arbeit": "1.00",
-        "Fairshares": "0"
+        "Arbeit": "1.00"
       },
       {
         "Id": "CS",
         "Name": "k: Christine Schlott",
         "Type": "Employee",
-        "Arbeit": "0.41666",
-        "Fairshares": "0"
+        "Arbeit": "0.41666"
       },
       {
         "Id": "IK",
         "Name": "k: Ingo Komorowski",
         "Type": "Employee",
-        "Arbeit": "1.00",
-        "Fairshares": "0"
+        "Arbeit": "1.00"
       },
       {
         "Id": "SR",
         "Name": "k: Sven Röpstorff",
         "Type": "Employee",
-        "Arbeit": "0.50",
-        "Fairshares": "0"
+        "Arbeit": "0.50"
       }
     ]
   },
   {
     "Abrechenzeitpunkt": "2020-12-31",
     "Liquiditaetsbedarf": "150000.0",
-    "Vertriebsprovision": 0.05,
-    "AngestelltenUmsatzAnteil": 0.7,
     "Kommitmenschen": [
       {
         "Id": "IK",
         "Name": "k: Ingo Komorowski",
         "Type": "Employee",
-        "Arbeit": "0.00",
-        "Fairshares": "0"
+        "Arbeit": "0.00"
       },
       {
         "Id": "KR",
         "Name": "k: Katja Roth",
         "Type": "Employee",
-        "Arbeit": "0.00",
-        "Fairshares": "0"
+        "Arbeit": "0.00"
       },
       {
         "Id": "AN",
@@ -237,58 +244,49 @@
         "Id": "AB",
         "Name": "k: Anna Blume",
         "Type": "Employee",
-        "Arbeit": "1.00",
-        "Fairshares": "0"
+        "Arbeit": "1.00"
       },
       {
         "Id": "CS",
         "Name": "k: Christine Schlott",
         "Type": "Employee",
-        "Arbeit": "0.666",
-        "Fairshares": "0"
+        "Arbeit": "1.00"
       },
       {
         "Id": "SR",
         "Name": "k: Sven Röpstorff",
         "Type": "Employee",
-        "Arbeit": "1.00",
-        "Fairshares": "0"
+        "Arbeit": "1.00"
       },
       {
         "Id": "MH",
         "Name": "k: Michael Häussler",
         "Type": "Employee",
-        "Arbeit": "0.75",
-        "Fairshares": "0"
+        "Arbeit": "0.75"
       },
       {
         "Id": "JK",
         "Name": "k: Jost Künzel",
         "Type": "Employee",
-        "Arbeit": "0.666",
-        "Fairshares": "0"
+        "Arbeit": "0.666"
       },
       {
         "Id": "MG",
         "Name": "k: Michael Gallus",
         "Type": "Employee",
-        "Arbeit": "0.25",
-        "Fairshares": "0"
+        "Arbeit": "0.25"
       },
       {
         "Id": "TB",
         "Name": "k: Thomas Boehlefeld",
         "Type": "Employee",
-        "Arbeit": "0.25",
-        "Fairshares": "0"
+        "Arbeit": "0.25"
       }
     ]
   },
   {
     "Abrechenzeitpunkt": "2021-12-31",
     "Liquiditaetsbedarf": "150000.0",
-    "Vertriebsprovision": 0.05,
-    "AngestelltenUmsatzAnteil": 0.7,
     "Kommitmenschen": [
       {
         "Id": "AN",
@@ -309,63 +307,51 @@
         "Name": "k: Benjamin Wiedenmann",
         "Type": "Partner",
         "Arbeit": "1.00",
-        "Fairshares": "0.19333333"
+        "Fairshares": "0.1933"
       },
       {
         "Id": "AB",
         "Name": "k: Anna Blume",
         "Type": "Employee",
-        "Arbeit": "1.00",
-        "Fairshares": "0"
+        "Arbeit": "1.00"
       },
       {
         "Id": "SR",
         "Name": "k: Sven Röpstorff",
         "Type": "Partner",
         "Arbeit": "1.00",
-        "Fairshares": "0.048333333"
+        "Fairshares": "0.04833"
       },
       {
         "Id": "MH",
         "Name": "k: Michael Häussler",
         "Type": "Partner",
         "Arbeit": "1.00",
-        "Fairshares": "0.048333333"
+        "Fairshares": "0.04833"
       },
       {
         "Id": "JK",
         "Name": "k: Jost Künzel",
         "Type": "Employee",
-        "Arbeit": "1.00",
-        "Fairshares": "0"
+        "Arbeit": "1.00"
       },
       {
         "Id": "MG",
         "Name": "k: Michael Gallus",
         "Type": "Employee",
-        "Arbeit": "1.00",
-        "Fairshares": "0"
+        "Arbeit": "1.00"
       },
       {
         "Id": "TB",
         "Name": "k: Thomas Boehlefeld",
         "Type": "Employee",
-        "Arbeit": "1.00",
-        "Fairshares": "0"
+        "Arbeit": "1.00"
       },
       {
         "Id": "FL",
-        "Name": "k: Faton Lekay",
+        "Name": "k: Faton Lekaj",
         "Type": "Employee",
-        "Arbeit": "0.833",
-        "Fairshares": "0"
-      },
-      {
-        "Id": "AKN",
-        "Name": "k: Anna Nissen",
-        "Type": "Employee",
-        "Arbeit": "0.41666",
-        "Fairshares": "0"
+        "Arbeit": "0.8333"
       }
     ]
   }
