@@ -19,24 +19,6 @@ import (
 	"github.com/ahojsenn/kontrol/booking"
 )
 
-// Beschreibt, dass die netto (Rechnungs-)Position in Spalte X der CSV-Datei dem Stakeholder Y gehört
-var netBookings = []struct {
-	Owner  string
-	Column int
-}{
-	{Owner: "BW", Column: 11},
-	{Owner: "AN", Column: 12},
-	{Owner: "RW", Column: 13},
-	{Owner: "JM", Column: 14},
-	{Owner: "KR", Column: 15},
-	{Owner: "IK", Column: 16},
-	{Owner: "SR", Column: 17},
-	{Owner: "MH", Column: 18},
-	{Owner: "JK", Column: 19},
-	{Owner: "EX", Column: 20},
-	{Owner: "RR", Column: 21},
-}
-
 type headerItem = struct {
 	Description string
 	Column      int
@@ -66,7 +48,7 @@ func Import(file string, aYear int, as accountSystem.AccountSystem) {
 			if err == io.EOF {
 				break
 			}
-			// log.Println("in Import, reading line ", rownr)
+			//log.Println("in Import, reading line ", rownr)
 
 			/*			if isHeader(record[0]) {
 							continue
@@ -90,14 +72,15 @@ func Import(file string, aYear int, as accountSystem.AccountSystem) {
 
 			if isValidBookingType(record[0]) {
 				typ := record[0]
-				soll := record[1]
-				haben := record[2]
-				cs := strings.Replace(record[3], " ", "", -1) // suppress whitespace
-				project := sanitizeMyString(record[4])
-				subject := sanitizeMyString(record[5])
-				amount := parseAmount(record[6], rownr)
-				year, month := parseMonth(record[7])
-				bankCreated := parseFileCreated(record[8])
+				svensSummary := record[1]
+				soll := record[2]
+				haben := record[3]
+				cs := strings.Replace(record[4], " ", "", -1) // suppress whitespace
+				project := sanitizeMyString(record[5])
+				subject := sanitizeMyString(record[6])
+				amount := parseAmount(record[7], rownr)
+				year, month := parseMonth(record[8])
+				bankCreated := parseFileCreated(record[9])
 				imported++
 				//m := make(map[valueMagnets.Stakeholder]float64)
 				m := make(map[string]float64)
@@ -110,7 +93,7 @@ func Import(file string, aYear int, as accountSystem.AccountSystem) {
 					stakeholder := shrepo.Get(p.Description).Id
 					m[stakeholder] = parseAmount(record[p.Column], rownr)
 				}
-				bkng := booking.NewBooking(rownr, typ, soll, haben, cs, project, m, amount, subject, month, year, bankCreated)
+				bkng := booking.NewBooking(rownr, typ, soll, haben, cs, project+":"+svensSummary, m, amount, subject, month, year, bankCreated)
 
 				//				log.Println ("in Immport, ", imported, year, bkng)
 

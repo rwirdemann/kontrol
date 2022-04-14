@@ -84,7 +84,7 @@ func main() {
 }
 
 func ImportAndProcessBookings(as accountSystem.AccountSystem, year int) {
-	log.Println("in ImportAndProcessBookings...")
+	log.Println("in ImportAndProcessBookings... :-)")
 	util.Global.Errors = nil
 
 	as.ClearBookings()
@@ -144,7 +144,7 @@ func watchBookingFile(repository accountSystem.AccountSystem, year int, month st
 				// there might be more than one server of this kind running on this server
 				// so wait for year mod 10 (seconds year %5)*5 seconds
 				waitFor := (util.Global.FinancialYear % 5) * 5.0
-				time.Sleep(time.Duration(waitFor)* time.Second)
+				time.Sleep(time.Duration(waitFor) * time.Second)
 				log.Printf("booking reimport start: %s\n", time.Now())
 				ImportAndProcessBookings(repository, year)
 				log.Printf("booking reimport end: %s\n", time.Now())
