@@ -2,6 +2,7 @@ package booking
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/ahojsenn/kontrol/util"
@@ -87,6 +88,7 @@ type Booking struct {
 	Id          int
 	RowNr       int
 	Type        string // siehe const-Block hier drüber für gültige Werte
+	Cost1       string
 	Soll        string
 	Haben       string
 	CostCenter  string
@@ -122,6 +124,12 @@ func NewBooking(
 		Net:         net,
 	}
 
+	proj := strings.Split(project, ";")[0]
+	cost1 := ""
+	if strings.Contains(project, ";") {
+		cost1 = strings.Split(project, ";")[1]
+	}
+
 	return &Booking{
 		Id:               util.GetNewBookingId(),
 		RowNr:            rownr,
@@ -130,7 +138,8 @@ func NewBooking(
 		Soll:             soll,
 		Haben:            haben,
 		CostCenter:       costCenter,
-		Project:          project,
+		Project:          proj,
+		Cost1:            cost1,
 		Amount:           amount,
 		Text:             text,
 		Month:            month,
