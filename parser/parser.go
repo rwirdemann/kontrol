@@ -86,7 +86,7 @@ func Import(file string, aYear int, as accountSystem.AccountSystem) {
 			var typ, soll, haben, cs, project, cost1, subject string
 			var amount float64
 			var bankCreated time.Time
-			var rownr, year, month int
+			var year, month int
 			if isValidBookingType(record[0]) {
 				if header_basics[1].Description == "Cost1" {
 					typ = record[0]
