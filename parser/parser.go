@@ -53,20 +53,27 @@ func Import(file string, aYear int, as accountSystem.AccountSystem) {
 			if isHeader(record[0]) {
 				log.Println("in Import, read header", record)
 				var hi headerItem
+
+				var stakeholderStartCol int
+				if record[1] == "Cost1" {
+					stakeholderStartCol = 12
+				}  else {
+					stakeholderStartCol = 11
+				}	
+
 				for i, s := range record {
 					hi.Column = i
 					hi.Description = s
 					// break out of loop when hitting first empty description
-					// log.Println("in Import, read header, col=", hi)
+					// log.Println("in Import, read header, col=", hi, hi.Description == "Cost1" )
 					if hi.Description == "" {
 						break
 					}
-					stakeholderStartCol := 11
-					if hi.Description == "Cost1" {stakeholderStartCol=12}
-					if i < stakeholderStartCol {
+
+					if hi.Column < stakeholderStartCol {
 						header_basics = append(header_basics, hi)
 					} else {
-						log.Println("in Import, read header, stakeholder=", hi)
+						// log.Println("in Import, read header, stakeholder =", hi, stakeholderStartCol, hi.Column )
 						header_stakeholder = append(header_stakeholder, hi)
 					}
 

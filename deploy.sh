@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-set -e
+# set -e
 # Any subsequent(*) commands which fail will cause the shell script to exit immediately
 
 export SOURCE=./
@@ -25,7 +25,9 @@ echo
 
 
 # clear
+set -x
 echo "Deploy stuff to "${TARGETSERVER}
+${SSHSERVER} date
 ${SSHSERVER} "[ -f ${TARGETPROGRAM} ] &&  mv ${TARGETPROGRAM} ${TARGETPROGRAM}.old"
 scp ${TARGETPROGRAM} ${TARGETUSER}@${TARGETSERVER}:${TARGETPROGRAM}
 scp httpsconfig.env ${TARGETUSER}@${TARGETSERVER}:.
