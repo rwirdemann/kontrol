@@ -81,18 +81,6 @@ func Import(file string, aYear int, as accountSystem.AccountSystem) {
 			var bankCreated time.Time
 			var rownr, year, month int
 			if isValidBookingType(record[0]) {
-<<<<<<< HEAD
-				typ := record[0]
-				svensSummary := record[1]
-				soll := record[2]
-				haben := record[3]
-				cs := strings.Replace(record[4], " ", "", -1) // suppress whitespace
-				project := sanitizeMyString(record[5])
-				subject := sanitizeMyString(record[6])
-				amount := parseAmount(record[7], rownr)
-				year, month := parseMonth(record[8])
-				bankCreated := parseFileCreated(record[9])
-=======
 				if header_basics[1].Description == "Cost1" {
 					typ = record[0]
 					cost1 = record[1]
@@ -116,7 +104,6 @@ func Import(file string, aYear int, as accountSystem.AccountSystem) {
 					year, month = parseMonth(record[7])
 					bankCreated = parseFileCreated(record[8])
 				}
->>>>>>> 7b3570a (now with svens new column)
 				imported++
 				//m := make(map[valueMagnets.Stakeholder]float64)
 				m := make(map[string]float64)
@@ -129,11 +116,7 @@ func Import(file string, aYear int, as accountSystem.AccountSystem) {
 					stakeholder := shrepo.Get(p.Description).Id
 					m[stakeholder] = parseAmount(record[p.Column], rownr)
 				}
-<<<<<<< HEAD
-				bkng := booking.NewBooking(rownr, typ, soll, haben, cs, project+":"+svensSummary, m, amount, subject, month, year, bankCreated)
-=======
 				bkng := booking.NewBooking(rownr, typ, soll, haben, cs, project+";"+cost1, m, amount, subject, month, year, bankCreated)
->>>>>>> 7b3570a (now with svens new column)
 
 				//				log.Println ("in Immport, ", imported, year, bkng)
 
