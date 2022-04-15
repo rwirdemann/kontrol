@@ -90,7 +90,7 @@ func Import(file string, aYear int, as accountSystem.AccountSystem) {
 			if isValidBookingType(record[0]) {
 				if header_basics[1].Description == "Cost1" {
 					typ = record[0]
-					cost1 = record[1]
+					cost1 = sanitizeMyString(record[1])
 					soll = record[2]
 					haben = record[3]
 					cs = strings.Replace(record[4], " ", "", -1) // suppress whitespace
