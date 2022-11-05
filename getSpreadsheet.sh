@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-export SPREADSHEET_KEY1="1xkTQDGJkq9UKvZfFJTEK_W1EdM2AAy7xIFikxTCGhnk"
-export SPREADSHEET_KEY="1-p7QnCtwv0TrOINDgG2v_KqfB6wtSPbNNaXQ6PX1u3g"
+export SPREADSHEET_KEY="1xkTQDGJkq9UKvZfFJTEK_W1EdM2AAy7xIFikxTCGhnk"
+export SPREADSHEET_KEY_Sven="1-p7QnCtwv0TrOINDgG2v_KqfB6wtSPbNNaXQ6PX1u3g"
 export FILENAME="Buchungen-KG.csv"
 export URL="https://docs.google.com/spreadsheets/d/$SPREADSHEET_KEY/export?exportFormat=csv"
 

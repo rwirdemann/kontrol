@@ -14,7 +14,7 @@ import (
 
 	"github.com/ahojsenn/kontrol/accountSystem"
 	"github.com/ahojsenn/kontrol/util"
-	"github.com/ahojsenn/kontrol/valueMagnets"
+//	"github.com/ahojsenn/kontrol/valueMagnets"
 
 	"github.com/ahojsenn/kontrol/booking"
 )
@@ -57,9 +57,9 @@ func Import(file string, aYear int, as accountSystem.AccountSystem) {
 				var stakeholderStartCol int
 				if record[1] == "Cost1" {
 					stakeholderStartCol = 12
-				}  else {
+				} else {
 					stakeholderStartCol = 11
-				}	
+				}
 
 				for i, s := range record {
 					hi.Column = i
@@ -73,12 +73,12 @@ func Import(file string, aYear int, as accountSystem.AccountSystem) {
 					if hi.Column < stakeholderStartCol {
 						header_basics = append(header_basics, hi)
 					} else {
-						// log.Println("in Import, read header, stakeholder =", hi, stakeholderStartCol, hi.Column )
+						log.Println("in Import, read header, stakeholder =", hi, stakeholderStartCol, hi.Column )
 						header_stakeholder = append(header_stakeholder, hi)
 					}
 
 				}
-				//log.Println("in Import, read header", header_basics, header_stakeholder)
+				log.Println("in Import, read header", header_basics, header_stakeholder)
 				continue
 				//CONTINUE:
 			}
@@ -115,13 +115,14 @@ func Import(file string, aYear int, as accountSystem.AccountSystem) {
 				//m := make(map[valueMagnets.Stakeholder]float64)
 				m := make(map[string]float64)
 				// now loop over columns with personal revenues of all stakeholders...
-				shrepo := valueMagnets.Stakeholder{}
+				//shrepo := valueMagnets.Stakeholder{}
 
 				// loop over columns until header column is empty
 				for _, p := range header_stakeholder {
 					//
-					stakeholder := shrepo.Get(p.Description).Id
-					m[stakeholder] = parseAmount(record[p.Column], rownr)
+					//stakeholder := shrepo.Get(p.Description).Id
+					//m[stakeholder] = parseAmount(record[p.Column], rownr)
+					m[p.Description] = parseAmount(record[p.Column], rownr)
 				}
 				bkng := booking.NewBooking(rownr, typ, soll, haben, cs, project+";"+cost1, m, amount, subject, month, year, bankCreated)
 
